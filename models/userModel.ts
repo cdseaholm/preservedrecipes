@@ -1,7 +1,5 @@
 import mongoose, { Model, Schema } from "mongoose";
 import { IUser } from "./types/user";
-import { userPreferencesSchema } from "./userPreferencesModel";
-import { vacationSchema } from "./vacationModel";
 
 export const userSchema = new Schema(
   {
@@ -16,14 +14,6 @@ export const userSchema = new Schema(
     password: {
       type: String,
       required: true,
-    },
-    userPreferences: {
-      type: userPreferencesSchema,
-      required: false,
-    },
-    vacations: {
-      type: [vacationSchema],
-      required: false,
     },
     resetPasswordToken: {
       type: String,

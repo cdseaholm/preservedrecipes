@@ -1,7 +1,6 @@
 'use client'
 
 import { LoadingSpinner } from "@/components/misc/loadingSpinner";
-import { useModalStore } from "@/context/modalStore";
 import { Session, User } from "next-auth";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -12,7 +11,6 @@ const buttonStyle = "flex justify-center items-center border border-neutral-200 
 export default function ProfilePage({ session }: { session: Session | null }) {
     const router = useRouter();
     const [loading, setLoading] = useState<boolean>(true);
-    const setOpenPreferencesModal = useModalStore(state => state.setOpenPreferencesModal);
     const user = session ? session.user as User : null;
     const userName = user ? user.name : '';
 
@@ -34,16 +32,16 @@ export default function ProfilePage({ session }: { session: Session | null }) {
                 </div>
                 <div className="grid grid-cols-1 grid-rows-8 gap-5 gap-x-4 md:gap-x-16 w-11/12 h-4/5 md:w-1/2 md:h-1/2">
                     <label className="underline font-bold text-sm md:text-base flex justify-center items-center text-center">
-                        Your Vacay-AI Actions:
+                        Your P.Rec Actions:
                     </label>
                     <button className={buttonStyle} onClick={() => toast.info('Create New Vacation Plan')}>
-                        Create New Vacation Plan
+                        Create New Recipe
                     </button>
                     <button className={buttonStyle} onClick={() => toast.info('Ask AI for Vacation Ideas')}>
-                        Ask AI for Vacation Ideas
+                        Not a part of a family tree? Make one and invite relatives
                     </button>
                     <button className={buttonStyle} onClick={() => toast.info('Vacation History')}>
-                        Vacation History
+                        Family Recipes
                     </button>
                     <label className="underline font-bold text-sm md:text-base flex justify-center items-center text-center">
                         Your Profile Actions:
@@ -51,8 +49,8 @@ export default function ProfilePage({ session }: { session: Session | null }) {
                     <button className={buttonStyle} onClick={() => toast.info('Profile Settings')}>
                         Profile Settings
                     </button>
-                    <button className={buttonStyle} onClick={() => setOpenPreferencesModal(true)}>
-                        Update Preferences
+                    <button className={buttonStyle} onClick={() => toast.info('Family Settings')}>
+                        Family Settings
                     </button>
                     <button className={buttonStyle} onClick={() => toast.info('Account Settings')}>
                         Account Settings

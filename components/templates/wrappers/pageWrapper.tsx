@@ -12,8 +12,6 @@ import { useSession } from "next-auth/react";
 import { User } from "next-auth";
 import { InitializeUserData } from "@/utils/userHelpers/initUserData";
 import { useUserStore } from "@/context/userStore";
-import { IUserPreferences } from "@/models/types/userPreferences";
-import { IVacation } from "@/models/types/vacation";
 
 export default function PageWrapper({ children }: Readonly<{ children: React.ReactNode; }>) {
 
@@ -21,8 +19,6 @@ export default function PageWrapper({ children }: Readonly<{ children: React.Rea
     let widthRef = 0 as number;
     const setWidthQuery = useStateStore((state) => state.setWidthQuery);
     const setUrlToUse = useStateStore((state) => state.setUrlToUse);
-    const setUserPreferences = useUserStore(state => state.setUserPreferences);
-    const setVacations = useUserStore(state => state.setVacations);
     const setUserID = useUserStore(state => state.setUserID);
 
     const initializeWidths = () => {
@@ -76,8 +72,7 @@ export default function PageWrapper({ children }: Readonly<{ children: React.Rea
                     return;
                 }
 
-                setUserPreferences(initialized.userPreferences as IUserPreferences);
-                setVacations(initialized.vacations as IVacation[])
+                //set recipes, set family tree, etc
                 setUserID(initialized.userID)
                 
             }
