@@ -68,7 +68,7 @@ function SmallHeader({ session }: { session: Session | null }) {
     return (
         <div className="flex flex-row justify-between items-center px-5 py-2 w-full border-b border-neutral-300">
             <section className="text-base font-bold">
-                VacayAI Image Here
+                PreservedRecipes Image Here
             </section>
             <nav>
                 <Menu shadow="md" width={150}>
@@ -77,7 +77,7 @@ function SmallHeader({ session }: { session: Session | null }) {
                     </Menu.Target>
                     <Menu.Dropdown>
                         <Menu.Label>
-                            VacayAI Specific
+                            PreservedRecipes Specific
                         </Menu.Label>
                         <Menu.Item onClick={() => toast.info("Let's learn about VacayAI!")}>
                             About
@@ -96,7 +96,7 @@ function SmallHeader({ session }: { session: Session | null }) {
                                     Profile
                                 </Menu.Item>
                                 <Menu.Item onClick={() => toast.info("Creating Vacay!")}>
-                                    Create New Vacay
+                                    Create New Recipe
                                 </Menu.Item>
                                 <Menu.Item onClick={() => setOpenSignOutModal(true)}>
                                     Sign Out
@@ -132,7 +132,7 @@ function LargeHeader({ session }: { session: Session | null }) {
     return (
         <div className="flex flex-row justify-between items-center px-12 py-2 w-full border-b border-neutral-300 bg-gray-50">
             <section className="text-base font-bold">
-                VacayAI
+                PreservedRecipes
             </section>
             <nav className="flex flex-row justify-end items-center w-1/3 space-x-8">
                 <button onClick={() => toast.info(`You'd go to the About page right now!`)}>
@@ -155,7 +155,7 @@ function LargeHeader({ session }: { session: Session | null }) {
                                 Profile
                             </Menu.Item>
                             <Menu.Item onClick={() => toast.info("Creating Vacay!")}>
-                                Create New Vacay
+                                Create New Recipe
                             </Menu.Item>
                             <Menu.Item onClick={() => setOpenSignOutModal(true)}>
                                 Sign Out
