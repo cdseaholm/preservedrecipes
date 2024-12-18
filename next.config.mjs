@@ -13,9 +13,6 @@ const nextConfig = {
       },
     ];
   },
-  webpack: (config) => {
-    return config;
-  },
   images: {
     remotePatterns: [
       {
@@ -23,7 +20,16 @@ const nextConfig = {
       }
     ]
   },
-  productionBrowserSourceMaps: true
-};
+  productionBrowserSourceMaps: true,
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.plugins.push(new BundleAnalyzerPlugin({
+        analyzerMode: 'static',
+        reportFilename: './bundle-report.html',
+        openAnalyzer: false,
+      }));
+    }
 
-export default nextConfig;
+    return config;
+  }
+};

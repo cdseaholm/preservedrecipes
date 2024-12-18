@@ -18,6 +18,8 @@ export default {
         highlight: 'rgba(var(--highlight-rgb), var(--highlight-opacity))',
         altBack: 'rgba(var(--altBack-rgb), var(--altBack-opacity))',
         mainText: 'rgba(var(--mainText-rgb), var(--mainText-opacity))',
+        lightText: 'rgba(var(--lightText-rgb), var(--lightText-opacity))',
+        darkText: 'rgba(var(--darkText-rgb), var(--darkText-opacity))'
       },
     },
   },

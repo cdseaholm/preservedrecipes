@@ -20,6 +20,7 @@ import { useUserStore } from "@/context/userStore";
 import { IRecipe } from "@/models/types/recipe";
 
 export default function MainHeader() {
+    const router = useRouter();
     const { data: session } = useSession();
     const userInfo = useUserStore(state => state.userInfo);
     const recipes = userInfo ? userInfo.recipes as IRecipe[] : [] as IRecipe[];
@@ -37,17 +38,21 @@ export default function MainHeader() {
         setColorPickerMode(!colorPickerMode)
     }
 
+    const handleAboutClick = () => {
+        router.push('/?section=about-section');
+    };
+
     return (
-        <header className={`bg-mainBack w-full flex flex-row justify-between items-center text-black px-5 border-b border-accent text-mainText sticky top-0 z-30 ${isMediumScreenOrLess ? "px-5 py-2" : 'px-12 py-2'}`} style={{ height: '7vh' }}>
+        <header className={`bg-mainBack w-full flex flex-row justify-between items-center px-5 border-b border-accent text-mainText sticky top-0 z-30 ${isMediumScreenOrLess ? "px-5 py-2" : 'px-12 py-2'}`} style={{ height: '7vh' }}>
             <section className="text-base font-bold">
                 <Link href={'/'}>
                     {isMediumScreenOrLess ? 'PreservedRecipes Image Here' : 'PreservedRecipes'}
                 </Link>
             </section>
             {isMediumScreenOrLess ? (
-                <SmallHeader session={session} recipeText={recipeText} familyText={familyText} communityText={communityText} handleColorPicker={handleColorPicker}/>
+                <SmallHeader session={session} recipeText={recipeText} familyText={familyText} communityText={communityText} handleColorPicker={handleColorPicker} handleAboutClick={handleAboutClick}/>
             ) : (
-                <LargeHeader session={session} recipeText={recipeText} familyText={familyText} communityText={communityText} handleColorPicker={handleColorPicker}/>
+                <LargeHeader session={session} recipeText={recipeText} familyText={familyText} communityText={communityText} handleColorPicker={handleColorPicker} handleAboutClick={handleAboutClick}/>
             )}
         </header>
     )
@@ -107,7 +112,7 @@ const communities = (
     <RiCommunityLine />
 )
 
-function SmallHeader({ session, recipeText, familyText, communityText, handleColorPicker }: { session: Session | null, recipeText: string, familyText: string, communityText: string, handleColorPicker: () => void }) {
+function SmallHeader({ session, recipeText, familyText, communityText, handleColorPicker, handleAboutClick }: { session: Session | null, recipeText: string, familyText: string, communityText: string, handleColorPicker: () => void, handleAboutClick: () => void }) {
 
     const router = useRouter();
     let user = session ? session.user as User : {} as User;
@@ -115,7 +120,7 @@ function SmallHeader({ session, recipeText, familyText, communityText, handleCol
     let firstName = userName ? userName.split(' ')[0] : null;
     const setSignInModal = useModalStore(state => state.setOpenSignInModal);
     const setOpenSignOutModal = useModalStore(state => state.setOpenSignOutModal);
-    const setRegisterModal = useModalStore(state => state.setOpenRegisterModal)
+    const setRegisterModal = useModalStore(state => state.setOpenRegisterModal);
 
     return (
         <nav>
@@ -135,7 +140,7 @@ function SmallHeader({ session, recipeText, familyText, communityText, handleCol
                     <Menu.Label>
                         PreservedRecipes Specific
                     </Menu.Label>
-                    <Menu.Item onClick={() => toast.info("Let's learn about VacayAI!")}>
+                    <Menu.Item onClick={handleAboutClick}>
                         About
                     </Menu.Item>
                     <Menu.Item onClick={handleColorPicker}>
@@ -183,7 +188,7 @@ function SmallHeader({ session, recipeText, familyText, communityText, handleCol
     )
 }
 
-function LargeHeader({ session, recipeText, familyText, communityText, handleColorPicker }: { session: Session | null, recipeText: string, familyText: string, communityText: string, handleColorPicker: () => void }) {
+function LargeHeader({ session, recipeText, familyText, communityText, handleColorPicker, handleAboutClick }: { session: Session | null, recipeText: string, familyText: string, communityText: string, handleColorPicker: () => void, handleAboutClick: () => void }) {
 
     const router = useRouter();
     let user = session ? session.user as User : {} as User;
@@ -191,11 +196,12 @@ function LargeHeader({ session, recipeText, familyText, communityText, handleCol
     let firstName = userName ? userName.split(' ')[0] : null;
     const setSignInModal = useModalStore(state => state.setOpenSignInModal);
     const setOpenSignOutModal = useModalStore(state => state.setOpenSignOutModal);
-    const setRegisterModal = useModalStore(state => state.setOpenRegisterModal)
+    const setRegisterModal = useModalStore(state => state.setOpenRegisterModal);
 
     return (
         <nav className="flex flex-row justify-end items-center w-1/3 space-x-8">
-            <button onClick={() => toast.info(`You'd go to the About page right now!`)}>
+            <button onClick={handleAboutClick}
+            >
                 About
             </button>
             <button onClick={handleColorPicker}>

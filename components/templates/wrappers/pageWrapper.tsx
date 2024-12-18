@@ -22,7 +22,7 @@ export default function PageWrapper({ children }: Readonly<{ children: React.Rea
     const setWidthQuery = useStateStore((state) => state.setWidthQuery);
     const setUrlToUse = useStateStore((state) => state.setUrlToUse);
     const setUserInfo = useUserStore(state => state.setUserInfo);
-    const [loading, setLoading] = useState<boolean>(true)
+    const [loading, setLoading] = useState<boolean>(true);
 
     const initializeWidths = useCallback((newWidth: number) => {
         setWidthQuery(newWidth)
@@ -85,7 +85,6 @@ export default function PageWrapper({ children }: Readonly<{ children: React.Rea
                     return;
                 }
 
-                //set recipes, set family tree, etc
                 handleUserInfo(initialized.userInfo)
 
             }

@@ -8,7 +8,7 @@ export default function WelcomeSection({ user }: { user: User | null }) {
 
     return (
         <div className="h-full w-full homeDiv">
-            <div className="flex flex-col items-center justify-start h-full w-full px-5 bg-mainBack/90">
+            <div className="flex flex-col items-center justify-start h-full w-full px-5 bg-mainBack/95">
                 <h2 className="flex flex-row items-center justify-start text-3xl md:text-4xl font-semibold w-full text-mainText w-3/4 pt-8 titlePoint1">
                     Preserve Your Family Recipes
                 </h2>
@@ -17,7 +17,7 @@ export default function WelcomeSection({ user }: { user: User | null }) {
                         bg-mainContent
                         flex flex-col
                         rounded-lg
-                        text-black
+                        text-lightText
                         justify-evenly
                         items-center
                         w-11/12
@@ -27,7 +27,7 @@ export default function WelcomeSection({ user }: { user: User | null }) {
                         my-32
                         md:my-52
                         shadow-xl
-                        shadow-accent/20
+                        shadow-highlight/50
                         relative
                         overflow-hidden
                         border
@@ -42,7 +42,7 @@ export default function WelcomeSection({ user }: { user: User | null }) {
                         bg-mainContent
                         flex flex-col
                         rounded-lg
-                        text-black
+                        text-lightText
                         justify-evenly
                         items-center
                         w-11/12
