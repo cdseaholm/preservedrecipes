@@ -6,6 +6,7 @@ import { Inter } from "next/font/google";
 import { ColorSchemeScript, MantineProvider } from '@mantine/core';
 import '@mantine/core/styles.css';
 import AuthWrapper from "@/components/templates/wrappers/authwrapper";
+import '@mantine/carousel/styles.css';
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -26,7 +27,7 @@ export default function RootLayout({
           <ColorSchemeScript />
         </head>
         <body className="overflow-hidden">
-          <MantineProvider>
+          <MantineProvider withGlobalClasses withStaticClasses withCssVariables>
             <PageWrapper>
               {children}
             </PageWrapper>

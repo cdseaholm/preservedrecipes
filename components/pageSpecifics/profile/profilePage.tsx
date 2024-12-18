@@ -1,12 +1,12 @@
 'use client'
 
+import ContentButtons from "@/components/buttons/contentButtons";
+import LinkButton from "@/components/buttons/linkButtons";
 import { LoadingSpinner } from "@/components/misc/loadingSpinner";
 import { Session, User } from "next-auth";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-
-const buttonStyle = "flex justify-center items-center border border-neutral-200 rounded-md p-4 hover:bg-neutral-200 text-xs md:text-sm";
 
 export default function ProfilePage({ session }: { session: Session | null }) {
     const router = useRouter();
@@ -20,41 +20,54 @@ export default function ProfilePage({ session }: { session: Session | null }) {
             toast.error('Unauthorized to access this page');
         }
         setLoading(false);
-    }, [session]);
+    }, [session, router]);
 
     return (
         loading ? (
             <LoadingSpinner />
         ) : (
-            <section className="flex flex-col justify-start items-center" style={{ minHeight: '100vh', width: '100vw' }}>
-                <div className="flex flex-row justify-center items-center text-lg md:text-xl" style={{ minHeight: '15vh' }}>
-                    {`Welcome to your profile ${userName}`}
-                </div>
-                <div className="grid grid-cols-1 grid-rows-8 gap-5 gap-x-4 md:gap-x-16 w-11/12 h-4/5 md:w-1/2 md:h-1/2">
+            <section className="flex flex-col justify-center items-center bg-mainBack" style={{ minHeight: '100vh', width: '100vw' }}>
+                <div className="flex flex-col justify-evenly items-center gap-4 md:gap-x-16 w-11/12 h-4/5 md:w-1/2 md:h-1/2 py-12 bg-mainContent rounded-md border border-mainText/30">
+                    <div className="flex flex-row justify-center items-center text-xl md:text-2xl pb-8">
+                        {`Welcome to your profile ${userName}`}
+                    </div>
                     <label className="underline font-bold text-sm md:text-base flex justify-center items-center text-center">
                         Your P.Rec Actions:
                     </label>
-                    <button className={buttonStyle} onClick={() => toast.info('Create New Vacation Plan')}>
-                        Create New Recipe
-                    </button>
-                    <button className={buttonStyle} onClick={() => toast.info('Ask AI for Vacation Ideas')}>
-                        Not a part of a family tree? Make one and invite relatives
-                    </button>
-                    <button className={buttonStyle} onClick={() => toast.info('Vacation History')}>
-                        Family Recipes
-                    </button>
+                    <div className="flex flex-row w-full h-full justify-center items-center">
+                        <ContentButtons extraProps={''} onClick={() => toast.info('Create New Vacation Plan')} content="Create New Recipe" />
+                    </div>
+                    <div className="flex flex-row w-full h-full justify-center items-center">
+                        <ContentButtons extraProps={''} onClick={() => toast.info('Vacation History')} content="Family Recipes" />
+                    </div>
+                    <div className="flex flex-row w-full h-full justify-center items-center py-2  pb-4">
+                        <div className="flex flex-col w-full h-full items-center">
+                            <div className="text-mainText">
+                                Not a part of a Family Recipe Tree?
+                            </div>
+                            <ContentButtons extraProps={''} onClick={() => toast.info('Ask AI for Vacation Ideas')} content="Start a Family Recipe Tree" />
+                            <div>
+                                -Or-
+                            </div>
+                            <ContentButtons extraProps="" onClick={() => toast.info('Join Community')} content="Join a public community" />
+                        </div>
+                    </div>
                     <label className="underline font-bold text-sm md:text-base flex justify-center items-center text-center">
                         Your Profile Actions:
                     </label>
-                    <button className={buttonStyle} onClick={() => toast.info('Profile Settings')}>
-                        Profile Settings
-                    </button>
-                    <button className={buttonStyle} onClick={() => toast.info('Family Settings')}>
-                        Family Settings
-                    </button>
-                    <button className={buttonStyle} onClick={() => toast.info('Account Settings')}>
-                        Account Settings
-                    </button>
+                    <div className="flex flex-row w-full h-full justify-center items-center">
+                        <LinkButton extraProps="" href={'/profile/settings'} content="Profile Settings" />
+                        {/**Add in ID props to URL for family/accounts */}
+                    </div>
+                    <div className="flex flex-row w-full h-full justify-center items-center">
+                        <LinkButton extraProps="" href="/family/settings" content="Family Settings" />
+                    </div>
+                    <div className="flex flex-row w-full h-full justify-center items-center">
+                        <LinkButton extraProps="" href="/account" content="Account Settings" />
+                    </div>
+                    <div className="flex flex-row w-full h-full justify-center items-center">
+                        <LinkButton extraProps="" href="/account" content="Account History" />
+                    </div>
                 </div>
             </section>
         )

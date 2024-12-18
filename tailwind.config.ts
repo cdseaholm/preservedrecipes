@@ -11,6 +11,13 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        mainBack: 'rgba(var(--mainBack-rgb), var(--mainBack-opacity))',
+        mainContent: 'rgba(var(--mainContent-rgb), var(--mainContent-opacity))',
+        altContent: 'rgba(var(--altContent-rgb), var(--altContent-opacity))',
+        accent: 'rgba(var(--accent-rgb), var(--accent-opacity))',
+        highlight: 'rgba(var(--highlight-rgb), var(--highlight-opacity))',
+        altBack: 'rgba(var(--altBack-rgb), var(--altBack-opacity))',
+        mainText: 'rgba(var(--mainText-rgb), var(--mainText-opacity))',
       },
     },
   },

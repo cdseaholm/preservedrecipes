@@ -1,12 +1,13 @@
 
+import { IUser } from '@/models/types/user';
 import { create } from 'zustand';
 
 interface UserStore {
-    userID: string;
-    setUserID: (userID: string) => void;
+    userInfo: IUser
+    setUserInfo: (userInfo: IUser) => void
 }
 
 export const useUserStore = create<UserStore>((set) => ({
-    userID: '',
-    setUserID: (newString) => set({userID: newString})
+    userInfo: {} as IUser,
+    setUserInfo: (info) => set({ userInfo: info })
 }));

@@ -1,5 +1,7 @@
 import mongoose, { Model, Schema } from "mongoose";
 import { IUser } from "./types/user";
+import { recipeSchema } from "./recipe";
+import { commentSchema } from "./comment";
 
 export const userSchema = new Schema(
   {
@@ -14,6 +16,42 @@ export const userSchema = new Schema(
     password: {
       type: String,
       required: true,
+    },
+    familyID: {
+      type: String,
+      default: ''
+    },
+    recipes: {
+      type: [recipeSchema],
+      default: []
+    },
+    comments: {
+      type: [commentSchema],
+      default: []
+    },
+    communityIDs: {
+      type: [String],
+      default: []
+    },
+    ratings: {
+      type: [Number],
+      default: []
+    },
+    siblingIDs: {
+      type: [String],
+      default: []
+    },
+    parentIDs: {
+      type: [String],
+      default: []
+    },
+    childrenIDs: {
+      type: [String],
+      default: []
+    },
+    partnerIDs: {
+      type: [String],
+      default: []
     },
     resetPasswordToken: {
       type: String,
