@@ -6,7 +6,7 @@ interface StateStore {
     widthQuery: number;
     setWidthQuery: (width: number) => void;
     colorPickerMode: boolean;
-    setColorPickerMode: (colorPickerMode: boolean) => void
+    setColorPickerMode: (colorPickerMode: boolean) => void;
 }
 
 export const useStateStore = create<StateStore>((set) => ({
@@ -15,5 +15,5 @@ export const useStateStore = create<StateStore>((set) => ({
     widthQuery: 0,
     setWidthQuery: (width) => set({ widthQuery: width }),
     colorPickerMode: false,
-    setColorPickerMode: (mode) => set({ colorPickerMode: mode })
+    setColorPickerMode: (mode) => set({ colorPickerMode: mode }),
 }));

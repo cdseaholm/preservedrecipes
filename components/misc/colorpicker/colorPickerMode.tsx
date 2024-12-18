@@ -26,7 +26,7 @@ export default function ColorPickerMode() {
             <InfoSection />
           </section>
           <section className='flex flex-col justify-center items-center w-full h-full bg-mainBack'>
-            <MiscSection />
+            <MiscSection id='about-section' />
           </section>
           <MainFooter />
         </MainTemplate>
@@ -41,7 +41,9 @@ export default function ColorPickerMode() {
         <CustomColorPicker colorName="accent" onChange={handleColorChange} defaultColor="#f25042" />
         <CustomColorPicker colorName="highlight" onChange={handleColorChange} defaultColor="#8c7851" />
         <CustomColorPicker colorName="altBack" onChange={handleColorChange} defaultColor="#fffffe" />
-        <CustomColorPicker colorName="mainText" onChange={handleColorChange} defaultColor="#716040" />
+        <CustomColorPicker colorName="mainText" onChange={handleColorChange} defaultColor="#8B4513" />
+        <CustomColorPicker colorName="lightText" onChange={handleColorChange} defaultColor="#ffffff" />
+        <CustomColorPicker colorName="darkText" onChange={handleColorChange} defaultColor="#000000" />
       </aside>
     </div >
   );
