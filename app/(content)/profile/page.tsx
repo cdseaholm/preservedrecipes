@@ -9,7 +9,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
     return {
         title: `Profile Page for ${userName}`,
-        description: `A Profile Page for ${userName} to manage their personal information and Vacation interests.`,
+        description: `A Profile Page for ${userName} to manage their personal information, and connected recipes`,
     };
 }
 
@@ -17,8 +17,6 @@ export default async function Page() {
     const session = await getServerSession();
 
     return (
-        <div style={{minHeight: '100vh', width: '100vw'}}>
-            <ProfilePage session={session} />
-        </div>
+        <ProfilePage session={session} />
     );
 }

@@ -5,6 +5,20 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --mainBack-rgb: 249, 244, 239;
+  --mainBack-opacity: 1;
+  --mainContent-rgb: 255, 255, 254;
+  --mainContent-opacity: 1;
+  --altContent-rgb: 234, 221, 207;
+  --altContent-opacity: 1;
+  --accent-rgb: 242, 80, 66;
+  --accent-opacity: 1;
+  --highlight-rgb: 140, 120, 81;
+  --highlight-opacity: 1;
+  --altBack-rgb: 255, 255, 254;
+  --altBack-opacity: 1;
+  --mainText-rgb: 113, 96, 64;
+  --mainText-opacity: 1;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -19,3 +33,34 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.homeDiv {
+  background-image: url('../public/images/istockphoto-recipebook.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: bottom;
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.titlePoint1 {
+  opacity: 0;
+  animation: fadeIn 2s forwards;
+  animation-delay: .6s;
+}
+
+.titlePoint2 {
+  opacity: 0;
+  animation: fadeIn 2s forwards;
+  animation-delay: 1.2s;
+}
+
+.titlePoint3 {
+  opacity: 0;
+  animation: fadeIn 2s forwards;
+  animation-delay: 1.8s;
+}
+

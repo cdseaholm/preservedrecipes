@@ -4,7 +4,7 @@ import { useModalStore } from "@/context/modalStore";
 import RegisterHelper from "@/utils/userHelpers/registerHelper";
 import { Fieldset, Modal, PasswordInput, TextInput } from "@mantine/core"
 import { useForm } from "@mantine/form";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import ModalTemplate from "./templates/modalTemplate";
 import { IUser } from "@/models/types/user";
@@ -12,7 +12,7 @@ import SignInHelper from "@/utils/userHelpers/signInHelper";
 import { LoadingSpinner } from "../misc/loadingSpinner";
 import { Session } from "next-auth";
 
-export default function RegisterModal({session, handleUpdate}: {session: Session | null, handleUpdate: () => Promise<void>}) {
+export default function RegisterModal({ session, handleUpdate }: { session: Session | null, handleUpdate: () => Promise<void> }) {
 
     const openRegisterModal = useModalStore(state => state.openRegisterModal);
     const setOpenRegisterModal = useModalStore(state => state.setOpenRegisterModal);
@@ -49,13 +49,6 @@ export default function RegisterModal({session, handleUpdate}: {session: Session
         }
     });
 
-    useEffect(() => {
-        if (!openRegisterModal) {
-            form.reset();
-            form.clearErrors();
-        }
-    }, [openRegisterModal]);
-
     const handleRegister = async ({ name, email, password }: { name: string, email: string, password: string }) => {
 
         setLoading(true)
@@ -91,7 +84,7 @@ export default function RegisterModal({session, handleUpdate}: {session: Session
                 toast.error('Error Registering')
                 return;
             } else {
-                
+
                 let signInAttempt = await SignInHelper({ emailPassed: email, pwPassed: password }) as { status: boolean };
 
                 if (!signInAttempt) {
@@ -99,8 +92,10 @@ export default function RegisterModal({session, handleUpdate}: {session: Session
                     return;
                 }
 
+                toast.success('Registered and Signed in!');
+                form.reset();
+                form.clearErrors();
                 await handleUpdate();
-                toast.success('Registered and Signed in!')
                 setOpenRegisterModal(false)
                 //setOpenPref(true)
             }
@@ -111,6 +106,8 @@ export default function RegisterModal({session, handleUpdate}: {session: Session
     }
 
     const handleCancel = () => {
+        form.reset();
+        form.clearErrors();
         setOpenRegisterModal(false);
         toast.info("Cancelled Registering");
     }

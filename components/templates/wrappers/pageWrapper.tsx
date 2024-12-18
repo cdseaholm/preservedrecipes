@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useState, useRef } from "react";
 import MainBody from "../mainBody";
 import { useStateStore } from "@/context/stateStore";
 import { getBaseUrl } from "@/utils/helpers/helpers";
@@ -12,18 +12,21 @@ import { useSession } from "next-auth/react";
 import { User } from "next-auth";
 import { InitializeUserData } from "@/utils/userHelpers/initUserData";
 import { useUserStore } from "@/context/userStore";
+import { LoadingSpinner } from "@/components/misc/loadingSpinner";
+import { IUser } from "@/models/types/user";
 
 export default function PageWrapper({ children }: Readonly<{ children: React.ReactNode; }>) {
 
     const { data: session, update } = useSession();
-    let widthRef = 0 as number;
+    const widthRef = useRef<number | null>(null);
     const setWidthQuery = useStateStore((state) => state.setWidthQuery);
     const setUrlToUse = useStateStore((state) => state.setUrlToUse);
-    const setUserID = useUserStore(state => state.setUserID);
+    const setUserInfo = useUserStore(state => state.setUserInfo);
+    const [loading, setLoading] = useState<boolean>(true)
 
-    const initializeWidths = () => {
-        setWidthQuery(widthRef);
-    }
+    const initializeWidths = useCallback((newWidth: number) => {
+        setWidthQuery(newWidth)
+    }, [setWidthQuery]);
 
     const handleUpdate = async () => {
         await update();
@@ -31,30 +34,40 @@ export default function PageWrapper({ children }: Readonly<{ children: React.Rea
 
     const updateMedia = useCallback(() => {
         const newWidth = window.innerWidth;
-        if (newWidth !== widthRef) {
-            widthRef = newWidth;
-            setWidthQuery(newWidth);
+        if (!newWidth) {
+            return;
         }
+        widthRef.current = newWidth
+        setWidthQuery(newWidth);
+
     }, [setWidthQuery]);
+
+    const handleUrlToUse = useCallback((currentUrl: string) => {
+        setUrlToUse(currentUrl);
+    }, [setUrlToUse]);
+
+    const handleUserInfo = useCallback((userInfo: IUser) => {
+        setUserInfo(userInfo)
+    }, [setUserInfo]);
 
     useEffect(() => {
         const newWidth = window.innerWidth;
         if (!newWidth) {
             return;
         }
-        widthRef = newWidth
-        initializeWidths();
+        widthRef.current = newWidth
+        initializeWidths(newWidth);
 
         window.addEventListener('resize', updateMedia);
         return () => window.removeEventListener('resize', updateMedia);
-    }, [updateMedia]);
+    }, [updateMedia, initializeWidths]);
 
     useEffect(() => {
         const fetchUrl = async () => {
             try {
                 const currentUrl = await getBaseUrl();
                 if (currentUrl) {
-                    setUrlToUse(currentUrl);
+                    handleUrlToUse(currentUrl)
                 }
             } catch (error) {
                 console.error("Failed to fetch base URL:", error);
@@ -73,21 +86,26 @@ export default function PageWrapper({ children }: Readonly<{ children: React.Rea
                 }
 
                 //set recipes, set family tree, etc
-                setUserID(initialized.userID)
-                
+                handleUserInfo(initialized.userInfo)
+
             }
         }
         initUserData();
-    }, [setUrlToUse]);
+        setLoading(false)
+    }, [setUrlToUse, handleUrlToUse, handleUserInfo, session]);
 
     return (
-        <MainBody>
-            <MainHeader />
-            <MainTemplate>
-                {children}
-                <MainFooter />
-            </MainTemplate>
-            <ModalProvider handleUpdate={handleUpdate} session={session}/>
-        </MainBody>
+        loading ? (
+            <LoadingSpinner />
+        ) : (
+            <MainBody>
+                <MainHeader />
+                <MainTemplate>
+                    {children}
+                    <MainFooter />
+                </MainTemplate>
+                <ModalProvider handleUpdate={handleUpdate} session={session} />
+            </MainBody>
+        )
     )
 }

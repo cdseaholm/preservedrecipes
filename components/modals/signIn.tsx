@@ -6,10 +6,9 @@ import ModalTemplate from "./templates/modalTemplate";
 import { toast } from "sonner";
 import SignInHelper from "@/utils/userHelpers/signInHelper";
 import { useForm } from '@mantine/form';
-import { useEffect } from "react";
 import { Session } from "next-auth";
 
-export default function SignInModal({session, handleUpdate}: {session: Session | null, handleUpdate: () => Promise<void>}) {
+export default function SignInModal({ session, handleUpdate }: { session: Session | null, handleUpdate: () => Promise<void> }) {
 
     const openSignInModal = useModalStore(state => state.openSignInModal);
     const setOpenSignInModal = useModalStore(state => state.setOpenSignInModal);
@@ -31,13 +30,6 @@ export default function SignInModal({session, handleUpdate}: {session: Session |
             )
         }
     });
-
-    useEffect(() => {
-        if (!openSignInModal) {
-            form.reset();
-            form.clearErrors();
-        }
-    }, [openSignInModal]);
 
     const handleSignIn = async ({ email, password }: { email: string, password: string }) => {
 
@@ -65,8 +57,10 @@ export default function SignInModal({session, handleUpdate}: {session: Session |
                 return;
             }
 
-            toast.success('Successful Sign in!')
-            await handleUpdate()
+            toast.success('Successful Sign in!');
+            form.reset();
+            form.clearErrors();
+            await handleUpdate();
             setOpenSignInModal(false)
 
         } catch (error) {
@@ -75,6 +69,8 @@ export default function SignInModal({session, handleUpdate}: {session: Session |
     }
 
     const handleCancel = () => {
+        form.reset();
+        form.clearErrors();
         setOpenSignInModal(false);
         toast.info("Cancelled Signing in");
     }
