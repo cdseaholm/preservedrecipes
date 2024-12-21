@@ -18,12 +18,14 @@ import { RiCommunityLine } from "react-icons/ri";
 import { PiCookieThin } from "react-icons/pi"
 import { useUserStore } from "@/context/userStore";
 import { IRecipe } from "@/models/types/recipe";
+import { IUserFamily } from "@/models/types/userFamily";
 
 export default function MainHeader() {
     const { data: session } = useSession();
     const userInfo = useUserStore(state => state.userInfo);
     const recipes = userInfo ? userInfo.recipes as IRecipe[] : [] as IRecipe[];
-    const familyID = userInfo ? userInfo.familyID as string : '';
+    const userFamily = userInfo ? userInfo.userFamily as IUserFamily : {} as IUserFamily;
+    const familyID = userFamily ? userFamily.familyID as string : '';
     const communities = userInfo ? userInfo.communityIDs as string[] : [] as string[];
     const recipeText = recipes && recipes.length > 0 ? 'Your Recipes' : 'Create a Recipe';
     const familyText = familyID && familyID !== '' ? 'Your Family' : 'Create or Join a family';
