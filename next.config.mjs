@@ -1,5 +1,4 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+export default {
   async headers() {
     return [
       {
@@ -20,16 +19,22 @@ const nextConfig = {
       }
     ]
   },
+  experimental: {
+    optimizePackageImports: ['@mantine/core', '@mantine/hooks'],
+  },
   productionBrowserSourceMaps: true,
-  webpack: (config, { isServer }) => {
-    if (!isServer) {
-      config.plugins.push(new BundleAnalyzerPlugin({
-        analyzerMode: 'static',
-        reportFilename: './bundle-report.html',
-        openAnalyzer: false,
-      }));
+  generateBuildId: async () => {
+    if (process.env.BUILD_ID) {
+      return process.env.BUILD_ID;
+    } else {
+      return `${new Date().getTime()}`;
+    }
+  },
+  webpack: (config, { dev }) => {
+    if (!dev) {
+      config.devtool = 'source-map';
     }
 
     return config;
-  }
+  },
 };

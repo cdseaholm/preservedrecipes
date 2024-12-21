@@ -4,7 +4,7 @@ import { IComment } from "./types/comment";
 
 export const commentSchema = new Schema(
   {
-    commentor: {
+    commentorID: {
       type: String,
       required: false,
     },

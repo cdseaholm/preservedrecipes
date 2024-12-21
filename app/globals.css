@@ -6,23 +6,14 @@
   --background: #ffffff;
   --foreground: #171717;
   --mainBack-rgb: 249, 244, 239;
-  --mainBack-opacity: 1;
   --mainContent-rgb: 255, 255, 254;
-  --mainContent-opacity: 1;
   --altContent-rgb: 255,248,220;
-  --altContent-opacity: 1;
   --accent-rgb: 242, 80, 66;
-  --accent-opacity: 1;
   --highlight-rgb: 123, 63, 0;
-  --highlight-opacity: 1;
   --altBack-rgb: 222,184,135;
-  --altBack-opacity: 1;
   --mainText-rgb: 139, 69, 19;
-  --mainText-opacity: 1;
   --lightText-rgb: 255, 255, 255;
-  --lightText-opacity: 1;
   --darkText-rgb: 0, 0, 0;
-  --darkText-opacity: 1;
 }
 
 @media (prefers-color-scheme: dark) {

@@ -1,5 +1,5 @@
-import { IComment } from "./comment";
 import { IRecipe } from "./recipe";
+import { IUserFamily } from "./userFamily";
 
 
 export interface IUser {
@@ -7,15 +7,10 @@ export interface IUser {
   email: string;
   password: string;
   _id: string;
-  familyID: string;
+  userFamily: IUserFamily;
   recipes: IRecipe[];
-  comments: IComment[];
   communityIDs: string[];
   ratings: number[];
-  siblingIDs: string[];
-  parentIDs: string[];
-  childrenIDs: string[];
-  partnerIDs: string[];
   createdAt: string;
   updatedAt: string;
   resetPasswordToken: string;
