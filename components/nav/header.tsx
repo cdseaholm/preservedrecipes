@@ -20,7 +20,6 @@ import { useUserStore } from "@/context/userStore";
 import { IRecipe } from "@/models/types/recipe";
 
 export default function MainHeader() {
-    const router = useRouter();
     const { data: session } = useSession();
     const userInfo = useUserStore(state => state.userInfo);
     const recipes = userInfo ? userInfo.recipes as IRecipe[] : [] as IRecipe[];
@@ -38,10 +37,6 @@ export default function MainHeader() {
         setColorPickerMode(!colorPickerMode)
     }
 
-    const handleAboutClick = () => {
-        router.push('/?section=about-section');
-    };
-
     return (
         <header className={`bg-mainBack w-full flex flex-row justify-between items-center px-5 border-b border-accent text-mainText sticky top-0 z-30 ${isMediumScreenOrLess ? "px-5 py-2" : 'px-12 py-2'}`} style={{ height: '7vh' }}>
             <section className="text-base font-bold">
@@ -50,9 +45,9 @@ export default function MainHeader() {
                 </Link>
             </section>
             {isMediumScreenOrLess ? (
-                <SmallHeader session={session} recipeText={recipeText} familyText={familyText} communityText={communityText} handleColorPicker={handleColorPicker} handleAboutClick={handleAboutClick}/>
+                <SmallHeader session={session} recipeText={recipeText} familyText={familyText} communityText={communityText} handleColorPicker={handleColorPicker} />
             ) : (
-                <LargeHeader session={session} recipeText={recipeText} familyText={familyText} communityText={communityText} handleColorPicker={handleColorPicker} handleAboutClick={handleAboutClick}/>
+                <LargeHeader session={session} recipeText={recipeText} familyText={familyText} communityText={communityText} handleColorPicker={handleColorPicker} />
             )}
         </header>
     )
@@ -112,7 +107,7 @@ const communities = (
     <RiCommunityLine />
 )
 
-function SmallHeader({ session, recipeText, familyText, communityText, handleColorPicker, handleAboutClick }: { session: Session | null, recipeText: string, familyText: string, communityText: string, handleColorPicker: () => void, handleAboutClick: () => void }) {
+function SmallHeader({ session, recipeText, familyText, communityText, handleColorPicker }: { session: Session | null, recipeText: string, familyText: string, communityText: string, handleColorPicker: () => void }) {
 
     const router = useRouter();
     let user = session ? session.user as User : {} as User;
@@ -140,8 +135,10 @@ function SmallHeader({ session, recipeText, familyText, communityText, handleCol
                     <Menu.Label>
                         PreservedRecipes Specific
                     </Menu.Label>
-                    <Menu.Item onClick={handleAboutClick}>
-                        About
+                    <Menu.Item>
+                        <Link href={'/about'}>
+                            About
+                        </Link>
                     </Menu.Item>
                     <Menu.Item onClick={handleColorPicker}>
                         Color Picker
@@ -188,7 +185,7 @@ function SmallHeader({ session, recipeText, familyText, communityText, handleCol
     )
 }
 
-function LargeHeader({ session, recipeText, familyText, communityText, handleColorPicker, handleAboutClick }: { session: Session | null, recipeText: string, familyText: string, communityText: string, handleColorPicker: () => void, handleAboutClick: () => void }) {
+function LargeHeader({ session, recipeText, familyText, communityText, handleColorPicker }: { session: Session | null, recipeText: string, familyText: string, communityText: string, handleColorPicker: () => void }) {
 
     const router = useRouter();
     let user = session ? session.user as User : {} as User;
@@ -200,10 +197,9 @@ function LargeHeader({ session, recipeText, familyText, communityText, handleCol
 
     return (
         <nav className="flex flex-row justify-end items-center w-1/3 space-x-8">
-            <button onClick={handleAboutClick}
-            >
+            <Link href={'/about'}>
                 About
-            </button>
+            </Link>
             <button onClick={handleColorPicker}>
                 Color Picker
             </button>

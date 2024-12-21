@@ -1,8 +1,8 @@
 import connectDB from '@/lib/mongodb';
-import { IComment } from '@/models/types/comment';
 import { IRecipe } from '@/models/types/recipe';
 import { IUser } from '@/models/types/user';
-import User from '@/models/userModel';
+import { IUserFamily } from '@/models/types/userFamily';
+import User from '@/models/user';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
@@ -30,14 +30,16 @@ export async function POST(req: NextRequest) {
       name: body.namePassed,
       email: body.emailPassed,
       password: body.saltedPW,
-      familyID: '',
+      userFamily: {
+        familyID: '',
+        siblingIDs: [] as string[],
+        parentIDs: [] as string[],
+        childrenIDs: [] as string[],
+        partnerIDs: [] as string[]
+      } as IUserFamily,
       recipes: [] as IRecipe[],
-      comments: [] as IComment[],
+      communityIDs: [] as string[],
       ratings: [] as number[],
-      siblingIDs: [] as string[],
-      parentIDs: [] as string[],
-      childrenIDs: [] as string[],
-      partnerIDs: [] as string[]
     }) as IUser;
 
     if (!user) {
