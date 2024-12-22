@@ -10,6 +10,7 @@ import WelcomeSectionMock from './mock/homepage/welcomeSectionMock';
 import { Popover } from '@mantine/core';
 import { GoInfo } from 'react-icons/go';
 import { forwardRef } from 'react';
+import ThemeToggle from '@/components/buttons/themeToggle';
 
 const MyInfoIcon = forwardRef<HTMLDivElement>(
   (props, ref) => (
@@ -32,10 +33,10 @@ export default function ColorPickerMode() {
       <div className='flex flex-col w-full md:w-4/5 h-full md:ml-[20%]'>
         <MainHeaderMock />
         <MainTemplate>
-          <section className='flex flex-col justify-center items-center w-full h-full bg-mainBack'>
+          <section className='flex flex-col justify-center items-center w-full h-full bg-mainBack '>
             <WelcomeSectionMock />
           </section>
-          <section className='flex flex-col justify-center items-center w-full h-full bg-mainText'>
+          <section className='flex flex-col justify-center items-center w-full h-full bg-altBack'>
             <InfoSectionMock />
           </section>
           <section className='flex flex-col justify-center items-center w-full h-full bg-mainBack'>
@@ -45,14 +46,17 @@ export default function ColorPickerMode() {
         </MainTemplate>
       </div>
       <aside className='flex w-full h-1/3 flex-col md:w-1/5 md:h-full p-4 fixed md:left-0 bottom-0 md:top-0 z-40 bg-white overflow-auto border-t border-black'>
-        <Popover width={200} position='bottom-start' withArrow shadow="md">
-          <Popover.Target>
-            <MyInfoIcon />
-          </Popover.Target>
-          <Popover.Dropdown styles={{ dropdown: { backgroundColor: 'GrayText', color: 'white' } }}>
-            {`Refresh screen to reset. Or click color picker to see your chosen color with predefined opacity's and background images`}
-          </Popover.Dropdown>
-        </Popover>
+        <div className='flex flex-row justify-between items-center px-2'>
+          <Popover width={200} position='bottom-start' withArrow shadow="md">
+            <Popover.Target>
+              <MyInfoIcon />
+            </Popover.Target>
+            <Popover.Dropdown styles={{ dropdown: { backgroundColor: 'GrayText', color: 'white' } }}>
+              {`Refresh screen to reset. Or click color picker to see your chosen color with predefined opacity's and background images`}
+            </Popover.Dropdown>
+          </Popover>
+          <ThemeToggle />
+        </div>
         <CustomColorPicker colorName="mainBack" onChange={handleColorChange} defaultColor="#f9f4ef" />
         <CustomColorPicker colorName="mainContent" onChange={handleColorChange} defaultColor="#fffffe" />
         <CustomColorPicker colorName="altContent" onChange={handleColorChange} defaultColor="#eaddcf" />

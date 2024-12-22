@@ -11,12 +11,15 @@ import { IUser } from "@/models/types/user";
 import SignInHelper from "@/utils/userHelpers/signInHelper";
 import { LoadingSpinner } from "../misc/loadingSpinner";
 import { Session } from "next-auth";
+import { useStateStore } from "@/context/stateStore";
 
 export default function RegisterModal({ session, handleUpdate }: { session: Session | null, handleUpdate: () => Promise<void> }) {
 
     const openRegisterModal = useModalStore(state => state.openRegisterModal);
     const setOpenRegisterModal = useModalStore(state => state.setOpenRegisterModal);
     const [loading, setLoading] = useState<boolean>(false);
+    const resetZoom = useStateStore(state => state.handleZoomReset);
+    const width = useStateStore(state => state.widthQuery);
 
     const form = useForm({
         mode: 'uncontrolled',
@@ -96,6 +99,7 @@ export default function RegisterModal({ session, handleUpdate }: { session: Sess
                 form.reset();
                 form.clearErrors();
                 await handleUpdate();
+                resetZoom(width, false);
                 setOpenRegisterModal(false)
                 //setOpenPref(true)
             }
@@ -108,6 +112,7 @@ export default function RegisterModal({ session, handleUpdate }: { session: Sess
     const handleCancel = () => {
         form.reset();
         form.clearErrors();
+        resetZoom(width, false);
         setOpenRegisterModal(false);
         toast.info("Cancelled Registering");
     }
@@ -115,7 +120,7 @@ export default function RegisterModal({ session, handleUpdate }: { session: Sess
     return (
         <Modal opened={openRegisterModal} onClose={handleCancel} title="Register" centered overlayProps={{
             backgroundOpacity: 0.55, blur: 3, className: 'drop-shadow-xl'
-        }}>
+        }} removeScrollProps={{ allowPinchZoom: true }} lockScroll={false}>
             <ModalTemplate subtitle={null}>
                 {loading ? (
                     <LoadingSpinner />

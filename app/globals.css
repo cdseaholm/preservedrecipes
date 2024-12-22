@@ -16,6 +16,20 @@
   --darkText-rgb: 0, 0, 0;
 }
 
+.dark {
+  --background: #171717;
+  --foreground: #ffffff;
+  --mainBack-rgb: 34, 34, 34;
+  --mainContent-rgb: 48, 48, 48;
+  --altContent-rgb: 60, 60, 60;
+  --accent-rgb: 242, 80, 66;
+  --highlight-rgb: 255, 165, 0;
+  --altBack-rgb: 105, 105, 105;
+  --mainText-rgb: 255, 255, 255;
+  --lightText-rgb: 0, 0, 0;
+  --darkText-rgb: 255, 255, 255;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
@@ -57,5 +71,24 @@ body {
   opacity: 0;
   animation: fadeIn 2s forwards;
   animation-delay: 1.8s;
+}
+
+.full-screen {
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.content {
+    max-width: 1600px;
+    max-height: 1000px;
+    min-height: 600px;
+    min-width: 300px;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
 }
 

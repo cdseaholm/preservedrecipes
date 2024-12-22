@@ -7,11 +7,14 @@ import { toast } from "sonner";
 import SignInHelper from "@/utils/userHelpers/signInHelper";
 import { useForm } from '@mantine/form';
 import { Session } from "next-auth";
+import { useStateStore } from "@/context/stateStore";
 
 export default function SignInModal({ session, handleUpdate }: { session: Session | null, handleUpdate: () => Promise<void> }) {
 
     const openSignInModal = useModalStore(state => state.openSignInModal);
     const setOpenSignInModal = useModalStore(state => state.setOpenSignInModal);
+    const resetZoom = useStateStore(state => state.handleZoomReset);
+    const width = useStateStore(state => state.widthQuery);
 
     const form = useForm({
         mode: 'uncontrolled',
@@ -61,7 +64,8 @@ export default function SignInModal({ session, handleUpdate }: { session: Sessio
             form.reset();
             form.clearErrors();
             await handleUpdate();
-            setOpenSignInModal(false)
+            resetZoom(width, false);
+            setOpenSignInModal(false);
 
         } catch (error) {
             console.error('Error Signing in:', error);
@@ -71,6 +75,7 @@ export default function SignInModal({ session, handleUpdate }: { session: Sessio
     const handleCancel = () => {
         form.reset();
         form.clearErrors();
+        resetZoom(width, false);
         setOpenSignInModal(false);
         toast.info("Cancelled Signing in");
     }
@@ -78,7 +83,7 @@ export default function SignInModal({ session, handleUpdate }: { session: Sessio
     return (
         <Modal opened={openSignInModal} onClose={handleCancel} title="Sign In" centered overlayProps={{
             backgroundOpacity: 0.55, blur: 3, className: 'drop-shadow-xl'
-        }}>
+        }} removeScrollProps={{ allowPinchZoom: true }} lockScroll={false}>
             <ModalTemplate subtitle={null}>
                 <form id="modalLoginForm" onSubmit={form.onSubmit((values) => handleSignIn(values))} onAbort={handleCancel} className="w-full">
                     <Fieldset legend="Personal Information">
