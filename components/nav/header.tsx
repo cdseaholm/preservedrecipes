@@ -1,15 +1,9 @@
 'use client'
 
 import { useStateStore } from "@/context/stateStore"
-import { Divider, Group, Menu, UnstyledButton } from "@mantine/core";
-import { forwardRef } from "react";
-import { FiMenu } from "react-icons/fi";
-import { FaRegUserCircle } from "react-icons/fa";
-import { toast } from "sonner";
 import { useModalStore } from "@/context/modalStore";
 import { useSession } from "next-auth/react";
 import { Session, User } from "next-auth";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { GoSignIn, GoSignOut } from "react-icons/go";
 import { AiOutlineProfile } from "react-icons/ai";
@@ -19,6 +13,8 @@ import { PiCookieThin } from "react-icons/pi"
 import { useUserStore } from "@/context/userStore";
 import { IRecipe } from "@/models/types/recipe";
 import { IUserFamily } from "@/models/types/userFamily";
+import { HeaderSmallNotShort, HeaderSmallShort } from "./headerFormats/headerSmall";
+import { HeaderLargeNotShort, HeaderLargeShort } from "./headerFormats/headerLarge";
 
 export default function MainHeader() {
     const { data: session } = useSession();
@@ -34,56 +30,32 @@ export default function MainHeader() {
     const isMediumScreenOrLess = widthQuery < 768;
     const setColorPickerMode = useStateStore(state => state.setColorPickerMode);
     const colorPickerMode = useStateStore(state => state.colorPickerMode);
+    const handleZoomMain = useStateStore(state => state.handleZoomReset);
+    const width = useStateStore(state => state.widthQuery);
 
     const handleColorPicker = () => {
         setColorPickerMode(!colorPickerMode)
     }
 
+    const handleZoomReset = async (open: boolean) => {
+        handleZoomMain(width, open);
+    }
+
     return (
-        <header className={`bg-mainBack w-full flex flex-row justify-between items-center px-5 border-b border-accent text-mainText sticky top-0 z-30 ${isMediumScreenOrLess ? "px-5 py-2" : 'px-12 py-2'}`} style={{ height: '7vh' }}>
-            <section className="text-base font-bold">
+        <header className={`bg-mainBack w-full flex flex-row justify-between items-center px-5 border-b border-accent text-mainText sticky top-0 z-30 ${isMediumScreenOrLess ? "px-5 py-2" : 'px-12 py-2'}`} style={{ minHeight: '170'}}>
+            <section className="text-base font-bold w-2/3 md:1/3">
                 <Link href={'/'}>
                     {isMediumScreenOrLess ? 'PreservedRecipes Image Here' : 'PreservedRecipes'}
                 </Link>
             </section>
             {isMediumScreenOrLess ? (
-                <SmallHeader session={session} recipeText={recipeText} familyText={familyText} communityText={communityText} handleColorPicker={handleColorPicker} />
+                <SmallHeader session={session} recipeText={recipeText} familyText={familyText} communityText={communityText} handleColorPicker={handleColorPicker} handleZoomReset={handleZoomReset} />
             ) : (
-                <LargeHeader session={session} recipeText={recipeText} familyText={familyText} communityText={communityText} handleColorPicker={handleColorPicker} />
+                <LargeHeader session={session} recipeText={recipeText} familyText={familyText} communityText={communityText} handleColorPicker={handleColorPicker} handleZoomReset={handleZoomReset} />
             )}
         </header>
     )
 }
-
-const UserButton = forwardRef<HTMLButtonElement>(
-    ({ ...others }, ref) => (
-        <UnstyledButton
-            ref={ref}
-            className="bg-transparent"
-            {...others}
-        >
-            <Group>
-                <FiMenu />
-            </Group>
-        </UnstyledButton>
-    )
-);
-UserButton.displayName = 'UserButton';
-
-const LargeUserButton = forwardRef<HTMLButtonElement>(
-    ({ ...others }, ref) => (
-        <UnstyledButton
-            ref={ref}
-            className="bg-transparent"
-            {...others}
-        >
-            <Group>
-                <FaRegUserCircle size={20} />
-            </Group>
-        </UnstyledButton>
-    )
-);
-LargeUserButton.displayName = 'LargeUserButton'
 
 const signOut = (
     <GoSignOut color="red" />
@@ -109,151 +81,152 @@ const communities = (
     <RiCommunityLine />
 )
 
-function SmallHeader({ session, recipeText, familyText, communityText, handleColorPicker }: { session: Session | null, recipeText: string, familyText: string, communityText: string, handleColorPicker: () => void }) {
+function SmallHeader({ session, recipeText, familyText, communityText, handleColorPicker, handleZoomReset }: { session: Session | null, recipeText: string, familyText: string, communityText: string, handleColorPicker: () => void, handleZoomReset: (open: boolean) => Promise<void> }) {
 
-    const router = useRouter();
     let user = session ? session.user as User : {} as User;
     let userName = user ? user.name : '';
     let firstName = userName ? userName.split(' ')[0] : null;
     const setSignInModal = useModalStore(state => state.setOpenSignInModal);
     const setOpenSignOutModal = useModalStore(state => state.setOpenSignOutModal);
     const setRegisterModal = useModalStore(state => state.setOpenRegisterModal);
+    const height = useStateStore(state => state.heightQuery);
+    const shortStack = useStateStore(state => state.shortStack);
+
+    const handleZoomClick = async () => {
+        await handleZoomReset(true);
+    };
+
+    const handleZoomClose = async () => {
+        await handleZoomReset(false);
+    };
+
+    const handleSignOutModal = (open: boolean) => {
+        setOpenSignOutModal(open);
+    };
+
+    const handleSignInModal = (open: boolean) => {
+        setSignInModal(open)
+    };
+
+    const handleRegisterModal = (open: boolean) => {
+        setRegisterModal(open)
+    };
 
     return (
-        <nav>
-            <Menu
-                shadow="md"
-                width={250}
-                withArrow
-                arrowSize={12}
-                arrowOffset={-2}
-            >
-                <Menu.Target>
-                    <UserButton />
-                </Menu.Target>
-                <Menu.Dropdown
-                    style={{ border: '1px solid #716040', outlineOffset: '-2px' }}
-                >
-                    <Menu.Label>
-                        PreservedRecipes Specific
-                    </Menu.Label>
-                    <Menu.Item>
-                        <Link href={'/about'}>
-                            About
-                        </Link>
-                    </Menu.Item>
-                    <Menu.Item onClick={handleColorPicker}>
-                        Color Picker
-                    </Menu.Item>
-                    <Menu.Item onClick={() => toast.info("Looking at Pricing!")}>
-                        Pricing
-                    </Menu.Item>
-                    <Menu.Divider />
-                    <Menu.Label>
-                        {!firstName ? 'User Specific' : `Hello ${firstName}!`}
-                    </Menu.Label>
-                    <Divider />
-                    {session ? (
-                        <>
-                            <Menu.Item onClick={() => router.push('/profile')} leftSection={profile}>
-                                Profile
-                            </Menu.Item>
-                            <Menu.Item onClick={() => toast.info("Recipes!")} leftSection={recipes}>
-                                {recipeText}
-                            </Menu.Item>
-                            <Menu.Item onClick={() => router.push('Fam')} leftSection={fam}>
-                                {familyText}
-                            </Menu.Item>
-                            <Menu.Item onClick={() => toast.info("Communities")} leftSection={communities}>
-                                {communityText}
-                            </Menu.Item>
-                            <Menu.Item onClick={() => setOpenSignOutModal(true)} leftSection={signOut}>
-                                Sign Out
-                            </Menu.Item>
-                        </>
-                    ) : (
-                        <>
-                            <Menu.Item onClick={() => setSignInModal(true)} leftSection={signIn}>
-                                Sign In
-                            </Menu.Item>
-                            <Menu.Item onClick={() => setRegisterModal(true)}>
-                                Register
-                            </Menu.Item>
-                        </>
-                    )}
-                </Menu.Dropdown>
-            </Menu>
-        </nav>
+        shortStack && height < 420 ? (
+            <HeaderSmallShort
+                handleZoomClick={handleZoomClick}
+                handleZoomClose={handleZoomClose}
+                handleColorPicker={handleColorPicker}
+                profile={profile}
+                firstName={firstName}
+                recipes={recipes}
+                fam={fam}
+                communities={communities}
+                session={session}
+                recipeText={recipeText}
+                familyText={familyText}
+                communityText={communityText}
+                setOpenSignOutModal={handleSignOutModal}
+                signOut={signOut}
+                setSignInModal={handleSignInModal}
+                signIn={signIn}
+                setRegisterModal={handleRegisterModal}
+            />
+        ) : (
+            <HeaderSmallNotShort
+                handleZoomClick={handleZoomClick}
+                handleZoomClose={handleZoomClose}
+                handleColorPicker={handleColorPicker}
+                profile={profile}
+                firstName={firstName}
+                recipes={recipes}
+                fam={fam}
+                communities={communities}
+                session={session}
+                recipeText={recipeText}
+                familyText={familyText}
+                communityText={communityText}
+                setOpenSignOutModal={handleSignOutModal}
+                signOut={signOut}
+                setSignInModal={handleSignInModal}
+                signIn={signIn}
+                setRegisterModal={handleRegisterModal}
+            />
+        )
     )
 }
 
-function LargeHeader({ session, recipeText, familyText, communityText, handleColorPicker }: { session: Session | null, recipeText: string, familyText: string, communityText: string, handleColorPicker: () => void }) {
+function LargeHeader({ session, recipeText, familyText, communityText, handleColorPicker, handleZoomReset }: { session: Session | null, recipeText: string, familyText: string, communityText: string, handleColorPicker: () => void, handleZoomReset: (open: boolean) => Promise<void> }) {
 
-    const router = useRouter();
     let user = session ? session.user as User : {} as User;
     let userName = user ? user.name : '';
     let firstName = userName ? userName.split(' ')[0] : null;
     const setSignInModal = useModalStore(state => state.setOpenSignInModal);
     const setOpenSignOutModal = useModalStore(state => state.setOpenSignOutModal);
     const setRegisterModal = useModalStore(state => state.setOpenRegisterModal);
+    const height = useStateStore(state => state.heightQuery);
+    const shortStack = useStateStore(state => state.shortStack);
+
+    const handleZoomClick = async () => {
+        await handleZoomReset(true);
+    }
+
+    const handleZoomClose = async () => {
+        await handleZoomReset(false);
+    }
+
+    const handleSignOutModal = (open: boolean) => {
+        setOpenSignOutModal(open);
+    };
+
+    const handleSignInModal = (open: boolean) => {
+        setSignInModal(open)
+    };
+
+    const handleRegisterModal = (open: boolean) => {
+        setRegisterModal(open)
+    };
 
     return (
-        <nav className="flex flex-row justify-end items-center w-1/3 space-x-8">
-            <Link href={'/about'}>
-                About
-            </Link>
-            <button onClick={handleColorPicker}>
-                Color Picker
-            </button>
-            <button onClick={() => toast.info(`You'd go to the Pricing page right now!`)}>
-                Pricing
-            </button>
-            {session ? (
-                <Menu
-                    shadow="md"
-                    width={300}
-                    withArrow
-                    arrowSize={12}
-                    arrowOffset={-2}
-                >
-                    <Menu.Target>
-                        <LargeUserButton />
-                    </Menu.Target>
-                    <Menu.Dropdown
-                        style={{ border: '1px solid #716040', outlineOffset: '-2px' }}
-                    >
-                        <Menu.Label>
-                            {!firstName ? 'User Specific' : `Hello ${firstName}!`}
-                        </Menu.Label>
-                        <Divider />
-                        <Menu.Item onClick={() => router.push('/profile')} leftSection={profile}>
-                            Profile
-                        </Menu.Item>
-                        <Menu.Item onClick={() => toast.info("Recipes!")} leftSection={recipes}>
-                            {recipeText}
-                        </Menu.Item>
-                        <Menu.Item onClick={() => router.push('Fam')} leftSection={fam}>
-                            {familyText}
-                        </Menu.Item>
-                        <Menu.Item onClick={() => toast.info("Communities")} leftSection={communities}>
-                            {communityText}
-                        </Menu.Item>
-                        <Divider />
-                        <Menu.Item onClick={() => setOpenSignOutModal(true)} leftSection={signOut}>
-                            Sign Out
-                        </Menu.Item>
-                    </Menu.Dropdown>
-                </Menu>
-            ) : (
-                <>
-                    <button onClick={() => setSignInModal(true)}>
-                        Sign In
-                    </button>
-                    <button onClick={() => setRegisterModal(true)}>
-                        Register
-                    </button>
-                </>
-            )}
-        </nav>
+        shortStack && height < 420 ? (
+            <HeaderLargeShort
+                handleZoomClick={handleZoomClick}
+                handleZoomClose={handleZoomClose}
+                handleColorPicker={handleColorPicker}
+                profile={profile}
+                firstName={firstName}
+                recipes={recipes}
+                fam={fam}
+                communities={communities}
+                session={session}
+                recipeText={recipeText}
+                familyText={familyText}
+                communityText={communityText}
+                setOpenSignOutModal={handleSignOutModal}
+                signOut={signOut}
+                setSignInModal={handleSignInModal}
+                setRegisterModal={handleRegisterModal}
+            />
+        ) : (
+            <HeaderLargeNotShort
+                handleZoomClick={handleZoomClick}
+                handleZoomClose={handleZoomClose}
+                handleColorPicker={handleColorPicker}
+                profile={profile}
+                firstName={firstName}
+                recipes={recipes}
+                fam={fam}
+                communities={communities}
+                session={session}
+                recipeText={recipeText}
+                familyText={familyText}
+                communityText={communityText}
+                setOpenSignOutModal={handleSignOutModal}
+                signOut={signOut}
+                setSignInModal={handleSignInModal}
+                setRegisterModal={handleRegisterModal}
+            />
+        )
     )
 }

@@ -1,4 +1,4 @@
-import "./globals.css";
+import "@/app/globals.css";
 import { Toaster } from "sonner";
 import PageWrapper from "@/components/templates/wrappers/pageWrapper";
 import { Inter } from "next/font/google";
@@ -18,7 +18,7 @@ export default function RootLayout({
       <head>
         <ColorSchemeScript />
       </head>
-      <body className="overflow-hidden">
+      <body className="overflow-hidden bg-mainBack dark:bg-mainBack">
         <AuthWrapper>
           <MantineProvider>
             <PageWrapper>
