@@ -48,36 +48,56 @@ export function HeaderSmallShort({ handleZoomClick, handleZoomClose, handleColor
                         style={{ border: '1px solid #716040', outlineOffset: '-2px' }}
                     >
                         <div className="flex flex-row justify-between px-2 items-center w-full">
-                            <Menu.Label>
+                            <Menu.Label style={{
+                                width: '50%'
+                            }}>
                                 {rightLabel}
                             </Menu.Label>
-                            <Menu.Label>
+                            <Menu.Label style={{
+                                textAlign: 'end',
+                                width: '50%'
+                            }}>
                                 {`PreservedRecipes Specific`}
                             </Menu.Label>
                         </div>
                         <div className="flex flex-row justify-between px-2 items-center w-full">
-                            <Menu.Item onClick={() => router.push('/profile')} leftSection={profile}>
+                            <Menu.Item onClick={() => router.push('/profile')} leftSection={profile} style={{
+                                width: '50%'
+                            }}>
                                 Profile
                             </Menu.Item>
-                            <Menu.Item>
+                            <Menu.Item className="text-end" style={{
+                                textAlign: 'end',
+                                width: '33%'
+                            }}>
                                 <Link href={'/about'}>
                                     About
                                 </Link>
                             </Menu.Item>
                         </div>
                         <div className="flex flex-row justify-between px-2 items-center w-full">
-                            <Menu.Item onClick={() => toast.info("Recipes!")} leftSection={recipes}>
+                            <Menu.Item onClick={() => toast.info("Recipes!")} leftSection={recipes} style={{
+                                width: '66%'
+                            }}>
                                 {recipeText}
                             </Menu.Item>
-                            <Menu.Item onClick={handleColorPicker}>
+                            <Menu.Item onClick={handleColorPicker} style={{
+                                textAlign: 'end',
+                                width: '33%'
+                            }}>
                                 Color Picker
                             </Menu.Item>
                         </div>
                         <div className="flex flex-row justify-between px-2 items-center w-full">
-                            <Menu.Item onClick={() => router.push('Fam')} leftSection={fam}>
+                            <Menu.Item onClick={() => router.push('Fam')} leftSection={fam} style={{
+                                width: '66%'
+                            }}>
                                 {familyText}
                             </Menu.Item>
-                            <Menu.Item onClick={() => toast.info("Looking at Pricing!")}>
+                            <Menu.Item onClick={() => toast.info("Looking at Pricing!")} style={{
+                                textAlign: 'end',
+                                width: '33%'
+                            }}>
                                 Pricing
                             </Menu.Item>
                         </div>

@@ -7,33 +7,35 @@ import { toast } from "sonner";
 
 export default function WelcomeSection({ user }: { user: User | null }) {
 
-    const thirdDivStyle = `bg-mainContent flex flex-col rounded-lg text-lightText justify-evenly items-center shadow-xl shadow-highlight/50 relative overflow-hidden border border-mainText/30 w-full sm:w-3/4 space-y-12 p-2 py-8 md:p-8`;
-
-    const contentButtonExtraProps = `flex flex-col justify-center items-center w-full text-sm sm:w-3/4 lg:w-2/3 lg:text-lg xl:w-1/2 2xl:w-2/5 p-3`;
-
     const height = useStateStore(state => state.heightQuery);
-    let spacePerHeight = height < 700 ? 'space-y-24' : height < 900 ? 'space-y-40' : 'space-y-52';
+    const thirdDivheightSpecs = height < 800 ? 'h-2/3' : 'h-1/2';
+    const contentHeightSpecs = height < 800 ? 'md:my-3' : 'h-auto p-3';
+
+    const contentButtonExtraProps = `flex flex-col justify-center items-center w-full h-auto ${contentHeightSpecs}`;
+    const thirdDivStyle = `grid grid-cols-1 grid-rows-3 gap-7 m-2 p-12 w-11/12 lg:w-3/4 xl:w-3/4 bg-transparent relative overflow-hidden text-lightText shadow-xl shadow-highlight/50 relative overflow-hidden border border-mainText/30 w-full rounded-md ${thirdDivheightSpecs}`;
 
 
     return (
-        <div className="homeDiv h-full w-full flex flex-col justify-start items-center" style={{minHeight: '600'}}>
-            <div className={`flex flex-col items-center justify-start px-5 bg-mainBack/90 h-full w-full ${spacePerHeight}`} style={{minHeight: '600'}}>
-                <h2 className="flex flex-row items-center justify-start text-3xl md:text-4xl font-semibold w-full text-mainText pt-8 titlePoint1">
+        <div className="homeDiv h-full w-full flex flex-col justify-start items-center" style={{ minHeight: '300' }}>
+            <div className={`flex flex-col items-center justify-evenly px-5 bg-mainBack/90 h-full w-full h-full`}>
+                <h2 className="flex flex-row items-center justify-start text-3xl md:text-4xl font-semibold w-full text-mainText pt-8 titlePoint1" style={{ minHeight: '100' }}>
                     Preserve Your Family Recipes
                 </h2>
-                {user ? (
-                    <div className={thirdDivStyle}>
-                        <ContentButtons content="Sign-In or Sign-Up" onClick={() => toast.info(`You would sign up right now`)} extraProps={contentButtonExtraProps} />
-                        <ContentButtons content="Create or Join your Family's Recipe Tree" onClick={() => toast.info(`You would create or join a family tree right now right now`)} extraProps={contentButtonExtraProps} />
-                        <ContentButtons content="Learn More" onClick={() => toast.info(`You would learn more right now`)} extraProps={contentButtonExtraProps} />
-                    </div>
-                ) : (
-                    <div className={thirdDivStyle}>
-                        <ContentButtons content="Sign-In or Sign-Up" onClick={() => toast.info(`You would sign up right now`)} extraProps={contentButtonExtraProps} />
-                        <ContentButtons content="Create or Join your Family's Recipe Tree" onClick={() => toast.info(`You would create or join a family tree right now right now`)} extraProps={contentButtonExtraProps} />
-                        <ContentButtons content="Learn More" onClick={() => toast.info(`You would learn more right now`)} extraProps={contentButtonExtraProps} />
-                    </div>
-                )}
+                <div className="flex flex-row items-center justify-center w-full h-4/5">
+                    {user ? (
+                        <div className={thirdDivStyle}>
+                            <ContentButtons content="Sign-In or Sign-Up" onClick={() => toast.info(`You would sign up right now`)} extraProps={contentButtonExtraProps} />
+                            <ContentButtons content="Create or Join your Family's Recipe Tree" onClick={() => toast.info(`You would create or join a family tree right now right now`)} extraProps={contentButtonExtraProps} />
+                            <ContentButtons content="Learn More" onClick={() => toast.info(`You would learn more right now`)} extraProps={contentButtonExtraProps} />
+                        </div>
+                    ) : (
+                        <div className={thirdDivStyle}>
+                            <ContentButtons content="Sign-In or Sign-Up" onClick={() => toast.info(`You would sign up right now`)} extraProps={contentButtonExtraProps} />
+                            <ContentButtons content="Create or Join your Family's Recipe Tree" onClick={() => toast.info(`You would create or join a family tree right now right now`)} extraProps={contentButtonExtraProps} />
+                            <ContentButtons content="Learn More" onClick={() => toast.info(`You would learn more right now`)} extraProps={contentButtonExtraProps} />
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     )

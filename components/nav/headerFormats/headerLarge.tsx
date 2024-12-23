@@ -1,5 +1,6 @@
 'use client'
 
+import { useStateStore } from "@/context/stateStore";
 import { Menu, Divider, UnstyledButton } from "@mantine/core";
 import { Session } from "next-auth";
 import Link from "next/link";
@@ -25,6 +26,7 @@ LargeUserButton.displayName = 'LargeUserButton'
 export function HeaderLargeShort({ handleZoomClick, handleZoomClose, handleColorPicker, profile, firstName, recipes, recipeText, fam, familyText, communities, communityText, setOpenSignOutModal, signOut, setSignInModal, setRegisterModal, session }: { handleZoomClick: () => void; handleZoomClose: () => void; handleColorPicker: () => void; profile: React.ReactNode; firstName: string | null; recipes: React.ReactNode; recipeText: string; fam: React.ReactNode; familyText: string; communities: React.ReactNode; communityText: string; setOpenSignOutModal: (open: boolean) => void; signOut: JSX.Element; setSignInModal: (open: boolean) => void, setRegisterModal: (open: boolean) => void, session: Session | null }) {
 
     const router = useRouter();
+    const width = useStateStore(state => state.widthQuery);
 
     return (
         <nav className="flex flex-row justify-end items-center w-2/3 space-x-8">
@@ -40,7 +42,7 @@ export function HeaderLargeShort({ handleZoomClick, handleZoomClose, handleColor
             {session ? (
                 <Menu
                     shadow="md"
-                    width={300}
+                    width={width / 1.5}
                     withArrow
                     arrowSize={12}
                     arrowOffset={-2}
@@ -57,25 +59,31 @@ export function HeaderLargeShort({ handleZoomClick, handleZoomClose, handleColor
                             {!firstName ? 'User Specific' : `Hello ${firstName}!`}
                         </Menu.Label>
                         <Divider />
-                        <Menu.Item onClick={() => router.push('/profile')} leftSection={profile}>
-                            Profile
-                        </Menu.Item>
-                        <Menu.Item onClick={() => toast.info("Recipes!")} leftSection={recipes}>
-                            {recipeText}
-                        </Menu.Item>
-                        <Menu.Item onClick={() => router.push('Fam')} leftSection={fam}>
-                            {familyText}
-                        </Menu.Item>
-                        <Menu.Item onClick={() => toast.info("Communities")} leftSection={communities}>
-                            {communityText}
-                        </Menu.Item>
+                        <div className="flex flex-row justify-between px-2 items-center w-full">
+                            <Menu.Item onClick={() => router.push('/profile')} leftSection={profile}>
+                                Profile
+                            </Menu.Item>
+                            <Menu.Item onClick={() => {
+                                setOpenSignOutModal(true);
+                                handleZoomClick();
+                            }} leftSection={signOut}>
+                                Sign Out
+                            </Menu.Item>
+                        </div>
+                        <div className="flex flex-row justify-between px-2 items-center w-full">
+                            <Menu.Item onClick={() => toast.info("Recipes!")} leftSection={recipes}>
+                                {recipeText}
+                            </Menu.Item>
+                            <Menu.Item onClick={() => toast.info("Communities")} leftSection={communities}>
+                                {communityText}
+                            </Menu.Item>
+                        </div>
+                        <div className="flex flex-row justify-start px-2 items-center w-full">
+                            <Menu.Item onClick={() => router.push('Fam')} leftSection={fam}>
+                                {familyText}
+                            </Menu.Item>
+                        </div>
                         <Divider />
-                        <Menu.Item onClick={() => {
-                            setOpenSignOutModal(true);
-                            handleZoomClick();
-                        }} leftSection={signOut}>
-                            Sign Out
-                        </Menu.Item>
                     </Menu.Dropdown>
                 </Menu>
             ) : (

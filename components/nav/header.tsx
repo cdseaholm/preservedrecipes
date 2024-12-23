@@ -42,8 +42,8 @@ export default function MainHeader() {
     }
 
     return (
-        <header className={`bg-mainBack w-full flex flex-row justify-between items-center px-5 border-b border-accent text-mainText sticky top-0 z-30 ${isMediumScreenOrLess ? "px-5 py-2" : 'px-12 py-2'}`} style={{ minHeight: '170'}}>
-            <section className="text-base font-bold w-2/3 md:1/3">
+        <header className={`bg-mainBack w-full flex flex-row justify-between items-center px-5 border-b border-accent text-mainText sticky top-0 z-30 ${isMediumScreenOrLess ? "px-5 py-2" : 'px-12 py-2'} min-h-[75px]`}>
+            <section className="text-base font-bold w-2/3 md:w-1/3">
                 <Link href={'/'}>
                     {isMediumScreenOrLess ? 'PreservedRecipes Image Here' : 'PreservedRecipes'}
                 </Link>

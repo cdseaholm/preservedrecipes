@@ -35,21 +35,21 @@ export default function ProfilePage({ session }: { session: Session | null }) {
                         Your P.Rec Actions:
                     </label>
                     <div className="flex flex-row w-full h-full justify-center items-center">
-                        <ContentButtons extraProps={''} onClick={() => toast.info('Create New Vacation Plan')} content="Create New Recipe" />
+                        <ContentButtons extraProps={'md:w-3/4 lg:w-2/3 xl:w-1/2 2xl:w-2/5'} onClick={() => toast.info('Create New Vacation Plan')} content="Create New Recipe"/>
                     </div>
                     <div className="flex flex-row w-full h-full justify-center items-center">
-                        <ContentButtons extraProps={''} onClick={() => toast.info('Vacation History')} content="Family Recipes" />
+                        <ContentButtons extraProps={'md:w-3/4 lg:w-2/3 xl:w-1/2 2xl:w-2/5'} onClick={() => toast.info('Vacation History')} content="Family Recipes" />
                     </div>
                     <div className="flex flex-row w-full h-full justify-center items-center py-2  pb-4">
                         <div className="flex flex-col w-full h-full items-center">
                             <div className="text-mainText">
                                 Not a part of a Family Recipe Tree?
                             </div>
-                            <ContentButtons extraProps={''} onClick={() => toast.info('Ask AI for Vacation Ideas')} content="Start a Family Recipe Tree" />
+                            <ContentButtons extraProps={'md:w-3/4 lg:w-2/3 xl:w-1/2 2xl:w-2/5'} onClick={() => toast.info('Ask AI for Vacation Ideas')} content="Start a Family Recipe Tree" />
                             <div>
                                 -Or-
                             </div>
-                            <ContentButtons extraProps="" onClick={() => toast.info('Join Community')} content="Join a public community" />
+                            <ContentButtons extraProps="md:w-3/4 lg:w-2/3 xl:w-1/2 2xl:w-2/5" onClick={() => toast.info('Join Community')} content="Join a public community" />
                         </div>
                     </div>
                     <label className="underline font-bold text-sm md:text-base flex justify-center items-center text-center">
