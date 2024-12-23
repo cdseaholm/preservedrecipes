@@ -10,10 +10,8 @@ export default function MainBody({ children }: { children: React.ReactNode }) {
         colorPickerMode ? (
             <ColorPickerMode />
         ) : (
-            <div className="full-screen">
-                <div className="content">
-                    {children}
-                </div>
+            <div className="h-screen w-screen overflow-hidden">
+                {children}
             </div>
         )
     )

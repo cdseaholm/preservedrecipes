@@ -57,7 +57,7 @@ export default function PageWrapper({ children }: Readonly<{ children: React.Rea
 
         setWidthQuery(newWidth);
         setHeightQuery(newHeight);
-        
+
 
     }, [setWidthQuery, setHeightQuery, setShortStack]);
 

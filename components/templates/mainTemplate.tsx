@@ -1,7 +1,10 @@
-export default function MainTemplate({children}: {children: React.ReactNode}) {
+export default function MainTemplate({ children }: { children: React.ReactNode }) {
+
     return (
-        <main className={`w-full scrollbar-thin scrollbar-webkit`} style={{overflowX: 'hidden', overflowY: 'auto', height: '100vh', minHeight: '800'}}>
-            {children}
+        <main className="w-screen scrollbar-thin scrollbar-webkit" style={{ overflowX: 'hidden', overflowY: 'auto', maxHeight: 'calc(100vh - 75px)' }}>
+            <div className="content">
+                {children}
+            </div>
         </main>
     )
 }
