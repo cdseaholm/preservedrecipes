@@ -45,7 +45,7 @@ export default function SignOutModal({session, handleUpdate}: {session: Session 
         }} title="Sign Out" centered overlayProps={{
             backgroundOpacity: 0.55, blur: 3, className: 'drop-shadow-xl'
         }} removeScrollProps={{allowPinchZoom: true}} lockScroll={false}>
-            <ModalTemplate subtitle={`Are you sure you want to sign out?`}>
+            <ModalTemplate subtitle={`Are you sure you want to sign out?`} minHeight="15vh" minWidth="15vw">
                 <section className="flex flex-row w-full justify-evenly items-center">
                     <button onClick={() => handleCancel()} className="border border-neutral-200 rounded-md hover:bg-neutral-200 p-2">
                         Cancel

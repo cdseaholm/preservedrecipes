@@ -10,7 +10,7 @@ export default function MainBody({ children }: { children: React.ReactNode }) {
         colorPickerMode ? (
             <ColorPickerMode />
         ) : (
-            <div className="h-screen w-screen overflow-hidden">
+            <div className="h-screen w-screen overflow-hidden bg-mainBack">
                 {children}
             </div>
         )

@@ -8,6 +8,8 @@ interface ModalStore {
     setOpenSignOutModal: (openSignOutModal: boolean) => void;
     openRegisterModal: boolean;
     setOpenRegisterModal: (openRegisterModal: boolean) => void;
+    openCreateRecipeModal: boolean;
+    setOpenCreateRecipeModal: (openCreateRecipeModal: boolean) => void;
 };
 
 export const useModalStore = create<ModalStore>((set) => ({
@@ -16,5 +18,7 @@ export const useModalStore = create<ModalStore>((set) => ({
     openSignOutModal: false,
     setOpenSignOutModal: (open) => set({openSignOutModal: open}),
     openRegisterModal: false,
-    setOpenRegisterModal: (open) => set({openRegisterModal: open})
+    setOpenRegisterModal: (open) => set({openRegisterModal: open}),
+    openCreateRecipeModal: false,
+    setOpenCreateRecipeModal: (open) => set({openCreateRecipeModal: open}),
 }));

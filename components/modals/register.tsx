@@ -118,67 +118,69 @@ export default function RegisterModal({ session, handleUpdate }: { session: Sess
     }
 
     return (
-        <Modal opened={openRegisterModal} onClose={handleCancel} title="Register" centered overlayProps={{
-            backgroundOpacity: 0.55, blur: 3, className: 'drop-shadow-xl'
-        }} removeScrollProps={{ allowPinchZoom: true }} lockScroll={false}>
-            <ModalTemplate subtitle={null}>
-                {loading ? (
-                    <LoadingSpinner />
-                ) : (
-                    <form id="modalRegisterForm" onSubmit={form.onSubmit((values) => handleRegister(values))} onAbort={handleCancel} className="w-full">
-                        <Fieldset legend="Personal Information">
-                            <TextInput
-                                id="modalRegisterName"
-                                name="modalRegisterName"
-                                label="Name"
-                                placeholder="Johnny Appleseed"
-                                mt={'md'}
-                                withAsterisk
-                                key={form.key('name')}
-                                {...form.getInputProps('name')}
-                            />
-                            <TextInput
-                                id="modalRegisterEmail"
-                                name="modalRegisterEmail"
-                                label="Email"
-                                placeholder="email@email.com"
-                                mt={'md'}
-                                withAsterisk
-                                key={form.key('email')}
-                                {...form.getInputProps('email')}
-                            />
-                            <PasswordInput
-                                id="modalRegisterPw"
-                                name="modalRegisterPw"
-                                label="Password"
-                                placeholder="******"
-                                withAsterisk
-                                mt={'md'}
-                                key={form.key('password')}
-                                {...form.getInputProps('password')}
-                            />
-                            <PasswordInput
-                                id="modalRegisterConfirmPw"
-                                name="modalRegisterConfirmPw"
-                                label="Confirm Password"
-                                placeholder="******"
-                                withAsterisk
-                                mt={'md'}
-                                key={form.key('confirmPassword')}
-                                {...form.getInputProps('confirmPassword')}
-                            />
-                        </Fieldset>
-                        <section className="flex flex-row w-full justify-evenly items-center pt-5">
-                            <button type="button" onClick={handleCancel} className="border border-neutral-200 rounded-md hover:bg-neutral-200 p-2">
-                                Cancel
-                            </button>
-                            <button type='submit' className="border border-neutral-200 rounded-md hover:bg-blue-200 bg-blue-400 p-2">
-                                Register
-                            </button>
-                        </section>
-                    </form>
-                )}
-            </ModalTemplate>
-        </Modal>
+        <Modal.Stack>
+            <Modal opened={openRegisterModal} onClose={handleCancel} title="Register" centered overlayProps={{
+                backgroundOpacity: 0.55, blur: 3, className: 'drop-shadow-xl'
+            }} removeScrollProps={{ allowPinchZoom: true }} lockScroll={false}>
+                <ModalTemplate subtitle={null} minHeight="15vh" minWidth="15vw">
+                    {loading ? (
+                        <LoadingSpinner />
+                    ) : (
+                        <form id="modalRegisterForm" onSubmit={form.onSubmit((values) => handleRegister(values))} onAbort={handleCancel} className="w-full">
+                            <Fieldset legend="Personal Information">
+                                <TextInput
+                                    id="modalRegisterName"
+                                    name="modalRegisterName"
+                                    label="Name"
+                                    placeholder="Johnny Appleseed"
+                                    mt={'md'}
+                                    withAsterisk
+                                    key={form.key('name')}
+                                    {...form.getInputProps('name')}
+                                />
+                                <TextInput
+                                    id="modalRegisterEmail"
+                                    name="modalRegisterEmail"
+                                    label="Email"
+                                    placeholder="email@email.com"
+                                    mt={'md'}
+                                    withAsterisk
+                                    key={form.key('email')}
+                                    {...form.getInputProps('email')}
+                                />
+                                <PasswordInput
+                                    id="modalRegisterPw"
+                                    name="modalRegisterPw"
+                                    label="Password"
+                                    placeholder="******"
+                                    withAsterisk
+                                    mt={'md'}
+                                    key={form.key('password')}
+                                    {...form.getInputProps('password')}
+                                />
+                                <PasswordInput
+                                    id="modalRegisterConfirmPw"
+                                    name="modalRegisterConfirmPw"
+                                    label="Confirm Password"
+                                    placeholder="******"
+                                    withAsterisk
+                                    mt={'md'}
+                                    key={form.key('confirmPassword')}
+                                    {...form.getInputProps('confirmPassword')}
+                                />
+                            </Fieldset>
+                            <section className="flex flex-row w-full justify-evenly items-center pt-5">
+                                <button type="button" onClick={handleCancel} className="border border-neutral-200 rounded-md hover:bg-neutral-200 p-2">
+                                    Cancel
+                                </button>
+                                <button type='submit' className="border border-neutral-200 rounded-md hover:bg-blue-200 bg-blue-400 p-2">
+                                    Register
+                                </button>
+                            </section>
+                        </form>
+                    )}
+                </ModalTemplate>
+            </Modal>
+        </Modal.Stack>
     )
 }

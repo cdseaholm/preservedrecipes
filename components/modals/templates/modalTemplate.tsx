@@ -1,6 +1,6 @@
-export default function ModalTemplate({ children, subtitle }: { children: React.ReactNode, subtitle: string | null }) {
+export default function ModalTemplate({ children, subtitle, minWidth, minHeight }: { children: React.ReactNode, subtitle: string | null, minWidth: string, minHeight: string }) {
     return (
-        <main style={{ minWidth: '15vh', minHeight: '15vh' }} className="flex flex-col justify-evenly items-center">
+        <main style={{ minWidth: minWidth, minHeight: minHeight }} className="flex flex-col justify-evenly items-center">
             {subtitle ? (
                 <section className="w-full text-center">
                     {subtitle}

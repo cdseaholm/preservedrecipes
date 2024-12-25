@@ -20,7 +20,7 @@ export default function Home() {
   return (
     sections.map((section: React.JSX.Element, index: number) => {
       return (
-        <section className={`flex flex-col justify-center items-center w-full min-h-[600px] h-full min-w-[300px] overflow-x-auto ${index === 1 ? 'bg-altBack' : 'bg-mainBack'}`} key={index}>
+        <section className={`flex flex-col ${index === 0 ? 'justify-start' : 'justify-center'} items-center h-4/5 w-full min-w-screen overflow-hidden ${index === 1 ? 'bg-altBack' : 'bg-mainBack'} min-h-[550px]`} key={index}>
           {section}
         </section>
       )
