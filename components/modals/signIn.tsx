@@ -84,7 +84,7 @@ export default function SignInModal({ session, handleUpdate }: { session: Sessio
         <Modal opened={openSignInModal} onClose={handleCancel} title="Sign In" centered overlayProps={{
             backgroundOpacity: 0.55, blur: 3, className: 'drop-shadow-xl'
         }} removeScrollProps={{ allowPinchZoom: true }} lockScroll={false}>
-            <ModalTemplate subtitle={null}>
+            <ModalTemplate subtitle={null} minHeight="15vh" minWidth="15vw">
                 <form id="modalLoginForm" onSubmit={form.onSubmit((values) => handleSignIn(values))} onAbort={handleCancel} className="w-full">
                     <Fieldset legend="Personal Information">
                         <TextInput
