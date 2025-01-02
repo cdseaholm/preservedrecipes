@@ -8,7 +8,9 @@ export default function ModalTemplate({ children, subtitle, minWidth, minHeight 
             ) : (
                 null
             )}
-            {children}
+            <div className="w-full h-full" style={{overflow: 'hidden'}}>
+                {children}
+            </div>
         </main>
     )
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useCallback, useState, useRef } from "react";
+import { useEffect, useCallback, useRef, useState } from "react";
 import MainBody from "../mainBody";
 import { useStateStore } from "@/context/stateStore";
 import { getBaseUrl } from "@/utils/helpers/helpers";
@@ -30,16 +30,15 @@ export default function PageWrapper({ children }: Readonly<{ children: React.Rea
     const initializeWidths = useCallback((newWidth: number, newHeight: number) => {
         setWidthQuery(newWidth);
         setHeightQuery(newHeight);
-        let widthPerc = newWidth * .8;
+        let widthPerc = newWidth * 0.8;
         if (widthPerc > newHeight) {
             setShortStack(true);
         }
-
     }, [setWidthQuery, setHeightQuery, setShortStack]);
 
     const handleUpdate = async () => {
         await update();
-    }
+    };
 
     const updateMedia = useCallback(() => {
         const newWidth = window.innerWidth;
@@ -50,23 +49,21 @@ export default function PageWrapper({ children }: Readonly<{ children: React.Rea
         widthRef.current = newWidth;
         heightRef.current = newHeight;
 
-        let widthPerc = newWidth * .8;
+        let widthPerc = newWidth * 0.8;
         if (widthPerc > newHeight) {
             setShortStack(true);
         }
 
         setWidthQuery(newWidth);
         setHeightQuery(newHeight);
-
-
     }, [setWidthQuery, setHeightQuery, setShortStack]);
 
     const handleUrlToUse = useCallback((currentUrl: string) => {
         setUrlToUse(currentUrl);
     }, [setUrlToUse]);
 
-    const handleUserInfo = useCallback((userInfo: IUser) => {
-        setUserInfo(userInfo)
+    const handleUserInfo = useCallback(async (userInfo: IUser) => {
+        setUserInfo(userInfo);
     }, [setUserInfo]);
 
     useEffect(() => {
@@ -88,7 +85,7 @@ export default function PageWrapper({ children }: Readonly<{ children: React.Rea
             try {
                 const currentUrl = await getBaseUrl();
                 if (currentUrl) {
-                    handleUrlToUse(currentUrl)
+                    handleUrlToUse(currentUrl);
                 }
             } catch (error) {
                 console.error("Failed to fetch base URL:", error);
@@ -97,35 +94,40 @@ export default function PageWrapper({ children }: Readonly<{ children: React.Rea
         fetchUrl();
         const initUserData = async () => {
             if (!session) {
+                setLoading(false);
                 return;
             } else {
                 let user = session.user as User;
                 const initialized = await InitializeUserData(user);
 
                 if (!initialized || initialized.status === false) {
+                    setLoading(false);
                     return;
                 }
 
-                handleUserInfo(initialized.userInfo)
-
+                await handleUserInfo(initialized.userInfo);
+                setLoading(false);
             }
-        }
+        };
         initUserData();
-        setLoading(false)
     }, [setUrlToUse, handleUrlToUse, handleUserInfo, session]);
 
+    if (loading) {
+        return (
+            <div className="w-screen h-screen flex justify-center items-center">
+                <LoadingSpinner />
+            </div>
+        );
+    }
+
     return (
-        loading ? (
-            <LoadingSpinner />
-        ) : (
-            <MainBody>
-                <MainHeader />
-                <MainTemplate>
-                    {children}
-                    <MainFooter />
-                </MainTemplate>
-                <ModalProvider handleUpdate={handleUpdate} session={session} />
-            </MainBody>
-        )
-    )
+        <MainBody>
+            <MainHeader session={session} loading={loading} />
+            <MainTemplate>
+                {children}
+                <MainFooter />
+            </MainTemplate>
+            <ModalProvider handleUpdate={handleUpdate} session={session} />
+        </MainBody>
+    );
 }

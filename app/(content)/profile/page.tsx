@@ -4,7 +4,7 @@ import { getServerSession } from "next-auth";
 
 export async function generateMetadata(): Promise<Metadata> {
     const session = await getServerSession();
-    const user = session ? session.user : '';
+    const user = session ? session.user : null;
     const userName = user ? user.name : ''
 
     return {

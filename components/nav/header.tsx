@@ -2,7 +2,6 @@
 
 import { useStateStore } from "@/context/stateStore"
 import { useModalStore } from "@/context/modalStore";
-import { useSession } from "next-auth/react";
 import { Session, User } from "next-auth";
 import Link from "next/link";
 import { GoSignIn, GoSignOut } from "react-icons/go";
@@ -15,9 +14,9 @@ import { IRecipe } from "@/models/types/recipe";
 import { IUserFamily } from "@/models/types/userFamily";
 import { HeaderSmallNotShort, HeaderSmallShort } from "./headerFormats/headerSmall";
 import { HeaderLargeNotShort, HeaderLargeShort } from "./headerFormats/headerLarge";
+import { Suspense } from "react";
 
-export default function MainHeader() {
-    const { data: session } = useSession();
+export default function MainHeader({ session, loading }: { session: Session | null, loading: boolean }) {
     const userInfo = useUserStore(state => state.userInfo);
     const recipes = userInfo ? userInfo.recipes as IRecipe[] : [] as IRecipe[];
     const userFamily = userInfo ? userInfo.userFamily as IUserFamily : {} as IUserFamily;
@@ -41,19 +40,42 @@ export default function MainHeader() {
         handleZoomMain(width, open);
     }
 
+    if (loading) {
+        return (
+            <header className={`bg-mainBack w-full flex flex-row justify-start items-center px-5 border-b border-accent text-mainText sticky top-0 z-30 ${isMediumScreenOrLess ? "px-5 py-2" : 'px-12 py-2'} min-h-[75px]`}>
+                <section className="text-base font-bold w-2/3 md:w-1/3">
+                    <Link href={'/'}>
+                        PreservedRecipes
+                    </Link>
+                </section>
+            </header>
+        );
+    }
+
     return (
-        <header className={`bg-mainBack w-full flex flex-row justify-between items-center px-5 border-b border-accent text-mainText sticky top-0 z-30 ${isMediumScreenOrLess ? "px-5 py-2" : 'px-12 py-2'} min-h-[75px]`}>
-            <section className="text-base font-bold w-2/3 md:w-1/3">
-                <Link href={'/'}>
-                    {isMediumScreenOrLess ? 'PreservedRecipes Image Here' : 'PreservedRecipes'}
-                </Link>
-            </section>
-            {isMediumScreenOrLess ? (
-                <SmallHeader session={session} recipeText={recipeText} familyText={familyText} communityText={communityText} handleColorPicker={handleColorPicker} handleZoomReset={handleZoomReset} />
-            ) : (
-                <LargeHeader session={session} recipeText={recipeText} familyText={familyText} communityText={communityText} handleColorPicker={handleColorPicker} handleZoomReset={handleZoomReset} />
-            )}
-        </header>
+        <Suspense fallback={
+            <header className={`bg-mainBack w-full flex flex-row justify-start items-center px-5 border-b border-accent text-mainText sticky top-0 z-30 ${isMediumScreenOrLess ? "px-5 py-2" : 'px-12 py-2'} min-h-[75px]`}>
+                <section className="text-base font-bold w-2/3 md:w-1/3">
+                    <Link href={'/'}>
+                        PreservedRecipes
+                    </Link>
+                </section>
+            </header>
+        }>
+            <header className={`bg-mainBack w-full flex flex-row justify-between items-center px-5 border-b border-accent text-mainText sticky top-0 z-30 ${isMediumScreenOrLess ? "px-5 py-2" : 'px-12 py-2'} min-h-[75px]`}>
+                <section className="text-base font-bold w-2/3 md:w-1/3">
+                    <Link href={'/'}>
+                        {isMediumScreenOrLess ? 'PreservedRecipes Image Here' : 'PreservedRecipes'}
+                    </Link>
+                </section>
+
+                {isMediumScreenOrLess ? (
+                    <SmallHeader session={session} recipeText={recipeText} familyText={familyText} communityText={communityText} handleColorPicker={handleColorPicker} handleZoomReset={handleZoomReset} />
+                ) : (
+                    <LargeHeader session={session} recipeText={recipeText} familyText={familyText} communityText={communityText} handleColorPicker={handleColorPicker} handleZoomReset={handleZoomReset} />
+                )}
+            </header>
+        </Suspense>
     )
 }
 

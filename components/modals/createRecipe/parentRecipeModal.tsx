@@ -1,30 +1,26 @@
 'use client'
 
-import { Fieldset, Modal, NumberInput, Select, Textarea, TextInput, useModalsStack } from "@mantine/core";
-import ModalTemplate from "../templates/modalTemplate";
+import { Modal, useModalsStack } from "@mantine/core";
 import { toast } from "sonner";
 import { useForm } from '@mantine/form';
 import { Session } from "next-auth";
 import { useStateStore } from "@/context/stateStore";
 import { useEffect, useState } from "react";
-import StepModal from "./stepModal";
 import { IngredientType } from "@/models/types/ingredientType";
-import IngredientModal from "./ingredientModal";
-
-export type RecipeCreation = {
-    name: string;
-    description: string;
-    ingredients: IngredientType[];
-    steps: stepType[]
-}
-
-type stepType = {
-    stepName: string;
-    stepType: string;
-    ingredientsUsed: string[];
-}
+import MainRecipeModal from "./mainRecipeModal";
+import { StepType } from "@/models/types/stepType";
+import { CloseChildAndSaveAddition, CloseChildAndSaveEdits, HandleAddChildValues, RemoveChildValues } from "./functions";
+import AddIngredients from "./ingredients/addIngredients";
+import EditIngredients from "./ingredients/editIngredients";
+import InfoPopover from "@/components/popovers/infoPopover";
+import { errorType } from "@/models/types/error";
+import { RecipeCreation } from "@/models/types/recipeCreation";
+import AddSteps from "./steps/addSteps";
+import EditSteps from "./steps/editSteps";
 
 export default function ParentRecipeModal({ session, handleUpdate, open, handleCloseCreateRecipe }: { session: Session | null, handleUpdate: () => Promise<void>, open: boolean, handleCloseCreateRecipe: () => void }) {
+
+    const width = useStateStore(state => state.widthQuery);
 
     const form = useForm({
         mode: 'uncontrolled',
@@ -32,30 +28,61 @@ export default function ParentRecipeModal({ session, handleUpdate, open, handleC
             name: '',
             description: '',
             ingredients: [] as IngredientType[],
-            steps: [] as stepType[]
+            steps: [] as StepType[]
         },
         validate: {
             name: (value) => (
-                value.length > 100 ? 'Invalid name too long'
-                    : null
+                value ? (value.length > 100 ? 'Invalid name too long' : null) : 'Name cannot be empty'
             ),
             description: (value: string) => (
-                value.length > 1000 ? 'Description too long, try something short and sweet just to get the point across' : null
-            )
+                value ? ((value.length > 1000) ? 'Description too long, try something short and sweet just to get the point across' : null) : 'Description cannot be empty'
+            ),
+            ingredients: {
+                ingredient: (value) =>
+                    value ? ((value.length === 0 || value === '') ? `Can't be empty` : null) : 'Cannot be empty',
+                quantity: (value) =>
+                    value ? ((value.length === 0 || value === '') ? `Can't be empty` : null) : 'Cannot be empty',
+                quantityType: (value) =>
+                    value ? ((value.length === 0 || value === '') ? `Can't be empty` : null) : 'Cannot be empty'
+            },
+            steps: {
+                stepId: (_value) => null,
+                stepType: (_value) => null,
+                description: (value) =>
+                    value ? ((value.length === 0 || value[0] === '') ? `Each step needs some instruction` : null) : 'Description cannot be empty',
+                ingredients: (_value) => null
+            }
         }
     });
 
-    const stack = useModalsStack(['create-main', 'create-step', 'ingredients']);
+    const stack = useModalsStack(['create-main', 'step', 'ingredient', 'edit-step', 'edit-ingredient']);
     const resetZoom = useStateStore(state => state.handleZoomReset);
-    const width = useStateStore(state => state.widthQuery);
-    const [prevValues, setPrevValues] = useState(form.values);
-    const [stepNumber, setStepNumber] = useState<number>(1);
-    const [newSteps, setNewSteps] = useState<stepType[]>([]);
+    const [childErrors, setChildErrors] = useState<errorType[]>([]);
+    const [valuesUsed, setValuesUsed] = useState<IngredientType[]>([] as IngredientType[]);
+    const handleSetValuesUsed = (newVals: IngredientType[]) => {
+        setValuesUsed([...newVals]);
+    };
+    const ingredientPills = form.getValues().ingredients.map((ingredient) => {
+        return ingredient
+    });
+    const stepPills = form.getValues().steps.map((step) => {
+        return step
+    });
+
+    const [ingredientCopy, setIngredientCopy] = useState<IngredientType | null>(null);
+    const [stepCopy, setStepCopy] = useState<StepType | null>(null);
+
+    const resetVals = () => {
+        setChildErrors([]);
+    }
 
     const handleCreateRecipe = async (initialValues: RecipeCreation) => {
 
         toast.info(`${initialValues}`);
-
+        if (childErrors.length > 0) {
+            toast.error('There are errors you need to deal with first!')
+            return;
+        }
         try {
 
             form.clearErrors();
@@ -81,25 +108,35 @@ export default function ParentRecipeModal({ session, handleUpdate, open, handleC
             //         }
 
             toast.success('Successfully created recipe!');
-            form.reset();
-            form.clearErrors();
             await handleUpdate();
             resetZoom(width, false);
             handleCloseCreateRecipe();
             stack.closeAll();
+            form.reset();
+            form.clearErrors();
 
         } catch (error) {
             console.error('Error creating recipe:', error);
         }
     }
 
-    const addIngredient = () => {
-        let blankIngredient = { ingredient: '', quantity: 0, quantityType: '' } as IngredientType
-        form.insertListItem('ingredients', blankIngredient);
+    const addChildValues = async (which: string) => {
+        const newVal = await HandleAddChildValues({ which: which, form: form }) as StepType | IngredientType;
+        if (which === 'steps') {
+            const stepCopy = newVal as StepType;
+            setStepCopy(stepCopy)
+        }
     };
 
-    const removeIngredient = (index: number) => {
-        form.removeListItem('ingredients', index);
+    const handleRemoveChildValue = async (which: string, index: number) => {
+        await RemoveChildValues({ which: which, form: form, index: index });
+
+        if (which === 'ingredients') {
+            stack.close('edit-ingredient');
+        } else if (which === 'steps') {
+            stack.close('edit-step');
+        }
+        setChildErrors([]);
     };
 
     const handleCancel = () => {
@@ -107,85 +144,180 @@ export default function ParentRecipeModal({ session, handleUpdate, open, handleC
         form.clearErrors();
         resetZoom(width, false);
         handleCloseCreateRecipe();
+        resetVals();
         stack.closeAll();
         toast.info("Cancelled Creating Recipe");
     }
 
-    const handleCancelIngredients = () => {
-        form.setValues(prevValues);
-        stack.close('ingredients');
+    const handleCloseChildAndSaveAdditions = async (which: string, newVals: IngredientType[] | StepType[], itemId: number) => {
+        setChildErrors([]);
+        try {
+            let stepId = null;
+            if (stack.state.step === true) {
+                stepId = stepCopy?.stepId as number;
+                console.log(stepId)
+            }
+            const attempt = await CloseChildAndSaveAddition({ which: which, form: form, newVals: newVals, itemId: itemId, stepId: stepId }) as errorType[];
+
+            if (attempt && attempt.length > 0) {
+                setChildErrors(attempt);
+                return false;
+            } else {
+                if (which === 'steps') {
+                    setStepCopy(null);
+                    setValuesUsed([] as IngredientType[])
+                    stack.close('step');
+                    toast.info('Steps Saved');
+                } else {
+                    stack.close('ingredient');
+                    if (stack.state.step === true) {
+                        const item = form.getValues().ingredients[itemId];
+                        const newIngVals = [...valuesUsed, item] as IngredientType[]
+                        handleSetValuesUsed(newIngVals)
+                        stack.open('step');
+                    }
+                    if (stack.state["edit-step"] === true) {
+                        const item = form.getValues().steps[itemId];
+                        const newIngVals = [...valuesUsed, item] as IngredientType[]
+                        handleSetValuesUsed(newIngVals)
+                        stack.open('edit-step');
+                    }
+                    toast.info('Ingredient Saved');
+                }
+                return true;
+            }
+        } catch (error: any) {
+            console.log(error);
+            return false;
+        }
+    }
+
+    const handleCloseChildAndSaveEdits = async (which: string, newVals: IngredientType[] | StepType[], itemId: number) => {
+        
+        const attempt = await CloseChildAndSaveEdits({ which: which, form: form, newVals: newVals, itemId: itemId }) as errorType[];
+
+        if (attempt && attempt.length > 0) {
+            setChildErrors(attempt);
+            return false;
+        } else {
+            if (which === 'steps') {
+                setStepCopy(null);
+                setValuesUsed([] as IngredientType[])
+                stack.close('edit-step');
+                toast.info('Step Saved');
+            } else {
+                setIngredientCopy(null)
+                stack.close('edit-ingredient');
+                toast.info('Ingredient Saved');
+            }
+            resetVals();
+            return true;
+        }
+    }
+
+    const handleCancelAdd = (which: string, currNewIndex: number) => {
+        if (which === 'steps') {
+            form.removeListItem(`steps`, currNewIndex);
+            setStepCopy(null);
+            setValuesUsed([] as IngredientType[])
+            stack.close('step');
+        } else {
+            form.removeListItem(`ingredients`, currNewIndex);
+            setIngredientCopy(null);
+            stack.close('ingredient');
+            if (stepCopy !== null) {
+                stack.open('step')
+            }
+        }
+        resetVals();
     };
 
-    const handleOpenIngredients = () => {
-        setPrevValues(form.values);
-        addIngredient();
-        stack.open('ingredients');
+    const handleCancelEdit = (which: string, currNewIndex: number) => {
+        if (which === 'steps') {
+            let resetStep = stepCopy;
+            if (resetStep === null) {
+                toast.error('Error canceling');
+                return;
+            }
+            form.setFieldValue(`steps.${currNewIndex}`, resetStep);
+            setStepCopy(null);
+            setValuesUsed([] as IngredientType[])
+            stack.close('edit-step');
+        } else if (which === 'ingredients') {
+            form.setFieldValue(`ingredients.${currNewIndex}`, ingredientCopy);
+            setIngredientCopy(null)
+            stack.close('edit-ingredient');
+        }
+        resetVals();
+    }
+
+    const handleOpenAdd = (which: string) => {
+        if (which === 'ingredients') {
+            addChildValues('ingredients');
+            stack.open('ingredient');
+        } else if (which === 'steps') {
+            addChildValues('steps');
+            stack.open('step');
+        }
     };
+
+    const handleOpenEdit = (which: string, index: number) => {
+        if (which === 'ingredients') {
+            setIngredientCopy(form.getValues().ingredients[index]);
+            stack.open('edit-ingredient');
+        } else if (which === 'steps') {
+            setStepCopy(form.getValues().steps[index]);
+            setValuesUsed(form.getValues().steps[index].ingredients)
+            stack.open('edit-step')
+        }
+    }
 
     useEffect(() => {
         if (open) {
             stack.open('create-main');
         }
-    }, [open]);
+    }, [open, stack]);
 
     return (
 
         <Modal.Stack>
-            <Modal {...stack.register('create-main')} title="Create Recipe" centered overlayProps={{
-                backgroundOpacity: 0.55, blur: 3, className: 'drop-shadow-xl'
-            }} removeScrollProps={{ allowPinchZoom: true }} lockScroll={false}>
-                <ModalTemplate subtitle={null} minHeight="15vh" minWidth="15vw">
-                    <form id="modalCreateRecipeForm" onSubmit={form.onSubmit((values) => handleCreateRecipe(values))} className="w-full">
-                        <Fieldset legend="Personal Information">
-                            <TextInput
-                                id="modalRecipeName"
-                                name="modalRecipeName"
-                                label="Recipe Name"
-                                placeholder="Grandma's Apple Pie"
-                                mt={'md'}
-                                withAsterisk
-                                key={form.key('name')}
-                                {...form.getInputProps('name')}
-                            />
-                            <Textarea
-                                id="modalRecipeDescription"
-                                name="modalRecipeDescription"
-                                label="Recipe Description"
-                                placeholder="Grandma's secret Apple Pie she made for us when we were younger"
-                                withAsterisk
-                                key={form.key('description')}
-                                {...form.getInputProps('description')}
-                            />
-                        </Fieldset>
-                        <section className="flex flex-row justify-center items-center w-full h-full p-2" onClick={() => handleOpenIngredients()}>
-                            <button className="w-1/2 md:w-1/3" type='button'>
-                                Add Ingredients
-                            </button>
-                        </section>
-                        <section className="flex flex-row w-full justify-evenly items-center pt-5">
-                            <button type="button" onClick={handleCancel} className="border border-neutral-200 rounded-md hover:bg-neutral-200 p-2">
-                                Cancel
-                            </button>
-                            <button type='submit' className="border border-neutral-200 rounded-md hover:bg-blue-200 bg-blue-400 p-2">
-                                Create
-                            </button>
-                        </section>
-                    </form>
-                </ModalTemplate>
-            </Modal>
-
-            <Modal {...stack.register('ingredients')} onClose={handleCancel} title="Create Recipe" centered overlayProps={{
+            <Modal {...stack.register('create-main')} onClose={handleCancel} title="Create Recipe" centered overlayProps={{
                 backgroundOpacity: 0.55, blur: 3, className: 'drop-shadow-xl'
             }} removeScrollProps={{ allowPinchZoom: true }} lockScroll={false} size={'auto'}>
-                <IngredientModal handleCancel={handleCancel} handleCreateRecipe={handleCreateRecipe} form={form} handleCancelIngredients={handleCancelIngredients} />
+                <MainRecipeModal handleCancel={handleCancel} handleCreateRecipe={handleCreateRecipe} form={form} handleOpenAdd={handleOpenAdd} handleEditToggle={handleOpenEdit} ingredientPills={ingredientPills} stepPills={stepPills} errors={childErrors} />
             </Modal>
 
-            <Modal {...stack.register('create-step')} onClose={handleCancel} title="Create Recipe" centered overlayProps={{
+            <Modal {...stack.register('ingredient')} onClose={handleCancel} centered overlayProps={{
                 backgroundOpacity: 0.55, blur: 3, className: 'drop-shadow-xl'
-            }} removeScrollProps={{ allowPinchZoom: true }} lockScroll={false}>
-                <StepModal handleCancel={handleCancel} handleCreateRecipe={handleCreateRecipe} form={form} />
+            }} removeScrollProps={{ allowPinchZoom: true }} lockScroll={false} size={'auto'} title={
+                <InfoPopover width={width} title="Create an Ingredient" infoOne="Here you can add ingredients, add the ingredient to a step within the recipe by selecting a step that is already made." infoTwo="If you're unsure where to begin you can add ingredients here first, or click BACK and add steps first and add ingredients to each step!" />
+            }>
+                <AddIngredients handleCloseChildAndSave={handleCloseChildAndSaveAdditions} form={form} handleCancelChild={handleCancelAdd} errors={childErrors} thisIngredient={form.getValues().ingredients[form.getValues().ingredients.length - 1]} />
             </Modal>
 
+            <Modal {...stack.register('edit-ingredient')} onClose={handleCancel} centered overlayProps={{
+                backgroundOpacity: 0.55, blur: 3, className: 'drop-shadow-xl'
+            }} removeScrollProps={{ allowPinchZoom: true }} lockScroll={false} size={'auto'} title={
+                <InfoPopover width={width} title="Edit Recipe Ingredient" infoOne="Here you can edit ingredients, remove them by clicking delete, or just edit them directly" infoTwo="If you're unsure where to begin you can add ingredients here first, or click BACK and add steps first and add ingredients to each step!" />
+            }>
+                <EditIngredients handleCloseChildAndSave={handleCloseChildAndSaveEdits} form={form} handleCancelChild={handleCancelEdit} handleRemoveChildValue={handleRemoveChildValue} errors={childErrors} thisItem={ingredientCopy ? form.getValues().ingredients[ingredientCopy.ingredientId] : null} />
+            </Modal>
+
+            <Modal {...stack.register('step')} onClose={handleCancel} centered overlayProps={{
+                backgroundOpacity: 0.55, blur: 3, className: 'drop-shadow-xl'
+            }} removeScrollProps={{ allowPinchZoom: true }} lockScroll={false} size={'auto'} title={
+                <InfoPopover width={width} title="Create Recipe Step" infoOne="Here you can add steps, add ingredients to the step by selecting an ingredient from previously used ones or make a new one. The step direction cannot be empty as you need to give some sort of direction." infoTwo="If you're unsure where to begin you can give the step some directions then begin to add ingredients that this step requires!" />
+            } py={'md'} px={'xs'}>
+                <AddSteps handleCloseChildAndSave={handleCloseChildAndSaveAdditions} form={form} handleCancelChild={handleCancelAdd} errors={childErrors} ingredientPills={ingredientPills} handleOpenAdd={handleOpenAdd} thisStep={form.getValues().steps[form.getValues().steps.length - 1]} valuesUsed={valuesUsed} handleSetValuesUsed={handleSetValuesUsed} />
+            </Modal>
+
+            <Modal {...stack.register('edit-step')} onClose={handleCancel} centered overlayProps={{
+                backgroundOpacity: 0.55, blur: 3, className: 'drop-shadow-xl'
+            }} removeScrollProps={{ allowPinchZoom: true }} lockScroll={false} size={'auto'} title={
+                <InfoPopover width={width} title="Edit Recipe Steps" infoOne="Here you can edit steps, remove them by clicking delete, or just edit them directly" infoTwo="If you're unsure where to begin you can give the step some directions then begin to add ingredients that this step requires!" />
+            } py={'md'} px={'xs'}>
+                <EditSteps handleCloseChildAndSave={handleCloseChildAndSaveEdits} form={form} handleCancelChild={handleCancelEdit} handleRemoveChildValue={handleRemoveChildValue} errors={childErrors} ingredientPills={ingredientPills} handleOpenAdd={handleOpenAdd} handleSetValuesUsed={handleSetValuesUsed} valuesUsed={valuesUsed} thisItem={stepCopy ? form.getValues().steps[stepCopy.stepId] : null} />
+            </Modal>
         </Modal.Stack>
     )
 }

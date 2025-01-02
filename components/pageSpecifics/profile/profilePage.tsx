@@ -29,7 +29,7 @@ export default function ProfilePage({ session }: { session: Session | null }) {
             <LoadingSpinner />
         ) : (
             <section className={`flex flex-col justify-center items-center h-full w-full w-full overflow-hidden bg-mainBack min-h-[550px]`}>
-                <div className="flex flex-col justify-evenly items-center gap-4 py-12 bg-mainContent rounded-md border border-mainText/30 h-full w-full">
+                <div className="flex flex-col justify-evenly items-center gap-4 py-12 bg-mainContent h-full w-full">
                     <div className="flex flex-row justify-center items-center text-xl md:text-2xl pb-8">
                         {`Welcome to your profile ${userName}`}
                     </div>
