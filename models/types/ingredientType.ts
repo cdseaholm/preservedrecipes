@@ -1,6 +1,7 @@
 
 export type IngredientType = {
+    ingredientId: number;
     ingredient: string;
-    quantity: number;
+    quantity: string;
     quantityType: string;
 }

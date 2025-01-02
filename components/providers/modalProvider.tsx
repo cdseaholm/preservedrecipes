@@ -6,6 +6,7 @@ import RegisterModal from "../modals/register";
 import SignInModal from "../modals/signIn";
 import SignOutModal from "../modals/signOut";
 import { Session } from "next-auth";
+import AlertModal from "../modals/alert/alertModal";
 
 export default function ModalProvider({session, handleUpdate}: {session: Session | null, handleUpdate: () => Promise<void>}) {
 
@@ -22,6 +23,7 @@ export default function ModalProvider({session, handleUpdate}: {session: Session
             <SignOutModal session={session} handleUpdate={handleUpdate}/>
             <RegisterModal session={session} handleUpdate={handleUpdate}/>
             <ParentRecipeModal session={session} handleUpdate={handleUpdate} open={openCreateRecipeModal} handleCloseCreateRecipe={handleCloseCreateRecipe} />
+            <AlertModal />
         </>
     );
 }
