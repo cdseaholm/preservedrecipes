@@ -1,6 +1,5 @@
 import mongoose, { Model, Schema } from "mongoose";
 import { IUser } from "./types/user";
-import { recipeSchema } from "./recipe";
 import { userFamilySchema } from "./userFamily";
 
 export const userSchema = new Schema(
@@ -21,13 +20,18 @@ export const userSchema = new Schema(
       type: userFamilySchema,
       default: {}
     },
-    recipes: {
-      type: [recipeSchema],
+    recipeIDs: {
+      type: [String],
       default: []
     },
     communityIDs: {
       type: [String],
       default: []
+    },
+    secretViewableRecipeIDs: {
+      type: [String],
+      default: [],
+      required: false
     },
     ratings: {
       type: [Number],

@@ -13,8 +13,6 @@ export async function CloseChildAndSaveAddition({ which, form, newVals, itemId, 
         const ingId = ingItem ? ingItem.ingredientId : -1;
         const result = await ValidateIngredients(ingItem, ingId)
 
-        console.log(result)
-
         if (result) {
 
             return result;
@@ -56,7 +54,6 @@ export async function CloseChildAndSaveEdits({ which, form, newVals, itemId }: {
         const ingItem = form.getValues().ingredients[itemId]
         const ingToEditId = ingItem.ingredientId;
         const localErrors = await ValidateIngredients(ingItem, ingItem.ingredientId);
-        console.log('localErrors: ', localErrors)
         if (localErrors.length > 0) {
 
             return localErrors;

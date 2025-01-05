@@ -46,13 +46,13 @@ export default function EditSteps({ handleCloseChildAndSave, form, handleCancelC
                                 <p className="text-xs">Type: Text</p>
                             </div>
                             <Textarea
-                                variant="unstyled"
-                                className={`w-full text-xs sm:text-sm h-fit ${errorWhich === 'description' ? 'border border-red-400' : 'border border-[#CED4DA]'} rounded-[4px] pe-[12px] ps-[12px]`}
+                                className={`w-full text-xs sm:text-sm`}
                                 id={`modalStep-${indexToEdit + 1}`}
                                 name={`modalStep-${indexToEdit + 1}`}
                                 placeholder="Enter your step instructions here"
                                 key={form.key(`steps.${indexToEdit}`)}
                                 {...form.getInputProps(`steps.${indexToEdit}.description`)}
+                                error={errorWhich === 'description'}
                             />
                             <ComboBoxMultiSelect pills={ingredientPills} which={"ingredients"} currentVals={valuesUsed} handleSetValuesUsed={handleSetValuesUsed} save={saveAndOpen} currValsLen={valuesUsed.length} />
                             <div className="flex flex-row w-full justify-end items-center">

@@ -1,5 +1,6 @@
 import { IComment } from "./comment";
-import { IRecipeStep } from "./recipeStep";
+import { IngredientType } from "./ingredientType";
+import { StepType } from "./stepType";
 
 
 export interface IRecipe {
@@ -7,10 +8,12 @@ export interface IRecipe {
     recipeType: string;
     image: string;
     creatorID: string;
-    steps: IRecipeStep[];
+    steps: StepType[];
     rating: number;
     comments: IComment[];
-    public: boolean;
     secret: boolean;
-    secretViewerIDs: string[]
+    secretViewerIDs: string[];
+    tags: string[];
+    ingredients: IngredientType[];
+    description: string
 }

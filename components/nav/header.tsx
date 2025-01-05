@@ -10,7 +10,6 @@ import { GiFamilyTree } from "react-icons/gi";
 import { RiCommunityLine } from "react-icons/ri";
 import { PiCookieThin } from "react-icons/pi"
 import { useUserStore } from "@/context/userStore";
-import { IRecipe } from "@/models/types/recipe";
 import { IUserFamily } from "@/models/types/userFamily";
 import { HeaderSmallNotShort, HeaderSmallShort } from "./headerFormats/headerSmall";
 import { HeaderLargeNotShort, HeaderLargeShort } from "./headerFormats/headerLarge";
@@ -18,7 +17,7 @@ import { Suspense } from "react";
 
 export default function MainHeader({ session, loading }: { session: Session | null, loading: boolean }) {
     const userInfo = useUserStore(state => state.userInfo);
-    const recipes = userInfo ? userInfo.recipes as IRecipe[] : [] as IRecipe[];
+    const recipes = userInfo ? userInfo.recipeIDs as string[] : [] as string[];
     const userFamily = userInfo ? userInfo.userFamily as IUserFamily : {} as IUserFamily;
     const familyID = userFamily ? userFamily.familyID as string : '';
     const communities = userInfo ? userInfo.communityIDs as string[] : [] as string[];

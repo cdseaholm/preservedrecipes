@@ -1,10 +1,9 @@
 import { LoadingSpinner } from "@/components/misc/loadingSpinner";
-import ModalTemplate from "./modalTemplate";
 
 export default function LoadingModal() {
     return (
-        <ModalTemplate subtitle={null} minHeight="15vh" minWidth="15vw">
+        <main style={{ maxWidth: '15vw', minHeight: '15vh' }} className="flex flex-col justify-evenly items-center">
             <LoadingSpinner />
-        </ModalTemplate>
+        </main>
     )
 }

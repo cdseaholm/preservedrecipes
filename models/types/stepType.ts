@@ -5,4 +5,6 @@ export type StepType = {
     stepType: string;
     description: string;
     ingredients: IngredientType[];
+    image: string;
+    stepAlternate: string[]
 }

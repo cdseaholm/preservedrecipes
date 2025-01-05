@@ -1,5 +1,6 @@
 import mongoose, { Model, Schema } from "mongoose";
-import { IRecipeStep } from "./types/recipeStep";
+import { StepType } from "./types/stepType";
+import { ingredientSchema } from "./ingredient";
 
 export const recipeStepSchema = new Schema(
   {
@@ -7,13 +8,21 @@ export const recipeStepSchema = new Schema(
         type: String,
         required: false,
     },
-    instruction: {
+    description: {
         type: String,
         required: false
     },
     stepAlternates: {
         type: [String],
         required: false
+    },
+    ingredients: {
+      type: [ingredientSchema],
+      required: false
+    },
+    stepType: {
+      type: String,
+      required: false
     }
   },
   {
@@ -23,4 +32,4 @@ export const recipeStepSchema = new Schema(
 
 const RecipeStep = mongoose.models?.RecipeStep || mongoose.model("RecipeStep", recipeStepSchema);
 
-export default RecipeStep as Model<IRecipeStep>;
+export default RecipeStep as Model<StepType>;

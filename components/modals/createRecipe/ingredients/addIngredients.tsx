@@ -36,29 +36,29 @@ export default function AddIngredients({ handleCloseChildAndSave, form, handleCa
                                 <ErrorPopover errors={errors} width={width} />
                             </div>
                             <TextInput
-                                variant="unstyled"
-                                className={`w-full text-xs sm:text-sm h-fit ${errIng ? 'border border-red-600' : 'border border-[#CED4DA]'} rounded-[4px] pe-[12px] ps-[12px]`}
+                                className={`w-full text-xs sm:text-sm`}
                                 id={`modalIngredient-${index + 1}`}
                                 name={`modalIngredient-${index + 1}`}
                                 placeholder="Sage"
                                 key={form.key(`ingredients.${index}.ingredient`)}
                                 {...form.getInputProps(`ingredients.${index}.ingredient`)}
+                                error={errIng}
                             />
                             <div className={`flex flex-row w-full h-[36px] justify-end items-center space-x-1`}>
                                 <NumberInput
-                                    variant="unstyled"
-                                    className={`sm:w-3/4 w-1/2 h-full text-xs sm:text-sm ${errQuant ? 'border border-red-600' : 'border border-[#CED4DA]'} rounded-[4px] pe-[12px] ps-[12px]`}
+                                    className={`sm:w-3/4 w-1/2 text-xs sm:text-sm`}
                                     placeholder="1"
                                     key={form.key(`ingredients.${index}.quantity`)}
                                     {...form.getInputProps(`ingredients.${index}.quantity`)}
+                                    error={errQuant}
                                 />
                                 <Select
-                                    variant="unstyled"
-                                    className={`sm:w-1/4 w-1/2 h-full text-xs sm:text-sm ${errType ? 'border border-red-600' : 'border border-[#CED4DA]'} rounded-[4px] pe-[12px] ps-[12px]`}
+                                    className={`sm:w-1/4 w-1/2 text-xs sm:text-sm`}
                                     placeholder="Tbs"
                                     key={form.key(`ingredients.${index}.quantityType`)}
                                     {...form.getInputProps(`ingredients.${index}.quantityType`)}
                                     data={['cup', 'dash', 'fl oz', 'g', 'kg', 'lb', 'liter', 'ml', 'oz', 'pinch', 'pint', 'quart', 'tablespoon', 'teaspoon', 'tsp', 'Tbs', 'tbsp',]}
+                                    error={errType}
                                 />
                             </div>
                         </Fieldset>

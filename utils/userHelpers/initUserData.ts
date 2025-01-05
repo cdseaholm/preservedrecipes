@@ -13,7 +13,7 @@ export async function InitializeUserData(user: User) {
     }
 
     try {
-        const res = await fetch(`/api/${id}/initData`, {
+        const res = await fetch(`/api/initData`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'

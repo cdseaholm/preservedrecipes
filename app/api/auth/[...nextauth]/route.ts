@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import connectDB from "@/lib/mongodb";
-import User from "@/models/user";
+import MongoUser from "@/models/user";
 import { VerifyPassword } from "@/utils/userHelpers/verifyPassword";
 
 const authOptions = {
@@ -20,7 +20,7 @@ const authOptions = {
           }
 
           await connectDB();
-          const user = await User.findOne({ email });
+          const user = await MongoUser.findOne({ email });
           if (!user) {
             return null;
           }
@@ -31,13 +31,14 @@ const authOptions = {
           }
 
           const plainUser = user.toObject();
+          const userID = plainUser._id.toString();
           return {
-            id: plainUser._id.toString(),
+            id: userID,
             email: plainUser.email,
             name: plainUser.name,
           };
         } catch (error) {
-          console.error('error: ', error);
+          console.error('Error during authorization:', error);
           return null;
         }
       },
@@ -46,7 +47,7 @@ const authOptions = {
   session: {
     strategy: 'jwt' as 'jwt',
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET ? process.env.NEXTAUTH_SECRET : '',
   pages: {
     signIn: '/signin',
   },

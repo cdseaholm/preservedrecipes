@@ -1,4 +1,3 @@
-import { IRecipe } from "./recipe";
 import { IUserFamily } from "./userFamily";
 
 
@@ -8,7 +7,7 @@ export interface IUser {
   password: string;
   _id: string;
   userFamily: IUserFamily;
-  recipes: IRecipe[];
+  recipeIDs: string[];
   communityIDs: string[];
   ratings: number[];
   createdAt: string;
