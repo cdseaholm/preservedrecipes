@@ -38,13 +38,13 @@ export default function AddSteps({ handleCloseChildAndSave, form, handleCancelCh
                                 <p className="text-xs">Type: Text</p>
                             </div>
                             <Textarea
-                                variant="unstyled"
-                                className={`w-full h-full text-xs sm:text-sm ${errorWhich === 'description' ? 'border border-red-600' : 'border border-[#CED4DA]'} rounded-[4px] pe-[12px] ps-[12px]`}
+                                className={`w-full text-xs sm:text-sm`}
                                 id={`modalStep-${index + 1}-description`}
                                 name={`modalStep-${index + 1}-description`}
                                 placeholder="Enter your descriptions here"
                                 key={form.key(`steps.${index}.description`)}
                                 {...form.getInputProps(`steps.${index}.description`)}
+                                error={errorWhich === 'description'}
                             />
                             <ComboBoxMultiSelect which="ingredients" pills={ingredientPills} currentVals={valuesUsed} handleSetValuesUsed={handleSetValuesUsed} save={saveAndOpen} currValsLen={valuesUsed.length}/>
                         </Fieldset>

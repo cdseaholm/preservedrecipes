@@ -5,7 +5,7 @@ import { forwardRef } from "react";
 import { GoInfo } from "react-icons/go";
 
 
-const MyInfoIcon = forwardRef<HTMLDivElement>(
+export const MyInfoIcon = forwardRef<HTMLDivElement>(
     (props, ref) => (
         <div ref={ref} {...props} className='cursor-pointer'>
             <GoInfo />

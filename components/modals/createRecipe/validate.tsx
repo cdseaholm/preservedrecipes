@@ -27,15 +27,26 @@ export async function ValidateSteps(step: StepType, index: number) {
 export async function ValidateNameAndDescription(name: string, description: string) {
     const errors = [] as errorType[];
     if (name.length > 150) {
-        errors.push({index: 0, which: 'name', message: `Name is too long. Keep it within 150 characters.`})
+        errors.push({ index: 0, which: 'name', message: `Name is too long. Keep it within 150 characters.` })
     }
     if (description.length > 1000) {
-        errors.push({index: 1, which: 'description', message: `Description is too long. Keep it within 1000 characters.`})
+        errors.push({ index: 1, which: 'description', message: `Description is too long. Keep it within 1000 characters.` })
     }
     if (!name || name.length === 0) {
-        errors.push({index: 0, which: 'name', message: `Name cannot be empty`});
+        errors.push({ index: 0, which: 'name', message: `Name cannot be empty` });
     }
     if (!description || description.length === 0) {
-        errors.push({index: 1, which: 'description', message: `Description of this recipe cannot be empty.`})
+        errors.push({ index: 1, which: 'description', message: `Description of this recipe cannot be empty.` })
     }
+    return errors;
+}
+
+export async function ValdiateViewerEmails(viewers: string[]) {
+    const errors = [] as errorType[];
+    viewers.forEach((viewer: string, index: number) => {
+        if (!/^\S+@\S+$/.test(viewer)) {
+            errors.push({index: index, which: 'viewers', message: `Email of viewer ${index + 1} is invalid`});
+        }
+    })
+    return errors;
 }

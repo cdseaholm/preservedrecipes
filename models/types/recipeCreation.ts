@@ -5,5 +5,9 @@ export type RecipeCreation = {
     name: string;
     description: string;
     ingredients: IngredientType[];
-    steps: StepType[]
+    steps: StepType[];
+    type: string;
+    tags: string[];
+    secret: boolean;
+    secretViewerIDs: string[];
 }

@@ -40,29 +40,29 @@ export default function EditIngredients({ handleCloseChildAndSave, form, handleC
                                 <ErrorPopover errors={errors} width={width} />
                             </div>
                             <TextInput
-                                variant="unstyled"
-                                className={`w-full text-xs sm:text-sm h-fit ${errIng ? 'border border-red-600' : 'border border-[#CED4DA]'} rounded-[4px] pe-[12px] ps-[12px]`}
+                                className={`w-full text-xs sm:text-sm`}
                                 id={`modalIngredient-${indexToEdit + 1}`}
                                 name={`modalIngredient-${indexToEdit + 1}`}
                                 placeholder="Sage"
                                 key={form.key(`ingredients.${indexToEdit}.ingredient`)}
                                 {...form.getInputProps(`ingredients.${indexToEdit}.ingredient`)}
+                                error={errIng}
                             />
                             <div className={`flex flex-row w-full h-fit justify-center items-center space-x-1`}>
                                 <NumberInput
-                                    variant="unstyled"
-                                    className={`sm:w-3/4 w-1/2 h-full text-xs sm:text-sm ${errQuant ? 'border border-red-600' : 'border border-[#CED4DA]'} rounded-[4px] pe-[12px] ps-[12px]`}
+                                    className={`sm:w-3/4 w-1/2 text-xs sm:text-sm`}
                                     placeholder="1"
                                     key={form.key(`ingredients.${indexToEdit}.quantity`)}
                                     {...form.getInputProps(`ingredients.${indexToEdit}.quantity`)}
+                                    error={errQuant}
                                 />
                                 <Select
-                                    variant="unstyled"
-                                    className={`sm:w-1/4 w-1/2 h-full text-xs sm:text-sm ${errType ? 'border border-red-600' : 'border border-[#CED4DA]'} rounded-[4px] pe-[12px] ps-[12px]`}
+                                    className={`sm:w-1/4 w-1/2 text-xs sm:text-sm`}
                                     placeholder="Tbs"
                                     key={form.key(`ingredients.${indexToEdit}.quantityType`)}
                                     {...form.getInputProps(`ingredients.${indexToEdit}.quantityType`)}
                                     data={['cup', 'dash', 'fl oz', 'g', 'kg', 'lb', 'liter', 'ml', 'oz', 'pinch', 'pint', 'quart', 'tablespoon', 'teaspoon', 'tsp', 'Tbs', 'tbsp',]}
+                                    error={errType}
                                 />
                             </div>
                             <div className="flex flex-row w-full justify-end items-center">

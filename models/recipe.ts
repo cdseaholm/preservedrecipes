@@ -2,6 +2,8 @@ import mongoose, { Model, Schema } from "mongoose";
 import { IRecipe } from "./types/recipe";
 import { commentSchema } from "./comment";
 import { recipeStepSchema } from "./recipeStep"; // Adjust the import path as necessary
+import { ratingSchema } from "./rating";
+import { ingredientSchema } from "./ingredient";
 
 export const recipeSchema = new Schema(
   {
@@ -25,21 +27,33 @@ export const recipeSchema = new Schema(
         type: [recipeStepSchema],
         required: false
     },
-    rating: {
-        type: Number,
+    ratings: {
+        type: [ratingSchema],
         required: false
     },
     comments: {
         type: [commentSchema],
         required: false
     },
-    public: {
+    secret: {
         type: Boolean,
         required: false
     },
     secretViewerIDs: {
         type: [String],
         required: false
+    },
+    ingredients: {
+      type: [ingredientSchema],
+      required: false
+    },
+    tags: {
+      type: [String],
+      required: false
+    },
+    description: {
+      type: String,
+      required: false
     }
   },
   {

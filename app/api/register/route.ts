@@ -1,5 +1,4 @@
 import connectDB from '@/lib/mongodb';
-import { IRecipe } from '@/models/types/recipe';
 import { IUser } from '@/models/types/user';
 import { IUserFamily } from '@/models/types/userFamily';
 import User from '@/models/user';
@@ -37,7 +36,7 @@ export async function POST(req: NextRequest) {
         childrenIDs: [] as string[],
         partnerIDs: [] as string[]
       } as IUserFamily,
-      recipes: [] as IRecipe[],
+      recipeIDs: [] as string[],
       communityIDs: [] as string[],
       ratings: [] as number[],
     }) as IUser;

@@ -8,7 +8,7 @@ import SignOutModal from "../modals/signOut";
 import { Session } from "next-auth";
 import AlertModal from "../modals/alert/alertModal";
 
-export default function ModalProvider({session, handleUpdate}: {session: Session | null, handleUpdate: () => Promise<void>}) {
+export default function ModalProvider({ session, handleUpdate }: { session: Session | null, handleUpdate: () => Promise<void> }) {
 
     const openCreateRecipeModal = useModalStore(state => state.openCreateRecipeModal);
     const setOpenCreateRecipeModal = useModalStore(state => state.setOpenCreateRecipeModal);
@@ -19,9 +19,9 @@ export default function ModalProvider({session, handleUpdate}: {session: Session
 
     return (
         <>
-            <SignInModal session={session} handleUpdate={handleUpdate}/>
-            <SignOutModal session={session} handleUpdate={handleUpdate}/>
-            <RegisterModal session={session} handleUpdate={handleUpdate}/>
+            <SignInModal session={session} handleUpdate={handleUpdate} />
+            <SignOutModal session={session} handleUpdate={handleUpdate} />
+            <RegisterModal session={session} handleUpdate={handleUpdate} />
             <ParentRecipeModal session={session} handleUpdate={handleUpdate} open={openCreateRecipeModal} handleCloseCreateRecipe={handleCloseCreateRecipe} />
             <AlertModal />
         </>
