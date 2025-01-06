@@ -5,7 +5,7 @@ import { useStateStore } from "@/context/stateStore";
 import { Menu, Divider, UnstyledButton } from "@mantine/core";
 import { Session } from "next-auth";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { forwardRef, JSX } from "react";
 import { FaRegUserCircle } from "react-icons/fa";
 import { toast } from "sonner";
@@ -26,6 +26,7 @@ LargeUserButton.displayName = 'LargeUserButton'
 
 export function HeaderLargeShort({ handleZoomClick, handleZoomClose, handleColorPicker, profile, firstName, recipes, recipeText, fam, familyText, communities, communityText, setOpenSignOutModal, signOut, setSignInModal, setRegisterModal, session }: { handleZoomClick: () => void; handleZoomClose: () => void; handleColorPicker: () => void; profile: React.ReactNode; firstName: string | null; recipes: React.ReactNode; recipeText: string; fam: React.ReactNode; familyText: string; communities: React.ReactNode; communityText: string; setOpenSignOutModal: (open: boolean) => void; signOut: JSX.Element; setSignInModal: (open: boolean) => void, setRegisterModal: (open: boolean) => void, session: Session | null }) {
 
+    const pathname = usePathname()
     const router = useRouter();
     const width = useStateStore(state => state.widthQuery);
     const setOpenCreateRecipeModal = useModalStore(state => state.setOpenCreateRecipeModal);
@@ -62,7 +63,7 @@ export function HeaderLargeShort({ handleZoomClick, handleZoomClose, handleColor
                         </Menu.Label>
                         <Divider />
                         <div className="flex flex-row justify-between px-2 items-center w-full">
-                            <Menu.Item onClick={() => router.push('/profile')} leftSection={profile}>
+                            <Menu.Item onClick={() => router.push('/profile')} leftSection={profile} disabled={pathname.includes('/profile') ? true : false} style={{ textDecoration: `${pathname.includes('/profile') ? 'underline' : ''}` }}>
                                 Profile
                             </Menu.Item>
                             <Menu.Item onClick={() => {
@@ -107,6 +108,7 @@ export function HeaderLargeShort({ handleZoomClick, handleZoomClose, handleColor
 
 export function HeaderLargeNotShort({ handleZoomClick, handleZoomClose, handleColorPicker, profile, firstName, recipes, recipeText, fam, familyText, communities, communityText, setOpenSignOutModal, signOut, setSignInModal, setRegisterModal, session }: { handleZoomClick: () => void; handleZoomClose: () => void; handleColorPicker: () => void; profile: React.ReactNode; firstName: string | null; recipes: React.ReactNode; recipeText: string; fam: React.ReactNode; familyText: string; communities: React.ReactNode; communityText: string; setOpenSignOutModal: (open: boolean) => void; signOut: JSX.Element; setSignInModal: (open: boolean) => void, setRegisterModal: (open: boolean) => void, session: Session | null }) {
 
+    const pathname = usePathname()
     const router = useRouter();
     const setOpenCreateRecipeModal = useModalStore(state => state.setOpenCreateRecipeModal);
 
@@ -141,7 +143,7 @@ export function HeaderLargeNotShort({ handleZoomClick, handleZoomClose, handleCo
                             {!firstName ? 'User Specific' : `Hello ${firstName}!`}
                         </Menu.Label>
                         <Divider />
-                        <Menu.Item onClick={() => router.push('/profile')} leftSection={profile}>
+                        <Menu.Item onClick={() => router.push('/profile')} leftSection={profile} disabled={pathname.includes('/profile') ? true : false} style={{ textDecoration: `${pathname.includes('/profile') ? 'underline' : ''}` }}>
                             Profile
                         </Menu.Item>
                         <Menu.Item onClick={() => setOpenCreateRecipeModal(true)} leftSection={recipes}>
