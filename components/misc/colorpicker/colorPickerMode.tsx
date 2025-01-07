@@ -2,7 +2,6 @@
 
 import CustomColorPicker from './customColorPicker';
 import MainFooter from '@/components/nav/footer';
-import MainTemplate from '@/components/templates/mainTemplate';
 import MainHeaderMock from './mock/headerMock';
 import InfoSectionMock from './mock/homepage/infoSectionMock';
 import MiscSectionMock from './mock/homepage/miscSectionMock';
@@ -32,7 +31,7 @@ export default function ColorPickerMode() {
     <div className="h-screen w-screen overflow-hidden">
       <div className='flex flex-col w-full md:w-4/5 h-full md:ml-[20%]'>
         <MainHeaderMock />
-        <MainTemplate>
+        <main className="flex flex-col justify-start items-center w-screen h-vh scrollbar-thin scrollbar-webkit top-[75px]" style={{ overflowX: 'hidden', overflowY: 'auto' }}>
           <section className='flex flex-col justify-center items-center w-full h-full bg-mainBack '>
             <WelcomeSectionMock />
           </section>
@@ -43,7 +42,7 @@ export default function ColorPickerMode() {
             <MiscSectionMock id='about-section' />
           </section>
           <MainFooter />
-        </MainTemplate>
+        </main>
       </div>
       <aside className='flex w-full h-1/3 flex-col md:w-1/5 md:h-full p-4 fixed md:left-0 bottom-0 md:top-0 z-40 bg-white overflow-auto border-t border-black'>
         <div className='flex flex-row justify-between items-center px-2'>

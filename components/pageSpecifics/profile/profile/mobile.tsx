@@ -1,11 +1,12 @@
 'use client'
 
-import LinkTextButton from "@/components/buttons/linkTextButtons"
 import { Avatar, Tabs } from "@mantine/core"
 import { useState, ChangeEvent } from "react"
 import PersonalTabs from "./profileMobileTabs/personalTab"
 import FamilyTabs from "./profileMobileTabs/familyTab"
 import SettingsTab from "./profileMobileTabs/settingsTab"
+import { FiSettings } from "react-icons/fi"
+import Link from "next/link"
 
 export default function MobileProfilePage({ userName, handleCreate, userInfo }: { userName: string, handleCreate: (which: string, open: boolean) => void, userInfo: string }) {
 
@@ -38,11 +39,19 @@ export default function MobileProfilePage({ userName, handleCreate, userInfo }: 
 
     return (
         <section className="flex flex-col justify-center items-center w-full overflow-y-hidden overflow-x-auto bg-mainBack min-h-[750px] p-2">
-            <Tabs defaultValue={'personal'} style={{ width: '95%', minHeight: '100%', height: '100%' }}>
+            <div className="flex flex-row justify-between items-center h-fit w-full bg-mainContent rounded-t-md divide-x text-xs sm:text-sm">
+                <p className="flex flex-row justify-start items-center h-fit w-fit bg-mainContent p-2 pl-4">
+                    {`${userName}'s Profile`}
+                    <Link href={`/profile/settings`} className="text-md lg:text-base text-blue-500 hover:bg-gray-100 hover:text-blue-300 p-2 rounded-md">
+                        <FiSettings />
+                    </Link>
+                </p>
+                <div className="flex flex-col justify-center items-center h-fit w-fit bg-mainContent p-2">
+                    <Avatar radius={'xl'} />
+                </div>
+            </div>
+            <Tabs defaultValue={'personal'} style={{ width: '100%', minHeight: '100%', height: '100%' }}>
                 <div className="flex flex-row justify-between items-start h-fit w-full bg-mainContent rounded-t-md divide-x">
-                    <p className="p-2">
-                        {`${userName}'s Profile`}
-                    </p>
                     <Tabs.List>
                         <Tabs.Tab value="personal">
                             Personal
@@ -54,10 +63,6 @@ export default function MobileProfilePage({ userName, handleCreate, userInfo }: 
                             Settings
                         </Tabs.Tab>
                     </Tabs.List>
-                </div>
-                <div className="flex flex-row justify-start items-center h-fit w-full bg-mainContent p-2 pl-4">
-                    <Avatar radius={'xl'} />
-                    <LinkTextButton link={'/profile/settings'} content="Profile Settings" />
                 </div>
                 <div className="flex flex-row justify-center items-start w-full h-[700px] bg-mainContent rounded-b-md">
                     <Tabs.Panel value="personal" w={'100%'} h={'100%'}>

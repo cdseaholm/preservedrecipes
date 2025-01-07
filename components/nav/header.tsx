@@ -14,8 +14,10 @@ import { IUserFamily } from "@/models/types/userFamily";
 import { HeaderSmallNotShort, HeaderSmallShort } from "./headerFormats/headerSmall";
 import { HeaderLargeNotShort, HeaderLargeShort } from "./headerFormats/headerLarge";
 import { Suspense } from "react";
+import { useSession } from "next-auth/react";
 
-export default function MainHeader({ session, loading }: { session: Session | null, loading: boolean }) {
+export default function MainHeader() {
+    const { data: session } = useSession();
     const userInfo = useUserStore(state => state.userInfo);
     const recipes = userInfo ? userInfo.recipeIDs as string[] : [] as string[];
     const userFamily = userInfo ? userInfo.userFamily as IUserFamily : {} as IUserFamily;
@@ -39,21 +41,9 @@ export default function MainHeader({ session, loading }: { session: Session | nu
         handleZoomMain(width, open);
     }
 
-    if (loading) {
-        return (
-            <header className={`bg-mainBack w-full flex flex-row justify-start items-center px-5 border-b border-accent text-mainText sticky top-0 z-30 ${isMediumScreenOrLess ? "px-5 py-2" : 'px-12 py-2'} min-h-[75px]`}>
-                <section className="text-base font-bold w-2/3 md:w-1/3">
-                    <Link href={'/'}>
-                        PreservedRecipes
-                    </Link>
-                </section>
-            </header>
-        );
-    }
-
     return (
         <Suspense fallback={
-            <header className={`bg-mainBack w-full flex flex-row justify-start items-center px-5 border-b border-accent text-mainText sticky top-0 z-30 ${isMediumScreenOrLess ? "px-5 py-2" : 'px-12 py-2'} min-h-[75px]`}>
+            <header className={`bg-mainBack w-full flex flex-row justify-start items-center px-5 border-b border-accent fixed text-mainText ${isMediumScreenOrLess ? "px-5 py-2" : 'px-12 py-2'} min-h-[75px]`}>
                 <section className="text-base font-bold w-2/3 md:w-1/3">
                     <Link href={'/'}>
                         PreservedRecipes
@@ -61,7 +51,7 @@ export default function MainHeader({ session, loading }: { session: Session | nu
                 </section>
             </header>
         }>
-            <header className={`bg-mainBack w-full flex flex-row justify-between items-center px-5 border-b border-accent text-mainText sticky top-0 z-30 ${isMediumScreenOrLess ? "px-5 py-2" : 'px-12 py-2'} min-h-[75px]`}>
+            <header className={`bg-mainBack w-full flex flex-row justify-between items-center px-5 border-b border-accent fixed text-mainText ${isMediumScreenOrLess ? "px-5 py-2" : 'px-12 py-2'} min-h-[75px]`}>
                 <section className="text-base font-bold w-2/3 md:w-1/3">
                     <Link href={'/'}>
                         {isMediumScreenOrLess ? 'PreservedRecipes Image Here' : 'PreservedRecipes'}
