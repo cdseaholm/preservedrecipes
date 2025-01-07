@@ -1,23 +1,20 @@
 'use client'
 
 import { useEffect, useCallback, useRef, useState } from "react";
-import MainBody from "../mainBody";
 import { useStateStore } from "@/context/stateStore";
 import { getBaseUrl } from "@/utils/helpers/helpers";
-import MainHeader from "../../nav/header";
 import MainFooter from "../../nav/footer";
-import MainTemplate from "../mainTemplate";
-import ModalProvider from "../../providers/modalProvider";
 import { useSession } from "next-auth/react";
 import { User } from "next-auth";
 import { InitializeUserData } from "@/utils/userHelpers/initUserData";
 import { useUserStore } from "@/context/userStore";
 import { LoadingSpinner } from "@/components/misc/loadingSpinner";
 import { IUser } from "@/models/types/user";
+import ColorPickerMode from "@/components/misc/colorpicker/colorPickerMode";
 
 export default function PageWrapper({ children }: Readonly<{ children: React.ReactNode; }>) {
 
-    const { data: session, update } = useSession();
+    const { data: session } = useSession();
     const widthRef = useRef<number | null>(null);
     const heightRef = useRef<number | null>(null);
     const setWidthQuery = useStateStore((state) => state.setWidthQuery);
@@ -25,6 +22,7 @@ export default function PageWrapper({ children }: Readonly<{ children: React.Rea
     const setShortStack = useStateStore((state) => state.setShortStack)
     const setUrlToUse = useStateStore((state) => state.setUrlToUse);
     const setUserInfo = useUserStore(state => state.setUserInfo);
+    const colorPickerMode = useStateStore(state => state.colorPickerMode);
     const [loading, setLoading] = useState<boolean>(true);
 
     const initializeWidths = useCallback((newWidth: number, newHeight: number) => {
@@ -35,10 +33,6 @@ export default function PageWrapper({ children }: Readonly<{ children: React.Rea
             setShortStack(true);
         }
     }, [setWidthQuery, setHeightQuery, setShortStack]);
-
-    const handleUpdate = async () => {
-        await update();
-    };
 
     const updateMedia = useCallback(() => {
         const newWidth = window.innerWidth;
@@ -121,13 +115,13 @@ export default function PageWrapper({ children }: Readonly<{ children: React.Rea
     }
 
     return (
-        <MainBody>
-            <MainHeader session={session} loading={loading} />
-            <MainTemplate>
+        colorPickerMode ? (
+            <ColorPickerMode />
+        ) : (
+            <main className="w-screen h-screen scrollbar-thin scrollbar-webkit fixed top-[75px]" style={{ overflowX: 'hidden', overflowY: 'auto', height: 'calc(100vh - 75px)' }}>
                 {children}
                 <MainFooter />
-            </MainTemplate>
-            <ModalProvider handleUpdate={handleUpdate} session={session} />
-        </MainBody>
-    );
+            </main>
+        )
+    )
 }

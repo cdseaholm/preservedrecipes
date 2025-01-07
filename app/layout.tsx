@@ -5,6 +5,8 @@ import { Inter } from "next/font/google";
 import { ColorSchemeScript, MantineProvider } from '@mantine/core';
 import '@mantine/core/styles.css';
 import AuthWrapper from "@/components/templates/wrappers/authwrapper";
+import MainHeader from "@/components/nav/header";
+import ModalProvider from "@/components/providers/modalProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,12 +20,14 @@ export default function RootLayout({
       <head>
         <ColorSchemeScript />
       </head>
-      <body className="overflow-hidden bg-mainBack">
+      <body className="h-screen w-screen overflow-hidden bg-mainBack">
         <AuthWrapper>
           <MantineProvider>
+            <MainHeader />
             <PageWrapper>
               {children}
             </PageWrapper>
+            <ModalProvider />
           </MantineProvider>
           <Toaster />
         </AuthWrapper>
