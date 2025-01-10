@@ -9,7 +9,7 @@ export default function ComboBox({ pills, handleOpenAdd, which, handleEditToggle
         onDropdownClose: () => combobox.resetSelectedOption(),
     });
 
-    const value = pills.length === 0 ? `Click to add or edit ${which}` : `${pills.length} ${which}`;
+    const value = pills.length === 0 ? `Empty` : `${pills.length} ${which}`;
 
     const handleOptionClick = (which: string) => {
         combobox.closeDropdown();
@@ -57,7 +57,7 @@ export default function ComboBox({ pills, handleOpenAdd, which, handleEditToggle
                     rightSection={<Combobox.Chevron />}
                     rightSectionPointerEvents="none"
                     onClick={() => combobox.toggleDropdown()}
-                    className='w-full h-full'
+                    className='w-full h-full overflow-hidden whitespace-nowrap text-ellipsis'
                 >
                     {value || <Input.Placeholder>Empty</Input.Placeholder>}
                 </InputBase>
@@ -69,21 +69,22 @@ export default function ComboBox({ pills, handleOpenAdd, which, handleEditToggle
                         key={'-1'}
                         onClick={() => handleOptionClick(which)}
                         title={`Add ${which}`}
-                        className="w-full flex flex-row items-center h-fit"
+                        className="w-full flex flex-row items-center h-fit overflow-hidden whitespace-nowrap text-ellipsis"
                     >
+                        <GoPlus className="mr-2" />
                         {`Add ${which === 'steps' ? 'a step' : 'an ingredient'}`}
-                        <GoPlus className="ml-2" />
                     </Combobox.Option>
                     <Combobox.Option
-                        disabled={pills.length === 0 ? true : false}
+                        disabled={pills.length === 0}
                         value='openChild'
                         key={'-2'}
                         onClick={() => combobox.toggleDropdown()}
                         title={`Edit ${which}`}
-                        className={`w-full flex flex-row items-center h-fit ${pills.length === 0 ? 'text-gray-400' : ''}`}
+                        className={`w-full flex flex-row items-center h-fit ${pills.length === 0 ? 'text-gray-400' : ''} overflow-hidden whitespace-nowrap text-ellipsis`}
+                        style={{ textOverflow: 'ellipsis' }}
                     >
-                        {`To edit, click the ${which === 'steps' ? 'step' : 'ingredient'} you would like to edit`}
-                        <GoPencil className="ml-2" />
+                        <GoPencil className="mr-2" />
+                        {`To edit, click an option`}
                     </Combobox.Option>
                     <Combobox.Group label={which === 'steps' ? 'Steps' : 'Ingredients'}>
                         {options}

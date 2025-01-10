@@ -6,7 +6,6 @@ import ErrorPopover from "@/components/popovers/errorPopover";
 import { StepType } from "@/models/types/stepType";
 import { IngredientType } from "@/models/types/ingredientType";
 import { useStateStore } from "@/context/stateStore";
-import ModalTemplate from "../../templates/modalTemplate";
 import { errorType } from "@/models/types/error";
 import { RecipeCreation } from "@/models/types/recipeCreation";
 
@@ -22,15 +21,13 @@ export default function EditIngredients({ handleCloseChildAndSave, form, handleC
     const errIng = errorsExist && errors.find((err) => err.which === 'ingredient') ? true : false;
     const errQuant = errorsExist && errors.find((err) => err.which === 'quantity') ? true : false;
     const errType = errorsExist && errors.find((err) => err.which === 'type') ? true : false;
-    const minWidth = width < 800 ? '80vw' : '60vw';
-    const indexToEdit = thisItem.ingredientId;
+    const indexToEdit = thisItem ? thisItem.ingredientId : -1;
 
     const save = () => {
         handleCloseChildAndSave('ingredients', [], indexToEdit);
     }
 
     return (
-        <ModalTemplate subtitle={null} minHeight="15vh" minWidth={minWidth}>
             <form id="modalAddIngredients" className="w-full h-full">
                 <Fieldset variant="unstyled" className="flex flex-col justify-center items-center w-full h-full border border-accent bg-altBack space-y-2" style={{ maxHeight: '90vh', overflow: 'hidden', borderRadius: '8px' }} radius={'sm'} px={'sm'} py={'sm'}>
                     <div className="w-full scrollbar-thin scrollbar-webkit space-y-2 flex flex-col" style={{ maxHeight: '65vh', overflowY: 'auto', overflowX: 'hidden' }}>
@@ -40,7 +37,7 @@ export default function EditIngredients({ handleCloseChildAndSave, form, handleC
                                 <ErrorPopover errors={errors} width={width} />
                             </div>
                             <TextInput
-                                className={`w-full text-xs sm:text-sm`}
+                                className={`w-full text-xs sm:text-sm overflow-hidden whitespace-nowrap text-ellipsis`}
                                 id={`modalIngredient-${indexToEdit + 1}`}
                                 name={`modalIngredient-${indexToEdit + 1}`}
                                 placeholder="Sage"
@@ -50,14 +47,14 @@ export default function EditIngredients({ handleCloseChildAndSave, form, handleC
                             />
                             <div className={`flex flex-row w-full h-fit justify-center items-center space-x-1`}>
                                 <NumberInput
-                                    className={`sm:w-3/4 w-1/2 text-xs sm:text-sm`}
+                                    className={`sm:w-3/4 w-1/2 text-xs sm:text-sm overflow-hidden whitespace-nowrap text-ellipsis`}
                                     placeholder="1"
                                     key={form.key(`ingredients.${indexToEdit}.quantity`)}
                                     {...form.getInputProps(`ingredients.${indexToEdit}.quantity`)}
                                     error={errQuant}
                                 />
                                 <Select
-                                    className={`sm:w-1/4 w-1/2 text-xs sm:text-sm`}
+                                    className={`sm:w-1/4 w-1/2 text-xs sm:text-sm overflow-hidden whitespace-nowrap text-ellipsis`}
                                     placeholder="Tbs"
                                     key={form.key(`ingredients.${indexToEdit}.quantityType`)}
                                     {...form.getInputProps(`ingredients.${indexToEdit}.quantityType`)}
@@ -82,6 +79,5 @@ export default function EditIngredients({ handleCloseChildAndSave, form, handleC
                     </button>
                 </section>
             </form>
-        </ModalTemplate>
     )
 }
