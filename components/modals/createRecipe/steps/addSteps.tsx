@@ -5,7 +5,6 @@ import { StepType } from "@/models/types/stepType";
 import { IngredientType } from "@/models/types/ingredientType";
 import ErrorPopover from "@/components/popovers/errorPopover";
 import { useStateStore } from "@/context/stateStore";
-import ModalTemplate from "../../templates/modalTemplate";
 import { errorType } from "@/models/types/error";
 import { RecipeCreation } from "@/models/types/recipeCreation";
 
@@ -14,7 +13,6 @@ export default function AddSteps({ handleCloseChildAndSave, form, handleCancelCh
     const error = errors ? errors[0] : {} as errorType;
     const errorWhich = error ? error.which as string : '';
     const width = useStateStore(s => s.widthQuery);
-    const minWidth = width < 800 ? '80vw' : '60vw';
     const index = thisStep ? thisStep.stepId as number : -1;
     const save = () => {
         handleCloseChildAndSave('steps', valuesUsed, index);
@@ -25,7 +23,6 @@ export default function AddSteps({ handleCloseChildAndSave, form, handleCancelCh
     }
 
     return (
-        <ModalTemplate subtitle={null} minHeight="15vh" minWidth={minWidth}>
             <form id="modalAddSteps" className="w-full h-full">
                 <Fieldset variant="unstyled" className="flex flex-col justify-center items-center w-full h-full border border-accent bg-altBack space-y-2" style={{ maxHeight: '90vh', overflow: 'hidden', borderRadius: '8px' }} radius={'sm'} px={'sm'} py={'sm'}>
                     <div className="w-full scrollbar-thin scrollbar-webkit space-y-2 flex flex-col" style={{ maxHeight: '65vh', overflowY: 'auto', overflowX: 'hidden' }}>
@@ -38,7 +35,7 @@ export default function AddSteps({ handleCloseChildAndSave, form, handleCancelCh
                                 <p className="text-xs">Type: Text</p>
                             </div>
                             <Textarea
-                                className={`w-full text-xs sm:text-sm`}
+                                className={`w-full text-xs sm:text-sm overflow-hidden whitespace-nowrap text-ellipsis`}
                                 id={`modalStep-${index + 1}-description`}
                                 name={`modalStep-${index + 1}-description`}
                                 placeholder="Enter your descriptions here"
@@ -59,6 +56,5 @@ export default function AddSteps({ handleCloseChildAndSave, form, handleCancelCh
                     </button>
                 </section>
             </form>
-        </ModalTemplate>
     )
 }

@@ -371,13 +371,13 @@ export default function ParentRecipeModal({ session, handleUpdate, open, handleC
             <Modal.Stack>
                 <Modal {...stack.register('create-main')} onClose={handleCancel} title="Create Recipe" centered overlayProps={{
                     backgroundOpacity: 0.55, blur: 3, className: 'drop-shadow-xl'
-                }} removeScrollProps={{ allowPinchZoom: true }} lockScroll={false} size={'auto'}>
+                }} removeScrollProps={{ allowPinchZoom: true }} lockScroll={false} size={'100%'} transitionProps={{ transition: hasOpenedMain ? `slide-up` : `pop` }}>
                     <MainRecipeModal handleCancel={handleCancel} handleCreateRecipe={handleCreateRecipe} form={form} handleOpenAdd={handleOpenAdd} handleEditToggle={handleOpenEdit} ingredientPills={ingredientPills} stepPills={stepPills} errors={childErrors} secret={form.getValues().secret} handleOpenViewers={handleOpenViewers} />
                 </Modal>
 
                 <Modal {...stack.register('ingredient')} onClose={handleCancel} centered overlayProps={{
                     backgroundOpacity: 0.55, blur: 3, className: 'drop-shadow-xl'
-                }} removeScrollProps={{ allowPinchZoom: true }} lockScroll={false} size={'auto'} title={
+                }} removeScrollProps={{ allowPinchZoom: true }} lockScroll={false} size={'100%'} title={
                     <InfoPopover width={width} title="Create an Ingredient" infoOne="Here you can add ingredients, add the ingredient to a step within the recipe by selecting a step that is already made." infoTwo="If you're unsure where to begin you can add ingredients here first, or click BACK and add steps first and add ingredients to each step!" />
                 }>
                     <AddIngredients handleCloseChildAndSave={handleCloseChildAndSaveAdditions} form={form} handleCancelChild={handleCancelAdd} errors={childErrors} thisIngredient={form.getValues().ingredients[form.getValues().ingredients.length - 1]} />
@@ -385,7 +385,7 @@ export default function ParentRecipeModal({ session, handleUpdate, open, handleC
 
                 <Modal {...stack.register('edit-ingredient')} onClose={handleCancel} centered overlayProps={{
                     backgroundOpacity: 0.55, blur: 3, className: 'drop-shadow-xl'
-                }} removeScrollProps={{ allowPinchZoom: true }} lockScroll={false} size={'auto'} title={
+                }} removeScrollProps={{ allowPinchZoom: true }} lockScroll={false} size={'100%'} title={
                     <InfoPopover width={width} title="Edit Recipe Ingredient" infoOne="Here you can edit ingredients, remove them by clicking delete, or just edit them directly" infoTwo="If you're unsure where to begin you can add ingredients here first, or click BACK and add steps first and add ingredients to each step!" />
                 }>
                     <EditIngredients handleCloseChildAndSave={handleCloseChildAndSaveEdits} form={form} handleCancelChild={handleCancelEdit} handleRemoveChildValue={handleRemoveChildValue} errors={childErrors} thisItem={ingredientCopy ? form.getValues().ingredients[ingredientCopy.ingredientId] : null} />
@@ -393,7 +393,7 @@ export default function ParentRecipeModal({ session, handleUpdate, open, handleC
 
                 <Modal {...stack.register('step')} onClose={handleCancel} centered overlayProps={{
                     backgroundOpacity: 0.55, blur: 3, className: 'drop-shadow-xl'
-                }} removeScrollProps={{ allowPinchZoom: true }} lockScroll={false} size={'auto'} title={
+                }} removeScrollProps={{ allowPinchZoom: true }} lockScroll={false} size={'100%'} title={
                     <InfoPopover width={width} title="Create Recipe Step" infoOne="Here you can add steps, add ingredients to the step by selecting an ingredient from previously used ones or make a new one. The step direction cannot be empty as you need to give some sort of direction." infoTwo="If you're unsure where to begin you can give the step some directions then begin to add ingredients that this step requires!" />
                 } py={'md'} px={'xs'}>
                     <AddSteps handleCloseChildAndSave={handleCloseChildAndSaveAdditions} form={form} handleCancelChild={handleCancelAdd} errors={childErrors} ingredientPills={ingredientPills} handleOpenAdd={handleOpenAdd} thisStep={form.getValues().steps[form.getValues().steps.length - 1]} valuesUsed={valuesUsed} handleSetValuesUsed={handleSetValuesUsed} />
@@ -401,7 +401,7 @@ export default function ParentRecipeModal({ session, handleUpdate, open, handleC
 
                 <Modal {...stack.register('edit-step')} onClose={handleCancel} centered overlayProps={{
                     backgroundOpacity: 0.55, blur: 3, className: 'drop-shadow-xl'
-                }} removeScrollProps={{ allowPinchZoom: true }} lockScroll={false} size={'auto'} title={
+                }} removeScrollProps={{ allowPinchZoom: true }} lockScroll={false} size={'100%'} title={
                     <InfoPopover width={width} title="Edit Recipe Steps" infoOne="Here you can edit steps, remove them by clicking delete, or just edit them directly" infoTwo="If you're unsure where to begin you can give the step some directions then begin to add ingredients that this step requires!" />
                 } py={'md'} px={'xs'}>
                     <EditSteps handleCloseChildAndSave={handleCloseChildAndSaveEdits} form={form} handleCancelChild={handleCancelEdit} handleRemoveChildValue={handleRemoveChildValue} errors={childErrors} ingredientPills={ingredientPills} handleOpenAdd={handleOpenAdd} handleSetValuesUsed={handleSetValuesUsed} valuesUsed={valuesUsed} thisItem={stepCopy ? form.getValues().steps[stepCopy.stepId] : null} />
@@ -409,7 +409,7 @@ export default function ParentRecipeModal({ session, handleUpdate, open, handleC
 
                 <Modal {...stack.register('add-viewers')} onClose={handleCancel} centered overlayProps={{
                     backgroundOpacity: 0.55, blur: 3, className: 'drop-shadow-xl'
-                }} removeScrollProps={{ allowPinchZoom: true }} lockScroll={false} size={'auto'} title={
+                }} removeScrollProps={{ allowPinchZoom: true }} lockScroll={false} size={'100%'} title={
                     <InfoPopover width={width} title="Edit Recipe Steps" infoOne="Here you can edit and add viewers to this recipe. Make sure the viewer you're adding has an account, then add their email address. " infoTwo="Be aware this recipe must be private." />
                 } py={'md'} px={'xs'}>
                     <RecipeViewers handleSaveAndCloseViewers={handleCloseViewers} errors={childErrors} form={form} handleCancelViewers={handleCancelViewers} />
