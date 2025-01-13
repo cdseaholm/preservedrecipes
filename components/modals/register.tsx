@@ -124,7 +124,7 @@ export default function RegisterModal({ session, handleUpdate }: { session: Sess
             }} removeScrollProps={{ allowPinchZoom: true }} lockScroll={false}>
                 <ModalTemplate subtitle={null} minHeight="15vh" minWidth="15vw">
                     {loading ? (
-                        <LoadingSpinner />
+                        <LoadingSpinner screen={true} />
                     ) : (
                         <form id="modalRegisterForm" onSubmit={form.onSubmit((values) => handleRegister(values))} onAbort={handleCancel} className="w-full">
                             <Fieldset legend="Personal Information">

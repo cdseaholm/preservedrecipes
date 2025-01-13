@@ -1,6 +1,6 @@
 'use client'
 
-import PaginationWrapper from "@/components/templates/wrappers/paginationWrapper";
+import PaginationWrapper from "@/components/wrappers/paginationWrapper";
 import { ICommunity } from "@/models/types/community";
 import CommunityCard from "./communityCard";
 import { LoadingSpinner } from "@/components/misc/loadingSpinner";
@@ -17,7 +17,7 @@ export default function CommunityMain({ communities, currentPage, numberOfPages 
   return (
     loading ? (
 
-      <LoadingSpinner />
+      <LoadingSpinner screen={true}/>
 
     ) : (
       <PaginationWrapper currentPage={currentPage} numberOfPages={numberOfPages}>

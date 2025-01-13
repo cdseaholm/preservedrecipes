@@ -1,30 +1,16 @@
 import ProfilePage from "@/components/pageSpecifics/profile/profilePage";
-import { IUser } from "@/models/types/user";
-import { IUserFamily } from "@/models/types/userFamily";
+import { ICommunity } from "@/models/types/community";
+import { IRecipe } from "@/models/types/recipe";
+import { ProfileHelper } from "@/utils/helpers/profileHelper";
 import { Metadata } from "next";
 import { getServerSession } from "next-auth";
-
-const fakeUser = {
-    name: 'Cael',
-    email: 'cael@gmail.com',
-    _id: '33',
-    userFamily: {
-        _id: '1',
-        familyID: '5',
-        siblingIDs: ['1', '2'],
-        parentIDs: ['1', '2'],
-        childrenIDs: [] as string[],
-        partnerIDs: [] as string[]
-    } as IUserFamily,
-    recipeIDs: ['1', '2'],
-    communityIDs: ['2', '4'],
-    ratings: [1, 1, 2],
-} as IUser;
+import ErrorPage from "../error/page";
+import { FamilyMemberRelation } from "@/models/types/familyMemberRelation";
 
 export async function generateMetadata(): Promise<Metadata> {
     const session = await getServerSession();
     const user = session ? session.user : null;
-    const userName = user ? user.name : ''
+    const userName = user ? user.name : '';
 
     return {
         title: `Profile Page for ${userName}`,
@@ -33,9 +19,20 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Page() {
-    const session = await getServerSession();
+    const data = await ProfileHelper() as { fetched: boolean, message: string, recipes: IRecipe[], communities: ICommunity[], members: FamilyMemberRelation[], familyRecipes: IRecipe[] };
+
+    if (!data) {
+        return (
+            <ErrorPage />
+        )
+    }
+
+    const recipesToPass = data.recipes;
+    const communitiesToPass = data.communities;
+    const membersToPass = data.members;
+    const famRecipesToPass = data.familyRecipes
 
     return (
-        <ProfilePage session={session} userInfo={fakeUser} />
+        <ProfilePage recipes={recipesToPass} communities={communitiesToPass} members={membersToPass} familyRecipes={famRecipesToPass} />
     );
 }

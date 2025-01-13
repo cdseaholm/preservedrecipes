@@ -28,14 +28,8 @@ export default function MainHeader() {
     const communityText = communities && communities.length > 0 ? 'Your Communities' : 'Join a Community';
     const widthQuery = useStateStore((state) => state.widthQuery);
     const isMediumScreenOrLess = widthQuery < 768;
-    const setColorPickerMode = useStateStore(state => state.setColorPickerMode);
-    const colorPickerMode = useStateStore(state => state.colorPickerMode);
     const handleZoomMain = useStateStore(state => state.handleZoomReset);
     const width = useStateStore(state => state.widthQuery);
-
-    const handleColorPicker = () => {
-        setColorPickerMode(!colorPickerMode)
-    }
 
     const handleZoomReset = async (open: boolean) => {
         handleZoomMain(width, open);
@@ -59,9 +53,9 @@ export default function MainHeader() {
                 </section>
 
                 {isMediumScreenOrLess ? (
-                    <SmallHeader session={session} recipeText={recipeText} familyText={familyText} communityText={communityText} handleColorPicker={handleColorPicker} handleZoomReset={handleZoomReset} />
+                    <SmallHeader session={session} recipeText={recipeText} familyText={familyText} communityText={communityText} handleZoomReset={handleZoomReset} />
                 ) : (
-                    <LargeHeader session={session} recipeText={recipeText} familyText={familyText} communityText={communityText} handleColorPicker={handleColorPicker} handleZoomReset={handleZoomReset} />
+                    <LargeHeader session={session} recipeText={recipeText} familyText={familyText} communityText={communityText} handleZoomReset={handleZoomReset} />
                 )}
             </header>
         </Suspense>
@@ -92,7 +86,7 @@ const communities = (
     <RiCommunityLine />
 )
 
-function SmallHeader({ session, recipeText, familyText, communityText, handleColorPicker, handleZoomReset }: { session: Session | null, recipeText: string, familyText: string, communityText: string, handleColorPicker: () => void, handleZoomReset: (open: boolean) => Promise<void> }) {
+function SmallHeader({ session, recipeText, familyText, communityText, handleZoomReset }: { session: Session | null, recipeText: string, familyText: string, communityText: string, handleZoomReset: (open: boolean) => Promise<void> }) {
 
     let user = session ? session.user as User : {} as User;
     let userName = user ? user.name : '';
@@ -128,7 +122,6 @@ function SmallHeader({ session, recipeText, familyText, communityText, handleCol
             <HeaderSmallShort
                 handleZoomClick={handleZoomClick}
                 handleZoomClose={handleZoomClose}
-                handleColorPicker={handleColorPicker}
                 profile={profile}
                 firstName={firstName}
                 recipes={recipes}
@@ -148,7 +141,6 @@ function SmallHeader({ session, recipeText, familyText, communityText, handleCol
             <HeaderSmallNotShort
                 handleZoomClick={handleZoomClick}
                 handleZoomClose={handleZoomClose}
-                handleColorPicker={handleColorPicker}
                 profile={profile}
                 firstName={firstName}
                 recipes={recipes}
@@ -168,7 +160,7 @@ function SmallHeader({ session, recipeText, familyText, communityText, handleCol
     )
 }
 
-function LargeHeader({ session, recipeText, familyText, communityText, handleColorPicker, handleZoomReset }: { session: Session | null, recipeText: string, familyText: string, communityText: string, handleColorPicker: () => void, handleZoomReset: (open: boolean) => Promise<void> }) {
+function LargeHeader({ session, recipeText, familyText, communityText, handleZoomReset }: { session: Session | null, recipeText: string, familyText: string, communityText: string, handleZoomReset: (open: boolean) => Promise<void> }) {
 
     let user = session ? session.user as User : {} as User;
     let userName = user ? user.name : '';
@@ -204,7 +196,6 @@ function LargeHeader({ session, recipeText, familyText, communityText, handleCol
             <HeaderLargeShort
                 handleZoomClick={handleZoomClick}
                 handleZoomClose={handleZoomClose}
-                handleColorPicker={handleColorPicker}
                 profile={profile}
                 firstName={firstName}
                 recipes={recipes}
@@ -223,7 +214,6 @@ function LargeHeader({ session, recipeText, familyText, communityText, handleCol
             <HeaderLargeNotShort
                 handleZoomClick={handleZoomClick}
                 handleZoomClose={handleZoomClose}
-                handleColorPicker={handleColorPicker}
                 profile={profile}
                 firstName={firstName}
                 recipes={recipes}

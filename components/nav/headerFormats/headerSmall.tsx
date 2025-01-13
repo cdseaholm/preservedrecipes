@@ -24,7 +24,7 @@ const UserButton = forwardRef<HTMLButtonElement>(
 );
 UserButton.displayName = 'UserButton';
 
-export function HeaderSmallShort({ handleZoomClick, handleZoomClose, handleColorPicker, profile, firstName, recipes, recipeText, fam, familyText, communities, communityText, setOpenSignOutModal, signOut, setSignInModal, signIn, setRegisterModal, session }: { handleZoomClick: () => void; handleZoomClose: () => void; handleColorPicker: () => void; profile: React.ReactNode; firstName: string | null; recipes: React.ReactNode; recipeText: string; fam: React.ReactNode; familyText: string; communities: React.ReactNode; communityText: string; setOpenSignOutModal: (open: boolean) => void; signOut: JSX.Element; setSignInModal: (open: boolean) => void, signIn: JSX.Element, setRegisterModal: (open: boolean) => void, session: Session | null }) {
+export function HeaderSmallShort({ handleZoomClick, handleZoomClose, profile, firstName, recipes, recipeText, fam, familyText, communities, communityText, setOpenSignOutModal, signOut, setSignInModal, signIn, setRegisterModal, session }: { handleZoomClick: () => void; handleZoomClose: () => void; profile: React.ReactNode; firstName: string | null; recipes: React.ReactNode; recipeText: string; fam: React.ReactNode; familyText: string; communities: React.ReactNode; communityText: string; setOpenSignOutModal: (open: boolean) => void; signOut: JSX.Element; setSignInModal: (open: boolean) => void, signIn: JSX.Element, setRegisterModal: (open: boolean) => void, session: Session | null }) {
 
     const pathname = usePathname();
     const router = useRouter();
@@ -85,24 +85,17 @@ export function HeaderSmallShort({ handleZoomClick, handleZoomClose, handleColor
                             }}>
                                 {recipeText}
                             </Menu.Item>
-                            <Menu.Item onClick={handleColorPicker} style={{
-                                textAlign: 'end',
-                                width: '33%'
-                            }}>
-                                Color Picker
-                            </Menu.Item>
-                        </div>
-                        <div className="flex flex-row justify-between px-2 items-center w-full">
-                            <Menu.Item onClick={() => router.push('Fam')} leftSection={fam} style={{
-                                width: '66%'
-                            }}>
-                                {familyText}
-                            </Menu.Item>
                             <Menu.Item onClick={() => toast.info("Looking at Pricing!")} style={{
                                 textAlign: 'end',
                                 width: '33%'
                             }}>
                                 Pricing
+                            </Menu.Item>
+                        </div>
+                        <div className="flex flex-row justify-end px-2 items-center w-full">
+                            <Menu.Item onClick={() => router.push('Fam')} leftSection={fam} style={{
+                            }}>
+                                {familyText}
                             </Menu.Item>
                         </div>
                         <div className="flex flex-row justify-end px-2 items-center w-full">
@@ -145,16 +138,11 @@ export function HeaderSmallShort({ handleZoomClick, handleZoomClose, handleColor
                             </Menu.Item>
                         </div>
                         <div className="flex flex-row justify-between px-2 items-center w-full">
-                            <Menu.Item onClick={handleColorPicker}>
-                                Color Picker
+                            <Menu.Item onClick={() => toast.info("Looking at Pricing!")}>
+                                Pricing
                             </Menu.Item>
                             <Menu.Item onClick={() => setRegisterModal(true)}>
                                 Register
-                            </Menu.Item>
-                        </div>
-                        <div className="flex flex-row justify-start px-2 items-center w-full">
-                            <Menu.Item onClick={() => toast.info("Looking at Pricing!")}>
-                                Pricing
                             </Menu.Item>
                         </div>
                     </Menu.Dropdown>
@@ -164,7 +152,7 @@ export function HeaderSmallShort({ handleZoomClick, handleZoomClose, handleColor
     )
 }
 
-export function HeaderSmallNotShort({ handleZoomClick, handleZoomClose, handleColorPicker, profile, firstName, recipes, recipeText, fam, familyText, communities, communityText, setOpenSignOutModal, signOut, setSignInModal, signIn, setRegisterModal, session }: { handleZoomClick: () => void; handleZoomClose: () => void; handleColorPicker: () => void; profile: React.ReactNode; firstName: string | null; recipes: React.ReactNode; recipeText: string; fam: React.ReactNode; familyText: string; communities: React.ReactNode; communityText: string; setOpenSignOutModal: (open: boolean) => void; signOut: JSX.Element; setSignInModal: (open: boolean) => void, signIn: JSX.Element, setRegisterModal: (open: boolean) => void, session: Session | null }) {
+export function HeaderSmallNotShort({ handleZoomClick, handleZoomClose, profile, firstName, recipes, recipeText, fam, familyText, communities, communityText, setOpenSignOutModal, signOut, setSignInModal, signIn, setRegisterModal, session }: { handleZoomClick: () => void; handleZoomClose: () => void; profile: React.ReactNode; firstName: string | null; recipes: React.ReactNode; recipeText: string; fam: React.ReactNode; familyText: string; communities: React.ReactNode; communityText: string; setOpenSignOutModal: (open: boolean) => void; signOut: JSX.Element; setSignInModal: (open: boolean) => void, signIn: JSX.Element, setRegisterModal: (open: boolean) => void, session: Session | null }) {
 
     const pathname = usePathname();
     const router = useRouter();
@@ -194,9 +182,6 @@ export function HeaderSmallNotShort({ handleZoomClick, handleZoomClose, handleCo
                         <Link href={'/about'}>
                             About
                         </Link>
-                    </Menu.Item>
-                    <Menu.Item onClick={handleColorPicker}>
-                        Color Picker
                     </Menu.Item>
                     <Menu.Item onClick={() => toast.info("Looking at Pricing!")}>
                         Pricing

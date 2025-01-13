@@ -24,7 +24,7 @@ const LargeUserButton = forwardRef<HTMLButtonElement>(
 );
 LargeUserButton.displayName = 'LargeUserButton'
 
-export function HeaderLargeShort({ handleZoomClick, handleZoomClose, handleColorPicker, profile, firstName, recipes, recipeText, fam, familyText, communities, communityText, setOpenSignOutModal, signOut, setSignInModal, setRegisterModal, session }: { handleZoomClick: () => void; handleZoomClose: () => void; handleColorPicker: () => void; profile: React.ReactNode; firstName: string | null; recipes: React.ReactNode; recipeText: string; fam: React.ReactNode; familyText: string; communities: React.ReactNode; communityText: string; setOpenSignOutModal: (open: boolean) => void; signOut: JSX.Element; setSignInModal: (open: boolean) => void, setRegisterModal: (open: boolean) => void, session: Session | null }) {
+export function HeaderLargeShort({ handleZoomClick, handleZoomClose, profile, firstName, recipes, recipeText, fam, familyText, communities, communityText, setOpenSignOutModal, signOut, setSignInModal, setRegisterModal, session }: { handleZoomClick: () => void; handleZoomClose: () => void; profile: React.ReactNode; firstName: string | null; recipes: React.ReactNode; recipeText: string; fam: React.ReactNode; familyText: string; communities: React.ReactNode; communityText: string; setOpenSignOutModal: (open: boolean) => void; signOut: JSX.Element; setSignInModal: (open: boolean) => void, setRegisterModal: (open: boolean) => void, session: Session | null }) {
 
     const pathname = usePathname()
     const router = useRouter();
@@ -36,9 +36,6 @@ export function HeaderLargeShort({ handleZoomClick, handleZoomClose, handleColor
             <Link href={'/about'}>
                 About
             </Link>
-            <button onClick={handleColorPicker}>
-                Color Picker
-            </button>
             <button onClick={() => toast.info(`You'd go to the Pricing page right now!`)}>
                 Pricing
             </button>
@@ -106,7 +103,7 @@ export function HeaderLargeShort({ handleZoomClick, handleZoomClose, handleColor
     )
 }
 
-export function HeaderLargeNotShort({ handleZoomClick, handleZoomClose, handleColorPicker, profile, firstName, recipes, recipeText, fam, familyText, communities, communityText, setOpenSignOutModal, signOut, setSignInModal, setRegisterModal, session }: { handleZoomClick: () => void; handleZoomClose: () => void; handleColorPicker: () => void; profile: React.ReactNode; firstName: string | null; recipes: React.ReactNode; recipeText: string; fam: React.ReactNode; familyText: string; communities: React.ReactNode; communityText: string; setOpenSignOutModal: (open: boolean) => void; signOut: JSX.Element; setSignInModal: (open: boolean) => void, setRegisterModal: (open: boolean) => void, session: Session | null }) {
+export function HeaderLargeNotShort({ handleZoomClick, handleZoomClose, profile, firstName, recipes, recipeText, fam, familyText, communities, communityText, setOpenSignOutModal, signOut, setSignInModal, setRegisterModal, session }: { handleZoomClick: () => void; handleZoomClose: () => void; profile: React.ReactNode; firstName: string | null; recipes: React.ReactNode; recipeText: string; fam: React.ReactNode; familyText: string; communities: React.ReactNode; communityText: string; setOpenSignOutModal: (open: boolean) => void; signOut: JSX.Element; setSignInModal: (open: boolean) => void, setRegisterModal: (open: boolean) => void, session: Session | null }) {
 
     const pathname = usePathname()
     const router = useRouter();
@@ -117,9 +114,6 @@ export function HeaderLargeNotShort({ handleZoomClick, handleZoomClose, handleCo
             <Link href={'/about'}>
                 About
             </Link>
-            <button onClick={handleColorPicker}>
-                Color Picker
-            </button>
             <button onClick={() => toast.info(`You'd go to the Pricing page right now!`)}>
                 Pricing
             </button>
