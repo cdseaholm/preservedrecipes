@@ -3,7 +3,7 @@
 import { useEffect, useCallback, useRef, useState } from "react";
 import { useStateStore } from "@/context/stateStore";
 import { getBaseUrl } from "@/utils/helpers/helpers";
-import MainFooter from "../../nav/footer";
+import MainFooter from "../nav/footer";
 import { useSession } from "next-auth/react";
 import { User } from "next-auth";
 import { InitializeUserData } from "@/utils/userHelpers/initUserData";
@@ -92,7 +92,8 @@ export default function PageWrapper({ children }: Readonly<{ children: React.Rea
                 return;
             } else {
                 let user = session.user as User;
-                const initialized = await InitializeUserData(user);
+                const headers = { 'Authorization': `Bearer ${session.user}` };
+                const initialized = await InitializeUserData({ user }, headers);
 
                 if (!initialized || initialized.status === false) {
                     setLoading(false);
@@ -109,7 +110,7 @@ export default function PageWrapper({ children }: Readonly<{ children: React.Rea
     if (loading) {
         return (
             <div className="w-screen h-screen flex justify-center items-center">
-                <LoadingSpinner />
+                <LoadingSpinner screen={true} />
             </div>
         );
     }

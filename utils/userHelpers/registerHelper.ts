@@ -3,7 +3,15 @@ import { toast } from "sonner";
 import { SaltAndHashPassword } from "./saltAndHash";
 
 export default async function RegisterHelper({ namePassed, emailPassed, pwPassed }: { namePassed: string, emailPassed: string, pwPassed: string }) {
-    
+
+    const baseUrl = process.env.BASE_URL ? process.env.BASE_URL : '';
+
+    if (baseUrl === '') {
+        return {
+            status: false, newUser: {} as IUser
+        };
+    }
+
     if (!namePassed) {
         return {
             status: false, newUser: {} as IUser
@@ -32,13 +40,13 @@ export default async function RegisterHelper({ namePassed, emailPassed, pwPassed
             }
         }
 
-        const res = await fetch('/api/register', {
+        const res = await fetch(`${baseUrl}/api/register`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({namePassed: namePassed, emailPassed: emailPassed, saltedPW: saltedPW})
-        })
+            body: JSON.stringify({ namePassed: namePassed, emailPassed: emailPassed, saltedPW: saltedPW })
+        });
 
         if (!res || res.status !== 200) {
             toast.error('Error registering');
@@ -50,12 +58,12 @@ export default async function RegisterHelper({ namePassed, emailPassed, pwPassed
         const data = await res.json();
         let userToReturn = {} as IUser;
         if (!data) {
-            return {status: false, newUser: userToReturn};
+            return { status: false, newUser: userToReturn };
         }
 
         userToReturn = data.newUser as IUser;
 
-        return {status: true, newUser: userToReturn as IUser}
+        return { status: true, newUser: userToReturn as IUser }
 
     } catch (error: any) {
         return {

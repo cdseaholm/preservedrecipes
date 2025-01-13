@@ -1,10 +1,10 @@
 import "@/app/globals.css";
 import { Toaster } from "sonner";
-import PageWrapper from "@/components/templates/wrappers/pageWrapper";
+import PageWrapper from "@/components/wrappers/pageWrapper";
 import { Inter } from "next/font/google";
 import { ColorSchemeScript, MantineProvider } from '@mantine/core';
 import '@mantine/core/styles.css';
-import AuthWrapper from "@/components/templates/wrappers/authwrapper";
+import AuthWrapper from "@/components/wrappers/authwrapper";
 import MainHeader from "@/components/nav/header";
 import ModalProvider from "@/components/providers/modalProvider";
 
@@ -15,22 +15,23 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
   return (
     <html lang="en" className={inter.className} suppressHydrationWarning>
       <head>
         <ColorSchemeScript />
       </head>
       <body className="h-screen w-screen overflow-hidden bg-mainBack">
-        <AuthWrapper>
-          <MantineProvider>
+        <MantineProvider>
+          <AuthWrapper>
             <MainHeader />
             <PageWrapper>
               {children}
             </PageWrapper>
             <ModalProvider />
-          </MantineProvider>
-          <Toaster />
-        </AuthWrapper>
+            <Toaster />
+          </AuthWrapper>
+        </MantineProvider>
       </body>
     </html>
   );

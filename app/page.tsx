@@ -13,7 +13,7 @@ export default function Home() {
 
   return (
     loading ? (
-      <LoadingSpinner />
+      <LoadingSpinner screen={true} />
     ) : (
       <Homepage />
     )
