@@ -60,23 +60,27 @@ export default function RegisterModal({ session, handleUpdate }: { session: Sess
             form.clearErrors();
 
             if (session) {
-                toast.warning("You are already signed in!")
+                toast.warning("You are already signed in!");
+                setLoading(false);
                 return;
             }
 
             const validation = form.validate();
 
             if (!validation) {
+                setLoading(false);
                 return;
             }
-
-            let signInAttempt = await RegisterHelper({ namePassed: name, emailPassed: email, pwPassed: password }) as { status: boolean, newUser: IUser };
 
             let attemptStatus = false;
             let createdUser = {} as IUser;
 
+            let signInAttempt = await RegisterHelper({ namePassed: name, emailPassed: email, pwPassed: password }) as { status: boolean, newUser: IUser };
+            console.log(signInAttempt);
+
             if (!signInAttempt) {
                 toast.error('Error registering');
+                setLoading(false);
                 return
             }
 
@@ -84,14 +88,16 @@ export default function RegisterModal({ session, handleUpdate }: { session: Sess
             createdUser = signInAttempt.newUser;
 
             if (attemptStatus === false || createdUser === {} as IUser) {
-                toast.error('Error Registering')
+                toast.error('Error Registering');
+                setLoading(false);
                 return;
             } else {
 
                 let signInAttempt = await SignInHelper({ emailPassed: email, pwPassed: password }) as { status: boolean };
 
                 if (!signInAttempt) {
-                    toast.error('Error signing in')
+                    toast.error('Error signing in');
+                    setLoading(false);
                     return;
                 }
 
@@ -106,12 +112,15 @@ export default function RegisterModal({ session, handleUpdate }: { session: Sess
 
         } catch (error) {
             console.error('Error Registering in:', error);
+            setLoading(false);
+            return;
         }
     }
 
     const handleCancel = () => {
         form.reset();
         form.clearErrors();
+        setLoading(false);
         resetZoom(width, false);
         setOpenRegisterModal(false);
         toast.info("Cancelled Registering");
@@ -124,7 +133,7 @@ export default function RegisterModal({ session, handleUpdate }: { session: Sess
             }} removeScrollProps={{ allowPinchZoom: true }} lockScroll={false}>
                 <ModalTemplate subtitle={null} minHeight="15vh" minWidth="15vw">
                     {loading ? (
-                        <LoadingSpinner screen={true} />
+                        <LoadingSpinner screen={false} />
                     ) : (
                         <form id="modalRegisterForm" onSubmit={form.onSubmit((values) => handleRegister(values))} onAbort={handleCancel} className="w-full">
                             <Fieldset legend="Personal Information">

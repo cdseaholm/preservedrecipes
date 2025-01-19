@@ -7,7 +7,7 @@ import { StepType } from "@/models/types/stepType";
 import { IngredientType } from "@/models/types/ingredientType";
 import { useStateStore } from "@/context/stateStore";
 import { errorType } from "@/models/types/error";
-import { RecipeCreation } from "@/models/types/recipeCreation";
+import { RecipeCreation } from "@/models/types/inAppCreations/recipeCreation";
 
 export default function EditIngredients({ handleCloseChildAndSave, form, handleCancelChild, handleRemoveChildValue, errors, thisItem }: { handleCloseChildAndSave: (which: string, newVals: IngredientType[] | StepType[], itemId: number) => void, form: UseFormReturnType<RecipeCreation, (values: RecipeCreation) => RecipeCreation>, handleCancelChild: (which: string, currNewIndex: number) => void, handleRemoveChildValue: (which: string, index: number) => void, errors: errorType[], thisItem: IngredientType | null }) {
 

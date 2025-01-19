@@ -1,44 +1,56 @@
+import { ICommunity } from "@/models/types/community";
+import { IFamily } from "@/models/types/family";
+import { FamilyMember } from "@/models/types/familyMemberRelation";
+import { IRecipe } from "@/models/types/recipe";
 import { IUser } from "@/models/types/user";
-import { User } from "next-auth";
+
+const BASE_URL = process.env.BASE_URL ? process.env.BASE_URL as string : '';
+
+async function fetchData({ endpoint }: { endpoint: string }, headers: HeadersInit) {
+    const url = `${BASE_URL}${endpoint}`;
+
+    const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+            ...headers,
+            'Content-Type': 'application/json'
+        },
+        next: {
+            revalidate: 6000
+        }
+    });
 
 
-export async function InitializeUserData({ user }: { user: User }, headers: HeadersInit) {
-    if (!user) {
-        return { status: false, message: 'Must be signed in', userInfo: {} as IUser }
+    if (!response.ok) {
+        throw new Error(`Failed to fetch data from ${url}`);
     }
 
-    let id = user.email;
+    const data = await response.json();
+    return data;
+}
 
-    if (!id) {
-        return { status: false, message: 'Must be signed in', userInfo: {} as IUser }
-    }
+export async function InitializeUserData(headers: HeadersInit) {
 
     try {
-        const res = await fetch(`/api/initData`, {
-            method: 'GET',
-            headers: {
-                ...headers,
-                'Content-Type': 'application/json'
-            },
-        });
+        const [userData, recipeData] = await Promise.all([
+            fetchData({ endpoint: '/api/initData' }, headers),
+            fetchData({ endpoint: '/api/recipe/get' }, headers),
+            // fetchData('/api/community/get'),
+            // fetchData('/api/family/members/get'),
+            // fetchData('/api/family/recipes/get')
+        ]);
 
-        if (!res || !res.ok) {
-            return { status: false, message: 'Error fetching data', userInfo: {} as IUser }
-        }
+        const userInfo = userData.userInfo as IUser
+        const recipes = recipeData.recipes as IRecipe[];
+        const communities = [] as ICommunity[];
+        const members = [] as FamilyMember[];
+        const familyRecipes = [] as IRecipe[];
+        const family = {} as IFamily
 
-        const data = await res.json();
+        return { status: true, message: 'Success', recipes, communities, members, familyRecipes, userInfo, family };
 
-        if (!data) {
-            return { status: false, message: 'Error initializing data', userInfo: {} as IUser }
-        }
-
-        if (data.status !== 200) {
-            return { status: false, message: `${data.message}`, userInfo: {} as IUser }
-        }
-
-        return { status: true, message: `${data.message}`, userInfo: data.userInfo as IUser }
 
     } catch (error: any) {
-        return { status: false, message: 'Error initializing data', userInfo: {} as IUser }
+        return { status: false, message: 'Error initializing data', recipes: [] as IRecipe[], communities: [] as ICommunity[], family: {} as IFamily, familyRecipes: [] as IRecipe[], userInfo: {} as IUser, familyMembers: [] as FamilyMember[] };
     }
 }

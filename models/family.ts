@@ -1,6 +1,8 @@
 import mongoose, { Model, Schema } from "mongoose";
 import { IFamily } from "./types/family";
 import { recipeSchema } from "./recipe";
+import { permissionSchema } from "./permission";
+import { heritageSchema } from "./heritage";
 
 export const familySchema = new Schema(
     {
@@ -8,12 +10,16 @@ export const familySchema = new Schema(
             type: String,
             required: false,
         },
+        heritage: {
+            type: [heritageSchema],
+            required: false,
+        },
         recipes: {
             type: [recipeSchema],
             required: false,
         },
         familyMemberIDs: {
-            type: [String],
+            type: [permissionSchema],
             required: false
         }
     },

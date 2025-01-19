@@ -1,29 +1,46 @@
-import { ChangeEvent, JSX } from "react";
+'use client'
+
+import { ChangeEvent } from "react";
 import { BiPlus, BiPencil } from "react-icons/bi";
-import { toast } from "sonner";
+import { FaRegTrashAlt } from "react-icons/fa";
+import { FaEdit } from "react-icons/fa";
 
-export default function SearchAndAdd({ handleSearch, handleCreate, options, type, mobile, additionString, searchString, promoString, index }: { handleSearch: (input: ChangeEvent<HTMLInputElement>, index: number,) => void, handleCreate: (which: string, open: boolean) => void, options: JSX.Element[], type: string, mobile: boolean, additionString: string, searchString: string, promoString: string, index: number }) {
+export default function SearchAndAdd({ handleSearch, handleCreate, children, type, additionString, searchString, index, handleEdit, edit, totalSelected, clickOptions, clickDelete, optionsLength }: { handleSearch: (input: ChangeEvent<HTMLInputElement>, index: number,) => void, handleCreate: (which: string, open: boolean) => void, children: React.ReactNode, type: string, additionString: string, searchString: string, index: number, handleEdit: () => void, edit: boolean, totalSelected: number, clickOptions: () => void, clickDelete: () => void, optionsLength: number }) {
 
-
+    const buttonClass = `h-content w-content flex flex-row p-1 justify-evenly items-center hover:bg-gray-100 hover:text-blue-300 text-blue-500 rounded-md text-sm sm:text-md space-x-1`;
 
     return (
-        <div className={`bg-mainBack p-1 w-full ${mobile ? 'min-h-[300px]' : 'min-h-[230px] h-1/2'} flex flex-col justify-evenly items-center py-2 px-5`}>
-            <div className="flex flex-row justify-evenly items-center space-x-4 w-full h-fit p-2">
-                <button onClick={() => handleCreate(type, true)} className={`h-fit w-fit flex flex-row p-1 justify-evenly items-center hover:bg-gray-100 hover:text-blue-300 text-blue-500 rounded-md ${mobile ? 'text-xs' : ''}`}>
-                    <BiPlus />
-                    {additionString}
-                </button>
-                <button onClick={() => toast.info('Delete recipe')} className={`h-fit w-fit flex flex-row p-1 justify-evenly items-center hover:bg-gray-100 hover:text-blue-300 text-blue-500 rounded-md ${mobile ? 'text-xs' : ''}`}>
-                    <BiPencil />
-                    <p>{`Edit`}</p>
-                </button>
+        <div className={`bg-mainBack p-1 w-full min-h-[300px] sm:min-h-[230px] sm:h-1/2 flex flex-col justify-evenly items-center py-2 sm:px-5`}>
+            <div className={`flex flex-row ${edit ? 'justify-between' : 'justify-end'} items-center sm:space-x-4 w-full h-fit p-2`}>
+                {edit &&
+                    <div className="flex flex-row justify-evenly items-center w-1/2 h-content">
+                        <button className={`${buttonClass}`} onClick={() => clickOptions()}>
+                            <p>{`Edit ${totalSelected}`}</p>
+                            <FaEdit height={'auto'} />
+                        </button>
+                        <button type="button" className={`${buttonClass}`} onClick={() => clickDelete()}>
+                            <p>{`Delete ${totalSelected}`}</p>
+                            <FaRegTrashAlt height={'auto'} />
+                        </button>
+                    </div>
+                }
+                <div className="flex flex-row justify-evenly items-center w-1/2 h-content">
+                    <button onClick={() => handleCreate(type, true)} className={buttonClass}>
+                        <BiPlus />
+                        {additionString}
+                    </button>
+                    <button onClick={() => handleEdit()} className={buttonClass} disabled={optionsLength > 0 ? false : true}>
+                        <BiPencil />
+                        <p>{`Edit`}</p>
+                    </button>
+                </div>
             </div>
             <div className="flex flex-col justify-start items-start w-[100%] h-full bg-mainContent border border-accent/30 rounded-md">
                 <input type="text" onChange={(e) => handleSearch(e, index)} className="flex flex-row w-full p-2 text-sm lg:text-md border-b border-highlight/50 shadow-inner" placeholder={`Search your ${searchString}`} />
-                <div className="scrollbar-thin scrollbar-webkit w-[100%] h-[300px] md:h-[400px] overflow-auto shadow-inner pt-4">
-                    {options.length > 0 ? options : <ul className="p-2 text-start pl-7">{`Add a ${promoString} to see it here`}</ul>}
+                <div className="scrollbar-thin scrollbar-webkit w-[100%] h-[450px] sm:h-[500px] overflow-auto shadow-inner py-4 px-2 overflow-x-hidden space-y-2">
+                    {children}
                 </div>
             </div>
-        </div>
+        </div >
     )
 }

@@ -1,39 +1,53 @@
-'use client'
+'use client';
 
-import { useStateStore } from "@/context/stateStore"
-import { useModalStore } from "@/context/modalStore";
-import { Session, User } from "next-auth";
+import { useSession } from "next-auth/react";
+import { useStateStore } from "@/context/stateStore";
+import { JSX, Suspense } from "react";
 import Link from "next/link";
-import { GoSignIn, GoSignOut } from "react-icons/go";
+import { GoSignOut, GoSignIn } from "react-icons/go";
 import { AiOutlineProfile } from "react-icons/ai";
 import { GiFamilyTree } from "react-icons/gi";
+import { PiCookieThin } from "react-icons/pi";
 import { RiCommunityLine } from "react-icons/ri";
-import { PiCookieThin } from "react-icons/pi"
 import { useUserStore } from "@/context/userStore";
-import { IUserFamily } from "@/models/types/userFamily";
-import { HeaderSmallNotShort, HeaderSmallShort } from "./headerFormats/headerSmall";
-import { HeaderLargeNotShort, HeaderLargeShort } from "./headerFormats/headerLarge";
-import { Suspense } from "react";
-import { useSession } from "next-auth/react";
+import { HeaderSmallShort, HeaderSmallNotShort, HeaderLargeShort, HeaderLargeNotShort } from "./headerFormats/headerFormats";
+import { handleZoomClick, handleZoomClose, handleSignOutModal, handleSignInModal, handleRegisterModal, getFirstName } from "./navFunctions/functions";
+import MakeTexts from "./navFunctions/makeTexts";
+
+const signOut = <GoSignOut color="red" />;
+const signIn = <GoSignIn color="blue" />;
+const profile = <AiOutlineProfile />;
+const fam = <GiFamilyTree />;
+const recipes = <PiCookieThin />;
+const communities = <RiCommunityLine />;
 
 export default function MainHeader() {
     const { data: session } = useSession();
     const userInfo = useUserStore(state => state.userInfo);
-    const recipes = userInfo ? userInfo.recipeIDs as string[] : [] as string[];
-    const userFamily = userInfo ? userInfo.userFamily as IUserFamily : {} as IUserFamily;
-    const familyID = userFamily ? userFamily.familyID as string : '';
-    const communities = userInfo ? userInfo.communityIDs as string[] : [] as string[];
-    const recipeText = recipes && recipes.length > 0 ? 'Your Recipes' : 'Create a Recipe';
-    const familyText = familyID && familyID !== '' ? 'Your Family' : 'Create or Join a family';
-    const communityText = communities && communities.length > 0 ? 'Your Communities' : 'Join a Community';
+    const textElements = MakeTexts({ userInfo: userInfo, elements: [recipes, fam, communities] }) as JSX.Element[];
+
     const widthQuery = useStateStore((state) => state.widthQuery);
     const isMediumScreenOrLess = widthQuery < 768;
-    const handleZoomMain = useStateStore(state => state.handleZoomReset);
-    const width = useStateStore(state => state.widthQuery);
+    const height = useStateStore(state => state.heightQuery);
+    const shortStack = useStateStore(state => state.shortStack);
 
-    const handleZoomReset = async (open: boolean) => {
-        handleZoomMain(width, open);
-    }
+    const commonParams = {
+        handleZoomClick: handleZoomClick,
+        handleZoomClose: handleZoomClose,
+        profile: profile,
+        firstName: getFirstName(session),
+        recipes: recipes,
+        fam: fam,
+        communities: communities,
+        session: session,
+        recipeText: textElements[0],
+        familyText: textElements[1],
+        communityText: textElements[2],
+        setOpenSignOutModal: handleSignOutModal,
+        signOut: signOut,
+        setSignInModal: handleSignInModal,
+        setRegisterModal: handleRegisterModal,
+    };
 
     return (
         <Suspense fallback={
@@ -53,181 +67,19 @@ export default function MainHeader() {
                 </section>
 
                 {isMediumScreenOrLess ? (
-                    <SmallHeader session={session} recipeText={recipeText} familyText={familyText} communityText={communityText} handleZoomReset={handleZoomReset} />
+                    shortStack && height < 420 ? (
+                        <HeaderSmallShort signIn={signIn} {...commonParams} />
+                    ) : (
+                        <HeaderSmallNotShort signIn={signIn} {...commonParams} />
+                    )
                 ) : (
-                    <LargeHeader session={session} recipeText={recipeText} familyText={familyText} communityText={communityText} handleZoomReset={handleZoomReset} />
+                    shortStack && height < 420 ? (
+                        <HeaderLargeShort {...commonParams} />
+                    ) : (
+                        <HeaderLargeNotShort {...commonParams} />
+                    )
                 )}
             </header>
         </Suspense>
-    )
-}
-
-const signOut = (
-    <GoSignOut color="red" />
-)
-
-const signIn = (
-    <GoSignIn color="blue" />
-)
-
-const profile = (
-    <AiOutlineProfile />
-)
-
-const fam = (
-    <GiFamilyTree />
-)
-
-const recipes = (
-    <PiCookieThin />
-)
-
-const communities = (
-    <RiCommunityLine />
-)
-
-function SmallHeader({ session, recipeText, familyText, communityText, handleZoomReset }: { session: Session | null, recipeText: string, familyText: string, communityText: string, handleZoomReset: (open: boolean) => Promise<void> }) {
-
-    let user = session ? session.user as User : {} as User;
-    let userName = user ? user.name : '';
-    let firstName = userName ? userName.split(' ')[0] : null;
-    const setSignInModal = useModalStore(state => state.setOpenSignInModal);
-    const setOpenSignOutModal = useModalStore(state => state.setOpenSignOutModal);
-    const setRegisterModal = useModalStore(state => state.setOpenRegisterModal);
-    const height = useStateStore(state => state.heightQuery);
-    const shortStack = useStateStore(state => state.shortStack);
-
-    const handleZoomClick = async () => {
-        await handleZoomReset(true);
-    };
-
-    const handleZoomClose = async () => {
-        await handleZoomReset(false);
-    };
-
-    const handleSignOutModal = (open: boolean) => {
-        setOpenSignOutModal(open);
-    };
-
-    const handleSignInModal = (open: boolean) => {
-        setSignInModal(open)
-    };
-
-    const handleRegisterModal = (open: boolean) => {
-        setRegisterModal(open)
-    };
-
-    return (
-        shortStack && height < 420 ? (
-            <HeaderSmallShort
-                handleZoomClick={handleZoomClick}
-                handleZoomClose={handleZoomClose}
-                profile={profile}
-                firstName={firstName}
-                recipes={recipes}
-                fam={fam}
-                communities={communities}
-                session={session}
-                recipeText={recipeText}
-                familyText={familyText}
-                communityText={communityText}
-                setOpenSignOutModal={handleSignOutModal}
-                signOut={signOut}
-                setSignInModal={handleSignInModal}
-                signIn={signIn}
-                setRegisterModal={handleRegisterModal}
-            />
-        ) : (
-            <HeaderSmallNotShort
-                handleZoomClick={handleZoomClick}
-                handleZoomClose={handleZoomClose}
-                profile={profile}
-                firstName={firstName}
-                recipes={recipes}
-                fam={fam}
-                communities={communities}
-                session={session}
-                recipeText={recipeText}
-                familyText={familyText}
-                communityText={communityText}
-                setOpenSignOutModal={handleSignOutModal}
-                signOut={signOut}
-                setSignInModal={handleSignInModal}
-                signIn={signIn}
-                setRegisterModal={handleRegisterModal}
-            />
-        )
-    )
-}
-
-function LargeHeader({ session, recipeText, familyText, communityText, handleZoomReset }: { session: Session | null, recipeText: string, familyText: string, communityText: string, handleZoomReset: (open: boolean) => Promise<void> }) {
-
-    let user = session ? session.user as User : {} as User;
-    let userName = user ? user.name : '';
-    let firstName = userName ? userName.split(' ')[0] : null;
-    const setSignInModal = useModalStore(state => state.setOpenSignInModal);
-    const setOpenSignOutModal = useModalStore(state => state.setOpenSignOutModal);
-    const setRegisterModal = useModalStore(state => state.setOpenRegisterModal);
-    const height = useStateStore(state => state.heightQuery);
-    const shortStack = useStateStore(state => state.shortStack);
-
-    const handleZoomClick = async () => {
-        await handleZoomReset(true);
-    }
-
-    const handleZoomClose = async () => {
-        await handleZoomReset(false);
-    }
-
-    const handleSignOutModal = (open: boolean) => {
-        setOpenSignOutModal(open);
-    };
-
-    const handleSignInModal = (open: boolean) => {
-        setSignInModal(open)
-    };
-
-    const handleRegisterModal = (open: boolean) => {
-        setRegisterModal(open)
-    };
-
-    return (
-        shortStack && height < 420 ? (
-            <HeaderLargeShort
-                handleZoomClick={handleZoomClick}
-                handleZoomClose={handleZoomClose}
-                profile={profile}
-                firstName={firstName}
-                recipes={recipes}
-                fam={fam}
-                communities={communities}
-                session={session}
-                recipeText={recipeText}
-                familyText={familyText}
-                communityText={communityText}
-                setOpenSignOutModal={handleSignOutModal}
-                signOut={signOut}
-                setSignInModal={handleSignInModal}
-                setRegisterModal={handleRegisterModal}
-            />
-        ) : (
-            <HeaderLargeNotShort
-                handleZoomClick={handleZoomClick}
-                handleZoomClose={handleZoomClose}
-                profile={profile}
-                firstName={firstName}
-                recipes={recipes}
-                fam={fam}
-                communities={communities}
-                session={session}
-                recipeText={recipeText}
-                familyText={familyText}
-                communityText={communityText}
-                setOpenSignOutModal={handleSignOutModal}
-                signOut={signOut}
-                setSignInModal={handleSignInModal}
-                setRegisterModal={handleRegisterModal}
-            />
-        )
-    )
+    );
 }

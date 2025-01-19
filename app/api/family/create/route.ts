@@ -1,27 +1,29 @@
 import connectDB from "@/lib/mongodb";
-import Recipe from "@/models/recipe";
-import { IComment } from "@/models/types/comment";
-import { IRecipe } from "@/models/types/recipe";
-import { RecipeCreation } from "@/models/types/recipeCreation";
+import Family from "@/models/family";
+import { IFamily } from "@/models/types/family";
+import { FamilyCreation } from "@/models/types/inAppCreations/familyCreation";
 import { IUser } from "@/models/types/user";
 import MongoUser from "@/models/user";
 import { getServerSession, User } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt"
+import { IRecipe } from "@/models/types/recipe";
+import { IPermissions } from "@/models/types/permission";
+import { IUserFamily } from "@/models/types/userFamily";
 
 export async function POST(req: NextRequest) {
 
     const secret = process.env.NEXTAUTH_SECRET ? process.env.NEXTAUTH_SECRET : '';
 
     if (secret === '') {
-        return NextResponse.json({ status: 401, message: 'Unauthorized', recipeReturned: {} as IRecipe });
+        return NextResponse.json({ status: 401, message: 'Unauthorized', familyReturned: {} as IFamily, userFamilyReturned: {} as IUserFamily });
     }
 
     const session = await getServerSession({ req, secret })
     const token = await getToken({ req, secret });
 
     if (!session || !token) {
-        return NextResponse.json({ status: 401, message: 'Unauthorized', recipeReturned: {} as IRecipe });
+        return NextResponse.json({ status: 401, message: 'Unauthorized', familyReturned: {} as IFamily, userFamilyReturned: {} as IUserFamily });
     }
 
     try {
@@ -30,52 +32,53 @@ export async function POST(req: NextRequest) {
         const userSesh = session?.user as User;
         const email = userSesh ? userSesh.email : '';
         if (email === '') {
-            return NextResponse.json({ status: 401, message: 'Unauthorized', recipeReturned: {} as IRecipe });
+            return NextResponse.json({ status: 401, message: 'Unauthorized', familyReturned: {} as IFamily, userFamilyReturned: {} as IUserFamily });
         }
 
         const user = await MongoUser.findOne({ email: email }) as IUser;
 
         if (!user) {
             console.log("User not found");
-            return NextResponse.json({ status: 404, message: 'User not found', recipeReturned: {} as IRecipe });
+            return NextResponse.json({ status: 404, message: 'User not found', familyReturned: {} as IFamily, userFamilyReturned: {} as IUserFamily });
         }
 
         if (user._id.toString() !== token.sub) {
             console.log('token mismatch')
-            return NextResponse.json({ status: 401, message: 'Unauthorized', recipeReturned: {} as IRecipe });
+            return NextResponse.json({ status: 401, message: 'Unauthorized', familyReturned: {} as IFamily, userFamilyReturned: {} as IUserFamily });
         }
 
-        const recipe = body.recipePassed as RecipeCreation;
-        const newRecipe = {
-            name: recipe.name,
-            recipeType: recipe.type,
-            image: '',
-            creatorID: user._id.toString(),
-            steps: recipe.steps,
-            rating: -1,
-            comments: [] as IComment[],
-            secret: recipe.secret,
-            secretViewerIDs: recipe.secretViewerIDs,
-            tags: recipe.tags,
-            ingredients: recipe.ingredients,
-            description: recipe.description
-        } as IRecipe;
+        const family = body.familyPassed as FamilyCreation;
 
-        const insertedRecipe = await Recipe.create(newRecipe);
+        const initIDs = [user._id];
 
-        if (!insertedRecipe) {
-            console.log("Error creating recipe");
-            return NextResponse.json({ status: 500, message: 'Error creating', recipeReturned: {} as IRecipe });
+        const admins = [{
+            id: user._id,
+            name: user.name,
+            permissionStatus: 'Admin',
+        }] as IPermissions[];
+
+        const insertedFamily = await Family.create({
+            name: family.name,
+            recipes: [] as IRecipe[],
+            familyMemberIDs: initIDs,
+            adminIDs: admins,
+            heritage: family.heritage
+        }) as IFamily;
+
+        if (!insertedFamily) {
+            console.log("Error creating family");
+            return NextResponse.json({ status: 500, message: 'Error creating', familyReturned: {} as IFamily, userFamilyReturned: {} as IUserFamily });
         }
 
-        const recipeId = insertedRecipe._id;
+        const oldUserFamily = user.userFamily;
+        const updatedUserFamily = { siblingIDs: oldUserFamily.siblingIDs, parentIDs: oldUserFamily.parentIDs, partnerIDs: oldUserFamily.partnerIDs, childrenIDs: oldUserFamily.childrenIDs, familyID: insertedFamily._id, userPermission: 'Admin' } as IUserFamily;
 
-        await MongoUser.updateOne({ email: email }, { $push: { recipeIDs: recipeId.toString() } });
+        await MongoUser.updateOne({ email: email }, { $set: { userFamily: updatedUserFamily } });
 
-        return NextResponse.json({ status: 200, message: 'Success!', recipeReturned: insertedRecipe as IRecipe });
+        return NextResponse.json({ status: 200, message: 'Success!', familyReturned: insertedFamily as IFamily, userFamilyReturned: updatedUserFamily });
 
     } catch (error: any) {
-        console.error('Error creating recipe:', error);
-        return NextResponse.json({ status: 500, message: 'Error creating recipe', recipeReturned: {} as IRecipe });
+        console.error('Error creating family:', error);
+        return NextResponse.json({ status: 500, message: 'Error creating family', familyReturned: {} as IFamily, userFamilyReturned: {} as IUserFamily });
     }
 }

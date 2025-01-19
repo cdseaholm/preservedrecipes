@@ -2,12 +2,13 @@ import connectDB from "@/lib/mongodb";
 import Recipe from "@/models/recipe";
 import { IComment } from "@/models/types/comment";
 import { IRecipe } from "@/models/types/recipe";
-import { RecipeCreation } from "@/models/types/recipeCreation";
+import { RecipeCreation } from "@/models/types/inAppCreations/recipeCreation";
 import { IUser } from "@/models/types/user";
 import MongoUser from "@/models/user";
 import { getServerSession, User } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt"
+import { revalidatePath } from "next/cache";
 
 export async function POST(req: NextRequest) {
 
@@ -71,6 +72,8 @@ export async function POST(req: NextRequest) {
         const recipeId = insertedRecipe._id;
 
         await MongoUser.updateOne({ email: email }, { $push: { recipeIDs: recipeId.toString() } });
+
+        revalidatePath('(content)/profile');
 
         return NextResponse.json({ status: 200, message: 'Success!', recipeReturned: insertedRecipe as IRecipe });
 
