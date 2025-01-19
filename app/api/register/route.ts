@@ -30,6 +30,7 @@ export async function POST(req: NextRequest) {
       email: body.emailPassed,
       password: body.saltedPW,
       userFamily: {
+        userPermission: '',
         familyID: '',
         siblingIDs: [] as string[],
         parentIDs: [] as string[],

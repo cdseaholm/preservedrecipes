@@ -4,27 +4,24 @@ import { SaltAndHashPassword } from "./saltAndHash";
 
 export default async function RegisterHelper({ namePassed, emailPassed, pwPassed }: { namePassed: string, emailPassed: string, pwPassed: string }) {
 
-    const baseUrl = process.env.BASE_URL ? process.env.BASE_URL : '';
-
-    if (baseUrl === '') {
-        return {
-            status: false, newUser: {} as IUser
-        };
-    }
+    const baseUrl = process.env.BASE_URL ? process.env.BASE_URL as string : '';
 
     if (!namePassed) {
+        console.log(namePassed)
         return {
             status: false, newUser: {} as IUser
         };
     }
 
     if (!emailPassed) {
+        console.log(emailPassed)
         return {
             status: false, newUser: {} as IUser
         };
     }
 
     if (!pwPassed) {
+        console.log(pwPassed)
         return {
             status: false, newUser: {} as IUser
         };
@@ -33,7 +30,7 @@ export default async function RegisterHelper({ namePassed, emailPassed, pwPassed
     try {
 
         const saltedPW = await SaltAndHashPassword(pwPassed);
-
+        console.log(saltedPW)
         if (!saltedPW) {
             return {
                 status: false, newUser: {} as IUser
@@ -49,7 +46,8 @@ export default async function RegisterHelper({ namePassed, emailPassed, pwPassed
         });
 
         if (!res || res.status !== 200) {
-            toast.error('Error registering');
+            toast.error('Error registering in help');
+            console.log(res)
             return {
                 status: false, newUser: {} as IUser
             };

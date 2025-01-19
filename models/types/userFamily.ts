@@ -1,5 +1,5 @@
 export interface IUserFamily {
-  _id: string;
+  userPermission: string;
   familyID: string;
   siblingIDs: string[];
   parentIDs: string[];

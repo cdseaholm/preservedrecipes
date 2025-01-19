@@ -4,6 +4,7 @@ import { StepType } from "./stepType";
 
 
 export interface IRecipe {
+    _id: string
     name: string;
     recipeType: string;
     image: string;

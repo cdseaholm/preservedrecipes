@@ -1,6 +1,6 @@
 import { ICommunity } from "@/models/types/community";
 import { IFamily } from "@/models/types/family";
-import { FamilyMemberRelation } from "@/models/types/familyMemberRelation";
+import { FamilyMember } from "@/models/types/familyMemberRelation";
 import { IRecipe } from "@/models/types/recipe";
 import { getServerSession, Session } from "next-auth";
 import { headers } from "next/headers";
@@ -12,7 +12,8 @@ async function fetchData(endpoint: string) {
 
     const response = await fetch(url, {
         method: 'GET',
-        headers: await headers()
+        headers: await headers(),
+        
     });
 
     if (!response.ok) {
@@ -40,7 +41,7 @@ export async function ProfileHelper() {
 
         const recipes = recipeData.recipes as IRecipe[];
         const communities = [] as ICommunity[];
-        const members = [] as FamilyMemberRelation[];
+        const members = [] as FamilyMember[];
         const familyRecipes = [] as IRecipe[];
 
         return { fetched: true, message: 'Success', recipes, communities, members, familyRecipes };

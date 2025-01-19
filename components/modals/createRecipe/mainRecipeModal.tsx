@@ -6,7 +6,7 @@ import { useStateStore } from "@/context/stateStore";
 import ComboBox from "@/components/misc/combobox/comboBox";
 import { StepType } from "@/models/types/stepType";
 import { IngredientType } from "@/models/types/ingredientType";
-import { RecipeCreation } from "@/models/types/recipeCreation";
+import { RecipeCreation } from "@/models/types/inAppCreations/recipeCreation";
 import ErrorPopover from "@/components/popovers/errorPopover";
 import { errorType } from "@/models/types/error";
 import { preMadeIngredientTags, preMadeIngredientTypes } from "@/models/types/premadeIngredientTags";
@@ -80,8 +80,8 @@ export default function MainRecipeModal({ handleCancel, handleCreateRecipe, form
                     error={errType}
                 />
                 <MultiSelect
-                    label="Recipe Type"
-                    placeholder="Dessert"
+                    label="Recipe Tags"
+                    placeholder="Celebration"
                     data={preMadeIngredientTags.map((tag: string) => ({ value: tag, label: tag }))}
                     className="overflow-hidden whitespace-nowrap text-ellipsis"
                     filter={optionsFilter}
@@ -102,12 +102,12 @@ export default function MainRecipeModal({ handleCancel, handleCreateRecipe, form
                 <Fieldset className="flex flex-row justify-between items-center w-full h-full" legend='Ingredients' mt={'md'} variant="unstyled">
                     <ComboBox which="ingredients" handleOpenAdd={handleOpenAdd} pills={ingredientPills} handleEditToggle={handleEditToggle} />
                 </Fieldset>
-                <Fieldset className="flex flex-row justify-between items-center w-full h-full" legend='Recipe viewabiltiy' mt={'md'} variant="unstyled">
+                <Fieldset className="flex flex-row justify-between items-start w-full h-full" legend='Recipe viewabiltiy' mt={'md'} variant="unstyled">
 
-                    <div className="flex flex-row justify-start items-center w-1/2 sm:w-2/3 space-x-2">
-                        <Popover width={width > 500 ? 500 : width - 50} position='bottom-start' withArrow shadow="md">
+                    <div className={`flex flex-row justify-start items-center w-content h-content space-x-2`}>
+                        <Popover width={width > 500 ? 500 : width - 50} position='top-start' withArrow shadow="md">
                             <Popover.Target>
-                                <MyInfoIcon />
+                                <MyInfoIcon title="" />
                             </Popover.Target>
                             <Popover.Dropdown styles={{ dropdown: { backgroundColor: 'GrayText', color: 'white' } }}>
                                 <p className="pb-2">{`Recipes cannot be viewed by anyone other than your family by default. You can add them to communities to be viewed if you'd like. However if you want to keep a recipe private, even from family, make this recipe private by setting the toggle to the right to private.`}</p>
@@ -115,6 +115,7 @@ export default function MainRecipeModal({ handleCancel, handleCreateRecipe, form
                             </Popover.Dropdown>
                         </Popover>
                         <Switch
+                            style={{ cursor: 'pointer' }}
                             checked={secret}
                             onChange={(e) => form.setFieldValue(`secret`, e.currentTarget.checked)}
                             color="red"

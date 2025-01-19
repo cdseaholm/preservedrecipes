@@ -2,7 +2,7 @@ import connectDB from "@/lib/mongodb";
 import Recipe from "@/models/recipe";
 import { IComment } from "@/models/types/comment";
 import { IRecipe } from "@/models/types/recipe";
-import { RecipeCreation } from "@/models/types/recipeCreation";
+import { RecipeCreation } from "@/models/types/inAppCreations/recipeCreation";
 import { IUser } from "@/models/types/user";
 import MongoUser from "@/models/user";
 import { getServerSession, User } from "next-auth";

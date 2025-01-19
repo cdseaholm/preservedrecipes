@@ -28,17 +28,11 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ status: 401, message: 'Unauthorized from token', recipes: [] as IRecipe[] });
     }
 
-    if (token && session) {
-        console.log('Clear')
-    }
-
     try {
         await connectDB();
 
         const userSesh = session?.user as User;
-        console.log('session', session, 'user', userSesh)
         const email = userSesh?.email || '';
-        console.log('email', email)
         if (!email) {
             return NextResponse.json({ status: 401, message: 'Unauthorized', recipes: [] as IRecipe[] });
         }
@@ -50,14 +44,12 @@ export async function GET(req: NextRequest) {
         }
 
         const recipeIDs = user.recipeIDs;
-        console.log('ids: ', recipeIDs);
 
         if (!recipeIDs || recipeIDs.length === 0) {
             return NextResponse.json({ status: 200, message: 'No recipes found', recipes: [] as IRecipe[] });
         }
 
         const recipePromises = recipeIDs.map(async (id) => {
-            console.log('id: ', id);
             const recipe = await Recipe.findOne({ _id: new ObjectId(id) }) as IRecipe;
             return recipe;
         });

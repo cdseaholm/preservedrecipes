@@ -22,6 +22,10 @@ export const userFamilySchema = new Schema(
         partnerIDs: {
             type: [String],
             default: []
+        },
+        userPermission: {
+            type: String,
+            default: ''
         }
     },
     {

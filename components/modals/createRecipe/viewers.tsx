@@ -5,7 +5,7 @@ import { Fieldset, TagsInput } from "@mantine/core";
 import ModalTemplate from "../templates/modalTemplate";
 import { useStateStore } from "@/context/stateStore";
 import { errorType } from "@/models/types/error";
-import { RecipeCreation } from "@/models/types/recipeCreation";
+import { RecipeCreation } from "@/models/types/inAppCreations/recipeCreation";
 import { UseFormReturnType } from "@mantine/form";
 
 export default function RecipeViewers({ handleSaveAndCloseViewers, errors, form, handleCancelViewers }: { handleSaveAndCloseViewers: () => Promise<void>, errors: errorType[], form: UseFormReturnType<RecipeCreation, (values: RecipeCreation) => RecipeCreation>, handleCancelViewers: () => void }) {

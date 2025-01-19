@@ -2,6 +2,7 @@ import mongoose, { Model, Schema } from "mongoose";
 import { recipeSchema } from "./recipe";
 import { ICommunity } from "./types/community";
 import { postSchema } from "./post";
+import { permissionSchema } from "./permission";
 
 export const communitySchema = new Schema(
     {
@@ -14,7 +15,7 @@ export const communitySchema = new Schema(
             required: false,
         },
         communityMemberIDs: {
-            type: [String],
+            type: [permissionSchema],
             required: false
         },
         recipes: {

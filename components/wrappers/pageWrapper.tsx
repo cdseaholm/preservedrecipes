@@ -5,12 +5,16 @@ import { useStateStore } from "@/context/stateStore";
 import { getBaseUrl } from "@/utils/helpers/helpers";
 import MainFooter from "../nav/footer";
 import { useSession } from "next-auth/react";
-import { User } from "next-auth";
 import { InitializeUserData } from "@/utils/userHelpers/initUserData";
 import { useUserStore } from "@/context/userStore";
 import { LoadingSpinner } from "@/components/misc/loadingSpinner";
 import { IUser } from "@/models/types/user";
 import ColorPickerMode from "@/components/misc/colorpicker/colorPickerMode";
+import { IRecipe } from "@/models/types/recipe";
+import { ICommunity } from "@/models/types/community";
+import { FamilyMember } from "@/models/types/familyMemberRelation";
+import { IFamily } from "@/models/types/family";
+import { useFamilyStore } from "@/context/familyStore";
 
 export default function PageWrapper({ children }: Readonly<{ children: React.ReactNode; }>) {
 
@@ -22,6 +26,11 @@ export default function PageWrapper({ children }: Readonly<{ children: React.Rea
     const setShortStack = useStateStore((state) => state.setShortStack)
     const setUrlToUse = useStateStore((state) => state.setUrlToUse);
     const setUserInfo = useUserStore(state => state.setUserInfo);
+    const setUserRecipes = useUserStore(state => state.setUserRecipes);
+    const setUserCommunities = useUserStore(state => state.setUserCommunities);
+    const setFamily = useFamilyStore(state => state.setFamily);
+    const setFamilyMembers = useFamilyStore(state => state.setFamilyMembers);
+    const setFamilyRecipes = useFamilyStore(state => state.setFamilyRecipes);
     const colorPickerMode = useStateStore(state => state.colorPickerMode);
     const [loading, setLoading] = useState<boolean>(true);
 
@@ -56,9 +65,23 @@ export default function PageWrapper({ children }: Readonly<{ children: React.Rea
         setUrlToUse(currentUrl);
     }, [setUrlToUse]);
 
-    const handleUserInfo = useCallback(async (userInfo: IUser) => {
-        setUserInfo(userInfo);
-    }, [setUserInfo]);
+    const handleUserInfo = useCallback(async (initialized: {
+        status: boolean;
+        message: string;
+        recipes: IRecipe[];
+        communities: ICommunity[];
+        members: FamilyMember[];
+        familyRecipes: IRecipe[];
+        family: IFamily;
+        userInfo: IUser;
+    }) => {
+        setUserInfo(initialized.userInfo);
+        setUserRecipes(initialized.recipes);
+        setUserCommunities(initialized.communities);
+        setFamily(initialized.family);
+        setFamilyMembers(initialized.members);
+        setFamilyRecipes(initialized.familyRecipes);
+    }, [setUserInfo, setUserRecipes, setUserCommunities, setFamily, setFamilyMembers, setFamilyRecipes]);
 
     useEffect(() => {
         const newWidth = window.innerWidth;
@@ -91,16 +114,15 @@ export default function PageWrapper({ children }: Readonly<{ children: React.Rea
                 setLoading(false);
                 return;
             } else {
-                let user = session.user as User;
                 const headers = { 'Authorization': `Bearer ${session.user}` };
-                const initialized = await InitializeUserData({ user }, headers);
+                const initialized = await InitializeUserData(headers) as { status: boolean, message: string, recipes: IRecipe[], communities: ICommunity[], members: FamilyMember[], familyRecipes: IRecipe[], family: IFamily, userInfo: IUser };
 
                 if (!initialized || initialized.status === false) {
                     setLoading(false);
                     return;
                 }
 
-                await handleUserInfo(initialized.userInfo);
+                await handleUserInfo(initialized);
                 setLoading(false);
             }
         };

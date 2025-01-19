@@ -3,7 +3,7 @@ import { StepType } from "@/models/types/stepType";
 import { UseFormReturnType } from "@mantine/form";
 import { ValidateIngredients, ValidateSteps } from "./validate";
 import { errorType } from "@/models/types/error";
-import { RecipeCreation } from "@/models/types/recipeCreation";
+import { RecipeCreation } from "@/models/types/inAppCreations/recipeCreation";
 
 export async function CloseChildAndSaveAddition({ which, form, newVals, itemId, stepId }: { form: UseFormReturnType<RecipeCreation, (values: RecipeCreation) => RecipeCreation>, which: string, newVals: IngredientType[] | StepType[], itemId: number, stepId: number | null }) {
 
