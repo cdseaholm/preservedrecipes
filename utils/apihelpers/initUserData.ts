@@ -1,6 +1,6 @@
-import { ICommunity } from "@/models/types/community";
+import { useFamilyStore } from "@/context/familyStore";
+import { useUserStore } from "@/context/userStore";
 import { IFamily } from "@/models/types/family";
-import { FamilyMember } from "@/models/types/familyMemberRelation";
 import { IRecipe } from "@/models/types/recipe";
 import { IUser } from "@/models/types/user";
 
@@ -32,25 +32,28 @@ async function fetchData({ endpoint }: { endpoint: string }, headers: HeadersIni
 export async function InitializeUserData(headers: HeadersInit) {
 
     try {
-        const [userData, recipeData] = await Promise.all([
-            fetchData({ endpoint: '/api/initData' }, headers),
+        const [userData, recipeData, familyData] = await Promise.all([
+            fetchData({ endpoint: '/api/user/get' }, headers),
             fetchData({ endpoint: '/api/recipe/get' }, headers),
+            fetchData({ endpoint: '/api/family/get' }, headers),
             // fetchData('/api/community/get'),
             // fetchData('/api/family/members/get'),
             // fetchData('/api/family/recipes/get')
         ]);
 
-        const userInfo = userData.userInfo as IUser
-        const recipes = recipeData.recipes as IRecipe[];
-        const communities = [] as ICommunity[];
-        const members = [] as FamilyMember[];
-        const familyRecipes = [] as IRecipe[];
-        const family = {} as IFamily
+        //const communities = [] as ICommunity[];
 
-        return { status: true, message: 'Success', recipes, communities, members, familyRecipes, userInfo, family };
+        const userStore = useUserStore.getState();
+        const familyStore = useFamilyStore.getState();
+
+        userStore.setUserInfo(userData.userInfo as IUser);
+        userStore.setUserRecipes(recipeData.recipes as IRecipe[]);
+        familyStore.setFamily(familyData.family as IFamily);
+        
+        return { status: true, message: 'Success' };
 
 
     } catch (error: any) {
-        return { status: false, message: 'Error initializing data', recipes: [] as IRecipe[], communities: [] as ICommunity[], family: {} as IFamily, familyRecipes: [] as IRecipe[], userInfo: {} as IUser, familyMembers: [] as FamilyMember[] };
+        return { status: false, message: 'Error initializing data' };
     }
 }

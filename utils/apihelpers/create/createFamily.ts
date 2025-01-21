@@ -1,6 +1,8 @@
+import { useFamilyStore } from "@/context/familyStore";
+import { useUserStore } from "@/context/userStore";
 import { IFamily } from "@/models/types/family";
 import { FamilyCreation } from "@/models/types/inAppCreations/familyCreation";
-import { IUserFamily } from "@/models/types/userFamily";
+import { IUser } from "@/models/types/user";
 
 
 export async function AttemptCreateFamily({ familyToAdd }: { familyToAdd: FamilyCreation }) {
@@ -17,7 +19,7 @@ export async function AttemptCreateFamily({ familyToAdd }: { familyToAdd: Family
         });
 
         if (!res.ok) {
-            return { status: false, message: `Failed Creation, ${res.statusText}`, newFamily: {} as IFamily, newUserFamily: {} as IUserFamily };
+            return { status: false, message: `Failed Creation, ${res.statusText}` };
         }
 
         const data = await res.json().catch(() => {
@@ -25,13 +27,21 @@ export async function AttemptCreateFamily({ familyToAdd }: { familyToAdd: Family
         });
 
         if (!data) {
-            return { status: false, message: `Failed Creation, Invalid JSON response`, newFamily: {} as IFamily, newUserFamily: {} as IUserFamily };
+            return { status: false, message: `Failed Creation, Invalid JSON response` };
         }
 
-        return { status: true, message: `Created`, newFamily: data.familyReturned as IFamily, newUserFamily: data.userFamilyReturned as IUserFamily };
+        useFamilyStore.getState().setFamily(data.familyReturned as IFamily);
+        const userInfo = useUserStore.getState().userInfo;
+        const newUserInfo = {
+            ...userInfo,
+            userFamilyID: data.familyReturned._id.toString(),
+        } as IUser;
+        useUserStore.getState().setUserInfo(newUserInfo);
+
+        return { status: true, message: `Created` };
 
     } catch (error: any) {
         console.log('Creating Family error: ', error);
-        return { status: false, message: `Failed creation`, newFamily: {} as IFamily, newUserFamily: {} as IUserFamily };
+        return { status: false, message: `Failed creation` };
     }
 }

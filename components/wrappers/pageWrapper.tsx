@@ -5,16 +5,11 @@ import { useStateStore } from "@/context/stateStore";
 import { getBaseUrl } from "@/utils/helpers/helpers";
 import MainFooter from "../nav/footer";
 import { useSession } from "next-auth/react";
-import { InitializeUserData } from "@/utils/userHelpers/initUserData";
-import { useUserStore } from "@/context/userStore";
+import { InitializeUserData } from "@/utils/apihelpers/initUserData";
 import { LoadingSpinner } from "@/components/misc/loadingSpinner";
-import { IUser } from "@/models/types/user";
 import ColorPickerMode from "@/components/misc/colorpicker/colorPickerMode";
-import { IRecipe } from "@/models/types/recipe";
-import { ICommunity } from "@/models/types/community";
-import { FamilyMember } from "@/models/types/familyMemberRelation";
-import { IFamily } from "@/models/types/family";
-import { useFamilyStore } from "@/context/familyStore";
+import { useAlertStore } from "@/context/alertStore";
+import { toast } from "sonner";
 
 export default function PageWrapper({ children }: Readonly<{ children: React.ReactNode; }>) {
 
@@ -25,13 +20,9 @@ export default function PageWrapper({ children }: Readonly<{ children: React.Rea
     const setHeightQuery = useStateStore((state) => state.setHeightQuery);
     const setShortStack = useStateStore((state) => state.setShortStack)
     const setUrlToUse = useStateStore((state) => state.setUrlToUse);
-    const setUserInfo = useUserStore(state => state.setUserInfo);
-    const setUserRecipes = useUserStore(state => state.setUserRecipes);
-    const setUserCommunities = useUserStore(state => state.setUserCommunities);
-    const setFamily = useFamilyStore(state => state.setFamily);
-    const setFamilyMembers = useFamilyStore(state => state.setFamilyMembers);
-    const setFamilyRecipes = useFamilyStore(state => state.setFamilyRecipes);
     const colorPickerMode = useStateStore(state => state.colorPickerMode);
+    const globalToast = useAlertStore(state => state.globalToast);
+    const setGlobalToast = useAlertStore(state => state.setGlobalToast);
     const [loading, setLoading] = useState<boolean>(true);
 
     const initializeWidths = useCallback((newWidth: number, newHeight: number) => {
@@ -65,24 +56,6 @@ export default function PageWrapper({ children }: Readonly<{ children: React.Rea
         setUrlToUse(currentUrl);
     }, [setUrlToUse]);
 
-    const handleUserInfo = useCallback(async (initialized: {
-        status: boolean;
-        message: string;
-        recipes: IRecipe[];
-        communities: ICommunity[];
-        members: FamilyMember[];
-        familyRecipes: IRecipe[];
-        family: IFamily;
-        userInfo: IUser;
-    }) => {
-        setUserInfo(initialized.userInfo);
-        setUserRecipes(initialized.recipes);
-        setUserCommunities(initialized.communities);
-        setFamily(initialized.family);
-        setFamilyMembers(initialized.members);
-        setFamilyRecipes(initialized.familyRecipes);
-    }, [setUserInfo, setUserRecipes, setUserCommunities, setFamily, setFamilyMembers, setFamilyRecipes]);
-
     useEffect(() => {
         const newWidth = window.innerWidth;
         const newHeight = window.innerHeight;
@@ -115,19 +88,25 @@ export default function PageWrapper({ children }: Readonly<{ children: React.Rea
                 return;
             } else {
                 const headers = { 'Authorization': `Bearer ${session.user}` };
-                const initialized = await InitializeUserData(headers) as { status: boolean, message: string, recipes: IRecipe[], communities: ICommunity[], members: FamilyMember[], familyRecipes: IRecipe[], family: IFamily, userInfo: IUser };
+                const initialized = await InitializeUserData(headers) as { status: boolean, message: string };
 
                 if (!initialized || initialized.status === false) {
                     setLoading(false);
                     return;
                 }
 
-                await handleUserInfo(initialized);
                 setLoading(false);
             }
         };
         initUserData();
-    }, [setUrlToUse, handleUrlToUse, handleUserInfo, session]);
+    }, [setUrlToUse, handleUrlToUse, session]);
+
+    useEffect(() => {
+        if (globalToast !== '') {
+            toast.info(globalToast);
+            setGlobalToast('');
+        }
+    }, [globalToast, setGlobalToast])
 
     if (loading) {
         return (

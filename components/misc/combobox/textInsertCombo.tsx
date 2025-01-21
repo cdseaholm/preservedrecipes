@@ -1,6 +1,6 @@
 'use client'
 
-import { FamilyMember } from '@/models/types/familyMemberRelation';
+import { IFamilyMember } from '@/models/types/familyMember';
 import { FamilyCreation } from '@/models/types/inAppCreations/familyCreation';
 import { InputBase, Combobox, useCombobox } from '@mantine/core';
 import { UseFormReturnType } from '@mantine/form';
@@ -9,7 +9,7 @@ import { useState } from 'react';
 export default function TextInsertComboBox({ form, handleOpenMembers, which }: { form: UseFormReturnType<FamilyCreation, (members: FamilyCreation) => FamilyCreation>, handleOpenMembers: (index: number | null) => void, which: string }) {
 
     const combobox = useCombobox({});
-    const members = [{} as FamilyMember]
+    const members = [{} as IFamilyMember]
     console.log('Was doing members from form: ', form)
     const [search, setSearch] = useState('');
 
@@ -29,7 +29,7 @@ export default function TextInsertComboBox({ form, handleOpenMembers, which }: {
             <div className='flex flex-row justify-evenly items-center w-full h-full'>
                 {item.familyMemberName}
                 {item.familyMemberEmail}
-                {item.status}
+                {item.permissionStatus}
             </div>
         </Combobox.Option>
     ));

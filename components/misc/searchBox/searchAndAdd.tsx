@@ -37,7 +37,7 @@ export default function SearchAndAdd({ handleSearch, handleCreate, children, typ
             </div>
             <div className="flex flex-col justify-start items-start w-[100%] h-full bg-mainContent border border-accent/30 rounded-md">
                 <input type="text" onChange={(e) => handleSearch(e, index)} className="flex flex-row w-full p-2 text-sm lg:text-md border-b border-highlight/50 shadow-inner" placeholder={`Search your ${searchString}`} />
-                <div className="scrollbar-thin scrollbar-webkit w-[100%] h-[450px] sm:h-[500px] overflow-auto shadow-inner py-4 px-2 overflow-x-hidden space-y-2">
+                <div className="scrollbar-thin scrollbar-webkit w-[100%] h-[450px] sm:h-[500px] overflow-auto shadow-inner py-4 px-2 overflow-x-hidden space-y-2 flex flex-col justify-start items-center">
                     {children}
                 </div>
             </div>

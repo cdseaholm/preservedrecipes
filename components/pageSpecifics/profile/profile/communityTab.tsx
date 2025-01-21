@@ -53,7 +53,7 @@ export default function CommunityTab({ userCommunities, type, additionString, se
                     </InSearchItemButton>
                 ))
             ) : (
-                <ul className="p-2 text-start pl-7">{`Add a ${promoString} to see it here`}</ul>
+                <ul className="p-2 text-start pl-7">{`Join a ${promoString} to see it here`}</ul>
             )}
         </SearchAndAdd>
     )

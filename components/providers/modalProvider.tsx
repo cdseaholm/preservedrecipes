@@ -8,7 +8,6 @@ import SignOutModal from "../modals/signOut";
 import AlertModal from "../modals/alert/alertModal";
 import { useSession } from "next-auth/react";
 import ParentFamilyModal from "../modals/createFamily/parentFamilyModal";
-import { useUserStore } from "@/context/userStore";
 
 export default function ModalProvider() {
 
@@ -17,7 +16,6 @@ export default function ModalProvider() {
     const setOpenCreateRecipeModal = useModalStore(state => state.setOpenCreateRecipeModal);
     const openCreateFamilyModal = useModalStore(state => state.openCreateFamilyModal);
     const setOpenCreateFamilyModal = useModalStore(state => state.setOpenCreateFamilyModal);
-    const userInfo = useUserStore(state => state.userInfo);
 
     const handleCloseCreateRecipe = () => {
         setOpenCreateRecipeModal(false);
@@ -37,7 +35,7 @@ export default function ModalProvider() {
             <SignOutModal session={session} handleUpdate={handleUpdate} />
             <RegisterModal session={session} handleUpdate={handleUpdate} />
             <ParentRecipeModal session={session} open={openCreateRecipeModal} handleCloseCreateRecipe={handleCloseCreateRecipe}/>
-            <ParentFamilyModal session={session} handleUpdate={handleUpdate} open={openCreateFamilyModal} handleCloseCreateFamily={handleCloseCreateFamily} userInfo={userInfo} />
+            <ParentFamilyModal session={session} handleUpdate={handleUpdate} open={openCreateFamilyModal} handleCloseCreateFamily={handleCloseCreateFamily} />
             <AlertModal />
         </>
     );

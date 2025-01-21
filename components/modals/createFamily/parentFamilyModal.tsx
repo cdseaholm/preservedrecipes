@@ -11,20 +11,16 @@ import DefaultFamilyModal from "./defaultFamilyModal";
 import { FamilyCreation } from "@/models/types/inAppCreations/familyCreation";
 import { errorType } from "@/models/types/error";
 import { HeritageType } from "@/models/types/inAppCreations/heritage";
-import { AttemptCreateFamily } from "@/utils/apihelpers/createFamily";
+import { AttemptCreateFamily } from "@/utils/apihelpers/create/createFamily";
 import { IFamily } from "@/models/types/family";
-import { useUserStore } from "@/context/userStore";
-import { IUserFamily } from "@/models/types/userFamily";
-import { IUser } from "@/models/types/user";
 
-export default function ParentFamilyModal({ session, handleUpdate, open, handleCloseCreateFamily, userInfo }: { session: Session | null, handleUpdate: () => Promise<void>, open: boolean, handleCloseCreateFamily: () => void, userInfo: IUser }) {
+export default function ParentFamilyModal({ session, handleUpdate, open, handleCloseCreateFamily }: { session: Session | null, handleUpdate: () => Promise<void>, open: boolean, handleCloseCreateFamily: () => void }) {
 
     const width = useStateStore(state => state.widthQuery);
     const [loading, setLoading] = useState<boolean>(false);
     const [childErrors, _setChildErrors] = useState<errorType[]>([] as errorType[]);
     const stack = useModalsStack(['default', 'members']);
     const hasOpenedMain = useRef(false);
-    const setUserInfo = useUserStore(state => state.setUserInfo);
 
     const familyForm = useForm({
         mode: 'uncontrolled',
@@ -39,14 +35,6 @@ export default function ParentFamilyModal({ session, handleUpdate, open, handleC
             heritage: (_value) => null,
         }
     });
-
-    const updateUser = async ({ newUserFamily }: { newUserFamily: IUserFamily }) => {
-        const newUserInfo = {
-            ...userInfo,
-            userFamily: newUserFamily,
-        };
-        setUserInfo(newUserInfo);
-    };
 
 
     const handleOpenDefault = useCallback(() => {
@@ -83,7 +71,7 @@ export default function ParentFamilyModal({ session, handleUpdate, open, handleC
                 return;
             }
 
-            let creationAttempt = await AttemptCreateFamily({ familyToAdd: initialValues }) as { status: boolean, message: string, newFamily: IFamily, newUserFamily: IUserFamily };
+            let creationAttempt = await AttemptCreateFamily({ familyToAdd: initialValues }) as { status: boolean, message: string, newFamily: IFamily };
 
             let attemptStatus = creationAttempt ? creationAttempt.status : false;
 
@@ -95,7 +83,6 @@ export default function ParentFamilyModal({ session, handleUpdate, open, handleC
             }
 
             toast.success('Successfully created family!');
-            await updateUser({ newUserFamily: creationAttempt.newUserFamily });
             await handleUpdate();
             resetZoom(width, false);
             handleCloseCreateFamily();

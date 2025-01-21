@@ -1,7 +1,7 @@
 'use client'
 
 import { useModalStore } from "@/context/modalStore";
-import RegisterHelper from "@/utils/userHelpers/registerHelper";
+import RegisterHelper from "@/utils/apihelpers/registerHelper";
 import { Fieldset, Modal, PasswordInput, TextInput } from "@mantine/core"
 import { useForm } from "@mantine/form";
 import { useState } from "react";

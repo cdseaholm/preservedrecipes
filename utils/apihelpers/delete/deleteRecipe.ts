@@ -1,14 +1,10 @@
 import { useUserStore } from "@/context/userStore";
 import { IRecipe } from "@/models/types/recipe";
+import { IUser } from "@/models/types/user";
 import { toast } from "sonner";
+import { DeleteResponse } from "./deleteUser";
 
-interface DeleteResponse {
-    status: boolean;
-    message: string;
-    updatedItems?: IRecipe[];
-}
-
-async function deleteRecipes(toDelete: IRecipe[], headers: HeadersInit): Promise<DeleteResponse> {
+export default async function AttemptDeleteRecipes({ toDelete }: { toDelete: IRecipe[] }, headers: HeadersInit): Promise<DeleteResponse> {
     const baseUrl = process.env.BASE_URL ? process.env.BASE_URL as string : '';
     const urlToDelete = `${baseUrl}/api/recipe/delete`;
 
@@ -36,9 +32,17 @@ async function deleteRecipes(toDelete: IRecipe[], headers: HeadersInit): Promise
             return { status: false, message: 'Failed to delete recipes, data null' };
         }
 
-        const updatedItems = data.updatedItems;
+        const recipes = useUserStore.getState().userRecipes as IRecipe[];
+        const toDeleteIDs = new Set(toDelete.map((deletion) => deletion._id));
+        const updatedItems = recipes.filter((recipe) => !toDeleteIDs.has(recipe._id));
 
-        useUserStore.getState().setUserRecipes(updatedItems);
+        useUserStore.getState().setUserRecipes(updatedItems as IRecipe[]);
+        const userInfo = useUserStore.getState().userInfo;
+        const newUserInfo = {
+            ...userInfo,
+            recipeIDs: userInfo.recipeIDs.filter((id) => !toDeleteIDs.has(id))
+        } as IUser
+        useUserStore.getState().setUserInfo(newUserInfo);
 
         toast.success('Recipes deleted successfully');
 
@@ -48,16 +52,5 @@ async function deleteRecipes(toDelete: IRecipe[], headers: HeadersInit): Promise
         console.error('Error deleting recipes:', error);
         toast.error('Error deleting recipes');
         return { status: false, message: 'Error deleting recipes' };
-    }
-}
-
-
-export default async function AttemptDelete({ which, toDelete }: { which: string, toDelete: IRecipe[] }, headers: HeadersInit): Promise<DeleteResponse> {
-    switch (which) {
-        case 'recipes':
-            return await deleteRecipes(toDelete, headers);
-        // Add more cases here for different types of deletions
-        default:
-            return { status: false, message: 'Invalid delete type' };
     }
 }
