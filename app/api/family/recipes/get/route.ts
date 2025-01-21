@@ -4,7 +4,6 @@ import MongoUser from "@/models/user";
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { getServerSession } from "next-auth/next";
-import { IUserFamily } from "@/models/types/userFamily";
 import Family from "@/models/family";
 import { IFamily } from "@/models/types/family";
 import { User } from "next-auth";
@@ -39,9 +38,8 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ status: 404, message: 'User not found', familyRecipes: [] as IRecipe[] });
         }
 
-        const family = user.userFamily as IUserFamily;
-        const familyID = family.familyID as string;
-        const famHub = await Family.findOne({ familyID }) as IFamily;
+        const familyID = user.userFamilyID as string;
+        const famHub = await Family.findOne({ _id: familyID }) as IFamily;
 
         if (!famHub) {
             return NextResponse.json({ status: 404, message: 'User family not found', familyRecipes: [] as IRecipe[] })

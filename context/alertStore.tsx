@@ -6,7 +6,9 @@ interface AlertStore {
     alertMessage: string;
     setAlertMessage: (alertMessage: string) => void;
     alertConfirm: boolean;
-    setAlertConfirm: (alertConfirm: boolean) => void
+    setAlertConfirm: (alertConfirm: boolean) => void;
+    globalToast: string;
+    setGlobalToast: (globalToast: string) => void
 }
 
 export const useAlertStore = create<AlertStore>((set) => ({
@@ -15,5 +17,7 @@ export const useAlertStore = create<AlertStore>((set) => ({
     alertMessage: '',
     setAlertMessage: (message) => set({alertMessage: message}),
     alertConfirm: false,
-    setAlertConfirm: (confirm) => set({alertConfirm: confirm})
+    setAlertConfirm: (confirm) => set({alertConfirm: confirm}),
+    globalToast: '',
+    setGlobalToast: (message) => set({globalToast: message})
 }));

@@ -1,12 +1,9 @@
-import { IUserFamily } from "./userFamily";
-
-
 export interface IUser {
   name: string;
   email: string;
   password: string;
   _id: string;
-  userFamily: IUserFamily;
+  userFamilyID: string;
   recipeIDs: string[];
   communityIDs: string[];
   ratings: number[];

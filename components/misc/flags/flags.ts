@@ -1,7 +1,6 @@
 import { HeritageType } from "@/models/types/inAppCreations/heritage";
 
 export const countries = [
-    { name: "United States of America", flagCode: "US" },
     { name: "Andorra", flagCode: "AD" },
     { name: "United Arab Emirates", flagCode: "AE" },
     { name: "Antigua and Barbuda", flagCode: "AG" },
@@ -234,6 +233,7 @@ export const countries = [
     { name: "Ukraine", flagCode: "UA" },
     { name: "Uganda", flagCode: "UG" },
     { name: "United States Minor Outlying Islands", flagCode: "UM" },
+    { name: "United States of America", flagCode: "US" },
     { name: "Uruguay", flagCode: "UY" },
     { name: "Uzbekistan", flagCode: "UZ" },
     { name: "Holy See", flagCode: "VA" },

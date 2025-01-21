@@ -1,6 +1,6 @@
 import { IUser } from "@/models/types/user"
 import { toast } from "sonner";
-import { SaltAndHashPassword } from "./saltAndHash";
+import { SaltAndHashPassword } from "../userHelpers/saltAndHash";
 
 export default async function RegisterHelper({ namePassed, emailPassed, pwPassed }: { namePassed: string, emailPassed: string, pwPassed: string }) {
 

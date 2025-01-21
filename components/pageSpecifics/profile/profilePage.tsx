@@ -10,11 +10,12 @@ import { Tabs } from "@mantine/core";
 import { useSession } from "next-auth/react";
 import { useProfileStore } from "@/context/profileStore";
 import { useUserStore } from "@/context/userStore";
-import FamilyTab from "./profile/familyTab";
+import FamilyTab from "./profile/family/familyTab";
 import AccountTab from "./profile/accountTab";
-import { useFamilyStore } from "@/context/familyStore";
 import RecipeTab from "./profile/recipeTab";
 import CommunityTab from "./profile/communityTab";
+import { useFamilyStore } from "@/context/familyStore";
+import { IFamilyMember } from "@/models/types/familyMember";
 
 
 export default function ProfilePage() {
@@ -30,10 +31,14 @@ export default function ProfilePage() {
     const [loading, setLoading] = useState<boolean>(true);
     const [activeTab, setActiveTab] = useState(initialTab);
     const userRecipes = useUserStore(s => s.userRecipes);
-    const familyRecipes = useFamilyStore(s => s.familyRecipes);
-    const familyMembers = useFamilyStore(s => s.familyMembers);
     const userCommunities = useUserStore(s => s.userCommunities);
-
+    const family = useFamilyStore(s => s.family);
+    const members = family ? family.familyMembers : [] as IFamilyMember[];
+    const admins = members ? members.filter((member) => member.permissionStatus === 'Admin') : [] as IFamilyMember[];
+    const numAdmins = admins ? admins.length : 0;
+    const userFamInfo = members ? members.find((member) => member.familyMemberID === userInfo._id.toString()) as IFamilyMember : {} as IFamilyMember;
+    const userFamPrivs = userFamInfo ? userFamInfo.permissionStatus as string : '';
+    const userAdminPrivs = userFamPrivs && userFamPrivs === 'Admin' ? true : false;
     //variables
     const user = session ? session.user as User : null;
     const userName = user ? user.name : '';
@@ -87,11 +92,11 @@ export default function ProfilePage() {
                     </div>
 
                     <Tabs.Panel value="account">
-                        <AccountTab familyPermissions={userInfo.userFamily.familyID !== '' && userInfo.userFamily.userPermission === 'Admin'} />
+                        <AccountTab numAdmins={numAdmins} userAdminPrivs={userAdminPrivs} family={family} />
                     </Tabs.Panel>
 
                     <Tabs.Panel value="family" className={tabsClass}>
-                        <FamilyTab userInfo={userInfo} familyMembers={familyMembers} familyRecipes={familyRecipes} type={'Family'} additionString={[finalStrings[0][0], finalStrings[1][0]]} searchString={[finalStrings[0][1], finalStrings[1][1]]} promoString={[finalStrings[0][2], finalStrings[1][2]]} />
+                        <FamilyTab userInfo={userInfo} type={'Family'} additionString={[finalStrings[0][0], finalStrings[1][0]]} searchString={[finalStrings[0][1], finalStrings[1][1]]} promoString={[finalStrings[0][2], finalStrings[1][2]]} numAdmins={numAdmins} userAdminPrivs={userAdminPrivs} />
                     </Tabs.Panel>
 
                     <Tabs.Panel value="recipes" className={tabsClass}>

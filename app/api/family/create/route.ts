@@ -8,22 +8,21 @@ import { getServerSession, User } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt"
 import { IRecipe } from "@/models/types/recipe";
-import { IPermissions } from "@/models/types/permission";
-import { IUserFamily } from "@/models/types/userFamily";
+import { IFamilyMember } from "@/models/types/familyMember";
 
 export async function POST(req: NextRequest) {
 
     const secret = process.env.NEXTAUTH_SECRET ? process.env.NEXTAUTH_SECRET : '';
 
     if (secret === '') {
-        return NextResponse.json({ status: 401, message: 'Unauthorized', familyReturned: {} as IFamily, userFamilyReturned: {} as IUserFamily });
+        return NextResponse.json({ status: 401, message: 'Unauthorized', familyReturned: {} as IFamily });
     }
 
     const session = await getServerSession({ req, secret })
     const token = await getToken({ req, secret });
 
     if (!session || !token) {
-        return NextResponse.json({ status: 401, message: 'Unauthorized', familyReturned: {} as IFamily, userFamilyReturned: {} as IUserFamily });
+        return NextResponse.json({ status: 401, message: 'Unauthorized', familyReturned: {} as IFamily });
     }
 
     try {
@@ -32,53 +31,48 @@ export async function POST(req: NextRequest) {
         const userSesh = session?.user as User;
         const email = userSesh ? userSesh.email : '';
         if (email === '') {
-            return NextResponse.json({ status: 401, message: 'Unauthorized', familyReturned: {} as IFamily, userFamilyReturned: {} as IUserFamily });
+            return NextResponse.json({ status: 401, message: 'Unauthorized', familyReturned: {} as IFamily });
         }
 
         const user = await MongoUser.findOne({ email: email }) as IUser;
 
         if (!user) {
             console.log("User not found");
-            return NextResponse.json({ status: 404, message: 'User not found', familyReturned: {} as IFamily, userFamilyReturned: {} as IUserFamily });
+            return NextResponse.json({ status: 404, message: 'User not found', familyReturned: {} as IFamily });
         }
 
         if (user._id.toString() !== token.sub) {
             console.log('token mismatch')
-            return NextResponse.json({ status: 401, message: 'Unauthorized', familyReturned: {} as IFamily, userFamilyReturned: {} as IUserFamily });
+            return NextResponse.json({ status: 401, message: 'Unauthorized', familyReturned: {} as IFamily });
         }
 
         const family = body.familyPassed as FamilyCreation;
 
-        const initIDs = [user._id];
-
-        const admins = [{
-            id: user._id,
-            name: user.name,
+        const initialMembers = [{
+            familyMemberName: user.name,
+            familyMemberEmail: user.email,
+            familyMemberID: user._id.toString(),
             permissionStatus: 'Admin',
-        }] as IPermissions[];
+        }] as IFamilyMember[];
 
         const insertedFamily = await Family.create({
             name: family.name,
             recipes: [] as IRecipe[],
-            familyMemberIDs: initIDs,
-            adminIDs: admins,
+            familyMembers: initialMembers,
             heritage: family.heritage
         }) as IFamily;
 
         if (!insertedFamily) {
             console.log("Error creating family");
-            return NextResponse.json({ status: 500, message: 'Error creating', familyReturned: {} as IFamily, userFamilyReturned: {} as IUserFamily });
+            return NextResponse.json({ status: 500, message: 'Error creating', familyReturned: {} as IFamily });
         }
 
-        const oldUserFamily = user.userFamily;
-        const updatedUserFamily = { siblingIDs: oldUserFamily.siblingIDs, parentIDs: oldUserFamily.parentIDs, partnerIDs: oldUserFamily.partnerIDs, childrenIDs: oldUserFamily.childrenIDs, familyID: insertedFamily._id, userPermission: 'Admin' } as IUserFamily;
+        await MongoUser.updateOne({ email: email }, { $set: { userFamilyID: insertedFamily._id.toString() } });
 
-        await MongoUser.updateOne({ email: email }, { $set: { userFamily: updatedUserFamily } });
-
-        return NextResponse.json({ status: 200, message: 'Success!', familyReturned: insertedFamily as IFamily, userFamilyReturned: updatedUserFamily });
+        return NextResponse.json({ status: 200, message: 'Success!', familyReturned: insertedFamily as IFamily });
 
     } catch (error: any) {
         console.error('Error creating family:', error);
-        return NextResponse.json({ status: 500, message: 'Error creating family', familyReturned: {} as IFamily, userFamilyReturned: {} as IUserFamily });
+        return NextResponse.json({ status: 500, message: 'Error creating family', familyReturned: {} as IFamily });
     }
 }

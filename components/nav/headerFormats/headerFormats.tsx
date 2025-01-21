@@ -9,6 +9,7 @@ import { FiMenu } from "react-icons/fi";
 import { toast } from "sonner";
 import { Session } from "next-auth";
 import MenuContent from "./menuContent";
+import { IUser } from "@/models/types/user";
 
 const LargeUserButton = forwardRef<HTMLButtonElement>(
     ({ ...others }, ref) => (
@@ -28,7 +29,7 @@ const UserButton = forwardRef<HTMLButtonElement>(
 );
 UserButton.displayName = 'UserButton';
 
-export function HeaderLargeShort({ handleZoomClick, handleZoomClose, profile, firstName, recipeText, familyText, communityText, setOpenSignOutModal, signOut, setSignInModal, setRegisterModal, session }: { handleZoomClick: () => void; handleZoomClose: () => void; profile: React.ReactNode; firstName: string | null; recipeText: JSX.Element; familyText: JSX.Element; communityText: JSX.Element; setOpenSignOutModal: (open: boolean) => void; signOut: JSX.Element; setSignInModal: (open: boolean) => void, setRegisterModal: (open: boolean) => void, session: Session | null }) {
+export function HeaderLargeShort({ userInfo, handleZoomClick, handleZoomClose, profile, firstName, setOpenSignOutModal, signOut, setSignInModal, setRegisterModal, session }: { userInfo: IUser, handleZoomClick: () => void; handleZoomClose: () => void; profile: React.ReactNode; firstName: string | null; setOpenSignOutModal: (open: boolean) => void; signOut: JSX.Element; setSignInModal: (open: boolean) => void, setRegisterModal: (open: boolean) => void, session: Session | null }) {
 
     const width = useStateStore(state => state.widthQuery);
 
@@ -40,13 +41,13 @@ export function HeaderLargeShort({ handleZoomClick, handleZoomClose, profile, fi
                 <Menu.Target>
                     <LargeUserButton />
                 </Menu.Target>
-                <MenuContent handleZoomClick={handleZoomClick} handleZoomClose={handleZoomClose} profile={profile} firstName={firstName} recipeText={recipeText} familyText={familyText} communityText={communityText} setOpenSignOutModal={setOpenSignOutModal} signOut={signOut} setSignInModal={setSignInModal} setRegisterModal={setRegisterModal} session={session} signIn={null} />
+                <MenuContent handleZoomClick={handleZoomClick} handleZoomClose={handleZoomClose} profile={profile} firstName={firstName}setOpenSignOutModal={setOpenSignOutModal} signOut={signOut} setSignInModal={setSignInModal} setRegisterModal={setRegisterModal} session={session} signIn={null} userInfo={userInfo} />
             </Menu>
         </nav>
     );
 }
 
-export function HeaderLargeNotShort({ handleZoomClick, handleZoomClose, profile, firstName, recipeText, familyText, communityText, setOpenSignOutModal, signOut, setSignInModal, setRegisterModal, session }: { handleZoomClick: () => void; handleZoomClose: () => void; profile: React.ReactNode; firstName: string | null; recipeText: JSX.Element; familyText: JSX.Element; communityText: JSX.Element; setOpenSignOutModal: (open: boolean) => void; signOut: JSX.Element; setSignInModal: (open: boolean) => void, setRegisterModal: (open: boolean) => void, session: Session | null }) {
+export function HeaderLargeNotShort({ userInfo, handleZoomClick, handleZoomClose, profile, firstName, setOpenSignOutModal, signOut, setSignInModal, setRegisterModal, session }: { userInfo: IUser, handleZoomClick: () => void; handleZoomClose: () => void; profile: React.ReactNode; firstName: string | null; setOpenSignOutModal: (open: boolean) => void; signOut: JSX.Element; setSignInModal: (open: boolean) => void, setRegisterModal: (open: boolean) => void, session: Session | null }) {
 
     return (
         <nav className="flex flex-row justify-end items-center w-2/3 space-x-8">
@@ -56,13 +57,13 @@ export function HeaderLargeNotShort({ handleZoomClick, handleZoomClose, profile,
                 <Menu.Target>
                     <LargeUserButton />
                 </Menu.Target>
-                <MenuContent handleZoomClick={handleZoomClick} handleZoomClose={handleZoomClose} profile={profile} firstName={firstName} recipeText={recipeText} familyText={familyText} communityText={communityText} setOpenSignOutModal={setOpenSignOutModal} signOut={signOut} setSignInModal={setSignInModal} setRegisterModal={setRegisterModal} session={session} signIn={null} />
+                <MenuContent handleZoomClick={handleZoomClick} handleZoomClose={handleZoomClose} profile={profile} firstName={firstName}setOpenSignOutModal={setOpenSignOutModal} signOut={signOut} setSignInModal={setSignInModal} setRegisterModal={setRegisterModal} session={session} signIn={null} userInfo={userInfo} />
             </Menu>
         </nav>
     );
 }
 
-export function HeaderSmallShort({ handleZoomClick, handleZoomClose, profile, firstName, recipeText, familyText, communityText, setOpenSignOutModal, signOut, setSignInModal, signIn, setRegisterModal, session }: { handleZoomClick: () => void; handleZoomClose: () => void; profile: React.ReactNode; firstName: string | null; recipeText: JSX.Element; familyText: JSX.Element; communityText: JSX.Element; setOpenSignOutModal: (open: boolean) => void; signOut: JSX.Element; setSignInModal: (open: boolean) => void, signIn: JSX.Element, setRegisterModal: (open: boolean) => void, session: Session | null }) {
+export function HeaderSmallShort({ userInfo, handleZoomClick, handleZoomClose, profile, firstName, setOpenSignOutModal, signOut, setSignInModal, signIn, setRegisterModal, session }: { userInfo: IUser, handleZoomClick: () => void; handleZoomClose: () => void; profile: React.ReactNode; firstName: string | null; setOpenSignOutModal: (open: boolean) => void; signOut: JSX.Element; setSignInModal: (open: boolean) => void, signIn: JSX.Element, setRegisterModal: (open: boolean) => void, session: Session | null }) {
     const width = useStateStore(state => state.widthQuery);
 
     return (
@@ -71,13 +72,13 @@ export function HeaderSmallShort({ handleZoomClick, handleZoomClose, profile, fi
                 <Menu.Target>
                     <UserButton />
                 </Menu.Target>
-                <MenuContent handleZoomClick={handleZoomClick} handleZoomClose={handleZoomClose} profile={profile} firstName={firstName} recipeText={recipeText} familyText={familyText} communityText={communityText} setOpenSignOutModal={setOpenSignOutModal} signOut={signOut} setSignInModal={setSignInModal} setRegisterModal={setRegisterModal} session={session} signIn={signIn} />
+                <MenuContent handleZoomClick={handleZoomClick} handleZoomClose={handleZoomClose} profile={profile} firstName={firstName}setOpenSignOutModal={setOpenSignOutModal} signOut={signOut} setSignInModal={setSignInModal} setRegisterModal={setRegisterModal} session={session} signIn={signIn} userInfo={userInfo} />
             </Menu>
         </nav>
     );
 }
 
-export function HeaderSmallNotShort({ handleZoomClick, handleZoomClose, profile, firstName, recipeText, familyText, communityText, setOpenSignOutModal, signOut, setSignInModal, signIn, setRegisterModal, session }: { handleZoomClick: () => void; handleZoomClose: () => void; profile: React.ReactNode; firstName: string | null; recipeText: JSX.Element; familyText: JSX.Element; communityText: JSX.Element; setOpenSignOutModal: (open: boolean) => void; signOut: JSX.Element; setSignInModal: (open: boolean) => void, signIn: JSX.Element, setRegisterModal: (open: boolean) => void, session: Session | null }) {
+export function HeaderSmallNotShort({ userInfo, handleZoomClick, handleZoomClose, profile, firstName, setOpenSignOutModal, signOut, setSignInModal, signIn, setRegisterModal, session }: { userInfo: IUser, handleZoomClick: () => void; handleZoomClose: () => void; profile: React.ReactNode; firstName: string | null; setOpenSignOutModal: (open: boolean) => void; signOut: JSX.Element; setSignInModal: (open: boolean) => void, signIn: JSX.Element, setRegisterModal: (open: boolean) => void, session: Session | null }) {
 
     return (
         <nav className="flex flex-row items-center justify-end w-1/3">
@@ -85,7 +86,7 @@ export function HeaderSmallNotShort({ handleZoomClick, handleZoomClose, profile,
                 <Menu.Target>
                     <UserButton />
                 </Menu.Target>
-                <MenuContent handleZoomClick={handleZoomClick} handleZoomClose={handleZoomClose} profile={profile} firstName={firstName} recipeText={recipeText} familyText={familyText} communityText={communityText} setOpenSignOutModal={setOpenSignOutModal} signOut={signOut} setSignInModal={setSignInModal} setRegisterModal={setRegisterModal} session={session} signIn={signIn} />
+                <MenuContent handleZoomClick={handleZoomClick} handleZoomClose={handleZoomClose} profile={profile} firstName={firstName}setOpenSignOutModal={setOpenSignOutModal} signOut={signOut} setSignInModal={setSignInModal} setRegisterModal={setRegisterModal} session={session} signIn={signIn} userInfo={userInfo} />
             </Menu>
         </nav>
     );

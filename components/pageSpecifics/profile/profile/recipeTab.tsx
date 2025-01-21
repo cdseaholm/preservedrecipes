@@ -7,9 +7,8 @@ import { IRecipe } from "@/models/types/recipe";
 import { ChangeEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { CheckFunction } from "./functions";
-import AttemptDelete from "@/utils/apihelpers/delete";
+import AttemptDeleteRecipes from "@/utils/apihelpers/delete/deleteRecipe";
 import { Session } from "next-auth";
-import { useUserStore } from "@/context/userStore";
 
 export default function RecipeTab({ userRecipes, type, additionString, searchString, promoString, session }: { userRecipes: IRecipe[], type: string, additionString: string, searchString: string, promoString: string, session: Session | null }) {
 
@@ -59,19 +58,18 @@ export default function RecipeTab({ userRecipes, type, additionString, searchStr
 
         const headers = { 'Authorization': `Bearer ${session.user}` };
 
-        const result = await AttemptDelete({ which: 'recipes', toDelete: itemsToDelete }, headers);
+        const result = await AttemptDeleteRecipes({ toDelete: itemsToDelete }, headers);
 
         if (result.status) {
 
-            const newIndicies = checked.map((isNotChecked, index) => !isNotChecked ? index : -1).filter(index => index !== -1);
-            const newRecipes = newIndicies.map((index) => userRecipes[index]);
-            useUserStore.getState().setUserRecipes(newRecipes);
             setEdit(false);
             setChecked(new Array(recipeTitles.length).fill(false));
             setCheckedAmt(0);
 
         } else {
+
             toast.error(result.message);
+
         }
     };
 

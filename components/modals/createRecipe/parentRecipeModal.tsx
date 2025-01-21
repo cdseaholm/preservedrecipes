@@ -19,11 +19,8 @@ import AddSteps from "./steps/addSteps";
 import EditSteps from "./steps/editSteps";
 import { ValdiateViewerEmails, ValidateNameAndDescription } from "./validate";
 import RecipeViewers from "./viewers";
-import { AttemptCreateRecipe } from "@/utils/apihelpers/recipes/createRecipe";
-import { IRecipe } from "@/models/types/recipe";
+import { AttemptCreateRecipe } from "@/utils/apihelpers/create/createRecipe";
 import LoadingModal from "../templates/loadingModal";
-import { IUser } from "@/models/types/user";
-import { useUserStore } from "@/context/userStore";
 
 export default function ParentRecipeModal({ session, open, handleCloseCreateRecipe }: { session: Session | null, open: boolean, handleCloseCreateRecipe: () => void }) {
 
@@ -107,27 +104,6 @@ export default function ParentRecipeModal({ session, open, handleCloseCreateReci
         hasOpenedMain.current = false;
     }
 
-    const handleUpdateRecipes = async ({ newRecipe }: { newRecipe: IRecipe }) => {
-        const userInfo = useUserStore.getState().userInfo;
-        const userRecipes = useUserStore.getState().userRecipes;
-    
-        const newRecipeIDs = [
-            ...userInfo.recipeIDs,
-            newRecipe._id
-        ] as string[];
-        const newUserInfo = {
-            ...userInfo,
-            recipeIDs: newRecipeIDs,
-        } as IUser;
-        useUserStore.getState().setUserInfo(newUserInfo);
-    
-        const newRecipes = [
-            ...userRecipes,
-            newRecipe
-        ] as IRecipe[];
-        useUserStore.getState().setUserRecipes(newRecipes);
-    };
-
     const handleCreateRecipe = async (initialValues: RecipeCreation) => {
         setLoading(true);
         try {
@@ -181,7 +157,7 @@ export default function ParentRecipeModal({ session, open, handleCloseCreateReci
                 secret: recipeSecret,
             } as RecipeCreation;
 
-            let creationAttempt = await AttemptCreateRecipe({ recipeToAdd: newRecipe }) as { status: boolean, message: string, newRecipe: IRecipe };
+            let creationAttempt = await AttemptCreateRecipe({ recipeToAdd: newRecipe }) as { status: boolean, message: string };
 
             let attemptStatus = creationAttempt ? creationAttempt.status : false;
 
@@ -193,7 +169,6 @@ export default function ParentRecipeModal({ session, open, handleCloseCreateReci
             }
 
             toast.success('Successfully created recipe!');
-            await handleUpdateRecipes({ newRecipe: creationAttempt.newRecipe });
             resetZoom(width, false);
             handleCloseCreateRecipe();
             hasOpenedMain.current = false;
