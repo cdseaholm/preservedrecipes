@@ -1,7 +1,6 @@
-import connectDB from "@/lib/mongodb";
+import { connectDB } from "@/lib/mongodb";
 import Family from "@/models/family";
 import { IFamily } from "@/models/types/family";
-import { FamilyCreation } from "@/models/types/inAppCreations/familyCreation";
 import { IUser } from "@/models/types/user";
 import MongoUser from "@/models/user";
 import { getServerSession, User } from "next-auth";
@@ -9,6 +8,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt"
 import { IRecipe } from "@/models/types/recipe";
 import { IFamilyMember } from "@/models/types/familyMember";
+import { FamilyFormType } from "@/components/forms/familyForm";
 
 export async function POST(req: NextRequest) {
 
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ status: 401, message: 'Unauthorized', familyReturned: {} as IFamily });
         }
 
-        const family = body.familyPassed as FamilyCreation;
+        const family = body.familyPassed as FamilyFormType;
 
         const initialMembers = [{
             familyMemberName: user.name,

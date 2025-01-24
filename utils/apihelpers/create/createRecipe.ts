@@ -1,10 +1,10 @@
 import { IRecipe } from "@/models/types/recipe";
-import { RecipeCreation } from "@/models/types/inAppCreations/recipeCreation";
 import { useUserStore } from "@/context/userStore";
 import { IUser } from "@/models/types/user";
+import { RecipeFormType } from "@/components/forms/recipe/recipeForm";
 
 
-export async function AttemptCreateRecipe({ recipeToAdd }: { recipeToAdd: RecipeCreation }) {
+export async function AttemptCreateRecipe({ recipeToAdd }: { recipeToAdd: RecipeFormType }) {
 
     const urlToUse = process.env.BASE_URL ? process.env.BASE_URL as string : '';
 

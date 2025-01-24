@@ -1,10 +1,13 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import connectDB from "@/lib/mongodb";
+import { getMongoClient, connectDB } from "@/lib/mongodb";
 import MongoUser from "@/models/user";
 import { VerifyPassword } from "@/utils/userHelpers/verifyPassword";
+import EmailProvider from "next-auth/providers/email";
+import { MongoDBAdapter } from "@auth/mongodb-adapter";
 
 const authOptions = {
+  adapter: MongoDBAdapter(getMongoClient),
   providers: [
     CredentialsProvider({
       credentials: {
@@ -43,6 +46,10 @@ const authOptions = {
         }
       },
     }),
+    EmailProvider({
+      server: process.env.EMAIL_SERVER,
+      from: process.env.EMAIL_FROM
+    })
   ],
   session: {
     strategy: 'jwt' as 'jwt',

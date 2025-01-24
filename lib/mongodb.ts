@@ -1,4 +1,5 @@
 import { getMongoDBUri } from "@/utils/helpers/helpers";
+import { MongoClient } from "mongodb";
 import _mongoose, { connect } from "mongoose";
 
 declare global {
@@ -52,4 +53,11 @@ async function connectDB() {
   return cached.conn;
 }
 
-export default connectDB;
+async function getMongoClient() {
+  const mongooseConnection = await connectDB();
+  const client = new MongoClient(mongooseConnection.connection.host);
+  await client.connect();
+  return client;
+}
+
+export { connectDB, getMongoClient };

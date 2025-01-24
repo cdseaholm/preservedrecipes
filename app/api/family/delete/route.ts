@@ -1,4 +1,4 @@
-import connectDB from "@/lib/mongodb";
+import { connectDB } from "@/lib/mongodb";
 import Recipe from "@/models/recipe";
 import { IRecipe } from "@/models/types/recipe";
 import { IUser } from "@/models/types/user";

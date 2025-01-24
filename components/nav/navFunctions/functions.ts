@@ -24,10 +24,6 @@ export const handleSignInModal = (open: boolean) => {
     useModalStore.getState().setOpenSignInModal(open);
 };
 
-export const handleRegisterModal = (open: boolean) => {
-    useModalStore.getState().setOpenRegisterModal(open);
-};
-
 export const getFirstName = (session: Session | null) => {
     let user = session ? session.user as User : {} as User;
     let userName = user ? user.name : '';

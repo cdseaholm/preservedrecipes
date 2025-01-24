@@ -7,9 +7,9 @@ import { StepType } from "@/models/types/stepType";
 import { IngredientType } from "@/models/types/ingredientType";
 import { useStateStore } from "@/context/stateStore";
 import { errorType } from "@/models/types/error";
-import { RecipeCreation } from "@/models/types/inAppCreations/recipeCreation";
+import { RecipeFormType } from "../../recipeForm";
 
-export default function AddIngredients({ handleCloseChildAndSave, form, handleCancelChild, errors, thisIngredient }: { handleCloseChildAndSave: (which: string, newVals: IngredientType[] | StepType[], itemId: number) => void, form: UseFormReturnType<RecipeCreation, (values: RecipeCreation) => RecipeCreation>, handleCancelChild: (which: string, currNewIndex: number) => void, errors: errorType[], thisIngredient: IngredientType }) {
+export default function AddIngredients({ handleCloseChildAndSave, form, handleCancelChild, errors, thisIngredient }: { handleCloseChildAndSave: (which: string, newVals: IngredientType[] | StepType[], itemId: number) => void, form: UseFormReturnType<RecipeFormType, (values: RecipeFormType) => RecipeFormType>, handleCancelChild: (which: string, currNewIndex: number) => void, errors: errorType[], thisIngredient: IngredientType }) {
 
     const errorsExist = errors ? true : false;
     const errIng = errorsExist && errors.find((err) => err.which === 'ingredient') ? true : false;

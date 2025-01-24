@@ -3,14 +3,14 @@
 import { useState } from 'react';
 import { Checkbox, Combobox, Group, Pill, PillsInput, useCombobox } from '@mantine/core';
 import { countries } from '../flags/flags';
-import { FamilyCreation } from '@/models/types/inAppCreations/familyCreation';
 import { UseFormReturnType } from '@mantine/form';
 import { HeritageType } from '@/models/types/inAppCreations/heritage';
 import { FlagIcon } from '../flags/flagIcon';
+import { FamilyFormType } from '@/components/forms/familyForm';
 
 const heritages = countries as HeritageType[];
 
-export function MultiSelectCheckbox({ form }: { form: UseFormReturnType<FamilyCreation, (values: FamilyCreation) => FamilyCreation> }) {
+export function MultiSelectCheckbox({ form }: { form: UseFormReturnType<FamilyFormType, (values: FamilyFormType) => FamilyFormType> }) {
     const combobox = useCombobox({
         onDropdownClose: () => combobox.resetSelectedOption(),
         onDropdownOpen: () => combobox.updateSelectedOptionIndex('active'),

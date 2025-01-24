@@ -12,7 +12,7 @@ export default function Homepage() {
     <WelcomeSection key={0}/>,
     <InfoTemplate tab={'recipes'} key={1}/>,
     <InfoTemplate tab={'family'} key={2}/>,
-    <InfoTemplate tab={'communities'} key={3}/>,
+    //<InfoTemplate tab={'communities'} key={3}/>,
     <AboutSection key={4} id="about-section" />
   ] as React.JSX.Element[];
 

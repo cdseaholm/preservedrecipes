@@ -1,6 +1,12 @@
-import connectDB from '@/lib/mongodb';
+import { connectDB } from '@/lib/mongodb';
+import Family from '@/models/family';
+import Invite from '@/models/invite';
+import { IFamily } from '@/models/types/family';
+import { IFamilyMember } from '@/models/types/familyMember';
+import { IInvite } from '@/models/types/invite';
 import { IUser } from '@/models/types/user';
 import User from '@/models/user';
+import { ObjectId } from 'mongodb';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
@@ -24,11 +30,41 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ status: 404, message: "User already exists", newUser: {} as IUser });
     }
 
+    const invite = body.invite as null | IInvite ? body.invite as IInvite : null;
+    console.log('invite: ', invite)
+    const userFamID = invite !== null ? invite.familyID : '';
+
+    if (invite !== null) {
+      const famObjectID = new ObjectId(invite.familyID);
+      const thisFam = await Family.findOne({ _id: famObjectID }) as IFamily;
+      const famMembers = thisFam.familyMembers;
+      const famMembersWithout = famMembers.filter((member) => member.familyMemberEmail !== invite.email);
+      const memberToChange = famMembers.find((member) => member.familyMemberEmail === invite.email);
+
+      if (!memberToChange) {
+        return NextResponse.json({ status: 404, message: 'Family member not found', returnedMembers: [] as IFamilyMember[] });
+      }
+
+      const newMember = {
+        ...memberToChange,
+        memberConnected: true
+      } as IFamilyMember;
+
+      const updatedMembers = [
+        ...famMembersWithout,
+        newMember
+      ] as IFamilyMember[];
+
+      await Family.updateOne({ _id: famObjectID }, { $set: { familyMembers: updatedMembers } });
+
+      await Invite.deleteOne({ token: invite.token });
+    }
+
     const user = await User.create({
       name: body.namePassed,
       email: body.emailPassed,
       password: body.saltedPW,
-      userFamilyID: '',
+      userFamilyID: userFamID,
       recipeIDs: [] as string[],
       communityIDs: [] as string[],
       ratings: [] as number[],
