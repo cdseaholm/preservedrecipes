@@ -6,9 +6,9 @@ import { IngredientType } from "@/models/types/ingredientType";
 import ErrorPopover from "@/components/popovers/errorPopover";
 import { useStateStore } from "@/context/stateStore";
 import { errorType } from "@/models/types/error";
-import { RecipeCreation } from "@/models/types/inAppCreations/recipeCreation";
+import { RecipeFormType } from "../../recipeForm";
 
-export default function AddSteps({ handleCloseChildAndSave, form, handleCancelChild, errors, ingredientPills, handleOpenAdd, thisStep, handleSetValuesUsed, valuesUsed }: { handleCloseChildAndSave: (which: string, newVals: IngredientType[] | StepType[], itemId: number) => void, form: UseFormReturnType<RecipeCreation, (values: RecipeCreation) => RecipeCreation>, handleCancelChild: (which: string, currNewIndex: number) => void, errors: errorType[], ingredientPills: StepType[] | IngredientType[], handleOpenAdd: (which: string, index: number) => void, thisStep: StepType, handleSetValuesUsed: (newVals: IngredientType[]) => void, valuesUsed: IngredientType[] }) {
+export default function AddSteps({ handleCloseChildAndSave, form, handleCancelChild, errors, ingredientPills, handleOpenAdd, thisStep, handleSetValuesUsed, valuesUsed }: { handleCloseChildAndSave: (which: string, newVals: IngredientType[] | StepType[], itemId: number) => void, form: UseFormReturnType<RecipeFormType, (values: RecipeFormType) => RecipeFormType>, handleCancelChild: (which: string, currNewIndex: number) => void, errors: errorType[], ingredientPills: StepType[] | IngredientType[], handleOpenAdd: (which: string, index: number) => void, thisStep: StepType, handleSetValuesUsed: (newVals: IngredientType[]) => void, valuesUsed: IngredientType[] }) {
     
     const error = errors ? errors[0] : {} as errorType;
     const errorWhich = error ? error.which as string : '';

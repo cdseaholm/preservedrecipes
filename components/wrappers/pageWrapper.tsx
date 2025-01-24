@@ -5,7 +5,7 @@ import { useStateStore } from "@/context/stateStore";
 import { getBaseUrl } from "@/utils/helpers/helpers";
 import MainFooter from "../nav/footer";
 import { useSession } from "next-auth/react";
-import { InitializeUserData } from "@/utils/apihelpers/initUserData";
+import { InitializeUserData } from "@/utils/apihelpers/get/initUserData";
 import { LoadingSpinner } from "@/components/misc/loadingSpinner";
 import ColorPickerMode from "@/components/misc/colorpicker/colorPickerMode";
 import { useAlertStore } from "@/context/alertStore";

@@ -1,13 +1,16 @@
 'use client'
 
 import { useModalStore } from "@/context/modalStore";
-import { Fieldset, Modal, PasswordInput, TextInput } from "@mantine/core";
+import { Modal } from "@mantine/core";
 import ModalTemplate from "./templates/modalTemplate";
 import { toast } from "sonner";
 import SignInHelper from "@/utils/userHelpers/signInHelper";
-import { useForm } from '@mantine/form';
+import { UseFormReturnType } from '@mantine/form';
 import { Session } from "next-auth";
 import { useStateStore } from "@/context/stateStore";
+import { useFamilyStore } from "@/context/familyStore";
+import { InviteRegCheck } from "@/utils/apihelpers/register/inviteSignInCheck";
+import SignInForm, { SignInFormType } from "../forms/signInForm";
 
 export default function SignInModal({ session, handleUpdate }: { session: Session | null, handleUpdate: () => Promise<void> }) {
 
@@ -15,37 +18,26 @@ export default function SignInModal({ session, handleUpdate }: { session: Sessio
     const setOpenSignInModal = useModalStore(state => state.setOpenSignInModal);
     const resetZoom = useStateStore(state => state.handleZoomReset);
     const width = useStateStore(state => state.widthQuery);
+    const invite = useFamilyStore(state => state.invite);
 
-    const form = useForm({
-        mode: 'uncontrolled',
-        initialValues: {
-            email: '',
-            password: ''
-        },
-        validate: {
-            email: (value) => (
-                !/^\S+@\S+$/.test(value) ? 'Invalid email'
-                    : value.length < 5 ? 'Invalid email'
-                        : null
-            ),
-            password: (value: string) => (
-                value.length < 5 ? 'Password length must be greater than 5 characters' : null
-            )
-        }
-    });
-
-    const handleSignIn = async ({ email, password }: { email: string, password: string }) => {
+    const handleSignIn = async ({ signInForm }: { signInForm: UseFormReturnType<SignInFormType, (values: SignInFormType) => SignInFormType> }) => {
 
         try {
 
-            form.clearErrors();
+            signInForm.clearErrors();
 
             if (session) {
                 toast.warning("You are already signed in!")
                 return;
             }
 
-            const validation = form.validate();
+
+            const { email, password } = signInForm.values;
+            const validation = signInForm.validate();
+
+            if (Object.keys(validation.errors).length > 0) {
+                return;
+            }
 
             if (!validation) {
                 return;
@@ -60,9 +52,16 @@ export default function SignInModal({ session, handleUpdate }: { session: Sessio
                 return;
             }
 
+            let inviteCheck = {} as { status: boolean, message: string };
+
+            if (invite) {
+                inviteCheck = await InviteRegCheck({ invite: invite }) as { status: boolean, message: string };
+                if (!inviteCheck || inviteCheck && inviteCheck.status === false) {
+                    toast.error(inviteCheck.message);
+                }
+            }
+
             toast.success('Successful Sign in!');
-            form.reset();
-            form.clearErrors();
             await handleUpdate();
             resetZoom(width, false);
             setOpenSignInModal(false);
@@ -73,8 +72,6 @@ export default function SignInModal({ session, handleUpdate }: { session: Sessio
     }
 
     const handleCancel = () => {
-        form.reset();
-        form.clearErrors();
         resetZoom(width, false);
         setOpenSignInModal(false);
         toast.info("Cancelled Signing in");
@@ -85,37 +82,7 @@ export default function SignInModal({ session, handleUpdate }: { session: Sessio
             backgroundOpacity: 0.55, blur: 3, className: 'drop-shadow-xl'
         }} removeScrollProps={{ allowPinchZoom: true }} lockScroll={false}>
             <ModalTemplate subtitle={null} minHeight="15vh" minWidth="15vw">
-                <form id="modalLoginForm" onSubmit={form.onSubmit((values) => handleSignIn(values))} onAbort={handleCancel} className="w-full">
-                    <Fieldset legend="Personal Information">
-                        <TextInput
-                            id="modalLoginEmail"
-                            name="modalLoginEmail"
-                            label="Email"
-                            placeholder="email@email.com"
-                            mt={'md'}
-                            withAsterisk
-                            key={form.key('email')}
-                            {...form.getInputProps('email')}
-                        />
-                        <PasswordInput
-                            id="modalLoginPw"
-                            name="modalLoginPw"
-                            label="Password"
-                            placeholder="******"
-                            withAsterisk
-                            key={form.key('password')}
-                            {...form.getInputProps('password')}
-                        />
-                    </Fieldset>
-                    <section className="flex flex-row w-full justify-evenly items-center pt-5">
-                        <button type="button" onClick={handleCancel} className="border border-neutral-200 rounded-md hover:bg-neutral-200 p-2">
-                            Cancel
-                        </button>
-                        <button type='submit' className="border border-neutral-200 rounded-md hover:bg-blue-200 bg-blue-400 p-2">
-                            Sign In
-                        </button>
-                    </section>
-                </form>
+                <SignInForm handleCancel={handleCancel} handleSignIn={handleSignIn} />
             </ModalTemplate>
         </Modal>
     )

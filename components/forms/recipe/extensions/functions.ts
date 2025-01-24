@@ -1,11 +1,11 @@
 import { IngredientType } from "@/models/types/ingredientType";
 import { StepType } from "@/models/types/stepType";
 import { UseFormReturnType } from "@mantine/form";
-import { ValidateIngredients, ValidateSteps } from "./validate";
 import { errorType } from "@/models/types/error";
-import { RecipeCreation } from "@/models/types/inAppCreations/recipeCreation";
+import { RecipeFormType } from "../recipeForm";
+import { ValidateIngredients, ValidateSteps } from "./validate";
 
-export async function CloseChildAndSaveAddition({ which, form, newVals, itemId, stepId }: { form: UseFormReturnType<RecipeCreation, (values: RecipeCreation) => RecipeCreation>, which: string, newVals: IngredientType[] | StepType[], itemId: number, stepId: number | null }) {
+export async function CloseChildAndSaveAddition({ which, form, newVals, itemId, stepId }: { form: UseFormReturnType<RecipeFormType, (values: RecipeFormType) => RecipeFormType>, which: string, newVals: IngredientType[] | StepType[], itemId: number, stepId: number | null }) {
 
     if (which === 'ingredients') {
 
@@ -47,7 +47,7 @@ export async function CloseChildAndSaveAddition({ which, form, newVals, itemId, 
 };
 
 
-export async function CloseChildAndSaveEdits({ which, form, newVals, itemId }: { form: UseFormReturnType<RecipeCreation, (values: RecipeCreation) => RecipeCreation>, which: string, newVals: IngredientType[] | StepType[], itemId: number }) {
+export async function CloseChildAndSaveEdits({ which, form, newVals, itemId }: { form: UseFormReturnType<RecipeFormType, (values: RecipeFormType) => RecipeFormType>, which: string, newVals: IngredientType[] | StepType[], itemId: number }) {
 
     if (which === 'ingredients') {
 
@@ -97,7 +97,7 @@ export async function CloseChildAndSaveEdits({ which, form, newVals, itemId }: {
     }
 };
 
-export async function HandleAddChildValues({ which, form }: { which: string, form: UseFormReturnType<RecipeCreation, (values: RecipeCreation) => RecipeCreation> }) {
+export async function HandleAddChildValues({ which, form }: { which: string, form: UseFormReturnType<RecipeFormType, (values: RecipeFormType) => RecipeFormType> }) {
     if (which === 'ingredients') {
         let id = form.getValues().ingredients.length;
         let blankIngredient = { ingredientId: id, ingredient: '', quantity: '', quantityType: '' } as IngredientType
@@ -112,7 +112,7 @@ export async function HandleAddChildValues({ which, form }: { which: string, for
     }
 }
 
-export async function RemoveChildValues({ which, form, index }: { which: string, form: UseFormReturnType<RecipeCreation, (values: RecipeCreation) => RecipeCreation>, index: number }) {
+export async function RemoveChildValues({ which, form, index }: { which: string, form: UseFormReturnType<RecipeFormType, (values: RecipeFormType) => RecipeFormType>, index: number }) {
     const userConfirmed = window.confirm(`Are you sure you want to delete this ${which === 'steps' ? 'step' : 'ingredient'}?`);
     if (!userConfirmed) {
         return;

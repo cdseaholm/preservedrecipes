@@ -15,7 +15,9 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function Page() {
 
+    const admin = process.env.ADMIN_USERNAME ? process.env.ADMIN_USERNAME as string : 'null';
+
     return (
-        <ProfilePage />
+        <ProfilePage admin={admin}/>
     );
 }

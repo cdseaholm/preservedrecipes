@@ -6,11 +6,12 @@ import { ChangeEvent, useState } from "react"
 import { toast } from "sonner"
 import { CheckFunction } from "../functions"
 import FamilySettings from "./familySettings"
-import FamilyMain from "./familyMain"
 import { IFamilyMember } from "@/models/types/familyMember"
 import { useFamilyStore } from "@/context/familyStore"
+import FamilyMembers from "./familyMembers"
+import FamilyRecipes from "./familyRecipes"
 
-export default function FamilyTab({ userInfo, type, additionString, searchString, promoString, numAdmins, userAdminPrivs }: { userInfo: IUser, type: string, additionString: string[], searchString: string[], promoString: string[], numAdmins: number, userAdminPrivs: boolean }) {
+export default function FamilyTab({ userInfo, type, additionString, searchString, promoString, numAdmins, userAdminPrivs, subTab }: { userInfo: IUser, type: string, additionString: string[], searchString: string[], promoString: string[], numAdmins: number, userAdminPrivs: boolean, subTab: string }) {
 
     const [edit, setEdit] = useState(false);
     const [famCheckedAmt, setFamCheckedAmt] = useState(0);
@@ -78,7 +79,11 @@ export default function FamilyTab({ userInfo, type, additionString, searchString
         settings ? (
             <FamilySettings userFamAdminPrivs={userAdminPrivs} familySettings={['Edit Family Members', 'Edit Family Recipes', 'Delete Family']} handleSettings={handleSettings} family={family} numAdmins={numAdmins}/>
         ) : (
-            <FamilyMain userInfo={userInfo} type={type} additionString={additionString} searchString={searchString} promoString={promoString} userFamAdminPrivs={userAdminPrivs} handleSettings={handleSettings} handleDelete={handleDelete} handleOptions={handleOptions} handleEdit={handleEdit} handleCheckedRec={handleCheckedRec} handleCheckedFam={handleCheckedFam} handleCreate={handleCreate} handleFamilyMemberSearch={handleFamilyMemberSearch} handleFamilyRecipeSearch={handleFamilyRecipeSearch} familySearch={familySearch} familyRecipeSearch={familyRecipeSearch} edit={edit} recChecked={recChecked} famRecipeTitles={famRecipeTitles} famChecked={famChecked} memberNames={memberNames} />
+            subTab === 'recipes' ? (
+                <FamilyRecipes userInfo={userInfo} type={type} additionString={additionString} searchString={searchString} promoString={promoString} userFamAdminPrivs={userAdminPrivs} handleSettings={handleSettings} handleDelete={handleDelete} handleOptions={handleOptions} handleEdit={handleEdit} handleCheckedRec={handleCheckedRec} handleCreate={handleCreate} handleFamilyRecipeSearch={handleFamilyRecipeSearch} familyRecipeSearch={familyRecipeSearch} edit={edit} recChecked={recChecked} famRecipeTitles={famRecipeTitles} />
+            ) : (
+                <FamilyMembers userInfo={userInfo} type={type} additionString={additionString} searchString={searchString} promoString={promoString} userFamAdminPrivs={userAdminPrivs} handleSettings={handleSettings} handleDelete={handleDelete} handleOptions={handleOptions} handleEdit={handleEdit} handleCheckedFam={handleCheckedFam} handleCreate={handleCreate} handleFamilyMemberSearch={handleFamilyMemberSearch} familySearch={familySearch} edit={edit} famChecked={famChecked} memberNames={memberNames} />
+            )
         )
     )
 }

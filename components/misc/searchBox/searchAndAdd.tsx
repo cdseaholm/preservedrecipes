@@ -13,7 +13,7 @@ export default function SearchAndAdd({ handleSearch, handleCreate, children, typ
         <div className={`bg-mainBack p-1 w-full min-h-[300px] sm:min-h-[230px] sm:h-1/2 flex flex-col justify-evenly items-center py-2 sm:px-5`}>
             <div className={`flex flex-row ${edit ? 'justify-between' : 'justify-end'} items-center sm:space-x-4 w-full h-fit p-2`}>
                 {edit &&
-                    <div className="flex flex-row justify-evenly items-center w-1/2 h-content">
+                    <div className="flex flex-row justify-evenly items-center w-content h-content space-x-7">
                         <button className={`${buttonClass}`} onClick={() => clickOptions()}>
                             <p>{`Edit ${totalSelected}`}</p>
                             <FaEdit height={'auto'} />
@@ -24,7 +24,7 @@ export default function SearchAndAdd({ handleSearch, handleCreate, children, typ
                         </button>
                     </div>
                 }
-                <div className="flex flex-row justify-evenly items-center w-1/2 h-content">
+                <div className="flex flex-row justify-evenly items-center w-content h-content space-x-7">
                     <button onClick={() => handleCreate(type, true)} className={buttonClass}>
                         <BiPlus />
                         {additionString}

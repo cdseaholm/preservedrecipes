@@ -1,19 +1,18 @@
 'use client'
 
-import { ComboboxItem, Fieldset, MultiSelect, OptionsFilter, Popover, Select, Switch, TextInput, Textarea, rem } from "@mantine/core";
-import { UseFormReturnType } from "@mantine/form";
-import { useStateStore } from "@/context/stateStore";
 import ComboBox from "@/components/misc/combobox/comboBox";
-import { StepType } from "@/models/types/stepType";
-import { IngredientType } from "@/models/types/ingredientType";
-import { RecipeCreation } from "@/models/types/inAppCreations/recipeCreation";
 import ErrorPopover from "@/components/popovers/errorPopover";
-import { errorType } from "@/models/types/error";
-import { preMadeIngredientTags, preMadeIngredientTypes } from "@/models/types/premadeIngredientTags";
+import { MyInfoIcon } from "@/components/popovers/infoPopover";
+import { preMadeIngredientTypes, preMadeIngredientTags } from "@/models/types/premadeIngredientTags";
+import { Fieldset, TextInput, Textarea, Select, MultiSelect, Popover, Switch, rem, OptionsFilter, ComboboxItem } from "@mantine/core";
 import { MdOutlinePublic } from "react-icons/md";
 import { RiGitRepositoryPrivateLine } from "react-icons/ri";
-import { MyInfoIcon } from "@/components/popovers/infoPopover";
-
+import { RecipeFormType } from "../recipeForm";
+import { UseFormReturnType } from "@mantine/form";
+import { useStateStore } from "@/context/stateStore";
+import { errorType } from "@/models/types/error";
+import { IngredientType } from "@/models/types/ingredientType";
+import { StepType } from "@/models/types/stepType";
 
 const optionsFilter: OptionsFilter = ({ options, search }) => {
     const filtered = (options as ComboboxItem[]).filter((option) =>
@@ -24,7 +23,29 @@ const optionsFilter: OptionsFilter = ({ options, search }) => {
     return filtered;
 };
 
-export default function MainRecipeModal({ handleCancel, handleCreateRecipe, form, handleOpenAdd, handleEditToggle, stepPills, ingredientPills, errors, secret, handleOpenViewers }: { handleCancel: () => void, handleCreateRecipe: (initialValues: RecipeCreation) => void, form: UseFormReturnType<RecipeCreation, (values: RecipeCreation) => RecipeCreation>, handleOpenAdd: (which: string) => void, handleEditToggle: (which: string, index: number) => void, stepPills: StepType[], ingredientPills: IngredientType[], errors: errorType[], secret: boolean, handleOpenViewers: () => void }) {
+export default function MainRecipeForm({
+    handleCancel,
+    handleCreateRecipe,
+    errors,
+    recipeForm,
+    handleOpenViewers,
+    secret,
+    handleOpenAdd,
+    stepPills,
+    handleEditToggle,
+    ingredientPills
+
+}: {
+    handleCancel: () => void,
+    handleCreateRecipe: ({ recipeForm }: { recipeForm: UseFormReturnType<RecipeFormType, (values: RecipeFormType) => RecipeFormType> }) => void,
+    recipeForm: UseFormReturnType<RecipeFormType, (values: RecipeFormType) => RecipeFormType>, errors: errorType[],
+    handleOpenViewers: () => void,
+    secret: boolean,
+    handleOpenAdd: (which: string) => void,
+    stepPills: StepType[],
+    ingredientPills: IngredientType[],
+    handleEditToggle: (which: string, index: number) => void
+}) {
 
     const width = useStateStore(s => s.widthQuery);
     const errorsExist = errors ? true : false;
@@ -34,7 +55,7 @@ export default function MainRecipeModal({ handleCancel, handleCreateRecipe, form
     const errTags = errorsExist && errors.find((err) => err.which === 'tags') ? true : false;
 
     return (
-        <form id="modalCreateRecipeForm" className="w-full h-full">
+        <form id="modalCreateRecipeForm" className="w-full h-full" onAbort={() => { recipeForm.reset(); recipeForm.clearErrors(); handleCancel(); }} onSubmit={recipeForm.onSubmit(() => handleCreateRecipe({ recipeForm }))}>
             <Fieldset legend="Recipe Structure">
                 <div className="flex flex-row w-full justify-end items-center">
                     <ErrorPopover errors={errors} width={width} />
@@ -46,8 +67,8 @@ export default function MainRecipeModal({ handleCancel, handleCreateRecipe, form
                     placeholder="Grandma's Apple Pie"
                     mt={'md'}
                     withAsterisk
-                    key={form.key('name')}
-                    {...form.getInputProps('name')}
+                    key={recipeForm.key('name')}
+                    {...recipeForm.getInputProps('name')}
                     error={errName}
                     className="overflow-hidden whitespace-nowrap text-ellipsis"
                 />
@@ -59,8 +80,8 @@ export default function MainRecipeModal({ handleCancel, handleCreateRecipe, form
                     className={`w-full text-xs sm:text-sm overflow-hidden whitespace-nowrap text-ellipsis`}
                     withAsterisk
                     mt={'md'}
-                    key={form.key('description')}
-                    {...form.getInputProps('description')}
+                    key={recipeForm.key('description')}
+                    {...recipeForm.getInputProps('description')}
                     error={errDescription}
                 />
                 <Select
@@ -75,8 +96,8 @@ export default function MainRecipeModal({ handleCancel, handleCreateRecipe, form
                     mt={'md'}
                     id="modalRecipeType"
                     name="modalRecipeType"
-                    key={form.key('type')}
-                    {...form.getInputProps('type')}
+                    key={recipeForm.key('type')}
+                    {...recipeForm.getInputProps('type')}
                     error={errType}
                 />
                 <MultiSelect
@@ -92,8 +113,8 @@ export default function MainRecipeModal({ handleCancel, handleCreateRecipe, form
                     mt={'md'}
                     id="modalRecipeTags"
                     name="modalRecipeTags"
-                    key={form.key('tags')}
-                    {...form.getInputProps('tags')}
+                    key={recipeForm.key('tags')}
+                    {...recipeForm.getInputProps('tags')}
                     error={errTags}
                 />
                 <Fieldset className="flex flex-row justify-between items-center w-full h-full" legend='Steps' mt={'md'} variant="unstyled">
@@ -117,7 +138,7 @@ export default function MainRecipeModal({ handleCancel, handleCreateRecipe, form
                         <Switch
                             style={{ cursor: 'pointer' }}
                             checked={secret}
-                            onChange={(e) => form.setFieldValue(`secret`, e.currentTarget.checked)}
+                            onChange={(e) => recipeForm.setFieldValue(`secret`, e.currentTarget.checked)}
                             color="red"
                             size="md"
                             onLabel='Private'
@@ -139,7 +160,7 @@ export default function MainRecipeModal({ handleCancel, handleCreateRecipe, form
                     </div>
                     {secret ? (
                         <button type="button" onClick={handleOpenViewers} className="h-[18px] flex flex-row w-content justify-end space-x-2 hover:bg-blue-300 rounded-md" title="Add more viewers">
-                            <p className="h-fit text-xs md:text-sm pl-1">{`${form.getValues().secretViewerIDs.length} viewer${form.getValues().secretViewerIDs.length > 1 ? 's ' : ' '}added`}</p>
+                            <p className="h-fit text-xs md:text-sm pl-1">{`${recipeForm.getValues().secretViewerIDs.length} viewer${recipeForm.getValues().secretViewerIDs.length > 1 ? 's ' : ' '}added`}</p>
                             <p className="h-fit text-xs md:text-sm pr-1">+</p>
                         </button>
                     ) : (
@@ -150,10 +171,10 @@ export default function MainRecipeModal({ handleCancel, handleCreateRecipe, form
                 </Fieldset>
             </Fieldset>
             <section className="flex flex-row w-full justify-evenly items-center pt-5">
-                <button type="button" onClick={handleCancel} className="border border-neutral-200 rounded-md hover:bg-neutral-200 p-2 w-1/5">
+                <button type="button" onClick={() => { recipeForm.reset(); recipeForm.clearErrors(); handleCancel(); }} className="border border-neutral-200 rounded-md hover:bg-neutral-200 p-2 w-1/5">
                     Cancel
                 </button>
-                <button type='button' className="border border-neutral-200 rounded-md hover:bg-blue-200 bg-blue-400 p-2 w-1/5" onClick={() => handleCreateRecipe(form.getValues())}>
+                <button type='submit' className="border border-neutral-200 rounded-md hover:bg-blue-200 bg-blue-400 p-2 w-1/5">
                     Create
                 </button>
             </section>

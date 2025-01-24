@@ -1,12 +1,12 @@
 'use client'
 
+import { FamilyFormType } from '@/components/forms/familyForm';
 import { IFamilyMember } from '@/models/types/familyMember';
-import { FamilyCreation } from '@/models/types/inAppCreations/familyCreation';
 import { InputBase, Combobox, useCombobox } from '@mantine/core';
 import { UseFormReturnType } from '@mantine/form';
 import { useState } from 'react';
 
-export default function TextInsertComboBox({ form, handleOpenMembers, which }: { form: UseFormReturnType<FamilyCreation, (members: FamilyCreation) => FamilyCreation>, handleOpenMembers: (index: number | null) => void, which: string }) {
+export default function TextInsertComboBox({ form, handleOpenMembers, which }: { form: UseFormReturnType<FamilyFormType, (members: FamilyFormType) => FamilyFormType>, handleOpenMembers: (index: number | null) => void, which: string }) {
 
     const combobox = useCombobox({});
     const members = [{} as IFamilyMember]

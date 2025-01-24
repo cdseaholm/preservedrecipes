@@ -8,7 +8,7 @@ import { GoSignOut, GoSignIn } from "react-icons/go";
 import { AiOutlineProfile } from "react-icons/ai";
 import { useUserStore } from "@/context/userStore";
 import { HeaderSmallShort, HeaderSmallNotShort, HeaderLargeShort, HeaderLargeNotShort } from "./headerFormats/headerFormats";
-import { handleZoomClick, handleZoomClose, handleSignOutModal, handleSignInModal, handleRegisterModal, getFirstName } from "./navFunctions/functions";
+import { handleZoomClick, handleZoomClose, handleSignOutModal, handleSignInModal, getFirstName } from "./navFunctions/functions";
 
 const signOut = <GoSignOut color="red" />;
 const signIn = <GoSignIn color="blue" />;
@@ -33,7 +33,6 @@ export default function MainHeader() {
         setOpenSignOutModal: handleSignOutModal,
         signOut: signOut,
         setSignInModal: handleSignInModal,
-        setRegisterModal: handleRegisterModal,
     };
 
     return (

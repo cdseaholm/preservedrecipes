@@ -18,6 +18,10 @@ export const familyMemberSchema = new Schema(
         permissionStatus: {
             type: String,
             default: ''
+        },
+        memberConnected: {
+            type: String,
+            default: false
         }
     },
     {

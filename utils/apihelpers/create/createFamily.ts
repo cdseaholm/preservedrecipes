@@ -1,11 +1,11 @@
+import { FamilyFormType } from "@/components/forms/familyForm";
 import { useFamilyStore } from "@/context/familyStore";
 import { useUserStore } from "@/context/userStore";
 import { IFamily } from "@/models/types/family";
-import { FamilyCreation } from "@/models/types/inAppCreations/familyCreation";
 import { IUser } from "@/models/types/user";
 
 
-export async function AttemptCreateFamily({ familyToAdd }: { familyToAdd: FamilyCreation }) {
+export async function AttemptCreateFamily({ familyToAdd }: { familyToAdd: FamilyFormType }) {
 
     const urlToUse = process.env.BASE_URL ? process.env.BASE_URL as string : '';
 

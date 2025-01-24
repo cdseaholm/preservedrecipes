@@ -3,4 +3,5 @@ export type IFamilyMember = {
     familyMemberName: string;
     familyMemberEmail: string;
     permissionStatus: string;
+    memberConnected: boolean;
 }

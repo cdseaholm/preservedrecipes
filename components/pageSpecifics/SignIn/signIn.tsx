@@ -1,6 +1,8 @@
 'use client'
 
+import { useFamilyStore } from "@/context/familyStore";
 import { useModalStore } from "@/context/modalStore";
+import { InviteRegCheck } from "@/utils/apihelpers/register/inviteSignInCheck";
 import SignInHelper from "@/utils/userHelpers/signInHelper";
 import { Fieldset, TextInput, PasswordInput } from "@mantine/core";
 import { useSession } from "next-auth/react";
@@ -13,6 +15,7 @@ export default function SignInPage() {
     const setOpenSignInModal = useModalStore(state => state.setOpenSignInModal);
     const [emailError, setEmailError] = useState<string>('');
     const [pwError, setPwError] = useState<string>('');
+    const invite = useFamilyStore(state => state.invite);
 
     const clearErrors = async () => {
         setEmailError('');
@@ -59,6 +62,15 @@ export default function SignInPage() {
                     setPwError(attemptError)
                 }
                 return;
+            }
+
+            let inviteCheck = {} as { status: boolean, message: string };
+
+            if (invite) {
+                inviteCheck = await InviteRegCheck({ invite: invite }) as { status: boolean, message: string };
+                if (!inviteCheck || inviteCheck && inviteCheck.status === false) {
+                    toast.error(inviteCheck.message);
+                }
             }
 
             toast.success('Successful sign in!')

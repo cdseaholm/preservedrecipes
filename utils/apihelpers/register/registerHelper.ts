@@ -1,27 +1,14 @@
 import { IUser } from "@/models/types/user"
 import { toast } from "sonner";
-import { SaltAndHashPassword } from "../userHelpers/saltAndHash";
+import { SaltAndHashPassword } from "../../userHelpers/saltAndHash";
+import { IInvite } from "@/models/types/invite";
 
-export default async function RegisterHelper({ namePassed, emailPassed, pwPassed }: { namePassed: string, emailPassed: string, pwPassed: string }) {
+export default async function RegisterHelper({ namePassed, emailPassed, pwPassed, invite }: { namePassed: string, emailPassed: string, pwPassed: string, invite: IInvite | null }) {
 
     const baseUrl = process.env.BASE_URL ? process.env.BASE_URL as string : '';
 
-    if (!namePassed) {
+    if (!namePassed || !emailPassed || !pwPassed || baseUrl === '') {
         console.log(namePassed)
-        return {
-            status: false, newUser: {} as IUser
-        };
-    }
-
-    if (!emailPassed) {
-        console.log(emailPassed)
-        return {
-            status: false, newUser: {} as IUser
-        };
-    }
-
-    if (!pwPassed) {
-        console.log(pwPassed)
         return {
             status: false, newUser: {} as IUser
         };
@@ -42,7 +29,7 @@ export default async function RegisterHelper({ namePassed, emailPassed, pwPassed
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ namePassed: namePassed, emailPassed: emailPassed, saltedPW: saltedPW })
+            body: JSON.stringify({ namePassed: namePassed, emailPassed: emailPassed, saltedPW: saltedPW, invite: invite })
         });
 
         if (!res || res.status !== 200) {
