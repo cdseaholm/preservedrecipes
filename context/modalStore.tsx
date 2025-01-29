@@ -14,6 +14,10 @@ interface ModalStore {
     setOpenLoadingModal: (openLoadingModal: boolean) => void;
     openSuggestionModal: boolean;
     setOpenSuggestionModal: (openSuggestionModal: boolean) => void;
+    openAddFamMemsModal: boolean;
+    setOpenAddFamMemsModal: (openAddFamMemsModal: boolean) => void;
+    openInviteSignInModal: boolean;
+    setOpenInviteSignInModal: (openInviteSignInModal: boolean) => void;
 };
 
 export const useModalStore = create<ModalStore>((set) => ({
@@ -25,8 +29,12 @@ export const useModalStore = create<ModalStore>((set) => ({
     setOpenCreateRecipeModal: (open) => set({ openCreateRecipeModal: open }),
     openCreateFamilyModal: false,
     setOpenCreateFamilyModal: (open) => set({ openCreateFamilyModal: open }),
+    openAddFamMemsModal: false,
+    setOpenAddFamMemsModal: (open) => set({ openAddFamMemsModal: open }),
     openLoadingModal: false,
     setOpenLoadingModal: (open) => set({ openLoadingModal: open }),
     openSuggestionModal: false,
-    setOpenSuggestionModal: (open) => set({ openSuggestionModal: open })
+    setOpenSuggestionModal: (open) => set({ openSuggestionModal: open }),
+    openInviteSignInModal: false,
+    setOpenInviteSignInModal: (open) => set({ openInviteSignInModal: open })
 }));

@@ -1,106 +1,74 @@
 'use client'
 
-import { useFamilyStore } from "@/context/familyStore";
-import { useModalStore } from "@/context/modalStore";
-import { InviteRegCheck } from "@/utils/apihelpers/register/inviteSignInCheck";
+import SignInForm, { SignInFormType } from "@/components/forms/signInForm";
+import { useStateStore } from "@/context/stateStore";
 import SignInHelper from "@/utils/userHelpers/signInHelper";
-import { Fieldset, TextInput, PasswordInput } from "@mantine/core";
+import { UseFormReturnType } from "@mantine/form";
 import { useSession } from "next-auth/react";
-import React, { useState } from "react";
+import React from "react";
 import { toast } from "sonner";
 
 export default function SignInPage() {
 
-    const { data: session } = useSession();
-    const setOpenSignInModal = useModalStore(state => state.setOpenSignInModal);
-    const [emailError, setEmailError] = useState<string>('');
-    const [pwError, setPwError] = useState<string>('');
-    const invite = useFamilyStore(state => state.invite);
+    const { data: session, update } = useSession();
+    const resetZoom = useStateStore(state => state.handleZoomReset);
+    const width = useStateStore(state => state.widthQuery);
 
-    const clearErrors = async () => {
-        setEmailError('');
-        setPwError('')
-    }
-
-    const handleSignIn = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
+    const handleSignIn = async ({ signInForm }: { signInForm: UseFormReturnType<SignInFormType, (values: SignInFormType) => SignInFormType> }) => {
 
         try {
 
-            await clearErrors();
+            signInForm.clearErrors();
 
             if (session) {
+
                 toast.warning("You are already signed in!")
                 return;
+
             }
 
-            const emailVal = event.currentTarget['modalLoginEmail'].value as string;
-            const pwVal = event.currentTarget['modalLoginPw'].value as string;
+            const values = signInForm.getValues();
+            const email = values.email;
+            const password = values.password;
+            const validation = signInForm.validate();
 
-            if (!emailVal && !pwVal) {
-                setEmailError('Email Required');
-                setPwError('Password required');
-                return;
-            } else if (!emailVal) {
-                setEmailError('Email Required');
-                return;
-            } else if (!pwVal) {
-                setPwError('Password required')
+            if (Object.keys(validation.errors).length > 0) {
                 return;
             }
 
-            let signInAttempt = await SignInHelper({ emailPassed: emailVal, pwPassed: pwVal }) as { status: boolean, error: string, whichInput: string };
+            if (!validation) {
+                return;
+            }
+
+            let signInAttempt = await SignInHelper({ emailPassed: email, pwPassed: password }) as { status: boolean };
 
             let attemptStatus = signInAttempt ? signInAttempt.status : false;
-            let attemptError = signInAttempt ? signInAttempt.error : '';
-            let inputError = signInAttempt ? signInAttempt.whichInput : '';
 
             if (attemptStatus === false) {
-                if (inputError === 'email') {
-                    setEmailError(attemptError);
-                } else {
-                    setPwError(attemptError)
-                }
+                toast.error('Error Signing in')
                 return;
             }
 
-            let inviteCheck = {} as { status: boolean, message: string };
-
-            if (invite) {
-                inviteCheck = await InviteRegCheck({ invite: invite }) as { status: boolean, message: string };
-                if (!inviteCheck || inviteCheck && inviteCheck.status === false) {
-                    toast.error(inviteCheck.message);
-                }
-            }
-
-            toast.success('Successful sign in!')
-            setOpenSignInModal(false)
+            await exit();
 
         } catch (error) {
-            console.error('Error signing out:', error);
+            console.error('Error Signing in:', error);
+            return;
         }
     }
 
+    const exit = async () => {
+        toast.success('Successful Sign in!');
+        await update();
+        resetZoom(width, false);
+    }
+
     const handleCancel = () => {
-        clearErrors();
-        setOpenSignInModal(false);
-        toast.info("Cancelled Signing out");
+        resetZoom(width, false);
+        toast.info("Cancelled Signing in");
     }
 
     return (
-        <form onSubmit={handleSignIn} className="w-full">
-            <Fieldset legend="Personal Information">
-                <TextInput name="modalLoginEmail" label="Email" placeholder="email@email.com" mt={'md'} withAsterisk error={emailError === '' ? false : emailError} />
-                <PasswordInput name="modalLoginPw" label="Password" placeholder="*****" withAsterisk error={pwError === '' ? false : pwError} />
-            </Fieldset>
-            <section className="flex flex-row w-full justify-evenly items-center pt-5">
-                <button onClick={() => handleCancel()} className="border border-neutral-200 rounded-md hover:bg-neutral-200 p-2">
-                    Cancel
-                </button>
-                <button type='submit' className="border border-neutral-200 rounded-md hover:bg-blue-200 bg-blue-400 p-2">
-                    Sign In
-                </button>
-            </section>
-        </form>
+        <SignInForm handleCancel={handleCancel} handleSignIn={handleSignIn} />
     );
 }

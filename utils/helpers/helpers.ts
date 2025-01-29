@@ -1,10 +1,8 @@
+import { useStateStore } from "@/context/stateStore";
+
 export async function getBaseUrl() {
-    if (process.env.NODE_ENV === "development") {
-        let devBase = process.env.BASE_URL as string;
-        return devBase;
-    }
-    let liveBase = process.env.BASE_LIVEURL as string;
-    return liveBase;
+    const devBase = process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL as string : 'null';
+    useStateStore.getState().setUrlToUse(devBase);
 }
 
 export async function getMongoDBUri() {

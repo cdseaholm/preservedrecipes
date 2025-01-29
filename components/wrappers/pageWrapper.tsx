@@ -18,8 +18,7 @@ export default function PageWrapper({ children }: Readonly<{ children: React.Rea
     const heightRef = useRef<number | null>(null);
     const setWidthQuery = useStateStore((state) => state.setWidthQuery);
     const setHeightQuery = useStateStore((state) => state.setHeightQuery);
-    const setShortStack = useStateStore((state) => state.setShortStack)
-    const setUrlToUse = useStateStore((state) => state.setUrlToUse);
+    const setShortStack = useStateStore((state) => state.setShortStack);
     const colorPickerMode = useStateStore(state => state.colorPickerMode);
     const globalToast = useAlertStore(state => state.globalToast);
     const setGlobalToast = useAlertStore(state => state.setGlobalToast);
@@ -52,10 +51,6 @@ export default function PageWrapper({ children }: Readonly<{ children: React.Rea
         setHeightQuery(newHeight);
     }, [setWidthQuery, setHeightQuery, setShortStack]);
 
-    const handleUrlToUse = useCallback((currentUrl: string) => {
-        setUrlToUse(currentUrl);
-    }, [setUrlToUse]);
-
     useEffect(() => {
         const newWidth = window.innerWidth;
         const newHeight = window.innerHeight;
@@ -73,10 +68,7 @@ export default function PageWrapper({ children }: Readonly<{ children: React.Rea
     useEffect(() => {
         const fetchUrl = async () => {
             try {
-                const currentUrl = await getBaseUrl();
-                if (currentUrl) {
-                    handleUrlToUse(currentUrl);
-                }
+                await getBaseUrl();
             } catch (error) {
                 console.error("Failed to fetch base URL:", error);
             }
@@ -87,8 +79,7 @@ export default function PageWrapper({ children }: Readonly<{ children: React.Rea
                 setLoading(false);
                 return;
             } else {
-                const headers = { 'Authorization': `Bearer ${session.user}` };
-                const initialized = await InitializeUserData(headers) as { status: boolean, message: string };
+                const initialized = await InitializeUserData() as { status: boolean, message: string };
 
                 if (!initialized || initialized.status === false) {
                     setLoading(false);
@@ -99,14 +90,14 @@ export default function PageWrapper({ children }: Readonly<{ children: React.Rea
             }
         };
         initUserData();
-    }, [setUrlToUse, handleUrlToUse, session]);
+    }, [session]);
 
     useEffect(() => {
         if (globalToast !== '') {
             toast.info(globalToast);
             setGlobalToast('');
         }
-    }, [globalToast, setGlobalToast])
+    }, [globalToast, setGlobalToast]);
 
     if (loading) {
         return (

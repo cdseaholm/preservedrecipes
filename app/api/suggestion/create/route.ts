@@ -1,4 +1,4 @@
-import { connectDB } from "@/lib/mongodb";
+import connectDB from "@/lib/mongodb";
 import Suggestion from "@/models/suggestion";
 import { ISuggestion } from "@/models/types/suggestion";
 import { IUser } from "@/models/types/user";
@@ -35,12 +35,10 @@ export async function POST(req: NextRequest) {
         const user = await MongoUser.findOne({ email: email }) as IUser;
 
         if (!user) {
-            console.log("User not found");
             return NextResponse.json({ status: 404, message: 'User not found', suggestionsReturned: [] as ISuggestion[] });
         }
 
         if (user._id.toString() !== token.sub) {
-            console.log('token mismatch')
             return NextResponse.json({ status: 401, message: 'Unauthorized', suggestionsReturned: [] as ISuggestion[] });
         }
 
@@ -56,7 +54,6 @@ export async function POST(req: NextRequest) {
         }) as ISuggestion;
 
         if (!newSuggestion) {
-            console.log("Error creating suggestion");
             return NextResponse.json({ status: 500, message: 'Error creating', suggestionsReturned: [] as ISuggestion[] });
         }
 
@@ -68,7 +65,6 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ status: 200, message: 'Success!', suggestionsReturned: returnSuggestions as ISuggestion[] });
 
     } catch (error: any) {
-        console.error('Error creating suggestion:', error);
         return NextResponse.json({ status: 500, message: 'Error creating suggestion', suggestionsReturned: [] as ISuggestion[] });
     }
 }

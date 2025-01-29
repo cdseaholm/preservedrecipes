@@ -1,4 +1,4 @@
-import { connectDB } from "@/lib/mongodb";
+import connectDB from "@/lib/mongodb";
 import { IUser } from "@/models/types/user";
 import MongoUser from "@/models/user";
 import { NextRequest, NextResponse } from "next/server";
@@ -13,11 +13,10 @@ export async function GET(req: NextRequest) {
     const secret = process.env.NEXTAUTH_SECRET || '';
 
     if (!secret) {
-        return NextResponse.json({ status: 401, message: 'Incorrect secret', userInfo: {} as IUser });
+        return NextResponse.json({ status: 401, message: 'Incorrect secret', recipes: [] as IRecipe[] });
     }
 
     const session = await getServerSession();
-
     const token = await getToken({ req, secret });
 
     if (!session) {
@@ -59,7 +58,6 @@ export async function GET(req: NextRequest) {
 
         return NextResponse.json({ status: 200, message: 'Success!', recipes: filteredRecipes });
     } catch (error) {
-        console.error(error);
         return NextResponse.json({ status: 500, message: 'Internal Server Error', recipes: [] as IRecipe[] });
     }
 }

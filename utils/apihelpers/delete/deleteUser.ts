@@ -8,7 +8,7 @@ export interface DeleteResponse {
 }
 
 export default async function AttemptDeleteUser(headers: HeadersInit): Promise<DeleteResponse> {
-    const baseUrl = process.env.BASE_URL ? process.env.BASE_URL as string : '';
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL as string : '';
     const urlToDelete = `${baseUrl}/api/user/delete`;
 
     try {
@@ -44,7 +44,6 @@ export default async function AttemptDeleteUser(headers: HeadersInit): Promise<D
         return { status: true, message: 'Recipes deleted successfully' };
 
     } catch (error) {
-        console.error('Error deleting user:', error);
         toast.error('Error deleting user');
         return { status: false, message: 'Error deleting user' };
     }

@@ -1,4 +1,5 @@
 import ProfilePage from "@/components/pageSpecifics/profile/profilePage";
+import { IUser } from "@/models/types/user";
 import { Metadata } from "next";
 import { getServerSession } from "next-auth";
 
@@ -8,16 +9,32 @@ export async function generateMetadata(): Promise<Metadata> {
     const userName = user ? user.name : '';
 
     return {
-        title: `Profile Page for ${userName}`,
-        description: `A Profile Page for ${userName} to manage their personal information, and connected recipes`,
+        title: userName ? `${userName}'s Profile - Preserved Recipes` : 'Profile - Preserved Recipes',
+        description: userName ? `Profile page for ${userName} on Preserved Recipes` : 'Profile page on Preserved Recipes',
     };
 }
 
-export default async function Page() {
+async function InitAdminData(admin: string) {
+    const session = await getServerSession();
+    if (!session) {
+        return false;
+    }
+    const user = session.user as IUser;
+    if (!user) {
+        return false;
+    }
+    const email = user.email as string;
+    if (admin === email) {
+        return true;
+    }
+    return false;
+}
 
+export default async function Page() {
     const admin = process.env.ADMIN_USERNAME ? process.env.ADMIN_USERNAME as string : 'null';
+    const adminHere = await InitAdminData(admin) as boolean;
 
     return (
-        <ProfilePage admin={admin}/>
+        <ProfilePage admin={adminHere} />
     );
 }

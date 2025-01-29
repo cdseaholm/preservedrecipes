@@ -4,15 +4,14 @@ import { IFamily } from "@/models/types/family";
 import { IRecipe } from "@/models/types/recipe";
 import { IUser } from "@/models/types/user";
 
-const BASE_URL = process.env.BASE_URL ? process.env.BASE_URL as string : '';
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL as string : '';
 
-async function fetchData({ endpoint }: { endpoint: string }, headers: HeadersInit) {
-    const url = `${BASE_URL}${endpoint}`;
+export async function fetchData({ endpoint }: { endpoint: string }) {
+    const url = `${baseUrl}${endpoint}`;
 
     const response = await fetch(url, {
         method: 'GET',
         headers: {
-            ...headers,
             'Content-Type': 'application/json'
         },
         next: {
@@ -29,13 +28,14 @@ async function fetchData({ endpoint }: { endpoint: string }, headers: HeadersIni
     return data;
 }
 
-export async function InitializeUserData(headers: HeadersInit) {
+export async function InitializeUserData() {
 
     try {
-        const [userData, recipeData, familyData] = await Promise.all([
-            fetchData({ endpoint: '/api/user/get' }, headers),
-            fetchData({ endpoint: '/api/recipe/get' }, headers),
-            fetchData({ endpoint: '/api/family/get' }, headers),
+        const [userData, recipeData, familyData, suggestionData] = await Promise.all([
+            fetchData({ endpoint: '/api/user/get' }),
+            fetchData({ endpoint: '/api/recipe/get' }),
+            fetchData({ endpoint: '/api/family/get' }),
+            fetchData({ endpoint: '/api/suggestion/get' })
             // fetchData('/api/community/get'),
             // fetchData('/api/family/members/get'),
             // fetchData('/api/family/recipes/get')
@@ -49,7 +49,8 @@ export async function InitializeUserData(headers: HeadersInit) {
         userStore.setUserInfo(userData.userInfo as IUser);
         userStore.setUserRecipes(recipeData.recipes as IRecipe[]);
         familyStore.setFamily(familyData.family as IFamily);
-        
+        useUserStore.getState().setSuggestions(suggestionData.suggestions)
+
         return { status: true, message: 'Success' };
 
 

@@ -1,4 +1,4 @@
-import { connectDB } from "@/lib/mongodb";
+import connectDB from "@/lib/mongodb";
 import Family from "@/models/family";
 import { IFamily } from "@/models/types/family";
 import { IUser } from "@/models/types/user";
@@ -37,12 +37,10 @@ export async function POST(req: NextRequest) {
         const user = await MongoUser.findOne({ email: email }) as IUser;
 
         if (!user) {
-            console.log("User not found");
             return NextResponse.json({ status: 404, message: 'User not found', familyReturned: {} as IFamily });
         }
 
         if (user._id.toString() !== token.sub) {
-            console.log('token mismatch')
             return NextResponse.json({ status: 401, message: 'Unauthorized', familyReturned: {} as IFamily });
         }
 
@@ -63,7 +61,6 @@ export async function POST(req: NextRequest) {
         }) as IFamily;
 
         if (!insertedFamily) {
-            console.log("Error creating family");
             return NextResponse.json({ status: 500, message: 'Error creating', familyReturned: {} as IFamily });
         }
 
@@ -72,7 +69,6 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ status: 200, message: 'Success!', familyReturned: insertedFamily as IFamily });
 
     } catch (error: any) {
-        console.error('Error creating family:', error);
         return NextResponse.json({ status: 500, message: 'Error creating family', familyReturned: {} as IFamily });
     }
 }

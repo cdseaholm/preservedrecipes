@@ -1,4 +1,4 @@
-import { connectDB } from "@/lib/mongodb";
+import connectDB from "@/lib/mongodb";
 import Recipe from "@/models/recipe";
 import { IUser } from "@/models/types/user";
 import MongoUser from "@/models/user";
@@ -35,7 +35,6 @@ export async function DELETE(req: NextRequest) {
         const user = await MongoUser.findOne({ email: email }) as IUser;
 
         if (!user) {
-            console.log("User not found");
             return NextResponse.json({ status: 404, message: 'User not found' });
         }
 
@@ -60,7 +59,6 @@ export async function DELETE(req: NextRequest) {
         return NextResponse.json({ status: 200, message: 'Success!' });
 
     } catch (error: any) {
-        console.error('Error creating recipe:', error);
         return NextResponse.json({ status: 500, message: 'Error creating recipe' });
     }
 }

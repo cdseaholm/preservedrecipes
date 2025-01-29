@@ -42,8 +42,7 @@ export default function ParentFamilyModal({ session, handleUpdate, handleCloseCr
             const validate = familyForm.validate();
 
             if (validate.hasErrors) {
-                console.log(validate.errors);
-                console.log(validate);
+                familyForm.setErrors(validate.errors)
                 return;
             }
 
@@ -58,7 +57,6 @@ export default function ParentFamilyModal({ session, handleUpdate, handleCloseCr
 
             if (attemptStatus === false) {
                 toast.error('Error creating family');
-                console.log(creationAttempt ? creationAttempt.message : 'Error with message');
                 setLoading(false);
                 return;
             }

@@ -1,4 +1,4 @@
-import { connectDB } from "@/lib/mongodb";
+import connectDB from "@/lib/mongodb";
 import Recipe from "@/models/recipe";
 import { IComment } from "@/models/types/comment";
 import { IRecipe } from "@/models/types/recipe";
@@ -37,12 +37,10 @@ export async function POST(req: NextRequest) {
         const user = await MongoUser.findOne({ email: email }) as IUser;
 
         if (!user) {
-            console.log("User not found");
             return NextResponse.json({ status: 404, message: 'User not found', recipeReturned: {} as IRecipe });
         }
 
         if (user._id.toString() !== token.sub) {
-            console.log('token mismatch')
             return NextResponse.json({ status: 401, message: 'Unauthorized', recipeReturned: {} as IRecipe });
         }
 
@@ -65,7 +63,6 @@ export async function POST(req: NextRequest) {
         const insertedRecipe = await Recipe.create(newRecipe);
 
         if (!insertedRecipe) {
-            console.log("Error creating recipe");
             return NextResponse.json({ status: 500, message: 'Error creating', recipeReturned: {} as IRecipe });
         }
 
@@ -78,7 +75,6 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ status: 200, message: 'Success!', recipeReturned: insertedRecipe as IRecipe });
 
     } catch (error: any) {
-        console.error('Error creating recipe:', error);
         return NextResponse.json({ status: 500, message: 'Error creating recipe', recipeReturned: {} as IRecipe });
     }
 }

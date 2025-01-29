@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { DeleteResponse } from "./deleteUser";
 
 export default async function AttemptDeleteRecipes({ toDelete }: { toDelete: IRecipe[] }, headers: HeadersInit): Promise<DeleteResponse> {
-    const baseUrl = process.env.BASE_URL ? process.env.BASE_URL as string : '';
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL as string : '';
     const urlToDelete = `${baseUrl}/api/recipe/delete`;
 
     try {
@@ -49,7 +49,6 @@ export default async function AttemptDeleteRecipes({ toDelete }: { toDelete: IRe
         return { status: true, message: 'Recipes deleted successfully' };
 
     } catch (error) {
-        console.error('Error deleting recipes:', error);
         toast.error('Error deleting recipes');
         return { status: false, message: 'Error deleting recipes' };
     }

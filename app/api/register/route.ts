@@ -1,4 +1,4 @@
-import { connectDB } from '@/lib/mongodb';
+import connectDB from "@/lib/mongodb";
 import Family from '@/models/family';
 import Invite from '@/models/invite';
 import { IFamily } from '@/models/types/family';
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
     }
 
     const invite = body.invite as null | IInvite ? body.invite as IInvite : null;
-    console.log('invite: ', invite)
+
     const userFamID = invite !== null ? invite.familyID : '';
 
     if (invite !== null) {
@@ -76,7 +76,6 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ status: 200, message: "Success!", newUser: user as IUser });
   } catch (error) {
-    console.error('Error:', error);
     return NextResponse.json({ status: 500, message: "Error catch", newUser: {} as IUser });
   }
 }

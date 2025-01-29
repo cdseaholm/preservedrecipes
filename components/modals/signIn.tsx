@@ -8,8 +8,6 @@ import SignInHelper from "@/utils/userHelpers/signInHelper";
 import { UseFormReturnType } from '@mantine/form';
 import { Session } from "next-auth";
 import { useStateStore } from "@/context/stateStore";
-import { useFamilyStore } from "@/context/familyStore";
-import { InviteRegCheck } from "@/utils/apihelpers/register/inviteSignInCheck";
 import SignInForm, { SignInFormType } from "../forms/signInForm";
 
 export default function SignInModal({ session, handleUpdate }: { session: Session | null, handleUpdate: () => Promise<void> }) {
@@ -18,7 +16,6 @@ export default function SignInModal({ session, handleUpdate }: { session: Sessio
     const setOpenSignInModal = useModalStore(state => state.setOpenSignInModal);
     const resetZoom = useStateStore(state => state.handleZoomReset);
     const width = useStateStore(state => state.widthQuery);
-    const invite = useFamilyStore(state => state.invite);
 
     const handleSignIn = async ({ signInForm }: { signInForm: UseFormReturnType<SignInFormType, (values: SignInFormType) => SignInFormType> }) => {
 
@@ -27,12 +24,15 @@ export default function SignInModal({ session, handleUpdate }: { session: Sessio
             signInForm.clearErrors();
 
             if (session) {
+
                 toast.warning("You are already signed in!")
                 return;
+
             }
 
-
-            const { email, password } = signInForm.values;
+            const values = signInForm.getValues();
+            const email = values.email;
+            const password = values.password;
             const validation = signInForm.validate();
 
             if (Object.keys(validation.errors).length > 0) {
@@ -52,23 +52,19 @@ export default function SignInModal({ session, handleUpdate }: { session: Sessio
                 return;
             }
 
-            let inviteCheck = {} as { status: boolean, message: string };
-
-            if (invite) {
-                inviteCheck = await InviteRegCheck({ invite: invite }) as { status: boolean, message: string };
-                if (!inviteCheck || inviteCheck && inviteCheck.status === false) {
-                    toast.error(inviteCheck.message);
-                }
-            }
-
-            toast.success('Successful Sign in!');
-            await handleUpdate();
-            resetZoom(width, false);
-            setOpenSignInModal(false);
+            await exit();
 
         } catch (error) {
             console.error('Error Signing in:', error);
+            return;
         }
+    }
+
+    const exit = async () => {
+        toast.success('Successful Sign in!');
+        await handleUpdate();
+        resetZoom(width, false);
+        setOpenSignInModal(false);
     }
 
     const handleCancel = () => {

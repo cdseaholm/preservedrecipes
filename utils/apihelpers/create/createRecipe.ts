@@ -6,7 +6,7 @@ import { RecipeFormType } from "@/components/forms/recipe/recipeForm";
 
 export async function AttemptCreateRecipe({ recipeToAdd }: { recipeToAdd: RecipeFormType }) {
 
-    const urlToUse = process.env.BASE_URL ? process.env.BASE_URL as string : '';
+    const urlToUse = process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL as string : '';
 
     try {
         const res = await fetch(`${urlToUse}/api/recipe/create`, {
@@ -44,7 +44,6 @@ export async function AttemptCreateRecipe({ recipeToAdd }: { recipeToAdd: Recipe
         return { status: true, message: `Created` };
 
     } catch (error: any) {
-        console.log('Creating Recipe error: ', error);
         return { status: false, message: `Failed creation` };
     }
 }
