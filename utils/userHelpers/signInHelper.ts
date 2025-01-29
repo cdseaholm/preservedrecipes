@@ -13,7 +13,6 @@ export default async function SignInHelper({ emailPassed, pwPassed }: { emailPas
     });
 
     if (res && res.error) {
-        console.log('Error logging in:', res.error);
         return { status: false };
     }
 

@@ -5,7 +5,7 @@ import { IInvite } from "@/models/types/invite";
 
 export async function InviteRegCheck({ invite }: { invite: IInvite }) {
 
-    const urlToUse = process.env.BASE_URL ? process.env.BASE_URL as string : '';
+    const urlToUse = process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL as string : '';
 
     if (urlToUse === '') {
         return { status: false }
@@ -13,7 +13,7 @@ export async function InviteRegCheck({ invite }: { invite: IInvite }) {
 
     try {
         const response = await fetch(`${urlToUse}/api/invite/accept`, {
-            method: 'PUT',
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -26,13 +26,17 @@ export async function InviteRegCheck({ invite }: { invite: IInvite }) {
 
         const data = await response.json();
 
-        if (!data || data.status !== 200) {
+        if (!data) {
             return { status: false, message: 'Failed to recieve invite, data null' };
+        }
+
+        if (data.status !== 200) {
+            return { status: false, message: `Failed to recieve invite, data status not 200 ${data.message}` };
         }
 
         const returnedMembers = data.returnedMembers as IFamilyMember[];
 
-        useFamilyStore.getState().setInvite(useFamilyStore.getInitialState().invite);
+        useFamilyStore.getState().setInvite(null);
 
         const userInfo = useUserStore.getState().userInfo;
         useUserStore.getState().setUserInfo({

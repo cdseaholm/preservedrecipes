@@ -5,22 +5,22 @@ import { IInvite } from "@/models/types/invite";
 
 export default async function RegisterHelper({ namePassed, emailPassed, pwPassed, invite }: { namePassed: string, emailPassed: string, pwPassed: string, invite: IInvite | null }) {
 
-    const baseUrl = process.env.BASE_URL ? process.env.BASE_URL as string : '';
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL as string : '';
 
     if (!namePassed || !emailPassed || !pwPassed || baseUrl === '') {
-        console.log(namePassed)
+ 
         return {
-            status: false, newUser: {} as IUser
+            status: false, newUser: null
         };
     }
 
     try {
 
         const saltedPW = await SaltAndHashPassword(pwPassed);
-        console.log(saltedPW)
         if (!saltedPW) {
+            
             return {
-                status: false, newUser: {} as IUser
+                status: false, newUser: null
             }
         }
 
@@ -34,14 +34,13 @@ export default async function RegisterHelper({ namePassed, emailPassed, pwPassed
 
         if (!res || res.status !== 200) {
             toast.error('Error registering in help');
-            console.log(res)
             return {
-                status: false, newUser: {} as IUser
+                status: false, newUser: null
             };
         }
 
         const data = await res.json();
-        let userToReturn = {} as IUser;
+        let userToReturn = null;
         if (!data) {
             return { status: false, newUser: userToReturn };
         }
@@ -51,8 +50,9 @@ export default async function RegisterHelper({ namePassed, emailPassed, pwPassed
         return { status: true, newUser: userToReturn as IUser }
 
     } catch (error: any) {
+        
         return {
-            status: false, newUser: {} as IUser
+            status: false, newUser: null
         };
     }
 

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Invite from '@/models/invite';
-import { connectDB } from '@/lib/mongodb';
+import connectDB from "@/lib/mongodb";
 import { IInvite } from '@/models/types/invite';
 
 export async function GET(req: NextRequest) {
@@ -30,7 +30,6 @@ export async function GET(req: NextRequest) {
 
         return NextResponse.redirect(`/register?token=${token}`);
     } catch (error) {
-        console.error('Error verifying invite token:', error);
         return NextResponse.json({ status: 500, message: 'Internal server error' });
     }
 }

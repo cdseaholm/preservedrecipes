@@ -7,20 +7,22 @@ import { toast } from "sonner";
 import ModalTemplate from "./templates/modalTemplate";
 import { Session } from "next-auth";
 import { useStateStore } from "@/context/stateStore";
+import { useRouter } from "next/navigation";
 
-export default function SignOutModal({session, handleUpdate}: {session: Session | null, handleUpdate: () => Promise<void>}) {
+export default function SignOutModal({ session, handleUpdate }: { session: Session | null, handleUpdate: () => Promise<void> }) {
 
     const openSignOutModal = useModalStore(state => state.openSignOutModal);
     const setOpenSignOutModal = useModalStore(state => state.setOpenSignOutModal);
     const resetZoom = useStateStore(state => state.handleZoomReset);
     const width = useStateStore(state => state.widthQuery);
+    const router = useRouter();
 
     const handleSignOut = async () => {
         if (!session) {
             toast.error('You are already signed out')
             return;
         }
-        
+
         try {
             await signOut();
             await handleUpdate();
@@ -29,6 +31,7 @@ export default function SignOutModal({session, handleUpdate}: {session: Session 
         } finally {
             resetZoom(width, false);
             setOpenSignOutModal(false);
+            router.replace('/')
         }
     }
 
@@ -44,7 +47,7 @@ export default function SignOutModal({session, handleUpdate}: {session: Session 
             setOpenSignOutModal(false);
         }} title="Sign Out" centered overlayProps={{
             backgroundOpacity: 0.55, blur: 3, className: 'drop-shadow-xl'
-        }} removeScrollProps={{allowPinchZoom: true}} lockScroll={false}>
+        }} removeScrollProps={{ allowPinchZoom: true }} lockScroll={false}>
             <ModalTemplate subtitle={`Are you sure you want to sign out?`} minHeight="15vh" minWidth="15vw">
                 <section className="flex flex-row w-full justify-evenly items-center">
                     <button onClick={() => handleCancel()} className="border border-neutral-200 rounded-md hover:bg-neutral-200 p-2">

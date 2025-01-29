@@ -7,7 +7,7 @@ import { IUser } from "@/models/types/user";
 
 export async function AttemptCreateFamily({ familyToAdd }: { familyToAdd: FamilyFormType }) {
 
-    const urlToUse = process.env.BASE_URL ? process.env.BASE_URL as string : '';
+    const urlToUse = process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL as string : '';
 
     try {
         const res = await fetch(`${urlToUse}/api/family/create`, {
@@ -41,7 +41,6 @@ export async function AttemptCreateFamily({ familyToAdd }: { familyToAdd: Family
         return { status: true, message: `Created` };
 
     } catch (error: any) {
-        console.log('Creating Family error: ', error);
         return { status: false, message: `Failed creation` };
     }
 }

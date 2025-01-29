@@ -1,4 +1,4 @@
-import { connectDB } from "@/lib/mongodb";
+import connectDB from "@/lib/mongodb";
 import { IUser } from "@/models/types/user";
 import MongoUser from "@/models/user";
 import { NextRequest, NextResponse } from "next/server";
@@ -12,7 +12,8 @@ import { IFamily } from "@/models/types/family";
 import { IFamilyMember } from "@/models/types/familyMember";
 import Invite from "@/models/invite";
 
-export async function PUT(req: NextRequest) {
+export async function POST(req: NextRequest) {
+
     const secret = process.env.NEXTAUTH_SECRET || '';
 
     if (!secret) {
@@ -54,6 +55,10 @@ export async function PUT(req: NextRequest) {
             return NextResponse.json({ status: 404, message: 'Family not found', returnedMembers: [] as IFamilyMember[] });
         }
 
+        if (user.userFamilyID !== '' && user.userFamilyID !== invite.familyID) {
+            return NextResponse.json({ status: 406, message: "User must leave current family to accept invite or user is a part of the family", returnedMembers: [] as IFamilyMember[] })
+        }
+
         await MongoUser.updateOne({ email: email }, { userFamilyID: invite.familyID });
 
         const famMembers = thisFam.familyMembers;
@@ -65,8 +70,11 @@ export async function PUT(req: NextRequest) {
         }
 
         const newMember = {
-            ...memberToChange,
-            memberConnected: true
+            familyMemberEmail: memberToChange.familyMemberEmail,
+            familyMemberID: user._id.toString(),
+            familyMemberName: user.name,
+            memberConnected: true,
+            permissionStatus: memberToChange.permissionStatus
         } as IFamilyMember;
 
         const updatedMembers = [

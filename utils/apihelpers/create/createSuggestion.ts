@@ -5,7 +5,7 @@ import { ISuggestion } from "@/models/types/suggestion";
 
 export async function AttemptCreateSuggestion({ suggestion }: { suggestion: SuggestionFormType }) {
 
-    const urlToUse = process.env.BASE_URL ? process.env.BASE_URL as string : '';
+    const urlToUse = process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL as string : '';
 
     try {
         const res = await fetch(`${urlToUse}/api/suggestion/create`, {
@@ -33,7 +33,6 @@ export async function AttemptCreateSuggestion({ suggestion }: { suggestion: Sugg
         return { status: true, message: `Created` };
 
     } catch (error: any) {
-        console.log('Creating Suggestion error: ', error);
         return { status: false, message: `Failed creation` };
     }
 }

@@ -1,27 +1,24 @@
 import { useFamilyStore } from "@/context/familyStore";
 import { IInvite } from "@/models/types/invite";
 import { IUser } from "@/models/types/user";
-import { toast } from "sonner";
 
-export async function OpenInvite({ token }: { token: string | string[] }) {
+export async function OpenInvite({ token }: { token: string }) {
 
-    const urlToUse = process.env.BASE_URL ? process.env.BASE_URL as string : '';
+    const urlToUse = process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL as string : '';
 
     if (urlToUse === '' || token === '') {
         return { status: false, message: urlToUse === '' ? 'Issue with url' : 'Issue with token', invite: {} as IInvite, userExists: false };
     }
 
     try {
-        const inviteRes = await fetch(`${urlToUse}/api/invite/open`, {
+        const inviteRes = await fetch(`${urlToUse}/api/invite/${token}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ token: token }),
+            }
         });
 
         if (!inviteRes.ok) {
-            toast.error('Failed to delete family');
             return { status: false, message: 'Failed to fetch invite, res', invite: {} as IInvite, userExists: false };
         }
 
@@ -40,7 +37,6 @@ export async function OpenInvite({ token }: { token: string | string[] }) {
 
 
     } catch (error: any) {
-        console.log(error);
         return { status: false, message: error, invite: {} as IInvite, userExists: false };
     }
 

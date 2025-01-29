@@ -9,9 +9,9 @@ import React, { Suspense } from 'react';
 export default function Homepage() {
 
   const sections = [
-    <WelcomeSection key={0}/>,
-    <InfoTemplate tab={'recipes'} key={1}/>,
-    <InfoTemplate tab={'family'} key={2}/>,
+    <WelcomeSection key={0} />,
+    <InfoTemplate tab={'recipes'} key={1} />,
+    <InfoTemplate tab={'family'} key={2} />,
     //<InfoTemplate tab={'communities'} key={3}/>,
     <AboutSection key={4} id="about-section" />
   ] as React.JSX.Element[];

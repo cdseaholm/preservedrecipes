@@ -18,7 +18,7 @@ import { useFamilyStore } from "@/context/familyStore";
 import { IFamilyMember } from "@/models/types/familyMember";
 
 
-export default function ProfilePage({ admin }: { admin: string }) {
+export default function ProfilePage({ admin }: { admin: boolean }) {
 
     //globals
     const router = useRouter();
@@ -44,7 +44,6 @@ export default function ProfilePage({ admin }: { admin: string }) {
     //variables
     const user = session ? session.user as User : null;
     const userName = user ? user.name : '';
-
 
 
     const tabsClass = `flex flex-col h-full w-full justify-evenly items-center py-8 px-4`
@@ -121,7 +120,7 @@ export default function ProfilePage({ admin }: { admin: string }) {
                     </div>
 
                     <Tabs.Panel value="account">
-                        <AccountTab numAdmins={numAdmins} userAdminPrivs={userAdminPrivs} family={family} suggestions={suggestions} session={session} admin={admin} />
+                        <AccountTab numAdmins={numAdmins} userAdminPrivs={userAdminPrivs} family={family} suggestions={suggestions} admin={admin} />
                     </Tabs.Panel>
 
                     <Tabs.Panel value="family" className={tabsClass}>

@@ -1,21 +1,18 @@
-'use client'
-
-import { LoadingSpinner } from '@/components/misc/loadingSpinner';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { Metadata } from 'next';
 import Homepage from './(content)/homepage/page';
 
-export default function Home() {
-  const [loading, setLoading] = useState<boolean>(true)
+export async function generateMetadata(): Promise<Metadata> {
 
-  useEffect(() => {
-    setLoading(false)
-  }, [loading]);
+  return {
+    title: `Home Page for Preserved Recipes`,
+    description: `Home Page for information about preserved recipes and more`,
+  };
+}
+
+export default async function Page() {
 
   return (
-    loading ? (
-      <LoadingSpinner screen={true} />
-    ) : (
-      <Homepage />
-    )
-  )
+    <Homepage />
+  );
 }

@@ -1,4 +1,4 @@
-import SignInPage from "@/components/pageSpecifics/SignIn/signIn";
+import SignInPage from "@/components/pageSpecifics/signIn/signIn";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

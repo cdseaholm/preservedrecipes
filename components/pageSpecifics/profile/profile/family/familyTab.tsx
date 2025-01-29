@@ -22,7 +22,7 @@ export default function FamilyTab({ userInfo, type, additionString, searchString
     const family = useFamilyStore(s => s.family);
     const familyRecipes = family ? family.recipes as IRecipe[] : [] as IRecipe[];
     const familyMembers = family ? family.familyMembers as IFamilyMember[] : [] as IFamilyMember[];
-    const memberNames = familyMembers ? familyMembers.map((mem) => mem.familyMemberName) as string[] : [] as string[];
+    const memberNames = familyMembers ? familyMembers.map((mem) => { return { name: mem.familyMemberName, email: mem.familyMemberEmail } }) as { name: string, email: string }[] : [] as { name: string, email: string }[];
     const famRecipeTitles = familyRecipes ? familyRecipes.map((rec) => rec.name) as string[] : [] as string[];
     const [famChecked, setFamChecked] = useState<boolean[]>(new Array(memberNames.length).fill(false));
     const [recChecked, setRecChecked] = useState<boolean[]>(new Array(famRecipeTitles.length).fill(false));
@@ -77,12 +77,12 @@ export default function FamilyTab({ userInfo, type, additionString, searchString
 
     return (
         settings ? (
-            <FamilySettings userFamAdminPrivs={userAdminPrivs} familySettings={['Edit Family Members', 'Edit Family Recipes', 'Delete Family']} handleSettings={handleSettings} family={family} numAdmins={numAdmins}/>
+            <FamilySettings userFamAdminPrivs={userAdminPrivs} familySettings={['Edit Family Members', 'Edit Family Recipes', 'Delete Family']} handleSettings={handleSettings} family={family} numAdmins={numAdmins} />
         ) : (
             subTab === 'recipes' ? (
                 <FamilyRecipes userInfo={userInfo} type={type} additionString={additionString} searchString={searchString} promoString={promoString} userFamAdminPrivs={userAdminPrivs} handleSettings={handleSettings} handleDelete={handleDelete} handleOptions={handleOptions} handleEdit={handleEdit} handleCheckedRec={handleCheckedRec} handleCreate={handleCreate} handleFamilyRecipeSearch={handleFamilyRecipeSearch} familyRecipeSearch={familyRecipeSearch} edit={edit} recChecked={recChecked} famRecipeTitles={famRecipeTitles} />
             ) : (
-                <FamilyMembers userInfo={userInfo} type={type} additionString={additionString} searchString={searchString} promoString={promoString} userFamAdminPrivs={userAdminPrivs} handleSettings={handleSettings} handleDelete={handleDelete} handleOptions={handleOptions} handleEdit={handleEdit} handleCheckedFam={handleCheckedFam} handleCreate={handleCreate} handleFamilyMemberSearch={handleFamilyMemberSearch} familySearch={familySearch} edit={edit} famChecked={famChecked} memberNames={memberNames} />
+                <FamilyMembers userInfo={userInfo} type={type} additionString={additionString} searchString={searchString} promoString={promoString} userFamAdminPrivs={userAdminPrivs} handleSettings={handleSettings} handleDelete={handleDelete} handleOptions={handleOptions} handleEdit={handleEdit} handleCheckedFam={handleCheckedFam} handleFamilyMemberSearch={handleFamilyMemberSearch} familySearch={familySearch} edit={edit} famChecked={famChecked} memberNames={memberNames} />
             )
         )
     )

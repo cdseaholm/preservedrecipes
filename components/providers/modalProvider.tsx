@@ -8,6 +8,8 @@ import AlertModal from "../modals/alert/alertModal";
 import { useSession } from "next-auth/react";
 import ParentFamilyModal from "../modals/createFamily/familyModal";
 import SuggestionModal from "../modals/suggestion/parentSuggestionModal";
+import AddFamMemsModal from "../modals/createFamily/addFamMemModal";
+import InviteSignInModal from "../modals/inviteSignIn";
 
 export default function ModalProvider() {
 
@@ -35,6 +37,8 @@ export default function ModalProvider() {
             <ParentRecipeModal session={session} open={openCreateRecipeModal} handleCloseCreateRecipe={handleCloseCreateRecipe} />
             <ParentFamilyModal session={session} handleUpdate={handleUpdate} handleCloseCreateFamily={handleCloseCreateFamily} />
             <SuggestionModal session={session} handleUpdate={handleUpdate} />
+            <AddFamMemsModal session={session} handleUpdate={handleUpdate} />
+            <InviteSignInModal session={session} handleUpdate={handleUpdate} />
             <AlertModal />
         </>
     );
