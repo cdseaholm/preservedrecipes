@@ -1,35 +1,121 @@
 'use client'
 
-import { AccountButton } from "@/components/buttons/accountButton";
-import { IFamily } from "@/models/types/family";
+import InSearchItemButton from "@/components/buttons/inSearchItemButton";
 import { ISuggestion } from "@/models/types/suggestion";
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
+import { CheckFunction } from "./functions";
+import { toast } from "sonner";
+import SearchAndAdd from "@/components/misc/searchBox/searchAndAdd";
+import { Session } from "next-auth";
+import ViewSpecificItem from "./profileHelpers/viewSpecificItem";
 
-export default function AccountTab({ numAdmins, userAdminPrivs, family, suggestions, admin }: { numAdmins: number, userAdminPrivs: boolean, family: IFamily, suggestions: ISuggestion[], admin: boolean }) {
+export default function AccountTab({ suggestions, session, indexToRender }: { suggestions: ISuggestion[], session: Session, indexToRender: number }) {
 
-    const profileTabs = ['Profile Settings', 'Account Settings', 'Account History', 'Delete Account'];
+    const [edit, setEdit] = useState(false);
+    const [checkedAmt, setCheckedAmt] = useState(0);
     const [search, setSearch] = useState('');
+    const [checked, setChecked] = useState<boolean[]>(new Array(suggestions.length).fill(false));
+    const [itemToView, setItemToView] = useState<ISuggestion | null>(null)
+
+    const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
+        setSearch(e.currentTarget.value)
+    }
+
+    const handleCreate = (_which: string, _open: boolean) => {
+        toast.info('Handle create')
+    }
+
+    const handleChecked = (index: number) => {
+        const checks = CheckFunction({ checked: checked, checkedAmt: checkedAmt, index: index }) as { newChecked: boolean[], newCheckedAmt: number }
+        if (!checks) {
+            toast.info('Error checking recipes')
+            return;
+        }
+        setChecked(checks.newChecked);
+        setCheckedAmt(checks.newCheckedAmt);
+    };
+
+    const handleEdit = () => {
+        setEdit(!edit)
+    }
+
+    const handleOptions = () => {
+        toast.info('Options')
+    }
+
+    const handleSeeItem = (index: number) => {
+        if (index === -1) {
+            setItemToView(null)
+        } else {
+            setItemToView(suggestions[index])
+        }
+    }
+
+    const handleDelete = async () => {
+
+        if (!session) {
+            toast.info('Deleting failed')
+            return;
+        }
+
+        toast.info('Deleting success')
+        return;
+
+        // const indicesToDelete = checked.map((isChecked, index) => isChecked ? index : -1).filter(index => index !== -1);
+
+        // const itemsToDelete = indicesToDelete.map(index => userRecipes[index]);
+
+        // const headers = { 'Authorization': `Bearer ${session.user}` };
+
+        // const result = await AttemptDeleteRecipes({ toDelete: itemsToDelete }, headers);
+
+        // if (result.status) {
+
+        //     setEdit(false);
+        //     setChecked(new Array(recipeTitles.length).fill(false));
+        //     setCheckedAmt(0);
+
+        // } else {
+
+        //     toast.error(result.message);
+
+        // }
+    };
 
     return (
-        <div className={`bg-mainBack p-1 w-full h-content flex flex-col justify-center items-center pt-3 px-5 pb-5 space-y-5`}>
-            {profileTabs.map((tab, index) =>
-                <AccountButton which={tab} key={index} numAdmins={numAdmins} userFamAdminPrivs={userAdminPrivs} family={family} />
-            )}
-            {admin &&
-                <div className="flex flex-col justify-start items-start w-[100%] h-full bg-mainContent border border-accent/30 rounded-md">
-                    <input type="text" onChange={(e) => setSearch(e.currentTarget.value)} className="flex flex-row w-full p-2 text-sm lg:text-md border-b border-highlight/50 shadow-inner" placeholder={`Search suggestions`} />
-                    <div className="scrollbar-thin scrollbar-webkit w-[100%] h-[450px] sm:h-[500px] overflow-auto shadow-inner py-4 px-2 overflow-x-hidden space-y-2 flex flex-col justify-start items-center">
-                        {suggestions.length > 0 ? (
+
+        indexToRender === 0 ? (
+            <p>Account Settings</p>
+
+        ) : indexToRender === 1 ? (
+            <p>Profile Settings</p>
+        ) : indexToRender === 2 ? (
+            <p>Account History</p>
+        ) : indexToRender === 3 ? (
+            <p>Delete Account</p>
+        ) : (
+
+            itemToView ? (
+
+                <ViewSpecificItem item={itemToView} handleSeeItem={handleSeeItem} parent={'suggestions'} />
+
+            ) : (
+
+                <SearchAndAdd handleSearch={handleSearch} handleCreate={handleCreate} type={'Account'} additionString={''} searchString={'Search for suggestions'} index={2} handleEdit={handleEdit} edit={edit} totalSelected={checkedAmt} clickOptions={handleOptions} clickDelete={handleDelete} optionsLength={suggestions ? suggestions.length : 0}>
+                    {
+                        suggestions.length > 0 ? (
 
                             suggestions.filter((item) => item.suggestionTitle.toLowerCase().includes(search.toLowerCase().trim())).map((item, index) => (
-                                <ul className="space-x-2 text-ellipses" key={index}>{index + 1}. {item.suggestion}</ul>
+                                <InSearchItemButton key={index} item={item.suggestionTitle} index={index} handleChecked={handleChecked} edit={edit} checked={checked[index]} handleSeeItem={handleSeeItem}>
+                                    <ul className="space-x-2 text-ellipses" key={index}>{index + 1}. {item.suggestion}</ul>
+                                </InSearchItemButton>
                             ))
                         ) : (
                             <ul className="p-2 text-start pl-7">{`Empty`}</ul>
-                        )}
-                    </div>
-                </div>
-            }
-        </div>
+                        )
+                    }
+                </SearchAndAdd>
+            )
+        )
     )
 }

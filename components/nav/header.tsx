@@ -8,20 +8,25 @@ import { GoSignOut, GoSignIn } from "react-icons/go";
 import { AiOutlineProfile } from "react-icons/ai";
 import { useUserStore } from "@/context/userStore";
 import { HeaderSmallShort, HeaderSmallNotShort, HeaderLargeShort, HeaderLargeNotShort } from "./headerFormats/headerFormats";
-import { handleZoomClick, handleZoomClose, handleSignOutModal, handleSignInModal, getFirstName } from "./navFunctions/functions";
+import { handleZoomClick, handleZoomClose, handleSignInModal, getFirstName } from "./navFunctions/functions";
 
-const signOut = <GoSignOut color="red" />;
+const signOutElement = <GoSignOut color="red" />;
 const signIn = <GoSignIn color="blue" />;
 const profile = <AiOutlineProfile />;
 
 export default function MainHeader() {
-    const { data: session } = useSession();
+    const { data: session, update } = useSession();
     const userInfo = useUserStore(state => state.userInfo);
 
     const widthQuery = useStateStore((state) => state.widthQuery);
     const isMediumScreenOrLess = widthQuery < 768;
     const height = useStateStore(state => state.heightQuery);
     const shortStack = useStateStore(state => state.shortStack);
+
+    const handleUpdate = async () => {
+        await update();
+    }
+
 
     const commonParams = {
         userInfo: userInfo,
@@ -30,9 +35,9 @@ export default function MainHeader() {
         profile: profile,
         firstName: getFirstName(session),
         session: session,
-        setOpenSignOutModal: handleSignOutModal,
-        signOut: signOut,
+        signOutElement: signOutElement,
         setSignInModal: handleSignInModal,
+        handleUpdate: handleUpdate,
     };
 
     return (

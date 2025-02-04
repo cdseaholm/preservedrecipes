@@ -9,15 +9,17 @@ import { toast } from "sonner";
 import { CheckFunction } from "./functions";
 import AttemptDeleteRecipes from "@/utils/apihelpers/delete/deleteRecipe";
 import { Session } from "next-auth";
+import ViewSpecificItem from "./profileHelpers/viewSpecificItem";
 
-export default function RecipeTab({ userRecipes, type, additionString, searchString, promoString, session }: { userRecipes: IRecipe[], type: string, additionString: string, searchString: string, promoString: string, session: Session | null }) {
+export default function RecipeTab({ userRecipes, type, additionString, searchString, promoString, session }: { userRecipes: IRecipe[], type: string, additionString: string, searchString: string, promoString: string, session: Session }) {
 
     const [edit, setEdit] = useState(false);
     const [checkedAmt, setCheckedAmt] = useState(0);
     const setOpenCreateRecipeModal = useModalStore(state => state.setOpenCreateRecipeModal);
     const [recipeSearch, setRecipeSearch] = useState('');
     const [recipeTitles, setRecipeTitles] = useState<string[]>([] as string[])
-    const [checked, setChecked] = useState<boolean[]>([] as boolean[]);
+    const [checked, setChecked] = useState<boolean[]>(new Array(userRecipes.length).fill(false));
+    const [itemToView, setItemToView] = useState<IRecipe | null>(null)
 
 
     const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
@@ -44,6 +46,14 @@ export default function RecipeTab({ userRecipes, type, additionString, searchStr
 
     const handleOptions = () => {
         toast.info('Options')
+    }
+
+    const handleSeeItem = (index: number) => {
+        if (index === -1) {
+            setItemToView(null)
+        } else {
+            setItemToView(userRecipes[index])
+        }
     }
 
     const handleDelete = async () => {
@@ -86,16 +96,22 @@ export default function RecipeTab({ userRecipes, type, additionString, searchStr
     }, [userRecipes])
 
     return (
-        <SearchAndAdd handleSearch={handleSearch} handleCreate={handleCreate} type={type} additionString={additionString} searchString={searchString} index={2} handleEdit={handleEdit} edit={edit} totalSelected={checkedAmt} clickOptions={handleOptions} clickDelete={handleDelete} optionsLength={userRecipes ? userRecipes.length : 0}>
-            {userRecipes && userRecipes.length > 0 ? (
-                recipeTitles.filter((item) => item.toLowerCase().includes(recipeSearch.toLowerCase().trim())).map((item, index) => (
-                    <InSearchItemButton key={index} item={item} index={index} handleChecked={handleChecked} edit={edit} checked={checked[index]}>
-                        <ul className="space-x-2">{index + 1}. {item}</ul>
-                    </InSearchItemButton>
-                ))
-            ) : (
-                <ul className="p-2 text-start pl-7">{`Add a ${promoString} to see it here`}</ul>
-            )}
-        </SearchAndAdd>
+        itemToView ? (
+
+            <ViewSpecificItem item={itemToView} handleSeeItem={handleSeeItem} parent={'suggestions'} />
+
+        ) : (
+            <SearchAndAdd handleSearch={handleSearch} handleCreate={handleCreate} type={type} additionString={additionString} searchString={searchString} index={2} handleEdit={handleEdit} edit={edit} totalSelected={checkedAmt} clickOptions={handleOptions} clickDelete={handleDelete} optionsLength={userRecipes ? userRecipes.length : 0}>
+                {userRecipes && userRecipes.length > 0 ? (
+                    recipeTitles.filter((item) => item.toLowerCase().includes(recipeSearch.toLowerCase().trim())).map((item, index) => (
+                        <InSearchItemButton key={index} item={item} index={index} handleChecked={handleChecked} edit={edit} checked={checked[index]} handleSeeItem={handleSeeItem}>
+                            <ul className="space-x-2">{index + 1}. {item}</ul>
+                        </InSearchItemButton>
+                    ))
+                ) : (
+                    <ul className="p-2 text-start pl-7">{`Add a ${promoString} to see it here`}</ul>
+                )}
+            </SearchAndAdd>
+        )
     )
 }

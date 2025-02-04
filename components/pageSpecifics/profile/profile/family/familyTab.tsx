@@ -11,14 +11,13 @@ import { useFamilyStore } from "@/context/familyStore"
 import FamilyMembers from "./familyMembers"
 import FamilyRecipes from "./familyRecipes"
 
-export default function FamilyTab({ userInfo, type, additionString, searchString, promoString, numAdmins, userAdminPrivs, subTab }: { userInfo: IUser, type: string, additionString: string[], searchString: string[], promoString: string[], numAdmins: number, userAdminPrivs: boolean, subTab: string }) {
+export default function FamilyTab({ userInfo, type, additionString, searchString, promoString, numAdmins, userAdminPrivs, indexToRender }: { userInfo: IUser, type: string, additionString: string[], searchString: string[], promoString: string[], numAdmins: number, userAdminPrivs: boolean, indexToRender: number }) {
 
     const [edit, setEdit] = useState(false);
     const [famCheckedAmt, setFamCheckedAmt] = useState(0);
     const [recCheckedAmt, setRecCheckedAmt] = useState(0);
     const [familySearch, setFamilySearch] = useState('');
     const [familyRecipeSearch, setFamilyRecipeSearch] = useState('');
-    const [settings, setSettings] = useState<boolean>(false);
     const family = useFamilyStore(s => s.family);
     const familyRecipes = family ? family.recipes as IRecipe[] : [] as IRecipe[];
     const familyMembers = family ? family.familyMembers as IFamilyMember[] : [] as IFamilyMember[];
@@ -71,19 +70,13 @@ export default function FamilyTab({ userInfo, type, additionString, searchString
         toast.info('Delete')
     }
 
-    const handleSettings = () => {
-        setSettings(!settings);
-    }
-
     return (
-        settings ? (
-            <FamilySettings userFamAdminPrivs={userAdminPrivs} familySettings={['Edit Family Members', 'Edit Family Recipes', 'Delete Family']} handleSettings={handleSettings} family={family} numAdmins={numAdmins} />
+        indexToRender === 0 ? (
+            <FamilyRecipes userInfo={userInfo} type={type} additionString={additionString} searchString={searchString} promoString={promoString} handleDelete={handleDelete} handleOptions={handleOptions} handleEdit={handleEdit} handleCheckedRec={handleCheckedRec} handleCreate={handleCreate} handleFamilyRecipeSearch={handleFamilyRecipeSearch} familyRecipeSearch={familyRecipeSearch} edit={edit} recChecked={recChecked} famRecipeTitles={famRecipeTitles} />
+        ) : indexToRender === 1 ? (
+            <FamilyMembers userInfo={userInfo} type={type} additionString={additionString} searchString={searchString} promoString={promoString} handleDelete={handleDelete} handleOptions={handleOptions} handleEdit={handleEdit} handleCheckedFam={handleCheckedFam} handleFamilyMemberSearch={handleFamilyMemberSearch} familySearch={familySearch} edit={edit} famChecked={famChecked} memberNames={memberNames} />
         ) : (
-            subTab === 'recipes' ? (
-                <FamilyRecipes userInfo={userInfo} type={type} additionString={additionString} searchString={searchString} promoString={promoString} userFamAdminPrivs={userAdminPrivs} handleSettings={handleSettings} handleDelete={handleDelete} handleOptions={handleOptions} handleEdit={handleEdit} handleCheckedRec={handleCheckedRec} handleCreate={handleCreate} handleFamilyRecipeSearch={handleFamilyRecipeSearch} familyRecipeSearch={familyRecipeSearch} edit={edit} recChecked={recChecked} famRecipeTitles={famRecipeTitles} />
-            ) : (
-                <FamilyMembers userInfo={userInfo} type={type} additionString={additionString} searchString={searchString} promoString={promoString} userFamAdminPrivs={userAdminPrivs} handleSettings={handleSettings} handleDelete={handleDelete} handleOptions={handleOptions} handleEdit={handleEdit} handleCheckedFam={handleCheckedFam} handleFamilyMemberSearch={handleFamilyMemberSearch} familySearch={familySearch} edit={edit} famChecked={famChecked} memberNames={memberNames} />
-            )
+            <FamilySettings userFamAdminPrivs={userAdminPrivs} familySettings={['Edit Family Members', 'Edit Family Recipes', 'Delete Family']} family={family} numAdmins={numAdmins} />
         )
     )
 }
