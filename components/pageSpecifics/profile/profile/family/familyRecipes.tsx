@@ -4,38 +4,48 @@ import InSearchItemButton from "@/components/buttons/inSearchItemButton"
 import SearchAndAdd from "@/components/misc/searchBox/searchAndAdd"
 import InfoPopover from "@/components/popovers/infoPopover"
 import { useModalStore } from "@/context/modalStore"
+import { IRecipe } from "@/models/types/recipe"
 import { IUser } from "@/models/types/user"
-import { ChangeEvent } from "react"
+import { ChangeEvent, useState } from "react"
+import { toast } from "sonner"
+import ViewSpecificItem from "../profileHelpers/viewSpecificItem"
 
-export default function FamilyRecipes({ userInfo, type, additionString, searchString, promoString, userFamAdminPrivs, handleSettings, handleDelete, handleOptions, handleEdit, handleCheckedRec, handleCreate, handleFamilyRecipeSearch, familyRecipeSearch, edit, recChecked, famRecipeTitles }: { userInfo: IUser, type: string, additionString: string[], searchString: string[], promoString: string[], userFamAdminPrivs: boolean, handleSettings: () => void, handleDelete: () => void, handleOptions: () => void, handleEdit: () => void, handleCheckedRec: (index: number) => void, handleCreate: (which: string, open: boolean) => void,  handleFamilyRecipeSearch: (e: ChangeEvent<HTMLInputElement>) => void, familyRecipeSearch: string, edit: boolean, recChecked: boolean[], famRecipeTitles: string[] }) {
+export default function FamilyRecipes({ userInfo, type, additionString, searchString, promoString, handleDelete, handleOptions, handleEdit, handleCheckedRec, handleCreate, handleFamilyRecipeSearch, familyRecipeSearch, edit, recChecked, famRecipeTitles }: { userInfo: IUser, type: string, additionString: string[], searchString: string[], promoString: string[], handleDelete: () => void, handleOptions: () => void, handleEdit: () => void, handleCheckedRec: (index: number) => void, handleCreate: (which: string, open: boolean) => void, handleFamilyRecipeSearch: (e: ChangeEvent<HTMLInputElement>) => void, familyRecipeSearch: string, edit: boolean, recChecked: boolean[], famRecipeTitles: string[] }) {
 
     const famRecipeTitlesLen = famRecipeTitles ? famRecipeTitles.length : 0;
     const familyID = userInfo ? userInfo.userFamilyID : '';
+    const [itemToView, setItemToView] = useState<IRecipe | null>(null);
+
+    const handleSeeItem = (index: number) => {
+        if (index === -1) {
+            setItemToView(null)
+        } else {
+            //setItemToView(suggestions[index])
+            toast.info(index)
+        }
+    }
 
     return (
         familyID !== '' ? (
-            <div className="flex flex-col justify-evenly items-center w-full h-content divide-y divide-gray-400 space-y-2">
-                <div className="flex flex-row justify-between items-center w-full h-content">
-                    {userFamAdminPrivs &&
-                        <div className="flex flex-row w-full justify-end sm:justify-start items-center p-1">
-                            <button type="button" className="text-blue-700 hover:text-blue-300 hover:underline" onClick={handleSettings}>
-                                Family Settings
-                            </button>
-                        </div>
-                    }
+            itemToView ? (
+
+                <ViewSpecificItem item={itemToView} handleSeeItem={handleSeeItem} parent={'suggestions'} />
+
+            ) : (
+                <div className="flex flex-col justify-evenly items-center w-full h-content divide-y divide-gray-400 space-y-2">
+                    <SearchAndAdd handleSearch={handleFamilyRecipeSearch} handleCreate={handleCreate} type={type} additionString={additionString[0]} searchString={searchString[0]} index={0} handleEdit={handleEdit} edit={edit} totalSelected={recChecked.filter((check) => check !== false).length} clickOptions={handleOptions} clickDelete={handleDelete} optionsLength={famRecipeTitlesLen}>
+                        {famRecipeTitlesLen > 0 ? (
+                            famRecipeTitles.filter((item) => item.toLowerCase().includes(familyRecipeSearch.toLowerCase().trim())).map((item, index) => (
+                                <InSearchItemButton key={index} item={item} index={index} handleChecked={handleCheckedRec} edit={edit} checked={recChecked[index]} handleSeeItem={handleSeeItem}>
+                                    <ul className="space-x-2">{index + 1}. {item}</ul>
+                                </InSearchItemButton>
+                            ))
+                        ) : (
+                            <ul className="p-2 text-start pl-7">{`Add a ${promoString[0]} to see it here`}</ul>
+                        )}
+                    </SearchAndAdd>
                 </div>
-                <SearchAndAdd handleSearch={handleFamilyRecipeSearch} handleCreate={handleCreate} type={type} additionString={additionString[0]} searchString={searchString[0]} index={0} handleEdit={handleEdit} edit={edit} totalSelected={recChecked.filter((check) => check !== false).length} clickOptions={handleOptions} clickDelete={handleDelete} optionsLength={famRecipeTitlesLen}>
-                    {famRecipeTitlesLen > 0 ? (
-                        famRecipeTitles.filter((item) => item.toLowerCase().includes(familyRecipeSearch.toLowerCase().trim())).map((item, index) => (
-                            <InSearchItemButton key={index} item={item} index={index} handleChecked={handleCheckedRec} edit={edit} checked={recChecked[index]}>
-                                <ul className="space-x-2">{index + 1}. {item}</ul>
-                            </InSearchItemButton>
-                        ))
-                    ) : (
-                        <ul className="p-2 text-start pl-7">{`Add a ${promoString[0]} to see it here`}</ul>
-                    )}
-                </SearchAndAdd>
-            </div>
+            )
         ) : (
             <div className="flex flex-col justify-evenly items-center w-full h-[300px] space-y-3">
                 <button onClick={() => useModalStore.getState().setOpenCreateFamilyModal(true)}>

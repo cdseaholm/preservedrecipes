@@ -19,13 +19,13 @@ export async function fetchData({ endpoint }: { endpoint: string }) {
         }
     });
 
-
     if (!response.ok) {
         throw new Error(`Failed to fetch data from ${url}`);
     }
 
     const data = await response.json();
     return data;
+    
 }
 
 export async function InitializeUserData() {
