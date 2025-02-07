@@ -13,6 +13,8 @@ import { useStateStore } from "@/context/stateStore";
 import { errorType } from "@/models/types/error";
 import { IngredientType } from "@/models/types/ingredientType";
 import { StepType } from "@/models/types/stepType";
+import SubmitButton from "@/components/buttons/submitButton";
+import CancelButton from "@/components/buttons/cancelButton";
 
 const optionsFilter: OptionsFilter = ({ options, search }) => {
     const filtered = (options as ComboboxItem[]).filter((option) =>
@@ -177,6 +179,8 @@ export default function MainRecipeForm({
                 <button type='submit' className="border border-neutral-200 rounded-md hover:bg-blue-200 bg-blue-400 p-2 w-1/5">
                     Create
                 </button>
+                <CancelButton handleCancel={() => { recipeForm.reset(); recipeForm.clearErrors(); handleCancel(); }} />
+                <SubmitButton buttonTitle="Create" />
             </section>
         </form>
     )

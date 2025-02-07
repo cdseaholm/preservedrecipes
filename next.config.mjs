@@ -1,4 +1,10 @@
-export default {
+import withBundleAnalyzer from '@next/bundle-analyzer';
+
+const withBundleAnalyzerConfig = withBundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+});
+
+export default withBundleAnalyzerConfig({
   async headers() {
     return [
       {
@@ -29,5 +35,5 @@ export default {
     }
 
     return config;
-  },
-};
+  }
+});

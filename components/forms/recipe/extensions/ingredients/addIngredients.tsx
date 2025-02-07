@@ -8,6 +8,8 @@ import { IngredientType } from "@/models/types/ingredientType";
 import { useStateStore } from "@/context/stateStore";
 import { errorType } from "@/models/types/error";
 import { RecipeFormType } from "../../recipeForm";
+import ActionButton from "@/components/buttons/basicActionButton";
+import CancelButton from "@/components/buttons/cancelButton";
 
 export default function AddIngredients({ handleCloseChildAndSave, form, handleCancelChild, errors, thisIngredient }: { handleCloseChildAndSave: (which: string, newVals: IngredientType[] | StepType[], itemId: number) => void, form: UseFormReturnType<RecipeFormType, (values: RecipeFormType) => RecipeFormType>, handleCancelChild: (which: string, currNewIndex: number) => void, errors: errorType[], thisIngredient: IngredientType }) {
 
@@ -62,12 +64,8 @@ export default function AddIngredients({ handleCloseChildAndSave, form, handleCa
                 </div>
             </Fieldset>
             <section className="flex flex-row w-full justify-evenly items-center pt-5">
-                <button type="button" onClick={() => { handleCancelChild('ingredients', newIngId); }} className="border border-neutral-200 rounded-md hover:bg-neutral-200 p-2 w-1/5">
-                    Back
-                </button>
-                <button type="button" className={`border border-neutral-200 rounded-md hover:bg-blue-200 bg-blue-400 p-2 w-1/5`} onClick={save}>
-                    Save
-                </button>
+                <CancelButton handleCancel={() => { handleCancelChild('ingredients', newIngId); }} />
+                <ActionButton buttonTitle="Save" action={save} />
             </section>
         </form>
     )

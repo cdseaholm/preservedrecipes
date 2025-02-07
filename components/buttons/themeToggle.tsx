@@ -36,6 +36,6 @@ export default function ThemeToggle() {
     };
 
     return (
-        <Switch size="md" color="dark.4" onLabel={moonIcon} offLabel={sunIcon} onClick={toggleTheme}/>
+        <Switch size="md" color="dark.4" onLabel={moonIcon} offLabel={sunIcon} onClick={toggleTheme} aria-label='Color theme switch'/>
     );
 }

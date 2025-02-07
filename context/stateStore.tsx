@@ -10,8 +10,6 @@ interface StateStore {
     setHeightQuery: (height: number) => void;
     shortStack: boolean;
     setShortStack: (short: boolean) => void;
-    colorPickerMode: boolean;
-    setColorPickerMode: (colorPickerMode: boolean) => void;
     handleZoomReset: (screenWidth: number, max: boolean) => void;
     loadingProgress: boolean;
     setLoadingProgress: (loadingProgress: boolean) => void;
@@ -26,8 +24,6 @@ export const useStateStore = create<StateStore>((set) => ({
     setHeightQuery: (height) => set({ heightQuery: height }),
     shortStack: false,
     setShortStack: (short) => set({ shortStack: short }),
-    colorPickerMode: false,
-    setColorPickerMode: (mode) => set({ colorPickerMode: mode }),
     handleZoomReset: (width, m) => {
         ZoomOutMobile({ deviceWidth: width, max: m })
     },

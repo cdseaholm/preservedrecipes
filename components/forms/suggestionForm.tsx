@@ -2,6 +2,8 @@
 
 import { Fieldset, Textarea, TextInput } from "@mantine/core"
 import { useForm, UseFormReturnType } from "@mantine/form";
+import CancelButton from "../buttons/cancelButton";
+import SubmitButton from "../buttons/submitButton";
 
 export type SuggestionFormType = {
     title: string;
@@ -53,12 +55,8 @@ export default function SuggestionForm({ handleCreateSuggestion, handleCancel }:
                 />
             </Fieldset>
             <section className="flex flex-row w-full justify-evenly items-center pt-12 pb-8">
-                <button type="button" onClick={() => { suggestionForm.reset(); suggestionForm.clearErrors(); handleCancel(); }} className="border border-neutral-200 rounded-md hover:bg-neutral-200 p-2 w-1/5 text-xs sm:text-sm">
-                    Cancel
-                </button>
-                <button type='submit' className="border border-neutral-200 rounded-md hover:bg-blue-200 bg-blue-400 p-2 w-1/5 text-xs sm:text-sm">
-                    Create
-                </button>
+                <CancelButton handleCancel={() => { () => { suggestionForm.reset(); suggestionForm.clearErrors(); handleCancel(); } }} />
+                <SubmitButton buttonTitle={'Create'} />
             </section>
         </form>
     )

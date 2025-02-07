@@ -38,7 +38,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "next-env.d.ts"
-  ],
+, "app/(content)/profile/components/tabs/account/accountSettings.tsx"  ],
   "exclude": [
     "node_modules"
   ]

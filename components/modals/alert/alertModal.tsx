@@ -5,6 +5,8 @@ import { toast } from "sonner";
 import { useStateStore } from "@/context/stateStore";
 import ModalTemplate from "../templates/modalTemplate";
 import { useAlertStore } from "@/context/alertStore";
+import CancelButton from "@/components/buttons/cancelButton";
+import ActionButton from "@/components/buttons/basicActionButton";
 
 export default function AlertModal() {
 
@@ -38,12 +40,8 @@ export default function AlertModal() {
                         {message}
                     </section>
                     <section className="flex flex-row w-full justify-evenly items-center pt-5">
-                        <button type="button" onClick={handleCancel} className="border border-neutral-200 rounded-md hover:bg-neutral-200 p-2">
-                            Cancel
-                        </button>
-                        <button type='button' className="border border-neutral-200 rounded-md hover:bg-blue-200 bg-blue-400 p-2" onClick={handleConfirm}>
-                            Confirm
-                        </button>
+                        <CancelButton handleCancel={handleCancel} />
+                        <ActionButton buttonTitle="Confirm" action={handleConfirm} />
                     </section>
                 </ModalTemplate>
             </Modal>

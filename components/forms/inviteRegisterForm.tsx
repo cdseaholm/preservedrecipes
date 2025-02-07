@@ -2,6 +2,7 @@
 
 import { Fieldset, TextInput, PasswordInput } from "@mantine/core"
 import { useForm, UseFormReturnType } from "@mantine/form";
+import SubmitButton from "../buttons/submitButton";
 
 export type InviteRegisterFormType = {
 
@@ -91,9 +92,7 @@ export default function InviteRegisterForm({ handleRegister }: { handleRegister:
                 />
             </Fieldset>
             <div className="flex flex-row w-full justify-evenly items-center pt-5">
-                <button type='submit' className="border border-neutral-200 rounded-md hover:bg-blue-200 bg-blue-400 p-2">
-                    Register
-                </button>
+                <SubmitButton buttonTitle="Register" />
             </div>
         </form>
     )

@@ -6,6 +6,8 @@ import { ScrollArea, TextInput } from "@mantine/core"
 import { useForm, UseFormReturnType } from "@mantine/form";
 import { useState } from "react";
 import { BiTrashAlt } from "react-icons/bi";
+import CancelButton from "../buttons/cancelButton";
+import SubmitButton from "../buttons/submitButton";
 
 export type NewMembers = {
     email: string;
@@ -38,7 +40,7 @@ export default function AddFamMemberForm({ handleAddFamMem, handleCancel }: { ha
             {item.email}
             <button onClick={() => {
                 addFamMemsForm.removeListItem('newMembers', index);
-            }}>
+            }} aria-label="Remove Family Member">
                 <BiTrashAlt />
             </button>
         </li>
@@ -116,7 +118,7 @@ export default function AddFamMemberForm({ handleAddFamMem, handleCancel }: { ha
                     className="w-full h-content"
                     rightSection={
                         <button type='button' className="w-content mr-4 p-2 rounded-md h-content hover:underline text-blue-700 hover:text-blue-400" onClick={() => handleMem()
-                        }>
+                        } aria-label="Add family member">
                             Add
                         </button>
                     }
@@ -126,18 +128,14 @@ export default function AddFamMemberForm({ handleAddFamMem, handleCancel }: { ha
 
             <div className="border border-accent/30 rounded-md min-h-[200px] p-2">
                 <ScrollArea.Autosize mah={200} type="scroll">
-                    {options.length === 0 ? <p className="text-center">Queue a family member to be added</p> : options}
+                    {options.length === 0 ? <p className="text-center">Queue a family member to be added</p> : <ul>{options}</ul>}
                 </ScrollArea.Autosize>
             </div>
 
 
             <section className="flex flex-row w-full justify-evenly items-center pt-12 pb-8">
-                <button type="button" onClick={() => { addFamMemsForm.reset(); addFamMemsForm.clearErrors(); handleCancel(); }} className="border border-neutral-200 rounded-md hover:bg-neutral-200 p-2 w-1/5 text-xs sm:text-sm">
-                    Cancel
-                </button>
-                <button type='submit' className="border border-neutral-200 rounded-md hover:bg-blue-200 bg-blue-400 p-2 w-1/5 text-xs sm:text-sm">
-                    Create
-                </button>
+                <CancelButton handleCancel={() => { addFamMemsForm.reset(); addFamMemsForm.clearErrors(); handleCancel(); }} />
+                <SubmitButton buttonTitle="Create"/>
             </section>
         </form>
     )

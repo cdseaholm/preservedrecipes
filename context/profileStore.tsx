@@ -1,5 +1,5 @@
 
-import { ProfilePageType } from '@/components/pageSpecifics/profile/profilePage';
+import { ProfilePageType } from '@/app/(content)/profile/components/mainProfile';
 import { create } from 'zustand';
 
 interface ProfileStore {

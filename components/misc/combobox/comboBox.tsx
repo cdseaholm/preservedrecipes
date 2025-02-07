@@ -58,6 +58,7 @@ export default function ComboBox({ pills, handleOpenAdd, which, handleEditToggle
                     rightSectionPointerEvents="none"
                     onClick={() => combobox.toggleDropdown()}
                     className='w-full h-full overflow-hidden whitespace-nowrap text-ellipsis'
+                    aria-label='Search'
                 >
                     {value || <Input.Placeholder>Empty</Input.Placeholder>}
                 </InputBase>

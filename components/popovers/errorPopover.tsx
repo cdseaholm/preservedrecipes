@@ -14,10 +14,12 @@ export default function ErrorPopover({ errors, width }: { errors: errorType[], w
                     </div>
                 </Popover.Target>
                 <Popover.Dropdown styles={{ dropdown: { backgroundColor: 'GrayText', color: 'white' } }}>
-                    {errors.map((error, index) => {
-                        const errorMessage = error ? error.message as string : '';
-                        return (<li key={index}>{errorMessage}</li>)
-                    })}
+                    <ul className="h-content w-content">
+                        {errors.map((error, index) => {
+                            const errorMessage = error ? error.message as string : '';
+                            return (<li key={index}>{errorMessage}</li>)
+                        })}
+                    </ul>
                 </Popover.Dropdown>
             </Popover>
         ) : (

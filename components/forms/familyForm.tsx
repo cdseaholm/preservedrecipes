@@ -7,6 +7,8 @@ import { MultiSelectCheckbox } from "../misc/combobox/multiSelectChecks";
 import { HeritageType } from "@/models/types/inAppCreations/heritage";
 import ErrorPopover from "../popovers/errorPopover";
 import { errorType } from "@/models/types/error";
+import SubmitButton from "../buttons/submitButton";
+import CancelButton from "../buttons/cancelButton";
 
 export type FamilyFormType = {
     name: string;
@@ -58,12 +60,8 @@ export default function FamilyForm({ handleCreateFamily, handleCancel, errors }:
                 </div>
             </Fieldset>
             <section className="flex flex-row w-full justify-evenly items-center pt-12 pb-8">
-                <button type="button" onClick={handleCancel} className="border border-neutral-200 rounded-md hover:bg-neutral-200 p-2 w-1/5 text-xs sm:text-sm">
-                    Cancel
-                </button>
-                <button type='submit' className="border border-neutral-200 rounded-md hover:bg-blue-200 bg-blue-400 p-2 w-1/5 text-xs sm:text-sm">
-                    Create
-                </button>
+                <CancelButton handleCancel={handleCancel} />
+                <SubmitButton buttonTitle="Create"/>
             </section>
         </form>
     )

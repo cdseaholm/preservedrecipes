@@ -26,5 +26,5 @@ export const RouterTransition = () => {
         }
     }, [beginLoad]);
 
-    return <NavigationProgress color={'cyan'}/>
+    return <NavigationProgress color={'cyan'} aria-label='Loading bar'/>
 }

@@ -1,4 +1,3 @@
-import CommunityMain from '@/components/pageSpecifics/communities/communityMain';
 import { ICommunity } from '@/models/types/community';
 import { IRecipe } from '@/models/types/recipe';
 import { IPost } from '@/models/types/post';
@@ -6,6 +5,9 @@ import { redirect } from 'next/navigation';
 import { IPermissions } from '@/models/types/permission';
 import { getServerSession } from 'next-auth';
 import { IUser } from '@/models/types/user';
+import CommunityMain from './components/communityMain';
+import { LoadingSpinner } from '@/components/misc/loadingSpinner';
+import { Suspense } from 'react';
 
 const fakeData = {
   communities: Array.from({ length: 10 }, (_, index) => ({
@@ -44,10 +46,12 @@ export default async function CommunityPage(props: { searchParams: Promise<{ pag
   const currentCommunities = fakeData.communities.slice(startIndex, endIndex);
 
   return (
-    <CommunityMain
-      communities={currentCommunities}
-      currentPage={currentPage}
-      numberOfPages={Math.ceil(fakeData.communities.length / itemsPerPage)}
-    />
+    <Suspense fallback={<LoadingSpinner screen={true} />}>
+      <CommunityMain
+        communities={currentCommunities}
+        currentPage={currentPage}
+        numberOfPages={Math.ceil(fakeData.communities.length / itemsPerPage)}
+      />
+    </Suspense>
   );
 }

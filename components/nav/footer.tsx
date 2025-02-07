@@ -1,8 +1,9 @@
 'use client'
 
-import { useStateStore } from "@/context/stateStore";
 import { useSession } from "next-auth/react";
 import RightsFooter from "./footer/rightsFoot";
+import Link from "next/link";
+import { toast } from "sonner";
 
 const FooterColumn = ({ children }: { children: React.ReactNode }) => {
     return (
@@ -18,12 +19,6 @@ const footerSectionText = "text-lg font-semibold underline p-1"
 export default function MainFooter() {
 
     const { data: session } = useSession();
-    const setColorPickerMode = useStateStore(state => state.setColorPickerMode);
-    const colorPickerMode = useStateStore(state => state.colorPickerMode);
-
-    const handleColorPicker = () => {
-        setColorPickerMode(!colorPickerMode)
-    }
 
     const sections = ['User', 'Product', 'Pages', 'More'];
 
@@ -39,7 +34,7 @@ export default function MainFooter() {
     //extracting communities for now
 
     return (
-        <footer className="bg-mainBack border-t border-accent w-screen mb-12 min-h-[30vh] flex flex-col justify-start items-start md:items-center">
+        <footer className="bg-mainBack border-t border-accent w-screen pb-12 min-h-[30vh] flex flex-col justify-start items-start md:items-center">
             <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 gap-6 p-4">
                 {sections.map((section, index) => {
                     return (
@@ -48,15 +43,17 @@ export default function MainFooter() {
                                 {section}
                             </h3>
                             {sectionsInfo[index].map((sectionInfo, sectionIndex) => {
-                                if (index === 2 && sectionIndex === 3) {
+                                if (index === 2 && sectionIndex === 2) {
                                     return (
-                                        <button onClick={() => handleColorPicker()} className={footerButtonText} key={sectionIndex}>
+                                        <Link href={'/color-picker-mode'} className={footerButtonText} key={sectionIndex} aria-label="Color Picker Mode">
                                             {sectionInfo}
-                                        </button>
+                                        </Link>
                                     )
                                 } else {
                                     return (
-                                        <p className={footerButtonText} key={sectionIndex}>{sectionInfo}</p>
+                                        <button onClick={() => toast.info(sectionInfo)} className={footerButtonText} key={sectionIndex} aria-label={sectionInfo}>
+                                            {sectionInfo}
+                                        </button>
                                     )
                                 }
                             })}
@@ -68,36 +65,3 @@ export default function MainFooter() {
         </footer>
     );
 }
-
-{/**
-    {session ? (
-                    <FooterColumn>
-                        <h3 className={footerSectionText}>User</h3>
-                        <p className={footerButtonText}>Profile</p>
-                        <p className={footerButtonText}>Sign out</p>
-                    </FooterColumn>
-                ) : (
-                    <FooterColumn>
-                        <h3 className={footerSectionText}>User</h3>
-                        <p className={footerButtonText}>Create Account</p>
-                        <p className={footerButtonText}>Sign in</p>
-                    </FooterColumn>
-                )}
-                <FooterColumn>
-                    <h3 className={footerSectionText}>Product</h3>
-                    <p className={footerButtonText}>About</p>
-                    <p className={footerButtonText}>Pricing</p>
-                    <p className={footerButtonText}>Contact</p>
-                </FooterColumn>
-                <FooterColumn>
-                    <h3 className={footerSectionText}>Pages</h3>
-                    <p className={footerButtonText}>Homepage</p>
-                    <p className={footerButtonText}>Communities</p>
-                    <p className={footerButtonText}>About</p>
-                    <p className={footerButtonText}>Login</p>
-                    <button onClick={() => handleColorPicker()} className={footerButtonText}>
-                        For fun - Color Picker
-                    </button>
-                </FooterColumn>
-                
-                */}
