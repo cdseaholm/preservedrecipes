@@ -1,8 +1,8 @@
 import React from 'react';
 import { Metadata } from 'next';
-import Homepage from './(content)/homepage/page';
+import Homepage from '@/app/(content)/homepage/components/mainHome';
 
-export async function generateMetadata(): Promise<Metadata> {
+export function generateMetadata(): Metadata {
 
   return {
     title: `Home Page for Preserved Recipes`,
@@ -10,7 +10,7 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function Page() {
+export default function Page() {
 
   return (
     <Homepage />

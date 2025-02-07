@@ -7,6 +7,8 @@ import { errorType } from "@/models/types/error";
 import { UseFormReturnType } from "@mantine/form";
 import { RecipeFormType } from "../recipeForm";
 import ModalTemplate from "@/components/modals/templates/modalTemplate";
+import CancelButton from "@/components/buttons/cancelButton";
+import ActionButton from "@/components/buttons/basicActionButton";
 
 export default function RecipeViewers({ handleSaveAndCloseViewers, errors, form, handleCancelViewers }: { handleSaveAndCloseViewers: () => Promise<void>, errors: errorType[], form: UseFormReturnType<RecipeFormType, (values: RecipeFormType) => RecipeFormType>, handleCancelViewers: () => void }) {
 
@@ -19,7 +21,7 @@ export default function RecipeViewers({ handleSaveAndCloseViewers, errors, form,
     const save = async () => {
         await handleSaveAndCloseViewers();
     }
-    
+
     return (
         <ModalTemplate subtitle={null} minHeight="15vh" minWidth={minWidth}>
             <form id="modalAddViewers" className="w-full h-full">
@@ -43,12 +45,8 @@ export default function RecipeViewers({ handleSaveAndCloseViewers, errors, form,
                     </div>
                 </Fieldset>
                 <section className="flex flex-row w-full justify-evenly items-center pt-5">
-                    <button type="button" onClick={() => { handleCancelViewers(); }} className="border border-neutral-200 rounded-md hover:bg-neutral-200 p-2 w-1/5">
-                        Back
-                    </button>
-                    <button type="button" className={`border border-neutral-200 rounded-md hover:bg-blue-200 bg-blue-400 p-2 w-1/5`} onClick={save}>
-                        Save
-                    </button>
+                    <CancelButton handleCancel={() => handleCancelViewers()} />
+                    <ActionButton buttonTitle="Save" action={save} />
                 </section>
             </form>
         </ModalTemplate>

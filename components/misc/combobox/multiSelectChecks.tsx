@@ -39,7 +39,7 @@ export function MultiSelectCheckbox({ form }: { form: UseFormReturnType<FamilyFo
     }
 
     const values = value.map((item) => (
-        <Pill key={item.flagCode} withRemoveButton onRemove={() => handleValueRemove(item)}>
+        <Pill key={item.flagCode} withRemoveButton onRemove={() => handleValueRemove(item)} aria-label='Remove flag'>
             <div className='flex flex-row items-center justify-center h-[22px] w-[18px]'>
                 <FlagIcon countryCode={item.flagCode} />
             </div>

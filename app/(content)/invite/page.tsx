@@ -1,5 +1,7 @@
-import InvitePage from "@/components/pageSpecifics/invite/invitePage";
 import { Metadata } from "next";
+import InvitePage from "./components/mainInvite";
+import { LoadingSpinner } from "@/components/misc/loadingSpinner";
+import { Suspense } from "react";
 
 export async function generateMetadata(): Promise<Metadata> {
 
@@ -20,6 +22,8 @@ export default async function Page({
     }
 
     return (
-        <InvitePage token={token} />
+        <Suspense fallback={<LoadingSpinner screen={true} />}>
+            <InvitePage token={token} />
+        </Suspense>
     );
 }

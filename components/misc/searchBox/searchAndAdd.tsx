@@ -14,22 +14,22 @@ export default function SearchAndAdd({ handleSearch, handleCreate, children, typ
             <div className={`flex flex-row ${edit ? 'justify-between' : 'justify-end'} items-center sm:space-x-4 w-full h-fit p-2`}>
                 {edit &&
                     <div className="flex flex-row justify-evenly items-center w-content h-content space-x-7">
-                        <button className={`${buttonClass}`} onClick={() => clickOptions()}>
+                        <button className={`${buttonClass}`} onClick={() => clickOptions()} aria-label="Edit">
                             <p>{`Edit ${totalSelected}`}</p>
                             <FaEdit height={'auto'} />
                         </button>
-                        <button type="button" className={`${buttonClass}`} onClick={() => clickDelete()}>
+                        <button type="button" className={`${buttonClass}`} onClick={() => clickDelete()} aria-label="Delete">
                             <p>{`Delete ${totalSelected}`}</p>
                             <FaRegTrashAlt height={'auto'} />
                         </button>
                     </div>
                 }
-                <div className="flex flex-row justify-evenly items-center w-content h-content space-x-7">
+                <div className="flex flex-row justify-evenly items-center w-content h-content space-x-7" aria-label="Add">
                     <button onClick={() => handleCreate(type, true)} className={buttonClass}>
                         <BiPlus />
                         {additionString}
                     </button>
-                    <button onClick={() => handleEdit()} className={buttonClass} disabled={optionsLength > 0 ? false : true}>
+                    <button onClick={() => handleEdit()} className={buttonClass} disabled={optionsLength > 0 ? false : true} aria-label="Toggle Edit">
                         <BiPencil />
                         <p>{`Edit`}</p>
                     </button>

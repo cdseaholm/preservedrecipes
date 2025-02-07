@@ -1,7 +1,10 @@
-import ProfilePage from "@/components/pageSpecifics/profile/profilePage";
 import { IUser } from "@/models/types/user";
+import { InitializeUserData } from "@/utils/apihelpers/get/initUserData";
 import { Metadata } from "next";
 import { getServerSession } from "next-auth";
+import ProfilePage from "./components/mainProfile";
+import { Suspense } from "react";
+import { LoadingSpinner } from "@/components/misc/loadingSpinner";
 
 export async function generateMetadata(): Promise<Metadata> {
     const session = await getServerSession();
@@ -16,17 +19,28 @@ export async function generateMetadata(): Promise<Metadata> {
 
 async function InitAdminData(admin: string) {
     const session = await getServerSession();
+
+
+    const initialized = await InitializeUserData() as { status: boolean, message: string };
+
+    if (!initialized || initialized.status === false) {
+        return;
+    }
+
     if (!session) {
         return false;
     }
+
     const user = session.user as IUser;
     if (!user) {
         return false;
     }
+
     const email = user.email as string;
     if (admin === email) {
         return true;
     }
+
     return false;
 }
 
@@ -35,6 +49,8 @@ export default async function Page() {
     const adminHere = await InitAdminData(admin) as boolean;
 
     return (
-        <ProfilePage admin={adminHere} />
+        <Suspense fallback={<LoadingSpinner screen={true} />}>
+            <ProfilePage admin={adminHere} />
+        </Suspense>
     );
 }

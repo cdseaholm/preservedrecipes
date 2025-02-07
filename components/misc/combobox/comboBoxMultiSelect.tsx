@@ -60,6 +60,7 @@ export default function ComboBoxMultiSelect({ pills, which, currentVals, handleS
                     rightSectionPointerEvents="none"
                     onClick={() => combobox.toggleDropdown()}
                     className='w-full'
+                    aria-label='Search'
                 >
                     {value || <Input.Placeholder>Empty</Input.Placeholder>}
                 </InputBase>

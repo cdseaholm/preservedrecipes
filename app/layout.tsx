@@ -1,14 +1,17 @@
 import "@/app/globals.css";
-import { Toaster } from "sonner";
-import PageWrapper from "@/components/wrappers/pageWrapper";
 import { Inter } from "next/font/google";
 import { ColorSchemeScript, MantineProvider } from '@mantine/core';
 import '@mantine/core/styles.css';
 import '@mantine/nprogress/styles.css';
 import AuthWrapper from "@/components/wrappers/authwrapper";
-import MainHeader from "@/components/nav/header";
-import ModalProvider from "@/components/providers/modalProvider";
 import { RouterTransition } from "@/components/misc/routerTransition";
+import StateWrapper from "@/components/wrappers/stateWrapper";
+import AppHeader from "@/components/nav/header/appHeader";
+import { lazy } from "react";
+
+const Toaster = lazy(() => import("sonner").then(module => ({ default: module.Toaster })));
+const ModalProvider = lazy(() => import('@/components/providers/modalProvider'));
+const MainFooter = lazy(() => import('@/components/nav/footer'))
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,15 +26,16 @@ export default function RootLayout({
       <head>
         <ColorSchemeScript />
       </head>
-      <body className="h-screen w-screen overflow-hidden bg-mainBack">
+      <body className="h-screen w-screen overflow-hidden bg-foreground">
         <MantineProvider>
           <RouterTransition />
           <AuthWrapper>
-            <MainHeader />
+            <AppHeader />
             <RouterTransition />
-            <PageWrapper>
+            <StateWrapper>
               {children}
-            </PageWrapper>
+              <MainFooter />
+            </StateWrapper>
             <ModalProvider />
             <Toaster />
           </AuthWrapper>

@@ -69,19 +69,19 @@ export const AccountButton = ({ family, which, userFamAdminPrivs, numAdmins }: {
 
     if (which === 'Delete Account') {
         return (
-            <button onClick={handleConfirmAccount} className="text-red-700 hover:text-red-400 hover:underline">
+            <button onClick={handleConfirmAccount} className="text-red-700 hover:text-red-400 hover:underline" aria-label="Delete Account Confirm">
                 {which}
             </button>
         )
     } else if (which === 'Delete Family') {
         return (
-            <button onClick={handleConfirmFam} className="text-red-700 hover:text-red-400 hover:underline">
+            <button onClick={handleConfirmFam} className="text-red-700 hover:text-red-400 hover:underline" aria-label="Delete Family return">
                 {which}
             </button>
         )
     } else {
         return (
-            <button onClick={() => toast.info(which)}>
+            <button onClick={() => toast.info(which)} aria-label="Delete else">
                 {which}
             </button>
         )

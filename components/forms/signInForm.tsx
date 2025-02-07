@@ -2,6 +2,8 @@
 
 import { Fieldset, PasswordInput, TextInput } from "@mantine/core"
 import { useForm, UseFormReturnType } from "@mantine/form";
+import CancelButton from "../buttons/cancelButton";
+import SubmitButton from "../buttons/submitButton";
 
 export type SignInFormType = {
     email: string;
@@ -52,12 +54,8 @@ export default function SignInForm({ handleSignIn, handleCancel }: { handleSignI
                 />
             </Fieldset>
             <section className="flex flex-row w-full justify-evenly items-center pt-5">
-                <button type="button" onClick={() => { signInForm.reset(); signInForm.clearErrors(); handleCancel(); }} className="border border-neutral-200 rounded-md hover:bg-neutral-200 p-2">
-                    Cancel
-                </button>
-                <button type='submit' className="border border-neutral-200 rounded-md hover:bg-blue-200 bg-blue-400 p-2">
-                    Sign In
-                </button>
+                <CancelButton handleCancel={() => { () => { signInForm.reset(); signInForm.clearErrors(); handleCancel();  }}} />
+                <SubmitButton buttonTitle={'Sign In'} />
             </section>
         </form>
     )
