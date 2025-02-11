@@ -23,7 +23,7 @@ export default function InfoPopover({ title, infoOne, infoTwo }: { title: string
 
     return (
         <div className='flex flex-row justify-between items-center px-2 space-x-2'>
-            <Popover width={width > 500 ? 500 : width - 50} position='bottom-start' withArrow shadow="md">
+            <Popover width={width > 500 ? 500 : width - 50} position='bottom-start' withArrow shadow-sm="md">
                 <Popover.Target>
                     <MyInfoIcon title={title} />
                 </Popover.Target>

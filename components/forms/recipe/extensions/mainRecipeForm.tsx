@@ -128,7 +128,7 @@ export default function MainRecipeForm({
                 <Fieldset className="flex flex-row justify-between items-start w-full h-full" legend='Recipe viewabiltiy' mt={'md'} variant="unstyled">
 
                     <div className={`flex flex-row justify-start items-center w-content h-content space-x-2`}>
-                        <Popover width={width > 500 ? 500 : width - 50} position='top-start' withArrow shadow="md">
+                        <Popover width={width > 500 ? 500 : width - 50} position='top-start' withArrow shadow-sm="md">
                             <Popover.Target>
                                 <MyInfoIcon title="" />
                             </Popover.Target>

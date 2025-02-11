@@ -1,17 +1,16 @@
 import "@/app/globals.css";
 import { Inter } from "next/font/google";
-import { ColorSchemeScript, MantineProvider } from '@mantine/core';
 import '@mantine/core/styles.css';
 import '@mantine/nprogress/styles.css';
 import AuthWrapper from "@/components/wrappers/authwrapper";
-import { RouterTransition } from "@/components/misc/routerTransition";
 import StateWrapper from "@/components/wrappers/stateWrapper";
+import ModalWrapper from "@/components/wrappers/dynamicWrappers/modalWrapper";
+import FooterWrapper from "@/components/wrappers/dynamicWrappers/footerWrapper";
+import ToasterWrapper from "@/components/wrappers/dynamicWrappers/toasterWrapper";
+import ColorScriptWrapper from "@/components/wrappers/dynamicWrappers/colorScriptWrapper";
+import MantineWrapper from "@/components/wrappers/dynamicWrappers/mantineWrapper";
+import RouterTransitionWrapper from "@/components/wrappers/dynamicWrappers/routerTransitionWrapper";
 import AppHeader from "@/components/nav/header/appHeader";
-import { lazy } from "react";
-
-const Toaster = lazy(() => import("sonner").then(module => ({ default: module.Toaster })));
-const ModalProvider = lazy(() => import('@/components/providers/modalProvider'));
-const MainFooter = lazy(() => import('@/components/nav/footer'))
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,22 +23,22 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.className} suppressHydrationWarning>
       <head>
-        <ColorSchemeScript />
+        <ColorScriptWrapper />
+        <link rel="preload" href="/images/istockphoto-recipebook.jpg" as="image" />
       </head>
-      <body className="h-screen w-screen overflow-hidden bg-foreground">
-        <MantineProvider>
-          <RouterTransition />
+      <body className="h-screen w-screen overflow-hidden bg-mainBack">
+        <MantineWrapper>
           <AuthWrapper>
             <AppHeader />
-            <RouterTransition />
+            <RouterTransitionWrapper />
             <StateWrapper>
               {children}
-              <MainFooter />
+              <FooterWrapper />
             </StateWrapper>
-            <ModalProvider />
-            <Toaster />
+            <ModalWrapper />
+            <ToasterWrapper />
           </AuthWrapper>
-        </MantineProvider>
+        </MantineWrapper>
       </body>
     </html>
   );

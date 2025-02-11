@@ -6,7 +6,7 @@ export default function ErrorPopover({ errors, width }: { errors: errorType[], w
 
     return (
         errors && errors.length !== 0 ? (
-            <Popover width={width > 500 ? 500 : width - 50} position='bottom-end' withArrow shadow="md">
+            <Popover width={width > 500 ? 500 : width - 50} position='bottom-end' withArrow shadow-sm="md">
                 <Popover.Target>
                     <div className='cursor-pointer flex flex-row justify-evenly w-fit h-full items-center font-semibold'>
                         <BiError color="#dc2626" />

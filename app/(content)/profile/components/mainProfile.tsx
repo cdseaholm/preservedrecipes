@@ -24,7 +24,7 @@ export default function ProfilePage({ admin }: { admin: boolean }) {
     const { data: session } = useSession();
 
     const parentTabs = ['Account', 'Family', 'Recipes'];
-    const accountTabs = admin ? ['Account Settings', 'Profile Settings', 'Account History', 'View Suggestions'] : ['Account Settings', 'Profile Settings', 'Account History', 'Delete Account'];
+    const accountTabs = admin ? ['Account Settings', 'Account History', 'View Suggestions'] : ['Account Settings', 'Account History', 'Delete Account'];
     const familyTabs = admin ? ['Family Recipes', 'Family Members', 'Family Settings'] : ['Family Recipes', 'Family Members'];
     const userTabs = ['User Recipes', 'User Communities'];
 

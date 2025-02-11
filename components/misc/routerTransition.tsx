@@ -1,10 +1,13 @@
 'use client'
-import { NavigationProgress, nprogress } from '@mantine/nprogress'
+
+import { nprogress } from '@mantine/nprogress'
+import dynamic from 'next/dynamic';
 import { usePathname } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react';
 
+const NavigationProgress = dynamic(() => import('@mantine/nprogress').then((mod) => mod.NavigationProgress));
 
-export const RouterTransition = () => {
+export default function RouterTransition() {
     const pathname = usePathname();
     const [prevPathname, setPrevPathname] = useState('');
     const [beginLoad, setBeginLoad] = useState(false);
@@ -26,5 +29,5 @@ export const RouterTransition = () => {
         }
     }, [beginLoad]);
 
-    return <NavigationProgress color={'cyan'} aria-label='Loading bar'/>
+    return <NavigationProgress color={'cyan'} aria-label='Loading bar' />
 }

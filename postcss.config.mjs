@@ -1,9 +1,8 @@
 /** @type {import('postcss-load-config').Config} */
-module.exports = {
+
+const config = {
   plugins: {
-    tailwindcss: {},
-    autoprefixer: {},
-    ...(process.env.NODE_ENV === 'production' ? { cssnano: {} } : {}),
+    "@tailwindcss/postcss": {},
     'postcss-preset-mantine': {},
     'postcss-simple-vars': {
       variables: {
@@ -16,3 +15,5 @@ module.exports = {
     },
   },
 };
+
+export default config;

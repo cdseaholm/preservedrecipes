@@ -1,39 +1,81 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-mainBack: var(--mainBack);
+  --color-mainContent: var(--mainContent);
+  --color-altContent: var(--altContent);
+  --color-accent: var(--accent);
+  --color-highlight: var(--highlight);
+  --color-altBack: var(--altBack);
+  --color-mainText: var(--mainText);
+  --color-lightText: var(--lightText);
+  --color-darkText: var(--darkText);
+}
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --mainBack-rgb: 249, 244, 239;
-  --mainContent-rgb: 255, 255, 254;
-  --altContent-rgb: 255, 248, 220;
-  --accent-rgb: 242, 80, 66;
-  --highlight-rgb: 123, 63, 0;
-  --altBack-rgb: 222,184,135;
-  --mainText-rgb: 139, 69, 19;
-  --lightText-rgb: 255, 255, 255;
-  --darkText-rgb: 0, 0, 0;
+  --mainBack: #f9f4ef;
+  --mainContent: #fffffe;
+  --altContent: #fff8dc;
+  --accent: #f25042;
+  --highlight: #7b3f00;
+  --altBack: #deb887;
+  --mainText: #8b4513;
+  --lightText: #ffffff;
+  --darkText: #000000;
 }
 
 .dark {
   --background: #171717;
   --foreground: #ffffff;
-  --mainBack-rgb: 34, 34, 34;
-  --mainContent-rgb: 48, 48, 48;
-  --altContent-rgb: 60, 60, 60;
-  --accent-rgb: 242, 80, 66;
-  --highlight-rgb: 255, 165, 0;
-  --altBack-rgb: 105, 105, 105;
-  --mainText-rgb: 255, 255, 255;
-  --lightText-rgb: 0, 0, 0;
-  --darkText-rgb: 255, 255, 255;
+  --mainBack: #222222;
+  --mainContent: #303030;
+  --altContent: #3c3c3c;
+  --accent: #f25042;
+  --highlight: #ffa500;
+  --altBack: #696969;
+  --mainText: #ffffff;
+  --lightText: #000000;
+  --darkText: #ffffff;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+  }
+}
+
+@layer utilities {
+    .scrollbar-thin::-webkit-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.5) transparent;
+  }
+
+  .scrollbar-webkit {
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+    &::-webkit-scrollbar-track {
+      background: var(--mainBack);
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: rgba(0, 0, 0, 0.5);
+      border-radius: 20px;
+      border: 1px solid transparent;
+    }
   }
 }
 

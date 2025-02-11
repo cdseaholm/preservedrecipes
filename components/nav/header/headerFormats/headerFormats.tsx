@@ -1,30 +1,30 @@
 'use client';
 
 import { useStateStore } from "@/context/stateStore";
-import { Menu, UnstyledButton } from "@mantine/core";
-import Link from "next/link";
 import { forwardRef, JSX } from "react";
 import { FaRegUserCircle } from "react-icons/fa";
 import { FiMenu } from "react-icons/fi";
-import { toast } from "sonner";
 import { Session } from "next-auth";
-import MenuContent from "./menuContent";
 import { IUser } from "@/models/types/user";
+import dynamic from "next/dynamic";
+import { Menu, MenuTarget } from "@mantine/core";
+
+const MenuContent = dynamic(() => import('./menuContent'), { ssr: false })
 
 const LargeUserButton = forwardRef<HTMLButtonElement>(
     ({ ...others }, ref) => (
-        <UnstyledButton ref={ref} size={20} className="bg-transparent" {...others} aria-label="User Menu">
+        <button ref={ref} className="bg-transparent" {...others} aria-label="User Menu" style={{ cursor: 'pointer' }}>
             <FaRegUserCircle size={28} />
-        </UnstyledButton>
+        </button>
     )
 );
 LargeUserButton.displayName = 'LargeUserButton';
 
 const UserButton = forwardRef<HTMLButtonElement>(
     ({ ...others }, ref) => (
-        <UnstyledButton ref={ref} size={28} className="bg-transparent" {...others} aria-label="Menu">
+        <button ref={ref} className="bg-transparent cursor-pointer" {...others} aria-label="Menu" style={{ cursor: 'pointer' }}>
             <FiMenu size={28} />
-        </UnstyledButton>
+        </button>
     )
 );
 UserButton.displayName = 'UserButton';
@@ -36,16 +36,12 @@ export function HeaderLarge({ userInfo, handleZoomClick, handleZoomClose, profil
 
     return (
 
-        <nav className="flex flex-row justify-end items-center w-2/3 space-x-8">
-            <Link href={'/about'} aria-label="About">About</Link>
-            <button onClick={() => toast.info(`You'd go to the Pricing page right now!`)} aria-label="Pricing">Pricing</button>
-            <Menu shadow="md" width={widthToUse} withArrow arrowSize={12} arrowOffset={-2} onOpen={handleZoomClick} onClose={handleZoomClose}>
-                <Menu.Target>
-                    <LargeUserButton />
-                </Menu.Target>
-                <MenuContent handleZoomClick={handleZoomClick} handleZoomClose={handleZoomClose} profile={profile} firstName={firstName} signOutElement={signOutElement} setSignInModal={setSignInModal} session={session} signIn={null} userInfo={userInfo} />
-            </Menu>
-        </nav>
+        <Menu shadow="md" width={widthToUse} withArrow arrowSize={12} arrowOffset={-2} onOpen={handleZoomClick} onClose={handleZoomClose}>
+            <MenuTarget>
+                <LargeUserButton />
+            </MenuTarget>
+            <MenuContent handleZoomClick={handleZoomClick} handleZoomClose={handleZoomClose} profile={profile} firstName={firstName} signOutElement={signOutElement} setSignInModal={setSignInModal} session={session} signIn={null} userInfo={userInfo} />
+        </Menu>
 
     );
 }
@@ -56,13 +52,11 @@ export function HeaderSmall({ userInfo, handleZoomClick, handleZoomClose, profil
     const widthToUse = short ? (width - 10) : 250;
 
     return (
-        <nav className="flex flex-row items-center justify-end w-1/3">
-            <Menu shadow="md" width={widthToUse} withArrow arrowSize={12} arrowOffset={-2} onOpen={handleZoomClick} onClose={handleZoomClose}>
-                <Menu.Target>
-                    <UserButton />
-                </Menu.Target>
-                <MenuContent handleZoomClick={handleZoomClick} handleZoomClose={handleZoomClose} profile={profile} firstName={firstName} signOutElement={signOutElement} setSignInModal={setSignInModal} session={session} signIn={signIn} userInfo={userInfo} />
-            </Menu>
-        </nav>
+        <Menu shadow="md" width={widthToUse} withArrow arrowSize={12} arrowOffset={-2} onOpen={handleZoomClick} onClose={handleZoomClose}>
+            <MenuTarget>
+                <UserButton />
+            </MenuTarget>
+            <MenuContent handleZoomClick={handleZoomClick} handleZoomClose={handleZoomClose} profile={profile} firstName={firstName} signOutElement={signOutElement} setSignInModal={setSignInModal} session={session} signIn={signIn} userInfo={userInfo} />
+        </Menu>
     );
 }
