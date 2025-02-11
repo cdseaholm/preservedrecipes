@@ -1,6 +1,6 @@
 import React from 'react';
 import { Metadata } from 'next';
-import Homepage from '@/app/(content)/homepage/components/mainHome';
+import Homepage from './(content)/homepage/components/mainHome';
 
 export function generateMetadata(): Metadata {
 

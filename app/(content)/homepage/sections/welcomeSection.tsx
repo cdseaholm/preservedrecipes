@@ -1,8 +1,11 @@
 'use client'
 
-import { toast } from "sonner";
-
 export default function WelcomeSection() {
+
+    const handleClick = async () => {
+        const { toast } = await import('sonner');
+        toast.info('You would sign up right now');
+    };
 
 
     return (
@@ -13,7 +16,7 @@ export default function WelcomeSection() {
             <h3 className="text-lg md:text-xl md:w-2/3 sm:w-4/5 w-[90%] pb-8 md:pb-16 font-medium">
                 {`Create a digital family cookbook to keep your family's recipes alive for generations to come or store your favorite recipes, links, photos of recipes for yourself to use in the future.`}
             </h3>
-            <button className="flex flex-col justify-center items-center w-auto h-auto rounded-full hover:bg-mainText hover:scale-105 transition-all duration-300 shadow-md tracking-wide hover:shadow-lg bg-highlight border border-accent py-4 px-6 ml-8" onClick={() => toast.info(`You would sign up right now`)} aria-label="Join">
+            <button type='button' className="flex flex-col justify-center items-center w-auto h-auto rounded-full hover:bg-mainText hover:scale-105 transition-all duration-300 shadow-md tracking-wide hover:shadow-lg bg-highlight border border-accent py-4 px-6 ml-8 cursor-pointer" onClick={handleClick} aria-label="Join">
                 <p className="text-lg sm:text-xl lg:text-2xl text-white font-medium">Join for free</p>
             </button>
         </div>
