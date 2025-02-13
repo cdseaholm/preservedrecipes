@@ -9,7 +9,7 @@ import FamilyTab from "./family/familyTab";
 import AccountTab from "./account/accountSettings";
 import SuggestionTab from "./account/suggestionTab";
 
-function GetChild({ activeChildIndex, session, userAdminPrivs, numAdmins, userInfo }: { activeChildIndex: ProfilePageType, session: Session, userAdminPrivs: boolean, numAdmins: number, userInfo: IUser }) {
+function GetChild({ activeChildIndex, session, userAdminPrivs, numAdmins, userInfo }: { activeChildIndex: ProfilePageType, session: Session | null, userAdminPrivs: boolean, numAdmins: number, userInfo: IUser }) {
 
     const userRecipes = useUserStore(s => s.userRecipes);
     const suggestions = useUserStore(s => s.suggestions);
@@ -34,7 +34,7 @@ function GetChild({ activeChildIndex, session, userAdminPrivs, numAdmins, userIn
                 </p>
             )
         } else {
-            <SuggestionTab suggestions={suggestions} session={session} />
+            return (<SuggestionTab suggestions={suggestions} session={session} />)
         }
     } else if (parentIndex === 1) {
         return (
@@ -47,7 +47,7 @@ function GetChild({ activeChildIndex, session, userAdminPrivs, numAdmins, userIn
     }
 }
 
-export default function TabsManager({ session, activeChildIndex, userAdminPrivs, numAdmins, userInfo }: { session: Session, activeChildIndex: ProfilePageType, userAdminPrivs: boolean, numAdmins: number, userInfo: IUser }) {
+export default function TabsManager({ session, activeChildIndex, userAdminPrivs, numAdmins, userInfo }: { session: Session | null, activeChildIndex: ProfilePageType, userAdminPrivs: boolean, numAdmins: number, userInfo: IUser }) {
 
     return (
         <div className="flex flex-col h-full w-full justify-evenly items-center py-2 px-1 border-8 border-gray-800/10">

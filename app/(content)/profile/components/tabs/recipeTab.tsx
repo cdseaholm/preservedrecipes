@@ -11,7 +11,7 @@ import AttemptDeleteRecipes from "@/utils/apihelpers/delete/deleteRecipe";
 import { Session } from "next-auth";
 import ViewSpecificItem from "../profileHelpers/viewSpecificItem";
 
-export default function RecipeTab({ userRecipes, type, additionString, searchString, promoString, session }: { userRecipes: IRecipe[], type: string, additionString: string, searchString: string, promoString: string, session: Session }) {
+export default function RecipeTab({ userRecipes, type, additionString, searchString, promoString, session }: { userRecipes: IRecipe[], type: string, additionString: string, searchString: string, promoString: string, session: Session | null }) {
 
     const [edit, setEdit] = useState(false);
     const [checkedAmt, setCheckedAmt] = useState(0);

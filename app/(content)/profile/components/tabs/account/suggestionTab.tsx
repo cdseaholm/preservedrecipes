@@ -9,7 +9,7 @@ import { CheckFunction } from "../../../functions/functions";
 import ViewSpecificItem from "../../profileHelpers/viewSpecificItem";
 import { Session } from "next-auth";
 
-export default function SuggestionTab({ suggestions, session }: { suggestions: ISuggestion[], session: Session }) {
+export default function SuggestionTab({ suggestions, session }: { suggestions: ISuggestion[], session: Session | null }) {
 
     const [edit, setEdit] = useState(false);
     const [checkedAmt, setCheckedAmt] = useState(0);
@@ -90,20 +90,21 @@ export default function SuggestionTab({ suggestions, session }: { suggestions: I
 
         ) : (
 
-            <SearchAndAdd handleSearch={handleSearch} handleCreate={handleCreate} type={'Account'} additionString={''} searchString={'Search for suggestions'} index={2} handleEdit={handleEdit} edit={edit} totalSelected={checkedAmt} clickOptions={handleOptions} clickDelete={handleDelete} optionsLength={suggestions ? suggestions.length : 0}>
-                {
-                    suggestions.length > 0 ? (
-
-                        suggestions.filter((item) => item.suggestionTitle.toLowerCase().includes(search.toLowerCase().trim())).map((item, index) => (
-                            <InSearchItemButton key={index} item={item.suggestionTitle} index={index} handleChecked={handleChecked} edit={edit} checked={checked[index]} handleSeeItem={handleSeeItem}>
-                                <ul className="space-x-2 text-ellipses" key={index}>{index + 1}. {item.suggestion}</ul>
-                            </InSearchItemButton>
-                        ))
-                    ) : (
-                        <ul className="p-2 text-start pl-7">{`Empty`}</ul>
-                    )
-                }
-            </SearchAndAdd>
+            <div className="flex flex-col justify-evenly items-center w-full h-content divide-y divide-gray-400 space-y-2">
+                <SearchAndAdd handleSearch={handleSearch} handleCreate={handleCreate} type={'Account'} additionString={''} searchString={'Search for suggestions'} index={2} handleEdit={handleEdit} edit={edit} totalSelected={checkedAmt} clickOptions={handleOptions} clickDelete={handleDelete} optionsLength={suggestions ? suggestions.length : 0}>
+                    {
+                        suggestions.length > 0 ? (
+                            suggestions.filter((item) => item.suggestionTitle.toLowerCase().includes(search.toLowerCase().trim())).map((item, index) => (
+                                <InSearchItemButton key={index} item={item.suggestionTitle} index={index} handleChecked={handleChecked} edit={edit} checked={checked[index]} handleSeeItem={handleSeeItem}>
+                                    <ul className="space-x-2 text-ellipses" key={index}>{index + 1}. {item.suggestion}</ul>
+                                </InSearchItemButton>
+                            ))
+                        ) : (
+                            <ul className="p-2 text-start pl-7">{`Empty`}</ul>
+                        )
+                    }
+                </SearchAndAdd>
+            </div>
         )
     )
 }

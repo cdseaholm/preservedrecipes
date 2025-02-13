@@ -1,34 +1,31 @@
-import connectDB from "@/lib/mongodb";
-import Suggestion from "@/models/suggestion";
-import { ISuggestion } from "@/models/types/suggestion";
-import { IUser } from "@/models/types/user";
-import MongoUser from "@/models/user";
-import { getServerSession, User } from "next-auth";
-import { getToken } from "next-auth/jwt";
-import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from 'next-auth';
+import { getToken } from 'next-auth/jwt';
+import connectDB from '@/lib/mongodb';
+import Suggestion from '@/models/suggestion';
+import { ISuggestion } from '@/models/types/suggestion';
+import { IUser } from '@/models/types/user';
+import MongoUser from '@/models/user';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
-    const secret = process.env.NEXTAUTH_SECRET || '';
-
-    if (!secret) {
-        return NextResponse.json({ status: 401, message: 'Incorrect secret', suggestions: [] as ISuggestion[] });
-    }
-
-    const session = await getServerSession({ req, secret });
-
-    if (!session) {
-        return NextResponse.json({ status: 401, message: 'Unauthorized from session.', suggestions: [] as ISuggestion[] });
-    }
-
-    const userSesh = session?.user as User;
-
-    const token = await getToken({ req, secret });
-
-    if (!token) {
-        return NextResponse.json({ status: 401, message: 'Unauthorized from token', suggestions: [] as ISuggestion[] });
-    }
-
     try {
+        const session = await getServerSession({ req, secret: process.env.NEXTAUTH_SECRET });
+        if (!session) {
+            return NextResponse.json({ status: 401, message: 'Unauthorized from session.', suggestions: [] as ISuggestion[] });
+        }
+
+        const userSesh = session.user as IUser;
+
+        const token = await getToken({ req });
+        if (!token) {
+            return NextResponse.json({ status: 401, message: 'Unauthorized from token', suggestions: [] as ISuggestion[] });
+        }
+
+        const headers = req.headers;
+        if (!headers) {
+            return NextResponse.json({ status: 401, message: 'Unauthorized from headers', suggestions: [] as ISuggestion[] });
+        }
+
         await connectDB();
         const email = userSesh.email || '';
         if (!email) {

@@ -19,7 +19,7 @@ export default function TabsList({ width, parentTabs, handleParentChange, curren
                                     borderTopRightRadius: '8px'
                                 }}
                                 onClick={() => handleParentChange(index)}
-                                className={`flex flex-row justify-evenly items-center space-x-2 ${active ? 'underline' : 'hover:underline hover:bg-gray-200/40'} p-2`}
+                                className={`flex flex-row justify-evenly items-center space-x-2 ${active ? 'underline' : 'hover:underline hover:bg-gray-200/40'} p-2 cursor-pointer`}
                                 aria-label={`${parentTab} options`}
                             >
                                 {parentTab}
@@ -28,7 +28,7 @@ export default function TabsList({ width, parentTabs, handleParentChange, curren
                         </Menu.Target>
                         <Menu.Dropdown>
                             {currentChildTabs && currentChildTabs.map((tab, childIndex) => {
-                                const disabled = activeParentIndex === 2 && childIndex === 1 ? true : false;
+                                const disabled = (activeParentIndex === 2 && childIndex === 1) || (activeParentIndex === 0 && childIndex === 1) ? true : false;
                                 return (
                                     <Menu.Item key={childIndex} onClick={() => handleTab(childIndex)} p={'md'} disabled={disabled} title={disabled ? 'To come' : tab}>
                                         {tab}

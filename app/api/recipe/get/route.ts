@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ status: 401, message: 'Incorrect secret', recipes: [] as IRecipe[] });
     }
 
-    const session = await getServerSession();
+    const session = await getServerSession({ req, secret });
     const token = await getToken({ req, secret });
 
     if (!session) {

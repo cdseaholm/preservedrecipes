@@ -24,7 +24,6 @@ export default function RootLayout({
     <html lang="en" className={inter.className} suppressHydrationWarning>
       <head>
         <ColorScriptWrapper />
-        <link rel="preload" href="/images/istockphoto-recipebook.jpg" as="image" />
       </head>
       <body className="h-screen w-screen overflow-hidden bg-mainBack">
         <MantineWrapper>

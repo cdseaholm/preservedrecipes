@@ -6,12 +6,13 @@ import { IUser } from "@/models/types/user";
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL as string : '';
 
-export async function fetchData({ endpoint }: { endpoint: string }) {
+export async function fetchData({ endpoint }: { endpoint: string }, headers: HeadersInit) {
     const url = `${baseUrl}${endpoint}`;
 
     const response = await fetch(url, {
         method: 'GET',
         headers: {
+            ...headers,
             'Content-Type': 'application/json'
         },
         next: {
@@ -24,37 +25,47 @@ export async function fetchData({ endpoint }: { endpoint: string }) {
     }
 
     const data = await response.json();
+
     return data;
-    
 }
 
-export async function InitializeUserData() {
+export async function InitializeUserData({ email }: { email: string }, headers: HeadersInit) {
+
+
 
     try {
         const [userData, recipeData, familyData, suggestionData] = await Promise.all([
-            fetchData({ endpoint: '/api/user/get' }),
-            fetchData({ endpoint: '/api/recipe/get' }),
-            fetchData({ endpoint: '/api/family/get' }),
-            fetchData({ endpoint: '/api/suggestion/get' })
-            // fetchData('/api/community/get'),
-            // fetchData('/api/family/members/get'),
-            // fetchData('/api/family/recipes/get')
+            fetchData({ endpoint: '/api/user/get' }, headers),
+            fetchData({ endpoint: '/api/recipe/get' }, headers),
+            fetchData({ endpoint: '/api/family/get' }, headers),
+            fetchData({ endpoint: '/api/suggestion/get' }, headers)
         ]);
-
-        //const communities = [] as ICommunity[];
 
         const userStore = useUserStore.getState();
         const familyStore = useFamilyStore.getState();
 
-        userStore.setUserInfo(userData.userInfo as IUser);
-        userStore.setUserRecipes(recipeData.recipes as IRecipe[]);
-        familyStore.setFamily(familyData.family as IFamily);
-        useUserStore.getState().setSuggestions(suggestionData.suggestions)
+        if (userData.status === 200) {
+            userStore.setUserInfo(userData.userInfo as IUser);
+        }
 
-        return { status: true, message: 'Success' };
+        if (recipeData.status === 200) {
+            userStore.setUserRecipes(recipeData.recipes as IRecipe[]);
+        }
 
+        if (familyData.status === 200) {
+            familyStore.setFamily(familyData.family as IFamily);
+        }
 
+        if (suggestionData.status === 200) {
+            useUserStore.getState().setSuggestions(suggestionData.suggestions);
+        }
+
+        if (email === 'cdseaholm@gmail.com') {
+            return { status: true, message: 'Success', admin: true };
+        }
+
+        return { status: true, message: 'Success', admin: false };
     } catch (error: any) {
-        return { status: false, message: 'Error initializing data' };
+        return { status: false, message: 'Error initializing data', admin: false };
     }
 }
