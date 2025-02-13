@@ -7,7 +7,7 @@ import { FaEdit } from "react-icons/fa";
 
 export default function SearchAndAdd({ handleSearch, handleCreate, children, type, additionString, searchString, index, handleEdit, edit, totalSelected, clickOptions, clickDelete, optionsLength }: { handleSearch: (input: ChangeEvent<HTMLInputElement>, index: number) => void, handleCreate: (which: string, open: boolean) => void, children: React.ReactNode, type: string, additionString: string, searchString: string, index: number, handleEdit: () => void, edit: boolean, totalSelected: number, clickOptions: () => void, clickDelete: () => void, optionsLength: number }) {
 
-    const buttonClass = `h-content w-content flex flex-row p-1 justify-evenly items-center hover:bg-gray-100 hover:text-blue-300 text-blue-500 rounded-md text-sm sm:text-md space-x-1`;
+    const buttonClass = `h-content w-content flex flex-row p-1 justify-evenly items-center hover:bg-gray-100 hover:text-blue-300 text-blue-500 rounded-md text-sm sm:text-md space-x-1 cursor-pointer`;
 
     return (
         <div className={`bg-mainBack p-1 w-full min-h-[300px] sm:min-h-[230px] sm:h-1/2 flex flex-col justify-evenly items-center py-2 sm:px-5`}>
@@ -41,6 +41,6 @@ export default function SearchAndAdd({ handleSearch, handleCreate, children, typ
                     {children}
                 </div>
             </div>
-        </div >
+        </div>
     )
 }

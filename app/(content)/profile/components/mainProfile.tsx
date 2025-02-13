@@ -2,7 +2,6 @@
 
 import { useStateStore } from "@/context/stateStore";
 import { User } from "next-auth";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useFamilyStore } from "@/context/familyStore";
@@ -11,6 +10,8 @@ import { useUserStore } from "@/context/userStore";
 import { useProfileStore } from "@/context/profileStore";
 import TabsManager from "./tabs/tabsManager";
 import TabsList from "./tabs/tabs";
+import { InitializeUserData } from "@/utils/apihelpers/get/initUserData";
+import { useRouter } from "next/navigation";
 
 export type ProfilePageType = {
     parent: number,
@@ -18,14 +19,16 @@ export type ProfilePageType = {
 }
 
 
-export default function ProfilePage({ admin }: { admin: boolean }) {
-    const router = useRouter();
+export default function ProfilePage() {
+
     const width = useStateStore(s => s.widthQuery);
     const { data: session } = useSession();
+    const router = useRouter();
 
+    const [loading, setLoading] = useState(true);
+    const [accountTabs, setAccountTabs] = useState<string[]>(['Account Settings', 'Account History']);
+    const [familyTabs, setFamilyTabs] = useState<string[]>(['Family Recipes', 'Family Members']);
     const parentTabs = ['Account', 'Family', 'Recipes'];
-    const accountTabs = admin ? ['Account Settings', 'Account History', 'View Suggestions'] : ['Account Settings', 'Account History', 'Delete Account'];
-    const familyTabs = admin ? ['Family Recipes', 'Family Members', 'Family Settings'] : ['Family Recipes', 'Family Members'];
     const userTabs = ['User Recipes', 'User Communities'];
 
     const userInfo = useUserStore(s => s.userInfo);
@@ -74,18 +77,41 @@ export default function ProfilePage({ admin }: { admin: boolean }) {
     }
 
     useEffect(() => {
+        if (!loading) {
+            return;
+        }
         if (!session) {
             router.replace('/');
+            return;
         }
-    }, [session, router]);
-
-    if (!session) {
-        return (
-            <section className="flex flex-col justify-center items-center w-full h-content gap-5 pt-6">
-                Error
-            </section>
-        )
-    }
+        const user = session.user;
+        if (!user) {
+            router.replace('/');
+            return;
+        }
+        const email = user.email ? user.email : '';
+        if (email === '') {
+            router.replace('/');
+            return;
+        }
+        const headers = { 'Authorization': `Bearer ${user}` };
+        const init = async () => {
+            const initialized = await InitializeUserData({ email: email }, headers) as { status: boolean, message: string, admin: boolean };
+            if (!initialized || initialized.status === false) {
+                router.replace('/');
+                return;
+            }
+            if (initialized.admin === true) {
+                const newAccountTabs = [...accountTabs, 'View Suggestions'];
+                setAccountTabs(newAccountTabs);
+                //needs to be moved into fam logic, here for now
+                const newFamilyTabs = [...familyTabs, 'Family Settings'];
+                setFamilyTabs(newFamilyTabs);
+            }
+            setLoading(false);
+        }
+        init();
+    }, [loading, session, accountTabs, familyTabs, router])
 
     return (
         <section className="flex flex-col justify-center items-center w-full h-content pt-6">
