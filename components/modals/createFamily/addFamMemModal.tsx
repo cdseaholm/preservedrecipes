@@ -8,10 +8,11 @@ import { toast } from "sonner";
 import LoadingModal from "../templates/loadingModal";
 import { useModalStore } from "@/context/modalStore";
 import { UseFormReturnType } from "@mantine/form";
-import { SendInvites } from "@/utils/apihelpers/emails/send";
+//import { SendInvites } from "@/utils/apihelpers/emails/send";
 import { useFamilyStore } from "@/context/familyStore";
 import { IFamily } from "@/models/types/family";
 import AddFamMemberForm, { NewFamMemFormType } from "@/components/forms/addFamMemForm";
+import { SendInvites } from "@/utils/apihelpers/emails/send";
 
 export default function AddFamMemsModal({ session, handleUpdate }: { session: Session | null, handleUpdate: () => Promise<void> }) {
 
@@ -64,7 +65,7 @@ export default function AddFamMemsModal({ session, handleUpdate }: { session: Se
                 return;
             }
 
-            toast.success('Successfully created suggestion!');
+            toast.success('Successfully sent invites!');
             await handleUpdate();
             resetZoom(width, false);
             setOpenAddFamMemsModal(false)

@@ -1,8 +1,6 @@
 import { NewFamMemFormType } from "@/components/forms/addFamMemForm";
 import { IFamilyMember } from "@/models/types/familyMember";
 import { IUser } from '@/models/types/user';
-import { getServerSession } from 'next-auth';
-import { getToken } from 'next-auth/jwt';
 import { type NextRequest, NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 import crypto from 'crypto';
@@ -112,31 +110,9 @@ async function prepareInvite({ email, familyID, inviteTokenCreated }: { email: N
 }
 
 export async function POST(req: NextRequest) {
-    const secret = process.env.NEXTAUTH_SECRET || '';
 
-    if (!secret) {
-        return NextResponse.json({ status: 401, message: 'Incorrect secret', famMembersReturned: [] as IFamilyMember[] });
-    }
-
-    const session = await getServerSession();
-    const token = await getToken({ req, secret });
-
-    if (!session) {
-        return NextResponse.json({ status: 401, message: 'Unauthorized from session', famMembersReturned: [] as IFamilyMember[] });
-    }
-
-    if (!token) {
-        return NextResponse.json({ status: 401, message: 'Unauthorized from token', famMembersReturned: [] as IFamilyMember[] });
-    }
-
-    const user = session.user;
-
-    if (!user) {
-        return NextResponse.json({ status: 401, message: 'Unauthorized from user', famMembersReturned: [] as IFamilyMember[] });
-    }
-
-    const senderEmail = user.email;
-    const senderName = user.name;
+    const senderEmail = 'cdseaholm@gmail.com';
+    const senderName = 'Carl';
 
     if (!senderEmail || !senderName) {
         return NextResponse.json({ status: 401, message: 'Unauthorized from email', famMembersReturned: [] as IFamilyMember[] });

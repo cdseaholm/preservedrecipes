@@ -18,6 +18,7 @@ import { User } from "next-auth";
 import InviteRegisterForm from "@/components/forms/inviteRegisterForm";
 import { InviteRegCheck } from "@/utils/apihelpers/register/inviteSignInCheck";
 import { useAlertStore } from "@/context/alertStore";
+import { useUserStore } from "@/context/userStore";
 
 export default function InvitePage({ token }: { token: string | null }) {
 
@@ -104,6 +105,8 @@ export default function InvitePage({ token }: { token: string | null }) {
                 setLoading(false);
                 return;
             }
+
+            useUserStore.getState().setUserInfo(createdUser)
 
             if (invite) {
                 const inviteCheck = await InviteRegCheck({ invite: invite }) as { status: boolean, message: string };

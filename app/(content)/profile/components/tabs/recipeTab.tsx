@@ -19,7 +19,7 @@ export default function RecipeTab({ userRecipes, type, additionString, searchStr
     const [recipeSearch, setRecipeSearch] = useState('');
     const [recipeTitles, setRecipeTitles] = useState<string[]>([] as string[])
     const [checked, setChecked] = useState<boolean[]>(new Array(userRecipes.length).fill(false));
-    const [itemToView, setItemToView] = useState<IRecipe | null>(null)
+    const [itemToView, setItemToView] = useState<IRecipe | null>(null);
 
 
     const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
@@ -93,12 +93,12 @@ export default function RecipeTab({ userRecipes, type, additionString, searchStr
         const lengthOfRecipes = userRecipes.length;
         setRecipeTitles(userRecipes.filter(rec => rec).map((rec) => rec.name))
         setChecked(new Array(lengthOfRecipes).fill(false));
-    }, [userRecipes])
+    }, [userRecipes]);
 
     return (
         itemToView ? (
 
-            <ViewSpecificItem item={itemToView} handleSeeItem={handleSeeItem} parent={'suggestions'} />
+            <ViewSpecificItem item={itemToView} handleSeeItem={handleSeeItem} parent={'recipe'} />
 
         ) : (
             <SearchAndAdd handleSearch={handleSearch} handleCreate={handleCreate} type={type} additionString={additionString} searchString={searchString} index={2} handleEdit={handleEdit} edit={edit} totalSelected={checkedAmt} clickOptions={handleOptions} clickDelete={handleDelete} optionsLength={userRecipes ? userRecipes.length : 0}>

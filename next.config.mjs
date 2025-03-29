@@ -26,7 +26,7 @@ export default withBundleAnalyzerConfig({
     ]
   },
   experimental: {
-    optimizePackageImports: ['@mantine/core', '@mantine/hooks'],
+    optimizePackageImports: ['@mantine/core', '@mantine/hooks']
   },
   productionBrowserSourceMaps: true,
   webpack: (config, { dev }) => {

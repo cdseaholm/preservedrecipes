@@ -25,19 +25,21 @@ export default function ComboBox({ pills, handleOpenAdd, which, handleEditToggle
 
     const options = typePills.map((item, index) => {
         if (which === 'steps') {
-            const stepItem = item ? item as StepType : {} as StepType;
-            const stepID = stepItem ? stepItem.stepId : -1;
+            if (!item) {
+                return;
+            }
+            
             return (
-                <Combobox.Option value={stepID.toString()} key={stepID} onClick={() => handleOptionEditClick(which, index)}>
-                    {`Step: ${stepID + 1}`}
+                <Combobox.Option value={`${index}`} key={index} onClick={() => handleOptionEditClick(which, index)}>
+                    {`Step: ${index + 1}`}
                 </Combobox.Option>
             );
         } else {
             const ingredientItem = item ? item as IngredientType : {} as IngredientType;
             const ingId = ingredientItem ? ingredientItem.ingredientId : -1
-            const ingIng = ingredientItem ? ingredientItem.ingredient : 'Ingredient'
+            const ingIng = ingredientItem ? ingredientItem.ingredient : 'Ingredient';
             return (
-                <Combobox.Option value={ingId.toString()} key={ingId} onClick={() => handleOptionEditClick(which, index)}>
+                <Combobox.Option value={ingredientItem.ingredient} key={ingId} onClick={() => handleOptionEditClick(which, index)}>
                     {`${index + 1}. ${ingIng}`}
                 </Combobox.Option>
             );

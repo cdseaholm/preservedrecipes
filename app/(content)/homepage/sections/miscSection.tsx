@@ -1,3 +1,4 @@
+import InTextButton from "@/components/buttons/basicInTextButton";
 import { useModalStore } from "@/context/modalStore";
 import Link from "next/link";
 
@@ -16,7 +17,7 @@ export default function AboutSection({ id }: { id: string }) {
                 <p>
                     Keep your eyes out for future updates too, as we have many exciting ideas coming for Preserved Recipes. Check out our <span>
                         <Link className="text-blue-700 hover:text-blue-300 hover:underline" href={'/upcoming'}>Upcoming Features</Link>
-                    </span>, and feel free to send in ideas of your own here <span><button className="text-blue-700 hover:text-blue-300 hover:underline" onClick={() => setOpenSuggestionModal(true)} aria-label="Add Suggestions">here</button></span>!
+                    </span>, and feel free to send in ideas of your own <span><InTextButton buttonText="here" ariaLabel="Add Suggestions here" action={() => setOpenSuggestionModal(true)}/></span>!
                 </p>
             </div>
         </div>

@@ -70,11 +70,15 @@ export default function InfoTemplate({ tab }: { tab: string }) {
         <ListWrapper>
           <h2>{Texts[indexToUse][0]}</h2>
           <ol>
-            <li>{Texts[indexToUse][1]}</li>
-            <li>{Texts[indexToUse][2]}</li>
-            <li>{Texts[indexToUse][3]}</li>
-            <li>{Texts[indexToUse][4]}</li>
-            <li>{Texts[indexToUse][5]}</li>
+            {Texts[indexToUse].map((text, index) => {
+              if (index !== 0) {
+                return (
+                  <li className="pl-5" key={index}>
+                    {`-${text}`}
+                  </li>
+                )
+              }
+            })}
           </ol>
         </ListWrapper>
       </TabBox>
