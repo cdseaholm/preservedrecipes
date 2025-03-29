@@ -56,8 +56,8 @@ export default function AppHeader() {
 
     return (
         <header className={`${headerClass} justify-between`}>
-            <section className="text-base font-bold w-2/3 md:w-1/3">
-                <Link href={'/'}>
+            <section className="text-base font-bold w-2/3 md:w-1/3 cursor-pointer hover:underline hover:text-mainText/70">
+                <Link href={'/'} title="Home">
                     {'Preserved Recipes'}
                 </Link>
             </section>
@@ -68,8 +68,8 @@ export default function AppHeader() {
                 </nav>
             ) : (
                 <nav className="flex flex-row justify-end items-center w-2/3 space-x-8">
-                    <Link href={'/about'} aria-label="About">About</Link>
-                    <button onClick={handleClick} aria-label="Pricing">Pricing</button>
+                    <Link href={'/about'} className="cursor-pointer hover:underline hover:text-mainText/70" aria-label="About">About</Link>
+                    <button onClick={handleClick} className="cursor-pointer hover:underline hover:text-mainText/70" type="button" aria-label="Pricing">Pricing</button>
                     <HeaderLarge {...commonParams} short={short} />
                 </nav>
             )}

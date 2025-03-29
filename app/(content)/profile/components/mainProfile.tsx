@@ -42,6 +42,7 @@ export default function ProfilePage() {
     const userFamInfo = members ? members.find((member) => member.familyMemberID === userInfo._id.toString()) as IFamilyMember : {} as IFamilyMember;
     const userFamPrivs = userFamInfo ? userFamInfo.permissionStatus as string : '';
     const userAdminPrivs = userFamPrivs && userFamPrivs === 'Admin' ? true : false;
+    //When it comes from Link, userIfno._id is undefined, make sure to add an effect to update
 
     const [activeParentIndex, setActiveParentIndex] = useState(0);
     const [currentOptions, setCurrentOptions] = useState<string[]>(accountTabs);

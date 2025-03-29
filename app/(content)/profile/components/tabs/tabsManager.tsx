@@ -50,7 +50,7 @@ function GetChild({ activeChildIndex, session, userAdminPrivs, numAdmins, userIn
 export default function TabsManager({ session, activeChildIndex, userAdminPrivs, numAdmins, userInfo }: { session: Session | null, activeChildIndex: ProfilePageType, userAdminPrivs: boolean, numAdmins: number, userInfo: IUser }) {
 
     return (
-        <div className="flex flex-col h-full w-full justify-evenly items-center py-2 px-1 border-8 border-gray-800/10">
+        <div className="flex flex-col h-full w-full justify-evenly items-center p-2 pb-6 bg-mainBack">
             {GetChild({ activeChildIndex: activeChildIndex, session: session, userAdminPrivs: userAdminPrivs, numAdmins: numAdmins, userInfo: userInfo })}
         </div>
     )

@@ -28,6 +28,7 @@ const optionsFilter: OptionsFilter = ({ options, search }) => {
 export default function MainRecipeForm({
     handleCancel,
     handleCreateRecipe,
+    handleEditRecipe,
     errors,
     recipeForm,
     handleOpenViewers,
@@ -35,18 +36,21 @@ export default function MainRecipeForm({
     handleOpenAdd,
     stepPills,
     handleEditToggle,
-    ingredientPills
+    ingredientPills,
+    creating
 
 }: {
     handleCancel: () => void,
     handleCreateRecipe: ({ recipeForm }: { recipeForm: UseFormReturnType<RecipeFormType, (values: RecipeFormType) => RecipeFormType> }) => void,
+    handleEditRecipe: ({ recipeForm }: { recipeForm: UseFormReturnType<RecipeFormType, (values: RecipeFormType) => RecipeFormType> }) => void,
     recipeForm: UseFormReturnType<RecipeFormType, (values: RecipeFormType) => RecipeFormType>, errors: errorType[],
     handleOpenViewers: () => void,
     secret: boolean,
     handleOpenAdd: (which: string) => void,
     stepPills: StepType[],
     ingredientPills: IngredientType[],
-    handleEditToggle: (which: string, index: number) => void
+    handleEditToggle: (which: string, index: number) => void,
+    creating: boolean
 }) {
 
     const width = useStateStore(s => s.widthQuery);
@@ -57,8 +61,8 @@ export default function MainRecipeForm({
     const errTags = errorsExist && errors.find((err) => err.which === 'tags') ? true : false;
 
     return (
-        <form id="modalCreateRecipeForm" className="w-full h-full" onAbort={() => { recipeForm.reset(); recipeForm.clearErrors(); handleCancel(); }} onSubmit={recipeForm.onSubmit(() => handleCreateRecipe({ recipeForm }))}>
-            <Fieldset legend="Recipe Structure">
+        <form id="modalCreateRecipeForm" className="w-full h-full" onAbort={() => { recipeForm.reset(); recipeForm.clearErrors(); handleCancel(); }} onSubmit={creating ? recipeForm.onSubmit(() => handleCreateRecipe({ recipeForm })) : recipeForm.onSubmit(() => handleEditRecipe({ recipeForm }))}>
+            <Fieldset legend={creating ? "Recipe Structure" : ''} mt={creating ? 0 : 2}>
                 <div className="flex flex-row w-full justify-end items-center">
                     <ErrorPopover errors={errors} width={width} />
                 </div>
@@ -172,16 +176,12 @@ export default function MainRecipeForm({
                     )}
                 </Fieldset>
             </Fieldset>
-            <section className="flex flex-row w-full justify-evenly items-center pt-5">
-                <button type="button" onClick={() => { recipeForm.reset(); recipeForm.clearErrors(); handleCancel(); }} className="border border-neutral-200 rounded-md hover:bg-neutral-200 p-2 w-1/5">
-                    Cancel
-                </button>
-                <button type='submit' className="border border-neutral-200 rounded-md hover:bg-blue-200 bg-blue-400 p-2 w-1/5">
-                    Create
-                </button>
-                <CancelButton handleCancel={() => { recipeForm.reset(); recipeForm.clearErrors(); handleCancel(); }} />
-                <SubmitButton buttonTitle="Create" />
-            </section>
+            {creating &&
+                <section className="flex flex-row w-full justify-evenly items-center pt-5">
+                    <CancelButton handleCancel={() => { recipeForm.reset(); recipeForm.clearErrors(); handleCancel(); }} />
+                    <SubmitButton buttonTitle="Create" />
+                </section>
+            }
         </form>
     )
 }

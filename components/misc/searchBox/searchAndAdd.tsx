@@ -1,7 +1,7 @@
 'use client'
 
 import { ChangeEvent } from "react";
-import { BiPlus, BiPencil } from "react-icons/bi";
+import { BiPlus, BiPencil, BiCheck } from "react-icons/bi";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { FaEdit } from "react-icons/fa";
 
@@ -12,7 +12,7 @@ export default function SearchAndAdd({ handleSearch, handleCreate, children, typ
     return (
         <div className={`bg-mainBack p-1 w-full min-h-[300px] sm:min-h-[230px] sm:h-1/2 flex flex-col justify-evenly items-center py-2 sm:px-5`}>
             <div className={`flex flex-row ${edit ? 'justify-between' : 'justify-end'} items-center sm:space-x-4 w-full h-fit p-2`}>
-                {edit &&
+                {edit ? (
                     <div className="flex flex-row justify-evenly items-center w-content h-content space-x-7">
                         <button className={`${buttonClass}`} onClick={() => clickOptions()} aria-label="Edit">
                             <p>{`Edit ${totalSelected}`}</p>
@@ -23,15 +23,18 @@ export default function SearchAndAdd({ handleSearch, handleCreate, children, typ
                             <FaRegTrashAlt height={'auto'} />
                         </button>
                     </div>
+                ) : (
+                    null
+                )
                 }
                 <div className="flex flex-row justify-evenly items-center w-content h-content space-x-7" aria-label="Add">
+                    <button onClick={() => handleEdit()} className={buttonClass} disabled={optionsLength > 0 ? false : true} aria-label="Toggle Edit">
+                        {edit ? (<BiCheck />) : (<BiPencil />)}
+                        <p>{edit ? 'Done' : 'Edit'}</p>
+                    </button>
                     <button onClick={() => handleCreate(type, true)} className={buttonClass}>
                         <BiPlus />
                         {additionString}
-                    </button>
-                    <button onClick={() => handleEdit()} className={buttonClass} disabled={optionsLength > 0 ? false : true} aria-label="Toggle Edit">
-                        <BiPencil />
-                        <p>{`Edit`}</p>
                     </button>
                 </div>
             </div>
