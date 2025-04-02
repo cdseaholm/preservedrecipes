@@ -25,7 +25,7 @@ function GetChild({ activeChildIndex, session, userAdminPrivs, numAdmins, userIn
     if (parentIndex === 0) {
         if (childIndex === 0) {
             return (
-                <AccountTab />
+                <AccountTab userFamAdminPrivs={userAdminPrivs} numAdmins={numAdmins} />
             )
         } else if (childIndex === 1) {
             return (
@@ -38,7 +38,7 @@ function GetChild({ activeChildIndex, session, userAdminPrivs, numAdmins, userIn
         }
     } else if (parentIndex === 1) {
         return (
-            <FamilyTab userInfo={userInfo} type={'Family'} additionString={[finalStrings[0][0], finalStrings[1][0]]} searchString={[finalStrings[0][1], finalStrings[1][1]]} promoString={[finalStrings[0][2], finalStrings[1][2]]} numAdmins={numAdmins} userAdminPrivs={userAdminPrivs} indexToRender={childIndex} />
+            <FamilyTab userInfo={userInfo} type={'Family'} additionString={[finalStrings[0][0], finalStrings[1][0]]} searchString={[finalStrings[0][1], finalStrings[1][1]]} promoString={[finalStrings[0][2], finalStrings[1][2]]} userAdminPrivs={userAdminPrivs} indexToRender={childIndex} />
         )
     } else {
         return (

@@ -7,13 +7,13 @@ import { toast } from "sonner"
 import FamilySettings from "./familySettings"
 import { IFamilyMember } from "@/models/types/familyMember"
 import { useFamilyStore } from "@/context/familyStore"
-import FamilyMembers from "./familyMembers"
+import FamilyMembers from "./members/familyMembers"
 import FamilyRecipes from "./familyRecipes"
 import { CheckFunction } from "../../../functions/functions"
 import { modals } from "@mantine/modals"
 import AttemptDeleteFamilyMember from "@/utils/apihelpers/delete/deleteFamilyMember"
 
-export default function FamilyTab({ userInfo, type, additionString, searchString, promoString, numAdmins, userAdminPrivs, indexToRender }: { userInfo: IUser, type: string, additionString: string[], searchString: string[], promoString: string[], numAdmins: number, userAdminPrivs: boolean, indexToRender: number }) {
+export default function FamilyTab({ userInfo, type, additionString, searchString, promoString, userAdminPrivs, indexToRender }: { userInfo: IUser, type: string, additionString: string[], searchString: string[], promoString: string[], userAdminPrivs: boolean, indexToRender: number }) {
 
     const [edit, setEdit] = useState(false);
     const [famCheckedAmt, setFamCheckedAmt] = useState(0);
@@ -157,9 +157,9 @@ export default function FamilyTab({ userInfo, type, additionString, searchString
         indexToRender === 0 ? (
             <FamilyRecipes userInfo={userInfo} type={type} additionString={additionString} searchString={searchString} promoString={promoString} handleDelete={handleDelete} handleOptions={handleEditClick} handleEdit={handleEdit} handleCheckedRec={handleCheckedRec} handleCreate={handleCreate} handleFamilyRecipeSearch={handleFamilyRecipeSearch} familyRecipeSearch={familyRecipeSearch} edit={edit} recChecked={recChecked} famRecipeTitles={famRecipeTitles} />
         ) : indexToRender === 1 ? (
-            <FamilyMembers userInfo={userInfo} type={type} additionString={additionString} searchString={searchString} promoString={promoString} handleDelete={handleDelete} handleOptions={handleEditClick} handleEdit={handleEdit} handleCheckedFam={handleCheckedFam} handleFamilyMemberSearch={handleFamilyMemberSearch} familySearch={familySearch} edit={edit} famChecked={famChecked} memberNames={memberNames} handleCheckAllFam={handleCheckAllFam} allCheck={allCheck} />
+            <FamilyMembers userInfo={userInfo} type={type} additionString={additionString} searchString={searchString} promoString={promoString} handleDelete={handleDelete} handleOptions={handleEditClick} handleEdit={handleEdit} handleCheckedFam={handleCheckedFam} handleFamilyMemberSearch={handleFamilyMemberSearch} familySearch={familySearch} edit={edit} famChecked={famChecked} memberNames={memberNames} handleCheckAllFam={handleCheckAllFam} allCheck={allCheck} familyMembers={familyMembers} />
         ) : (
-            <FamilySettings userFamAdminPrivs={userAdminPrivs} familySettings={['Edit Family Members', 'Edit Family Recipes', 'Delete Family']} family={family} numAdmins={numAdmins} />
+            <FamilySettings userFamAdminPrivs={userAdminPrivs} family={family} />
         )
     )
 }

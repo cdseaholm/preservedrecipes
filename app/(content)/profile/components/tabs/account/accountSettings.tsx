@@ -8,8 +8,13 @@ import ActionButton from "@/components/buttons/basicActionButton";
 import ChangeNameForm from "@/components/forms/changeNameForm";
 import { useForm, UseFormReturnType } from "@mantine/form";
 import { RegisterFormType } from "@/components/forms/registerForm";
+import { useAlertStore } from "@/context/alertStore";
+import AttemptDeleteUser, { DeleteResponse } from "@/utils/apihelpers/delete/deleteUser";
+import { signOut, useSession } from "next-auth/react";
 
-export default function AccountTab() {
+export default function AccountTab({ numAdmins, userFamAdminPrivs }: { numAdmins: number, userFamAdminPrivs: boolean }) {
+
+    const { data: session, update } = useSession();
 
     const changeNameForm = useForm({
         mode: 'uncontrolled',
@@ -52,8 +57,34 @@ export default function AccountTab() {
     }
 
     const attemptDelete = async () => {
-        toast.info('Deleting')
-        //handleDeleteAttempt(); //need to fix
+
+        if (!session) {
+            toast.error('You are not authorized to make this change');
+            return;
+        }
+
+        if (userFamAdminPrivs && numAdmins < 2) {
+            toast.info('Either give admin privileges to another family member or delete the family altogether before deleting your account.')
+            return;
+        }
+
+        const confirm = window.confirm('Are you sure you want to delete your account? This will remove everything created by you including recipes, posts, comments, etc.');
+        if (!confirm) {
+            return;
+        }
+
+        const headers = { 'Authorization': `Bearer ${session.user}` };
+        const attemptDelete = await AttemptDeleteUser(headers) as DeleteResponse;
+
+        if (!attemptDelete || attemptDelete.status === false) {
+            toast.error('Error deleting user')
+            return;
+        }
+
+        await signOut();
+        await update();
+        useAlertStore.getState().setGlobalToast('User deleted successfully');
+
     };
 
     const confirm = () => {
@@ -64,8 +95,7 @@ export default function AccountTab() {
         title: 'Please confirm your action',
         children: (
             <Text size="sm">
-                This action is so important that you are required to confirm it with a modal. Please click
-                one of these buttons to proceed.
+                Are you sure you want to delete your account?
             </Text>
         ),
         confirmProps: { children: 'Confirm' },

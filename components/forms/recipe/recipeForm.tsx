@@ -16,6 +16,7 @@ import MainRecipeForm from "./extensions/mainRecipeForm";
 import { useState, useRef, useCallback, useEffect } from "react";
 import { toast } from "sonner";
 import { HandleAddChildValues, RemoveChildValues } from "./extensions/functions";
+import { IUser } from "@/models/types/user";
 
 export type RecipeFormType = {
     name: string;
@@ -26,6 +27,7 @@ export type RecipeFormType = {
     tags: string[];
     secret: boolean;
     secretViewerIDs: string[];
+    familyRecipe: boolean;
 }
 
 
@@ -37,7 +39,8 @@ export default function RecipeForm({
     handleCloseChildAndSaveAdditions,
     open,
     handleCloseChildAndSaveEdits,
-    handleCloseViewers
+    handleCloseViewers,
+    userInfo
 }: {
 
     handleCreateRecipe: ({ recipeForm }: { recipeForm: UseFormReturnType<RecipeFormType, (values: RecipeFormType) => RecipeFormType> }) => Promise<boolean>,
@@ -47,7 +50,8 @@ export default function RecipeForm({
     handleCloseChildAndSaveAdditions: ({ which, newVals, itemId, form, stepId, }: { which: string, newVals: IngredientType[] | StepType[], itemId: number, form: UseFormReturnType<RecipeFormType, (values: RecipeFormType) => RecipeFormType>, stepId: null | number }) => Promise<{ saved: boolean, message: string }>,
     open: boolean,
     handleCloseChildAndSaveEdits: ({ which, newVals, itemId, form, }: { which: string, newVals: IngredientType[] | StepType[], itemId: number, form: UseFormReturnType<RecipeFormType, (values: RecipeFormType) => RecipeFormType>, }) => Promise<{ saved: boolean, message: string }>,
-    handleCloseViewers: ({ form }: { form: UseFormReturnType<RecipeFormType, (values: RecipeFormType) => RecipeFormType> }) => Promise<boolean>
+    handleCloseViewers: ({ form }: { form: UseFormReturnType<RecipeFormType, (values: RecipeFormType) => RecipeFormType> }) => Promise<boolean>,
+    userInfo: IUser
 }) {
 
     const recipeForm = useForm({
@@ -60,7 +64,8 @@ export default function RecipeForm({
             type: `Misc`,
             tags: [] as string[],
             secret: false,
-            secretViewerIDs: [] as string[]
+            secretViewerIDs: [] as string[],
+            familyRecipe: false
         },
         validate: {
             name: (value) => (
@@ -93,7 +98,10 @@ export default function RecipeForm({
                     }
                 }
                 return null;
-            }
+            },
+            familyRecipe: (_value) => (
+                null
+            )
         }
     });
 
@@ -330,7 +338,7 @@ export default function RecipeForm({
             <Modal {...stack.register('create-main')} onClose={handleCancel} title="Create Recipe" centered overlayProps={{
                 backgroundOpacity: 0.55, blur: 3, className: 'drop-shadow-xl'
             }} removeScrollProps={{ allowPinchZoom: true }} lockScroll={false} size={'100%'} transitionProps={{ transition: hasOpenedMain ? `slide-up` : `pop` }}>
-                <MainRecipeForm handleCancel={handleCancel} handleCreateRecipe={handleCreateRecipeInit} errors={childErrors} recipeForm={recipeForm} stepPills={stepPills} ingredientPills={ingredientPills} handleOpenViewers={handleOpenViewers} secret={recipeForm.getValues().secret} handleOpenAdd={handleOpenAdd} handleEditToggle={handleOpenEdit} creating={true} handleEditRecipe={handleCreateRecipeInit} />
+                <MainRecipeForm handleCancel={handleCancel} handleCreateRecipe={handleCreateRecipeInit} errors={childErrors} recipeForm={recipeForm} stepPills={stepPills} ingredientPills={ingredientPills} handleOpenViewers={handleOpenViewers} secret={recipeForm.getValues().secret} handleOpenAdd={handleOpenAdd} handleEditToggle={handleOpenEdit} creating={true} handleEditRecipe={handleCreateRecipeInit} userInfo={userInfo} familyRecipe={recipeForm.getValues().familyRecipe} />
             </Modal>
 
             <Modal {...stack.register('ingredient')} onClose={handleCancel} centered overlayProps={{
@@ -372,6 +380,6 @@ export default function RecipeForm({
             } py={'md'} px={'xs'}>
                 <RecipeViewers handleSaveAndCloseViewers={handleCloseViewersInit} errors={childErrors} form={recipeForm} handleCancelViewers={handleCancelViewers} />
             </Modal>
-        </Modal.Stack >
+        </Modal.Stack>
     )
 }

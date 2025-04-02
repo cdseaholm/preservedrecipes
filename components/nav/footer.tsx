@@ -49,11 +49,18 @@ export default function MainFooter() {
                                             {sectionInfo}
                                         </Link>
                                     )
-                                } else {
+                                } else if (index === 0 && sectionIndex === 1) {
                                     return (
                                         <button onClick={() => toast.info(sectionInfo)} className={footerButtonText} key={sectionIndex} aria-label={sectionInfo}>
                                             {sectionInfo}
                                         </button>
+                                    )
+                                } else {
+                                    const refToUse = index === 3 && sectionIndex === 0 ? 'upcoming' : sectionInfo.toLowerCase().split(' ').join('-');
+                                    return (
+                                        <Link href={refToUse} className={footerButtonText} key={sectionIndex} aria-label={sectionInfo}>
+                                            {sectionInfo}
+                                        </Link>
                                     )
                                 }
                             })}
