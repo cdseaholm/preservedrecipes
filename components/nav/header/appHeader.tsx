@@ -24,11 +24,6 @@ export default function AppHeader() {
     const shortStack = useStateStore(state => state.shortStack);
     const short = shortStack && height < 420 ? true : false;
 
-    const handleClick = async () => {
-        const { toast } = await import('sonner');
-        toast.info(`You'd go to the Pricing page right now!`)
-    }
-
     const commonParams = {
         userInfo: userInfo,
         handleZoomClick: handleZoomClick,
@@ -69,7 +64,7 @@ export default function AppHeader() {
             ) : (
                 <nav className="flex flex-row justify-end items-center w-2/3 space-x-8">
                     <Link href={'/about'} className="cursor-pointer hover:underline hover:text-mainText/70" aria-label="About">About</Link>
-                    <button onClick={handleClick} className="cursor-pointer hover:underline hover:text-mainText/70" type="button" aria-label="Pricing">Pricing</button>
+                    <Link href={'pricing'} className="cursor-pointer hover:underline hover:text-mainText/70" type="button" aria-label="Pricing">Pricing</Link>
                     <HeaderLarge {...commonParams} short={short} />
                 </nav>
             )}

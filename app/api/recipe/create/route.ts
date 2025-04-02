@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt"
 import { revalidatePath } from "next/cache";
 import { RecipeFormType } from "@/components/forms/recipe/recipeForm";
+import Family from "@/models/family";
 
 export async function POST(req: NextRequest) {
 
@@ -66,9 +67,23 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ status: 500, message: 'Error creating', recipeReturned: {} as IRecipe });
         }
 
+
         const recipeId = insertedRecipe._id;
 
         await MongoUser.updateOne({ email: email }, { $push: { recipeIDs: recipeId.toString() } });
+
+        const isFamilyRecipe = recipe.familyRecipe;
+
+        if (isFamilyRecipe) {
+            const userFam = await Family.findOne({ _id: user.userFamilyID });
+            if (!userFam) {
+                //contigency
+                return NextResponse.json({ status: 404, message: 'Could not find family, otherwise created', recipeReturned: {} as IRecipe });
+            }
+            const oldRecipes = userFam.recipes;
+            const newRecipes = [...oldRecipes, newRecipe] as IRecipe[];
+            await userFam.updateOne({ recipes: newRecipes })
+        }
 
         revalidatePath('(content)/profile');
 

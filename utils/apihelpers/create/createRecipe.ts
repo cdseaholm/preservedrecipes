@@ -2,6 +2,8 @@ import { IRecipe } from "@/models/types/recipe";
 import { useUserStore } from "@/context/userStore";
 import { IUser } from "@/models/types/user";
 import { RecipeFormType } from "@/components/forms/recipe/recipeForm";
+import { useFamilyStore } from "@/context/familyStore";
+import { IFamily } from "@/models/types/family";
 
 
 export async function AttemptCreateRecipe({ recipeToAdd }: { recipeToAdd: RecipeFormType }) {
@@ -40,6 +42,16 @@ export async function AttemptCreateRecipe({ recipeToAdd }: { recipeToAdd: Recipe
             recipeIDs: newRecipeIDs,
         } as IUser;
         useUserStore.getState().setUserInfo(newUserInfo);
+        if (recipeToAdd.familyRecipe === true) {
+            const fam = useFamilyStore.getState().family;
+            const oldFamRecipes = fam.recipes;
+            const newFamRecipes = [...oldFamRecipes, data.recipeReturned];
+            const newFam = {
+                ...fam,
+                recipes: newFamRecipes
+            } as IFamily;
+            useFamilyStore.getState().setFamily(newFam)
+        }
 
         return { status: true, message: `Created` };
 

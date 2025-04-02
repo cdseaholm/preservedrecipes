@@ -11,14 +11,14 @@ import { IoHomeOutline } from "react-icons/io5";
 import { PiCookieThin } from "react-icons/pi";
 import { signOut } from 'next-auth/react';
 // import { RiCommunityLine } from "react-icons/ri";
-import { toast } from "sonner";
 import { modals } from '@mantine/modals';
+import { MdInfoOutline, MdOutlineAttachMoney } from "react-icons/md";
 
 const fam = <GiFamilyTree />;
 const recipes = <PiCookieThin />;
 // const communities = <RiCommunityLine />;
 
-export default function MenuContent({ userInfo, session, profile, firstName, signOutElement, setSignInModal, signIn, handleZoomClick }: { userInfo: IUser, handleZoomClick: () => void; handleZoomClose: () => void; profile: React.ReactNode; firstName: string | null; signOutElement: JSX.Element; setSignInModal: (open: boolean) => void, session: Session | null, signIn: JSX.Element | null }) {
+export default function MenuContent({ userInfo, session, profile, firstName, signOutElement, setSignInModal, signIn, handleZoomClick, largeScreen }: { userInfo: IUser, handleZoomClick: () => void; handleZoomClose: () => void; profile: React.ReactNode; firstName: string | null; signOutElement: JSX.Element; setSignInModal: (open: boolean) => void, session: Session | null, signIn: JSX.Element | null, largeScreen: boolean }) {
 
     const pathname = usePathname();
     const router = useRouter();
@@ -50,7 +50,7 @@ export default function MenuContent({ userInfo, session, profile, firstName, sig
         onConfirm: () => signingOut(),
     });
 
-    return session ? (
+    return (
         <Menu.Dropdown style={{ border: '1px solid #716040', outlineOffset: '-2px' }}>
             <Menu.Label>{!firstName ? 'User Specific' : `Hello ${firstName}!`}</Menu.Label>
             <Divider />
@@ -59,57 +59,53 @@ export default function MenuContent({ userInfo, session, profile, firstName, sig
             }} leftSection={<IoHomeOutline />} pb={'sm'} pt={'sm'}>
                 Home
             </Menu.Item>
-            <Menu.Item onClick={() => {
-
-                router.push('/profile')
-            }} leftSection={profile} disabled={pathname.includes('/profile')} style={{ textDecoration: pathname.includes('/profile') ? 'underline' : '' }} pb={'sm'}>
-                Profile
-            </Menu.Item>
-            <Menu.Item leftSection={recipes} onClick={() => {
-                handleNavigation(2, '/profile')
-            }} pb={'sm'}>
-                {recipesData && recipesData.length > 0 ? (`Your Recipes`) : (`Create a Recipe`)}
-            </Menu.Item>
-
-
-            <Menu.Item leftSection={fam} onClick={() => {
-                handleNavigation(1, '/profile');
-            }} pb={'sm'}>
-                {userFamilyID && userFamilyID !== '' ? (`Your Family`) : (`Create a family`)}
-            </Menu.Item >
-
+            {largeScreen &&
+                <>
+                    <Menu.Item leftSection={<MdInfoOutline />} pb={'sm'} onClick={() => {
+                        router.push('/about')
+                    }}>
+                        About
+                    </Menu.Item>
+                    <Menu.Item leftSection={<MdOutlineAttachMoney />} onClick={() => router.push('/pricing')} pb={'sm'}>Pricing</Menu.Item>
+                </>
+            }
             <Divider />
-            <Menu.Item onClick={ConfirmModal} leftSection={signOutElement} pb={'sm'}>
-                Sign Out
-            </Menu.Item>
+            {session ? (
+                <>
+                    <Menu.Item onClick={() => {
+                        router.push('/profile')
+                    }} leftSection={profile} disabled={pathname.includes('/profile')} style={{ textDecoration: pathname.includes('/profile') ? 'underline' : '' }} pb={'sm'}>
+                        Profile
+                    </Menu.Item>
+                    <Menu.Item leftSection={recipes} onClick={() => {
+                        handleNavigation(2, '/profile')
+                    }} pb={'sm'}>
+                        {recipesData && recipesData.length > 0 ? (`Your Recipes`) : (`Create a Recipe`)}
+                    </Menu.Item>
+                    <Menu.Item leftSection={fam} onClick={() => {
+                        handleNavigation(1, '/profile');
+                    }} pb={'sm'}>
+                        {userFamilyID && userFamilyID !== '' ? (`Your Family`) : (`Create a family`)}
+                    </Menu.Item >
+                    <Divider />
+                    <Menu.Item onClick={ConfirmModal} leftSection={signOutElement} pb={'sm'}>
+                        Sign Out
+                    </Menu.Item>
+                </>
+            ) : (
+                <>
+                    <Menu.Label pb={'sm'}>User Specific</Menu.Label>
+                    <Menu.Item onClick={() => {
+                        setSignInModal(true);
+                        handleZoomClick();
+                    }} leftSection={signIn} pb={'sm'}>
+                        Sign In
+                    </Menu.Item>
+                    <Menu.Item onClick={() => {
+                        router.push('/register')
+                    }} pb={'sm'}>Register</Menu.Item>
+                </>
+            )}
         </Menu.Dropdown>
-    ) : (
-        <Menu.Dropdown style={{ border: '1px solid #716040', outlineOffset: '-2px' }}>
-            <Menu.Label>PreservedRecipes Specific</Menu.Label>
-            <Menu.Item onClick={() => {
-                router.push('/')
-            }} leftSection={<IoHomeOutline />} pb={'sm'} pt={'sm'}>
-                Home
-            </Menu.Item>
-            <Menu.Item pb={'sm'} onClick={() => {
-                router.push('/about')
-            }}>
-                About
-            </Menu.Item>
-            <Menu.Item onClick={() => {
-                toast.info("Looking at Pricing!")
-            }} pb={'sm'}>Pricing</Menu.Item>
-            <Divider />
-            <Menu.Label pb={'sm'}>User Specific</Menu.Label>
-            <Menu.Item onClick={() => {
-                setSignInModal(true);
-                handleZoomClick();
-            }} leftSection={signIn} pb={'sm'}>
-                Sign In
-            </Menu.Item>
-            <Menu.Item onClick={() => {
-                router.push('/register')
-            }} pb={'sm'}>Register</Menu.Item>
-        </Menu.Dropdown>
-    );
+    )
 };

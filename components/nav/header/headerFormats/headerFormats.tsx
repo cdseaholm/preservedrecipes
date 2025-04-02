@@ -40,7 +40,7 @@ export function HeaderLarge({ userInfo, handleZoomClick, handleZoomClose, profil
             <MenuTarget>
                 <LargeUserButton />
             </MenuTarget>
-            <MenuContent handleZoomClick={handleZoomClick} handleZoomClose={handleZoomClose} profile={profile} firstName={firstName} signOutElement={signOutElement} setSignInModal={setSignInModal} session={session} signIn={null} userInfo={userInfo} />
+            <MenuContent handleZoomClick={handleZoomClick} handleZoomClose={handleZoomClose} profile={profile} firstName={firstName} signOutElement={signOutElement} setSignInModal={setSignInModal} session={session} signIn={null} userInfo={userInfo} largeScreen={false} />
         </Menu>
 
     );
@@ -56,7 +56,7 @@ export function HeaderSmall({ userInfo, handleZoomClick, handleZoomClose, profil
             <MenuTarget>
                 <UserButton />
             </MenuTarget>
-            <MenuContent handleZoomClick={handleZoomClick} handleZoomClose={handleZoomClose} profile={profile} firstName={firstName} signOutElement={signOutElement} setSignInModal={setSignInModal} session={session} signIn={signIn} userInfo={userInfo} />
+            <MenuContent handleZoomClick={handleZoomClick} handleZoomClose={handleZoomClose} profile={profile} firstName={firstName} signOutElement={signOutElement} setSignInModal={setSignInModal} session={session} signIn={signIn} userInfo={userInfo} largeScreen={true} />
         </Menu>
     );
 }
