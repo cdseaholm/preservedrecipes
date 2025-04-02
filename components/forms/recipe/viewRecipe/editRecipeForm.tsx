@@ -18,17 +18,8 @@ import { toast } from "sonner";
 import { HandleAddChildValues, RemoveChildValues } from "../extensions/functions";
 import ViewSpecificIitemHead from "@/components/templates/viewSpecificItemHead";
 import { handleCloseChildAndSaveAdditions, handleCloseChildAndSaveEdits, handleCloseViewers } from "./functions";
-
-export type RecipeFormType = {
-    name: string;
-    description: string;
-    ingredients: IngredientType[];
-    steps: StepType[];
-    type: string;
-    tags: string[];
-    secret: boolean;
-    secretViewerIDs: string[];
-}
+import { RecipeFormType } from "../recipeForm";
+import { useUserStore } from "@/context/userStore";
 
 
 export default function EditRecipeForm({
@@ -47,6 +38,7 @@ export default function EditRecipeForm({
     handleSeeItem: (index: number) => void
 }) {
 
+    const userInfo = useUserStore(state => state.userInfo);
     const width = useStateStore(state => state.widthQuery);
     const stack = useModalsStack(['step', 'ingredient', 'edit-step', 'edit-ingredient', 'add-viewers']);
     const resetZoom = useStateStore(state => state.handleZoomReset);
@@ -143,7 +135,7 @@ export default function EditRecipeForm({
     const handleCloseChildAndSaveEditsInit = async (which: string, newVals: IngredientType[] | StepType[], itemId: number) => {
 
         handleChildErrors(null);
-        
+
         const saved = await handleCloseChildAndSaveEdits({ which: which, newVals: newVals, itemId: itemId, form: viewRecipeForm }) as { saved: boolean, message: string, childErrors: errorType[] };
 
         if (!saved) {
@@ -265,7 +257,7 @@ export default function EditRecipeForm({
     return (
         <Modal.Stack>
             <ViewSpecificIitemHead handleSeeItem={handleSeeItem} saveItemChanges={handleUpdateRecipe} changesMade={changesMade} />
-            <MainRecipeForm handleCancel={handleCancel} handleCreateRecipe={handleUpdateRecipe} errors={childErrors} recipeForm={viewRecipeForm} stepPills={stepPills} ingredientPills={ingredientPills} handleOpenViewers={handleOpenViewers} secret={viewRecipeForm.getValues().secret} handleOpenAdd={handleOpenAdd} handleEditToggle={handleOpenEdit} creating={false} handleEditRecipe={handleUpdateRecipe}/>
+            <MainRecipeForm handleCancel={handleCancel} handleCreateRecipe={handleUpdateRecipe} errors={childErrors} recipeForm={viewRecipeForm} stepPills={stepPills} ingredientPills={ingredientPills} handleOpenViewers={handleOpenViewers} secret={viewRecipeForm.getValues().secret} handleOpenAdd={handleOpenAdd} handleEditToggle={handleOpenEdit} creating={false} handleEditRecipe={handleUpdateRecipe} userInfo={userInfo} familyRecipe={true} />
 
             <Modal {...stack.register('ingredient')} onClose={handleCancel} centered overlayProps={{
                 backgroundOpacity: 0.55, blur: 3, className: 'drop-shadow-xl'
