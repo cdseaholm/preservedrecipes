@@ -12,7 +12,6 @@ export default function ViewSpecificItem({ item, parent, handleSeeItem }: { item
 
     const [suggestionToUse, setSuggestionToUse] = useState<ISuggestion | null>(null);
     const [recipeToUse, setRecipeToUse] = useState<IRecipe | null>(null)
-    const [familyMemberToUse, setFamilyMember] = useState<IFamilyMember | null>(null)
     const [communityToUse, setCommunityToUse] = useState<ICommunity | null>(null)
 
     useEffect(() => {
@@ -22,9 +21,6 @@ export default function ViewSpecificItem({ item, parent, handleSeeItem }: { item
         } else if (parent === 'recipe') {
             const newItem = item as IRecipe;
             setRecipeToUse(newItem);
-        } else if (parent === 'family member') {
-            const newItem = item as IFamilyMember;
-            setFamilyMember(newItem);
         } else if (parent === 'community') {
             const newItem = item as ICommunity;
             setCommunityToUse(newItem);
@@ -38,8 +34,6 @@ export default function ViewSpecificItem({ item, parent, handleSeeItem }: { item
             <p>{suggestionToUse.suggestorName}</p>
         ) : parent === 'community' && communityToUse !== null ? (
             <p>{communityToUse.name}</p>
-        ) : parent === 'family member' && familyMemberToUse !== null ? (
-            <p>{familyMemberToUse.familyMemberName}</p>
         ) : (
             <LoadingSpinner screen={true} />
         )

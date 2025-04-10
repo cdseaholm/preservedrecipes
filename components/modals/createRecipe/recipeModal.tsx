@@ -13,6 +13,7 @@ import RecipeForm, { RecipeFormType } from "@/components/forms/recipe/recipeForm
 import { LoadingSpinner } from "@/components/misc/loadingSpinner";
 import { UseFormReturnType } from "@mantine/form";
 import { CloseChildAndSaveAddition, CloseChildAndSaveEdits } from "@/components/forms/recipe/extensions/functions";
+import { useUserStore } from "@/context/userStore";
 
 export default function ParentRecipeModal({ session, open, handleCloseCreateRecipe }: { session: Session | null, open: boolean, handleCloseCreateRecipe: () => void }) {
 
@@ -20,6 +21,7 @@ export default function ParentRecipeModal({ session, open, handleCloseCreateReci
     const [loading, setLoading] = useState<boolean>(false);
     const resetZoom = useStateStore(state => state.handleZoomReset);
     const [childErrors, setChildErrors] = useState<errorType[]>([]);
+    const userInfo = useUserStore(state => state.userInfo);
 
     const handleCreateRecipe = async ({ recipeForm }: { recipeForm: UseFormReturnType<RecipeFormType, (values: RecipeFormType) => RecipeFormType> }) => {
         setLoading(true);
@@ -55,6 +57,7 @@ export default function ParentRecipeModal({ session, open, handleCloseCreateReci
             const recipeType = initialValues.type;
             const recipeSecret = initialValues.secret;
             const recipeSecretViewerIDs = recipeSecret ? initialValues.secretViewerIDs : [] as string[];
+            const familyRecipe = initialValues.familyRecipe;
 
             if (recipeIngredients.length <= 0 || recipeSteps.length <= 0) {
                 const userConfirmed = window.confirm(`Either Recipe Ingredients or Steps are empty. Are you sure you want to save your recipe?`);
@@ -73,6 +76,7 @@ export default function ParentRecipeModal({ session, open, handleCloseCreateReci
                 type: recipeType,
                 secretViewerIDs: recipeSecretViewerIDs,
                 secret: recipeSecret,
+                familyRecipe: familyRecipe
             } as RecipeFormType;
 
             let creationAttempt = await AttemptCreateRecipe({ recipeToAdd: newRecipe }) as { status: boolean, message: string };
@@ -168,7 +172,7 @@ export default function ParentRecipeModal({ session, open, handleCloseCreateReci
         loading ? (
             <LoadingSpinner screen={false} />
         ) : (
-            <RecipeForm handleCreateRecipe={handleCreateRecipe} handleCloseCreateRecipe={handleCloseCreateRecipe} childErrors={childErrors} resetChildErrors={resetChildErrors} handleCloseChildAndSaveAdditions={handleCloseChildAndSaveAdditions} open={open} handleCloseChildAndSaveEdits={handleCloseChildAndSaveEdits} handleCloseViewers={handleCloseViewers} />
+            <RecipeForm handleCreateRecipe={handleCreateRecipe} handleCloseCreateRecipe={handleCloseCreateRecipe} childErrors={childErrors} resetChildErrors={resetChildErrors} handleCloseChildAndSaveAdditions={handleCloseChildAndSaveAdditions} open={open} handleCloseChildAndSaveEdits={handleCloseChildAndSaveEdits} handleCloseViewers={handleCloseViewers} userInfo={userInfo} />
         )
     )
 }

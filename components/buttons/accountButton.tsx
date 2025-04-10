@@ -3,7 +3,7 @@
 import { useAlertStore } from "@/context/alertStore";
 import { IFamily } from "@/models/types/family";
 import AttemptDeleteFamily from "@/utils/apihelpers/delete/deleteFamily";
-import AttemptDeleteUser, { DeleteResponse } from "@/utils/apihelpers/delete/deleteUser";
+import AttemptDeleteUser, { HelperResponse } from "@/utils/apihelpers/delete/deleteUser";
 import { signOut, useSession } from "next-auth/react";
 import { toast } from "sonner"
 
@@ -29,7 +29,7 @@ export const AccountButton = ({ family, which, userFamAdminPrivs, numAdmins }: {
         }
 
         const headers = { 'Authorization': `Bearer ${session.user}` };
-        const attemptDelete = await AttemptDeleteUser(headers) as DeleteResponse;
+        const attemptDelete = await AttemptDeleteUser(headers) as HelperResponse;
 
         if (!attemptDelete || attemptDelete.status === false) {
             toast.error('Error deleting user')
@@ -55,7 +55,7 @@ export const AccountButton = ({ family, which, userFamAdminPrivs, numAdmins }: {
         }
 
         const headers = { 'Authorization': `Bearer ${session.user}` };
-        const attemptDelete = await AttemptDeleteFamily({ toDelete: family }, headers) as DeleteResponse;
+        const attemptDelete = await AttemptDeleteFamily({ toDelete: family }, headers) as HelperResponse;
 
         if (!attemptDelete || attemptDelete.status === false) {
             toast.error('Error deleting family')

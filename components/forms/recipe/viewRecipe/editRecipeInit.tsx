@@ -25,7 +25,8 @@ export default function EditRecipeInit({ currentRecipe, handleSeeItem }: { curre
             type: `Misc`,
             tags: currentRecipe.tags,
             secret: currentRecipe.secret,
-            secretViewerIDs: currentRecipe.secretViewerIDs
+            secretViewerIDs: currentRecipe.secretViewerIDs,
+            familyRecipe: true
         },
         validate: {
             name: (value) => (
@@ -58,7 +59,8 @@ export default function EditRecipeInit({ currentRecipe, handleSeeItem }: { curre
                     }
                 }
                 return null;
-            }
+            },
+            familyRecipe: (_value: boolean) => null
         }
     });
     const [childErrors, setChildErrors] = useState<errorType[]>([]);
