@@ -2,12 +2,12 @@ import { useFamilyStore } from "@/context/familyStore";
 import { useUserStore } from "@/context/userStore";
 import { toast } from "sonner";
 
-export interface DeleteResponse {
+export interface HelperResponse {
     status: boolean;
     message: string;
 }
 
-export default async function AttemptDeleteUser(headers: HeadersInit): Promise<DeleteResponse> {
+export default async function AttemptDeleteUser(headers: HeadersInit): Promise<HelperResponse> {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL as string : '';
     const urlToDelete = `${baseUrl}/api/user/delete`;
 

@@ -5,12 +5,13 @@ import { modals } from "@mantine/modals";
 import { Text } from "@mantine/core";
 import { toast } from "sonner";
 import ActionButton from "@/components/buttons/basicActionButton";
-import ChangeNameForm from "@/components/forms/changeNameForm";
+import ChangeForm, { ChangeFormType } from "@/components/forms/changeNameForm";
 import { useForm, UseFormReturnType } from "@mantine/form";
-import { RegisterFormType } from "@/components/forms/registerForm";
 import { useAlertStore } from "@/context/alertStore";
-import AttemptDeleteUser, { DeleteResponse } from "@/utils/apihelpers/delete/deleteUser";
+import AttemptDeleteUser, { HelperResponse } from "@/utils/apihelpers/delete/deleteUser";
 import { signOut, useSession } from "next-auth/react";
+import { IUser } from "@/models/types/user";
+import { EditDetails } from "@/utils/apihelpers/edit/editDetails";
 
 export default function AccountTab({ numAdmins, userFamAdminPrivs }: { numAdmins: number, userFamAdminPrivs: boolean }) {
 
@@ -22,7 +23,6 @@ export default function AccountTab({ numAdmins, userFamAdminPrivs }: { numAdmins
             name: '',
             email: '',
             password: '',
-            confirmPassword: ''
         },
         validate: {
             name: (value) => (
@@ -37,23 +37,50 @@ export default function AccountTab({ numAdmins, userFamAdminPrivs }: { numAdmins
             password: (value) => (
                 !value ? 'Password is required'
                     : value.length < 5 ? 'Password length must be greater than 5 characters' : null
-            ),
-            confirmPassword: (value, values) => (
-                !value ? 'Must confirm your password'
-                    : value.length < 5 ? 'Password length must be greater than 5 characters'
-                        : value !== values.password ? 'Confirm Password and Password must match'
-                            : null
             )
         }
     });
 
-    const submitNameChange = ({ changeNameForm }: { changeNameForm: UseFormReturnType<RegisterFormType, (values: RegisterFormType) => RegisterFormType> }) => {
+    const submitChange = async ({ changeNameForm, which }: { changeNameForm: UseFormReturnType<ChangeFormType, (values: ChangeFormType) => ChangeFormType>, which: string }) => {
 
-        const name = changeNameForm.getValues();
-        if (!name) {
+        if (!session) {
+            toast.warning('You must be signed in to make this change');
             return;
         }
-        toast.info(name.name)
+        const user = session.user as IUser
+        if (!user) {
+            toast.warning('You do not have permission to edit this')
+        }
+
+        const headers = { 'Authorization': `Bearer ${session.user}` };
+
+        const formVals = changeNameForm.getValues();
+        if (!formVals) {
+            return;
+        }
+
+        // if (formVals.password !== user.password) {
+        //     toast.error('Password is incorrect');
+        //     return;
+        // }
+
+        if (which === 'name') {
+            const changed = await EditDetails({ which: 'name', toEdit: formVals.name }, headers) as HelperResponse;
+            if (!changed.status) {
+                toast.error('Issue with changing name');
+                return;
+            }
+            toast.info('Name changed');
+            return;
+        } else {
+            const changed = await EditDetails({ which: 'email', toEdit: formVals.name }, headers) as HelperResponse;
+            if (!changed.status) {
+                toast.error('Issue with changing email');
+                return;
+            }
+            toast.info('Email changed');
+            return;
+        }
     }
 
     const attemptDelete = async () => {
@@ -74,7 +101,7 @@ export default function AccountTab({ numAdmins, userFamAdminPrivs }: { numAdmins
         }
 
         const headers = { 'Authorization': `Bearer ${session.user}` };
-        const attemptDelete = await AttemptDeleteUser(headers) as DeleteResponse;
+        const attemptDelete = await AttemptDeleteUser(headers) as HelperResponse;
 
         if (!attemptDelete || attemptDelete.status === false) {
             toast.error('Error deleting user')
@@ -105,23 +132,23 @@ export default function AccountTab({ numAdmins, userFamAdminPrivs }: { numAdmins
     });
 
     const changeName = () => modals.openConfirmModal({
-        title: 'Enter the change in name',
+        title: 'Enter the change in name, then your password to confirm',
         children: (
-            <ChangeNameForm changeNameForm={changeNameForm} />
+            <ChangeForm changeFormToUse={changeNameForm} which={'name'} />
         ),
         labels: { confirm: 'Confirm', cancel: 'Cancel' },
         onCancel: () => console.log('Cancel'),
-        onConfirm: () => submitNameChange({ changeNameForm })
+        onConfirm: () => submitChange({ changeNameForm, which: 'name' })
     });
 
     const changeEmail = () => modals.openConfirmModal({
-        title: 'Enter the change in name',
+        title: 'Enter the change in email, then your password to confirm',
         children: (
-            <ChangeNameForm changeNameForm={changeNameForm} />
+            <ChangeForm changeFormToUse={changeNameForm} which={'email'} />
         ),
         labels: { confirm: 'Confirm', cancel: 'Cancel' },
         onCancel: () => console.log('Cancel'),
-        onConfirm: () => submitNameChange({ changeNameForm })
+        onConfirm: () => submitChange({ changeNameForm, which: 'email' })
     });
 
     return (
