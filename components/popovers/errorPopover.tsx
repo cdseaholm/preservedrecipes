@@ -1,4 +1,5 @@
-import { errorType } from "@/models/types/error";
+'use client'
+import { errorType } from "@/models/types/misc/error";
 import { Popover } from "@mantine/core";
 import { BiError } from "react-icons/bi";
 

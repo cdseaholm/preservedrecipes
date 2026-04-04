@@ -1,11 +1,9 @@
 import connectDB from "@/lib/mongodb";
-import Recipe from "@/models/recipe";
-import { IUser } from "@/models/types/user";
+import { IUser } from "@/models/types/personal/user";
 import MongoUser from "@/models/user";
 import { getServerSession, User } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt"
-import { revalidatePath } from "next/cache";
 import { ObjectId } from "mongodb";
 import Family from "@/models/family";
 
@@ -46,15 +44,7 @@ export async function DELETE(req: NextRequest) {
             );
         }
 
-        const deleteRecipePromises = user.recipeIDs.map(async (id: string) => {
-            await Recipe.deleteOne({ _id: new ObjectId(id) });
-        });
-        await Promise.all(deleteRecipePromises);
-
-
-        await MongoUser.deleteOne({ _id: new ObjectId(user._id) })
-
-        revalidatePath('(content)/profile');
+        await MongoUser.deleteOne({ _id: new ObjectId(user._id) });
 
         return NextResponse.json({ status: 200, message: 'Success!' });
 

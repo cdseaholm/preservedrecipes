@@ -1,7 +1,7 @@
 'use client'
 
 import { useAlertStore } from "@/context/alertStore";
-import { IFamily } from "@/models/types/family";
+import { IFamily } from "@/models/types/family/family";
 import AttemptDeleteFamily from "@/utils/apihelpers/delete/deleteFamily";
 import AttemptDeleteUser, { HelperResponse } from "@/utils/apihelpers/delete/deleteUser";
 import { signOut, useSession } from "next-auth/react";

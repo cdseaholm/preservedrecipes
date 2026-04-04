@@ -1,5 +1,5 @@
 import mongoose, { Model, Schema } from "mongoose";
-import { IInvite } from "./types/invite";
+import { IInvite } from "./types/misc/invite";
 
 export const inviteSchema = new Schema(
     {

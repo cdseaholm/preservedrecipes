@@ -1,5 +1,5 @@
 import mongoose, { Model, Schema } from "mongoose";
-import { IngredientType } from "./types/ingredientType";
+import { IIngredient } from "./types/recipes/ingredient";
 
 export const ingredientSchema = new Schema(
   {
@@ -7,18 +7,6 @@ export const ingredientSchema = new Schema(
       type: String,
       required: false,
     },
-    quantity: {
-        type: String,
-        required: false
-    },
-    quantityType: {
-        type: String,
-        required: false,
-    },
-    ingredientId: {
-        type: Number,
-        required: false
-    }
   },
   {
     timestamps: true,
@@ -27,4 +15,4 @@ export const ingredientSchema = new Schema(
 
 const Ingredient = mongoose.models?.Ingredient || mongoose.model("Ingredient", ingredientSchema);
 
-export default Ingredient as Model<IngredientType>;
+export default Ingredient as Model<IIngredient>;

@@ -1,111 +1,120 @@
 'use client'
 
-import { useProfileStore } from "@/context/profileStore";
-import { IUser } from "@/models/types/user";
-import { Menu, Divider } from "@mantine/core";
+import { Divider } from "@mantine/core";
 import { Session } from "next-auth";
-import { usePathname, useRouter } from "next/navigation";
 import { JSX } from "react";
-import { GiFamilyTree } from "react-icons/gi";
-import { IoHomeOutline } from "react-icons/io5";
 import { PiCookieThin } from "react-icons/pi";
-import { signOut } from 'next-auth/react';
-// import { RiCommunityLine } from "react-icons/ri";
-import { modals } from '@mantine/modals';
-import { MdInfoOutline, MdOutlineAttachMoney } from "react-icons/md";
+import MenuPanelHooks from "@/components/hooks/menu/menu-panel-hooks";
+import { GiFamilyTree } from "react-icons/gi";
+import { MdHome, MdInfoOutline, MdOutlineAttachMoney } from "react-icons/md";
+import { RiCommunityLine } from "react-icons/ri";
+import { TfiWrite } from "react-icons/tfi";
+import { IUser } from "@/models/types/personal/user";
+import Link from "next/link";
+import { useNavigation } from "@/components/hooks/menu/use-navigation-hook";
 
-const fam = <GiFamilyTree />;
 const recipes = <PiCookieThin />;
-// const communities = <RiCommunityLine />;
+const communities = <RiCommunityLine />;
+const fam = <GiFamilyTree />;
 
-export default function MenuContent({ userInfo, session, profile, firstName, signOutElement, setSignInModal, signIn, handleZoomClick, largeScreen }: { userInfo: IUser, handleZoomClick: () => void; handleZoomClose: () => void; profile: React.ReactNode; firstName: string | null; signOutElement: JSX.Element; setSignInModal: (open: boolean) => void, session: Session | null, signIn: JSX.Element | null, largeScreen: boolean }) {
+export default function MenuContent({ session, profile, signOutElement, signIn, userData, closeDrawer }: { profile: React.ReactNode; signOutElement: JSX.Element; session: Session | null, signIn: JSX.Element | null, userData: IUser | null, closeDrawer: () => void }) {
 
-    const pathname = usePathname();
-    const router = useRouter();
-    const recipesData = userInfo ? userInfo.recipeIDs as string[] : [] as string[];
-    const userFamilyID = userInfo ? userInfo.userFamilyID as string : '';
-    // const communitiesData = userInfo ? userInfo.communityIDs as string[] : [] as string[];
-    const setTab = useProfileStore(s => s.setTab);
+    const { handleSignOutClick, handleSignInClick } = MenuPanelHooks();
+    const { navigate } = useNavigation();
 
-    const handleTab = async (tab: number) => {
-        setTab({ child: 0, parent: tab })
-    }
+    const homeButton = [
+        { value: 'Home', label: 'Home', icon: <MdHome />, onClick: () => { navigate('/'); closeDrawer(); } }
+    ]
 
-    const handleNavigation = async (tab: number, href: string) => {
-        if (href === '/profile') {
-            await handleTab(tab);
-        }
-        router.push(href);
-    };
+    const buttons = [
+        session && { value: 'Recipes', label: 'Recipes', icon: recipes, onClick: () => { navigate(`/u/recipes`); closeDrawer(); } },
+        session && { value: 'Family', label: 'Family', icon: fam, onClick: () => { (userData && userData.userFamilyID && navigate(`/family/${userData.userFamilyID}`)); closeDrawer(); } },
+        { value: 'Communities', label: 'Communities', icon: communities, onClick: () => { navigate('/communities'); closeDrawer(); } },
+        { value: 'About', label: 'About', icon: <MdInfoOutline />, onClick: () => { navigate('/about'); closeDrawer(); } },
+        { value: 'Pricing', label: 'Pricing', icon: <MdOutlineAttachMoney />, onClick: () => { navigate('/pricing'); closeDrawer(); } }
+    ];
 
-    const signingOut = async () => {
-        handleZoomClick();
-        await signOut();
-    }
+    const authButtons = [
+        session && { value: 'Profile', label: 'Profile', icon: profile, href: '/u/profile' },
+        session && { value: 'SignOut', label: 'Sign Out', icon: signOutElement, onClick: () => { handleSignOutClick(); closeDrawer(); } },
+        !session && { value: 'SignIn', label: 'Sign In', icon: signIn, onClick: () => { handleSignInClick(); closeDrawer(); } },
+        !session && { value: 'Register', label: 'Register', icon: <TfiWrite />, href: '/register' },
+    ];
 
-    const ConfirmModal = () => modals.openConfirmModal({
-        title: 'Confirm sign out',
-        labels: { confirm: 'Sign out', cancel: 'Cancel' },
-        onCancel: () => console.log('Cancel'),
-        onConfirm: () => signingOut(),
-    });
+    {/**
+        const authButtons = [
+        session && { value: 'Profile', label: 'Profile', icon: profile, onClick: () => { router.push(`/u/profile`); closeDrawer(); } },
+        session && { value: 'SignOut', label: 'Sign Out', icon: signOutElement, onClick: () => { handleSignOutClick(); closeDrawer(); } },
+        !session && { value: 'SignIn', label: 'Sign In', icon: signIn, onClick: () => { handleSignInClick(); closeDrawer(); } },
+        !session && { value: 'Register', label: 'Register', icon: <TfiWrite />, onClick: () => { router.push('/register'); closeDrawer(); } },
+    ];
+        */}
 
-    return (
-        <Menu.Dropdown style={{ border: '1px solid #716040', outlineOffset: '-2px' }}>
-            <Menu.Label>{!firstName ? 'User Specific' : `Hello ${firstName}!`}</Menu.Label>
-            <Divider />
-            <Menu.Item onClick={() => {
-                router.push('/');
-            }} leftSection={<IoHomeOutline />} pb={'sm'} pt={'sm'}>
-                Home
-            </Menu.Item>
-            {largeScreen &&
-                <>
-                    <Menu.Item leftSection={<MdInfoOutline />} pb={'sm'} onClick={() => {
-                        router.push('/about')
-                    }}>
-                        About
-                    </Menu.Item>
-                    <Menu.Item leftSection={<MdOutlineAttachMoney />} onClick={() => router.push('/pricing')} pb={'sm'}>Pricing</Menu.Item>
-                </>
-            }
-            <Divider />
-            {session ? (
-                <>
-                    <Menu.Item onClick={() => {
-                        router.push('/profile')
-                    }} leftSection={profile} disabled={pathname.includes('/profile')} style={{ textDecoration: pathname.includes('/profile') ? 'underline' : '' }} pb={'sm'}>
-                        Profile
-                    </Menu.Item>
-                    <Menu.Item leftSection={recipes} onClick={() => {
-                        handleNavigation(2, '/profile')
-                    }} pb={'sm'}>
-                        {recipesData && recipesData.length > 0 ? (`Your Recipes`) : (`Create a Recipe`)}
-                    </Menu.Item>
-                    <Menu.Item leftSection={fam} onClick={() => {
-                        handleNavigation(1, '/profile');
-                    }} pb={'sm'}>
-                        {userFamilyID && userFamilyID !== '' ? (`Your Family`) : (`Create a family`)}
-                    </Menu.Item >
-                    <Divider />
-                    <Menu.Item onClick={ConfirmModal} leftSection={signOutElement} pb={'sm'}>
-                        Sign Out
-                    </Menu.Item>
-                </>
-            ) : (
-                <>
-                    <Menu.Label pb={'sm'}>User Specific</Menu.Label>
-                    <Menu.Item onClick={() => {
-                        setSignInModal(true);
-                        handleZoomClick();
-                    }} leftSection={signIn} pb={'sm'}>
-                        Sign In
-                    </Menu.Item>
-                    <Menu.Item onClick={() => {
-                        router.push('/register')
-                    }} pb={'sm'}>Register</Menu.Item>
-                </>
-            )}
-        </Menu.Dropdown>
-    )
+    const buttonClass = `flex flex-row items-center px-6 hover:bg-accent/20 rounded-md space-x-2 w-full cursor-pointer`;
+    const textClass = `text-base md:text-lg lg:text-xl font-medium`;
+    const disabledButtonClass = `flex flex-row items-center px-6 rounded-md space-x-2 w-full bg-gray-300/50`;
+    const disabledTextClass = `text-base md:text-lg lg:text-xl font-medium text-gray-500`;
+
+    const menuContent = (
+        <>
+            {homeButton.map((button) => (
+                button && <button key={button.value} onClick={button.onClick} className={`${buttonClass} mt-4 py-4 w-full`}>
+                    <span className={`${textClass}`}>{button.icon}</span>
+                    <span className={`${textClass}`}>{button.label}</span>
+                </button>
+            ))}
+            <Divider my={'md'} c={'dark'} w={'100%'} h={'1px'} style={{
+                border: '1px solid rgba(0, 0, 0, 0.3)',
+            }} />
+            {buttons.map((button) => (
+                button && (
+                    /**(button.value === 'Family' || button.value === 'Communities')*/
+                    (button.value === 'Communities') ? (
+                        <button key={button.value} onClick={button.onClick} className={`${disabledButtonClass} py-4 mb-2`} disabled={true} title="Under Construction">
+                            <span className={`${disabledTextClass}`}>{button.icon}</span>
+                            <span className={`${disabledTextClass}`}>{button.label}</span>
+                        </button>
+                    ) : (
+                        <button key={button.value} onClick={button.onClick} className={`${buttonClass} py-4 mb-2`}>
+                            <span className={`${textClass}`}>{button.icon}</span>
+                            <span className={`${textClass}`}>{button.label}</span>
+                        </button>
+                    )
+                )
+            ))}
+            <Divider my={'md'} c={'dark'} w={'100%'} h={'1px'} style={{
+                border: '1px solid rgba(0, 0, 0, 0.3)',
+            }} />
+            {authButtons.map((button) => {
+                if (!button) return null;
+
+                if ('href' in button && button.href) {
+                    return (
+                        <Link
+                            key={button.value}
+                            href={button.href}
+                            onClick={closeDrawer}
+                            className={`${buttonClass} py-4 mb-2`}
+                        >
+                            <span className={`${textClass}`}>{button.icon}</span>
+                            <span className={`${textClass}`}>{button.label}</span>
+                        </Link>
+                    );
+                }
+
+                return (
+                    <button
+                        key={button.value}
+                        onClick={button.onClick}
+                        className={`${buttonClass} py-4 mb-2`}
+                    >
+                        <span className={`${textClass}`}>{button.icon}</span>
+                        <span className={`${textClass}`}>{button.label}</span>
+                    </button>
+                );
+            })}
+        </>
+    );
+
+    return menuContent;
 };

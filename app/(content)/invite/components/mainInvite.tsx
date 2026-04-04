@@ -3,31 +3,34 @@
 import RegisterHelper from "@/utils/apihelpers/register/registerHelper";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { IUser } from "@/models/types/user";
+import { IUser } from "@/models/types/personal/user";
 import SignInHelper from "@/utils/userHelpers/signInHelper";
 import { useStateStore } from "@/context/stateStore";
 import { useRouter } from "next/navigation";
-import { IInvite } from "@/models/types/invite";
-import { LoadingSpinner } from "@/components/misc/loadingSpinner";
 import { useSession } from "next-auth/react";
 import { useModalStore } from "@/context/modalStore";
-import { InviteRegisterFormType } from "@/components/forms/inviteRegisterForm";
+import { InviteRegisterFormType } from "@/components/forms/family/inviteRegisterForm";
 import { UseFormReturnType } from "@mantine/form";
 import { OpenInvite } from "@/utils/apihelpers/register/openCheckInvite";
 import { User } from "next-auth";
-import InviteRegisterForm from "@/components/forms/inviteRegisterForm";
+import InviteRegisterForm from "@/components/forms/family/inviteRegisterForm";
 import { InviteRegCheck } from "@/utils/apihelpers/register/inviteSignInCheck";
 import { useAlertStore } from "@/context/alertStore";
 import { useUserStore } from "@/context/userStore";
+import { LoadingOverlay } from "@mantine/core";
+import { IInvite } from "@/models/types/misc/invite";
+import ContentWrapper from "@/components/wrappers/contentWrapper";
+import NavWrapper from "@/components/wrappers/navWrapper";
+import { useWindowSizes } from "@/context/width-height-store";
 
-export default function InvitePage({ token }: { token: string | null }) {
+export default function InvitePage({ token, userInfo }: { token: string | null, userInfo: IUser | null }) {
 
     const router = useRouter();
     const { data: session, update } = useSession();
 
     const setGlobalToast = useAlertStore(state => state.setGlobalToast);
     const resetZoom = useStateStore(state => state.handleZoomReset);
-    const width = useStateStore(state => state.widthQuery);
+    const { width } = useWindowSizes();
     const forwardRef = useRef('');
 
     const forward = useCallback(() => {
@@ -179,15 +182,16 @@ export default function InvitePage({ token }: { token: string | null }) {
     }, [token, currentEmail, session, setGlobalToast, forward]);
 
     return (
-
-        loading ? (
-            <LoadingSpinner screen={false} />
-        ) : (
-            <section className="flex flex-col justify-start items-center w-full h-content gap-5 p-6">
+        <NavWrapper loadingChild={<LoadingOverlay
+            visible={loading}
+            zIndex={1000}
+            overlayProps={{ radius: "sm", blur: 2 }}
+        />} userInfo={userInfo}>
+            <ContentWrapper containedChild={true} paddingNeeded={true}>
                 <h1>Register</h1>
                 {invite && <p>You have been invited to join a family!</p>}
                 <InviteRegisterForm handleRegister={handleRegister} />
-            </section>
-        )
+            </ContentWrapper>
+        </NavWrapper>
     )
 }

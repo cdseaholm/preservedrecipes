@@ -1,75 +1,22 @@
-import { NewFamMemFormType } from "@/components/forms/addFamMemForm";
-import { IFamilyMember } from "@/models/types/familyMember";
-import { IUser } from '@/models/types/user';
+
+import { IFamilyMember } from "@/models/types/family/familyMember";
+import { IUser } from '@/models/types/personal/user';
 import { getServerSession } from 'next-auth';
 import { getToken } from 'next-auth/jwt';
 import { type NextRequest, NextResponse } from 'next/server';
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 import crypto from 'crypto';
 import connectDB from "@/lib/mongodb";
 import Invite from '@/models/invite';
-import { IInvite } from '@/models/types/invite';
-import Family from '@/models/family';
-import { ObjectId } from 'mongodb';
-import { IFamily } from '@/models/types/family';
-import MongoUser from '@/models/user';
-import { NewMembers } from '@/components/forms/addFamMemForm';
-import { spawnSync } from "child_process";
-import path from "path";
+import Family from "@/models/family";
+import { IFamily } from "@/models/types/family/family";
+import { NewFamMemFormType, NewMembers } from "@/models/types/family/new-fam";
+import { IInvite } from "@/models/types/misc/invite";
+import { ObjectId } from "mongodb";
+import MongoUser from "@/models/user";
+import InviteTemplate from "@/emails/invite-template-email";
 
 type ItemType = { newMember: IFamilyMember, newToken: string };
-
-async function sendEmail({ email, inviteToken, senderName, senderEmail, family, url }: {
-    email: string,
-    inviteToken: string,
-    senderName: string,
-    senderEmail: string,
-    family: IFamily,
-    apppw: string,
-    url: string
-}) {
-    try {
-        const inviteLink = `${url}/invite?token=${inviteToken}`;
-        const firstName = email.split('@')[0];
-        const familyName = family.name;
-
-        const scriptPath = path.join(process.cwd(), 'utils', 'apihelpers', 'emails', 'generateEmailTemplate.js');
-        const result = spawnSync('node', [scriptPath], {
-            input: JSON.stringify({ firstName, senderName, familyName, inviteLink }),
-            encoding: 'utf-8',
-            stdio: ['pipe', 'pipe', 'pipe'],
-        });
-
-        if (result.error) {
-            throw new Error(`Error rendering email: ${result.error.message}`);
-        }
-
-        const html = result.stdout.trim();
-        console.log('result: ', result)
-        console.log('stdout: ', result.stdout);
-        console.log('html: ', result.stdout.trim());
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.EMAIL_FROM,
-                pass: process.env.G_APP_PW,
-            },
-        });
-
-        await transporter.sendMail({
-            from: senderEmail,
-            to: email,
-            subject: `Invitation from ${senderName}`,
-            html,
-        });
-
-        return NextResponse.json({ status: 200, sent: true })
-
-    } catch (error: any) {
-        console.error('Error sending email:', error);
-        return NextResponse.json({ status: 500, sent: false, error: error.message });
-    }
-}
 
 async function prepareInvite({ email, familyID, inviteTokenCreated }: { email: NewMembers, familyID: string, inviteTokenCreated: string }) {
     const futureFamilyMem = await MongoUser.findOne({ email: email.email }) as IUser;
@@ -173,17 +120,31 @@ export async function POST(req: NextRequest) {
         }
 
         const emailFrom = process.env.EMAIL_FROM ? process.env.EMAIL_FROM as string : '';
-        const apppw = process.env.G_APP_PW ? process.env.G_APP_PW as string : '';
+        const resendKey = process.env.RESEND_API_KEY ? process.env.RESEND_API_KEY as string : '';
         const url = process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL as string : '';
 
-        if (emailFrom === '' || apppw === '' || url === '') {
-            return NextResponse.json({ status: 405, message: 'Issue with gmail setup', famMembersReturned: [] as IFamilyMember[] });;
+        if (emailFrom === '' || resendKey === '' || url === '') {
+            return NextResponse.json({ status: 405, message: 'Issue with gmail setup', famMembersReturned: [] as IFamilyMember[] });
+        }
+
+        const resend = new Resend(resendKey);
+
+        if (!resend) {
+            return NextResponse.json({ status: 500, message: 'Resend not initialized', famMembersReturned: [] as IFamilyMember[] });
         }
 
         for (const item of newItems) {
-            const sent = await sendEmail({ email: item.newMember.familyMemberEmail, inviteToken: item.newToken, senderName, senderEmail, family: thisFamily, apppw: apppw, url: url });
-            if (sent.status === 500) {
+            const sent: any = await resend.emails.send({
+                from: `Preserved Recipes <${emailFrom}>`,
+                to: item.newMember.familyMemberEmail,
+                subject: `Invitation from ${senderName}`,
+                react: InviteTemplate({ senderName, familyName: thisFamily.name, inviteLink: `${url}/invite?token=${item.newToken}`, firstName: item.newMember.familyMemberEmail.split('@')[0] }),
+            });
+            if (!sent || !sent.data) {
                 return NextResponse.json({ status: 500, message: `Errors with ${item.newMember.familyMemberEmail}`, famMembersReturned: [] as IFamilyMember[] });
+            }
+            if (sent && sent.error != null) {
+                return NextResponse.json({ status: 500, message: `Errors with ${item.newMember.familyMemberEmail} ${sent.error}`, famMembersReturned: [] as IFamilyMember[] });
             }
         }
 

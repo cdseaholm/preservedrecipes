@@ -3,24 +3,28 @@
 import RegisterHelper from "@/utils/apihelpers/register/registerHelper";
 import { useState } from "react";
 import { toast } from "sonner";
-import { IUser } from "@/models/types/user";
+import { IUser } from "@/models/types/personal/user";
 import SignInHelper from "@/utils/userHelpers/signInHelper";
 import { useStateStore } from "@/context/stateStore";
-import { LoadingSpinner } from "@/components/misc/loadingSpinner";
 import { useSession } from "next-auth/react";
-import RegisterForm, { RegisterFormType } from "@/components/forms/registerForm";
-import { UseFormReturnType } from "@mantine/form";
 import { useRouter } from "next/navigation";
+import { RegisterFormType } from "@/models/types/misc/register";
+import RegisterForm from "@/components/forms/personal/registerForm";
+import NavWrapper from "@/components/wrappers/navWrapper";
+import ContentWrapper from "@/components/wrappers/contentWrapper";
+import { LoadingOverlay } from "@mantine/core";
+import { useWindowSizes } from "@/context/width-height-store";
 
-export default function RegisterPage() {
+export default function RegisterPage({ userInfo }: { userInfo: IUser | null }) {
+
     const { data: session, update } = useSession();
     const [loading, setLoading] = useState<boolean>(false);
     const resetZoom = useStateStore(state => state.handleZoomReset);
-    const width = useStateStore(state => state.widthQuery);
+    const { width } = useWindowSizes();
     const router = useRouter();
 
 
-    const handleRegister = async ({ registerForm }: { registerForm: UseFormReturnType<RegisterFormType, (values: RegisterFormType) => RegisterFormType> }) => {
+    const handleRegister = async ({ registerForm }: { registerForm: RegisterFormType }) => {
 
         setLoading(true)
         try {
@@ -88,13 +92,11 @@ export default function RegisterPage() {
 
     return (
 
-        loading ? (
-            <LoadingSpinner screen={false} />
-        ) : (
-            <section className="flex flex-col justify-start items-center w-full h-content gap-5 pt-6">
-                <h1>Register</h1>
+        <NavWrapper loadingChild={<LoadingOverlay visible={loading} />} userInfo={userInfo}>
+            <ContentWrapper containedChild={true} paddingNeeded={true}>
+                <h1 className="text-xl md:text-2xl underline">Register</h1>
                 <RegisterForm handleRegister={handleRegister} />
-            </section>
-        )
+            </ContentWrapper>
+        </NavWrapper>
     )
 }

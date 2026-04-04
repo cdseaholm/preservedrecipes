@@ -1,7 +1,11 @@
 import { Metadata } from "next";
 import InvitePage from "./components/mainInvite";
-import { LoadingSpinner } from "@/components/misc/loadingSpinner";
-import { Suspense } from "react";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import connectDB from "@/lib/mongodb";
+import { IUser } from "@/models/types/personal/user";
+import User from "@/models/user";
+import { serializeDoc } from "@/utils/data/seralize";
+import { getServerSession } from "next-auth";
 
 export async function generateMetadata(): Promise<Metadata> {
 
@@ -21,9 +25,18 @@ export default async function Page({
         return <section>Error with param</section>
     }
 
+    const session = await getServerSession(authOptions);
+    let userInfo: IUser | null = null;
+
+    if (session && session.user && session.user.email) {
+
+        await connectDB();
+        const userDoc = await User.findOne({ email: session.user.email }).lean();
+        userInfo = serializeDoc<IUser>(userDoc);
+
+    }
+
     return (
-        <Suspense fallback={<LoadingSpinner screen={true} />}>
-            <InvitePage token={token} />
-        </Suspense>
+            <InvitePage token={token} userInfo={userInfo} />
     );
 }

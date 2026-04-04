@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Invite from '@/models/invite';
 import connectDB from "@/lib/mongodb";
-import { IInvite } from '@/models/types/invite';
+import { IInvite } from '@/models/types/misc/invite';
 
 export async function GET(req: NextRequest) {
     try {

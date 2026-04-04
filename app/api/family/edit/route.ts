@@ -1,11 +1,12 @@
 import connectDB from "@/lib/mongodb";
-import { IUser } from "@/models/types/user";
+import { IUser } from "@/models/types/personal/user";
 import MongoUser from "@/models/user";
 import { getServerSession, User } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt"
 import { revalidatePath } from "next/cache";
 import Family from "@/models/family";
+import { IFamilyMember } from "@/models/types/family/familyMember";
 
 export async function PUT(req: NextRequest) {
 
@@ -24,7 +25,7 @@ export async function PUT(req: NextRequest) {
 
     try {
         const body = await req.json();
-        const newName = body.newName as string;
+        const membersToChange = body.membersToChange as IFamilyMember[];
         const famId = body.famId as string;
         await connectDB();
         const userSesh = session?.user as User;
@@ -43,7 +44,7 @@ export async function PUT(req: NextRequest) {
             return NextResponse.json({ status: 401, message: 'Unauthorized' });
         }
 
-        await Family.updateOne({ _id: famId }, { $set: { name: newName } });
+        await Family.updateOne({ _id: famId }, { $set: { familyMembers: membersToChange } });
 
 
         revalidatePath('(content)/profile');

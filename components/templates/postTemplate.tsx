@@ -1,6 +1,7 @@
 'use client'
 
-import { IPost } from "@/models/types/post"
+import { IPost } from "@/models/types/misc/post"
+
 
 export default function PostTemplate({ post }: { post: IPost }) {
     return (

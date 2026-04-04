@@ -1,11 +1,11 @@
 'use client'
 
-import { IngredientType } from '@/models/types/ingredientType';
-import { StepType } from '@/models/types/stepType';
+import { IngredientForForm } from '@/models/types/recipes/ingredient';
+import { IStep } from '@/models/types/recipes/step';
 import { Input, InputBase, Combobox, useCombobox, Group, CheckIcon } from '@mantine/core';
 import { GoPlus } from 'react-icons/go';
 
-export default function ComboBoxMultiSelect({ pills, which, currentVals, handleSetValuesUsed, save, currValsLen }: { pills: IngredientType[] | StepType[], which: string, currentVals: IngredientType[], handleSetValuesUsed: (newVals: IngredientType[]) => void, save: () => void, currValsLen: number }) {
+export default function ComboBoxMultiSelect({ pills, which, currentVals, handleSetValuesUsed, save, currValsLen }: { pills: IngredientForForm[] | IStep[], which: string, currentVals: IngredientForForm[], handleSetValuesUsed: (newVals: IngredientForForm[]) => void, save: () => void, currValsLen: number }) {
 
     const combobox = useCombobox({
         onDropdownClose: () => combobox.resetSelectedOption(),
@@ -18,10 +18,10 @@ export default function ComboBoxMultiSelect({ pills, which, currentVals, handleS
         save();
     };
 
-    const handleOptionAddRemove = (item: IngredientType) => {
+    const handleOptionAddRemove = (item: IngredientForForm) => {
         combobox.focusTarget();
 
-        let newVals = currentVals as IngredientType[];
+        let newVals = currentVals as IngredientForForm[];
         if (currentVals.some(val => val.ingredientId === item.ingredientId)) {
             const filtered = currentVals.filter((val) => val.ingredientId !== item.ingredientId);
             newVals = [...filtered];
@@ -31,15 +31,15 @@ export default function ComboBoxMultiSelect({ pills, which, currentVals, handleS
         handleSetValuesUsed(newVals);
     };
 
-    const typePills = pills as IngredientType[];
+    const typePills = pills as IngredientForForm[];
 
     const options = typePills.map((item, index) => {
-        const ingredientItem = item as IngredientType;
+        const ingredientItem = item as IngredientForForm;
         const ingIDString = ingredientItem.ingredientId.toString();
         return (
-            <Combobox.Option value={ingIDString} key={ingIDString} onClick={() => handleOptionAddRemove(item)} active={currentVals.some(val => (val as IngredientType).ingredientId === ingredientItem.ingredientId)}>
+            <Combobox.Option value={ingIDString} key={ingIDString} onClick={() => handleOptionAddRemove(item)} active={currentVals.some(val => (val as IngredientForForm).ingredientId === ingredientItem.ingredientId)}>
                 <Group gap={'sm'}>
-                    {currentVals.some(val => (val as IngredientType).ingredientId === ingredientItem.ingredientId) ? <CheckIcon size={12} /> : <CheckIcon size={12} color='#f5f0f0' />}
+                    {currentVals.some(val => (val as IngredientForForm).ingredientId === ingredientItem.ingredientId) ? <CheckIcon size={12} /> : <CheckIcon size={12} color='#f5f0f0' />}
                     {`${index + 1}: ${ingredientItem.ingredient}`}
                 </Group>
             </Combobox.Option>

@@ -2,10 +2,10 @@
 
 import { BiLeftArrow } from "react-icons/bi"
 
-export default function ViewSpecificIitemHead({ handleSeeItem, saveItemChanges, changesMade }: { handleSeeItem: (index: number) => void, saveItemChanges: () => Promise<void>, changesMade: boolean }) {
+export default function ViewSpecificItemHead({ closeAll, saveItemChanges, changesMade }: { closeAll: () => void, saveItemChanges: () => Promise<void>, changesMade: boolean }) {
     return (
         <div className="flex flex-row justify-between items-center w-full border-b border-accent/50 p-3">
-            <button type="button" onClick={() => handleSeeItem(-1)} aria-label="Back" className={`flex flex-row justify-center items-center space-x-2 w-[75px] h-fit p-2 border border-neutral-200 rounded-md hover:bg-blue-200 bg-blue-400 cursor-pointer`}>
+            <button type="button" onClick={() => closeAll()} aria-label="Back" className={`flex flex-row justify-center items-center space-x-2 w-[75px] h-fit p-2 border border-neutral-200 rounded-md hover:bg-blue-200 bg-blue-400 cursor-pointer`}>
                 <BiLeftArrow size={12} />
                 <p className="text-[12px]">Back</p>
             </button>

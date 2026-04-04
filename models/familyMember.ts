@@ -1,5 +1,5 @@
 import mongoose, { Model, Schema } from "mongoose";
-import { IFamilyMember } from "./types/familyMember";
+import { IFamilyMember } from "./types/family/familyMember";
 
 export const familyMemberSchema = new Schema(
     {

@@ -3,42 +3,27 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useStateStore } from "@/context/stateStore";
-import { useUserStore } from "@/context/userStore";
-import { handleZoomClick, handleZoomClose, getFirstName, handleSignInModal } from "../navFunctions/functions";
 import { AiOutlineProfile } from "react-icons/ai";
 import { GoSignOut, GoSignIn } from "react-icons/go";
-import { HeaderSmall, HeaderLarge } from "./headerFormats/headerFormats";
+import { TabbedDrawer } from "./headerFormats/tabbed-drawer";
+import { IUser } from "@/models/types/personal/user";
+import { FiHome } from "react-icons/fi";
+import { useWindowSizes } from "@/context/width-height-store";
 
 const signOutElement = <GoSignOut color="red" />;
 const signInIcon = <GoSignIn color="blue" />;
 const profile = <AiOutlineProfile />;
 
-export default function AppHeader() {
+export default function AppHeader({ handleMenuToggle, openMenu, userInfo }: { handleMenuToggle: (menu: 'main' | 'sub' | null) => void, openMenu: 'main' | 'sub' | null, userInfo: IUser | null }) {
+
     const pathname = usePathname();
     const { data: session } = useSession();
-    const userInfo = useUserStore(state => state.userInfo);
-    const widthQuery = useStateStore((state) => state.widthQuery);
-    const isMediumScreenOrLess = widthQuery < 768;
-    const height = useStateStore(state => state.heightQuery);
-    const shortStack = useStateStore(state => state.shortStack);
-    const short = shortStack && height < 420 ? true : false;
+    const { width } = useWindowSizes();
 
-    const commonParams = {
-        userInfo: userInfo,
-        handleZoomClick: handleZoomClick,
-        handleZoomClose: handleZoomClose,
-        profile: profile,
-        firstName: getFirstName(session),
-        session: session,
-        signOutElement: signOutElement,
-        setSignInModal: handleSignInModal
-    };
+    const headerClass = `bg-[#694b33ff]/30 w-screen flex flex-row items-center fixed text-mainText min-h-[60px] border-b border-black/30`;
 
-    const headerClass = `bg-mainBack w-full flex flex-row items-center px-5 border-b border-accent fixed text-mainText px-5 py-2 md:px-12 md:py-2 min-h-[75px]`;
-
-    if (pathname === '/color-picker-mode') {
-        return (
+    const toRender = (
+        pathname === '/color-picker-mode' ? (
             <header className={`${headerClass} justify-end`}>
                 <section className="text-base font-bold w-2/3 md:w-1/3">
                     <Link href={'/'}>
@@ -46,28 +31,34 @@ export default function AppHeader() {
                     </Link>
                 </section>
             </header>
+        ) : (
+            <header className={`${headerClass} justify-between px-12 md:px-16 lg:px-20`}>
+                <section className="text-sm sm:text-base md:text-lg lg:text-xl font-bold w-content w-1/2 cursor-pointer hover:underline hover:text-mainText/70 min-h-[50px] flex flex-row items-center justify-start">
+                    <Link href={'/'} title="Home">
+                        {width < 768 ? (
+                            <div className="flex flex-col items-center justify-center">
+                                <FiHome size={24} className="text-mainText group-hover:text-mainText/70 my-1" />
+                                <span className="text-[10px] mb-1 font-medium text-mainText/80 group-hover:text-mainText/60">
+                                    Home
+                                </span>
+                            </div>
+                        ) : 'Preserved Recipes'}
+                    </Link>
+                </section>
+                <TabbedDrawer
+                    profile={profile}
+                    session={session}
+                    signOutElement={signOutElement}
+                    widthQuery={width}
+                    signIn={signInIcon}
+                    handleMenuToggle={handleMenuToggle}
+                    openMenu={openMenu}
+                    userInfo={userInfo}
+                />
+            </header>
         )
-    }
+    );
 
-    return (
-        <header className={`${headerClass} justify-between`}>
-            <section className="text-base font-bold w-2/3 md:w-1/3 cursor-pointer hover:underline hover:text-mainText/70">
-                <Link href={'/'} title="Home">
-                    {'Preserved Recipes'}
-                </Link>
-            </section>
-
-            {isMediumScreenOrLess ? (
-                <nav className="flex flex-row items-center justify-end w-1/3">
-                    <HeaderSmall signIn={signInIcon} {...commonParams} short={short} />
-                </nav>
-            ) : (
-                <nav className="flex flex-row justify-end items-center w-2/3 space-x-8">
-                    <Link href={'/about'} className="cursor-pointer hover:underline hover:text-mainText/70" aria-label="About">About</Link>
-                    <Link href={'pricing'} className="cursor-pointer hover:underline hover:text-mainText/70" type="button" aria-label="Pricing">Pricing</Link>
-                    <HeaderLarge {...commonParams} short={short} />
-                </nav>
-            )}
-        </header>
-    )
+    return toRender;
 }
+

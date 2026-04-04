@@ -1,9 +1,10 @@
-import { IngredientType } from '@/models/types/ingredientType';
-import { StepType } from '@/models/types/stepType';
+
+import { IngredientForForm } from '@/models/types/recipes/ingredient';
+import { IStep } from '@/models/types/recipes/step';
 import { Input, InputBase, Combobox, useCombobox } from '@mantine/core';
 import { GoPencil, GoPlus } from 'react-icons/go';
 
-export default function ComboBox({ pills, handleOpenAdd, which, handleEditToggle }: { pills: IngredientType[] | StepType[], handleOpenAdd: (which: string) => void, which: string, handleEditToggle: (which: string, index: number) => void }) {
+export default function ComboBox({ pills, handleOpenAdd, which, handleEditToggle }: { pills: IngredientForForm[] | IStep[], handleOpenAdd: (which: string) => void, which: string, handleEditToggle: (which: string, index: number) => void }) {
 
     const combobox = useCombobox({
         onDropdownClose: () => combobox.resetSelectedOption(),
@@ -21,7 +22,7 @@ export default function ComboBox({ pills, handleOpenAdd, which, handleEditToggle
         handleEditToggle(which, index);
     }
 
-    const typePills = which === 'steps' ? pills as StepType[] : pills as IngredientType[];
+    const typePills = which === 'steps' ? pills as IStep[] : pills as IngredientForForm[];
 
     const options = typePills.map((item, index) => {
         if (which === 'steps') {
@@ -35,7 +36,7 @@ export default function ComboBox({ pills, handleOpenAdd, which, handleEditToggle
                 </Combobox.Option>
             );
         } else {
-            const ingredientItem = item ? item as IngredientType : {} as IngredientType;
+            const ingredientItem = item ? item as IngredientForForm : {} as IngredientForForm;
             const ingId = ingredientItem ? ingredientItem.ingredientId : -1
             const ingIng = ingredientItem ? ingredientItem.ingredient : 'Ingredient';
             return (

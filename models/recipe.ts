@@ -1,9 +1,5 @@
 import mongoose, { Model, Schema } from "mongoose";
-import { IRecipe } from "./types/recipe";
-import { commentSchema } from "./comment";
-import { recipeStepSchema } from "./recipeStep"; // Adjust the import path as necessary
-import { ratingSchema } from "./rating";
-import { ingredientSchema } from "./ingredient";
+import { IRecipe } from "./types/recipes/recipe";
 
 export const recipeSchema = new Schema(
   {
@@ -12,39 +8,55 @@ export const recipeSchema = new Schema(
       required: false,
     },
     recipeType: {
-        type: String,
-        required: false
+      type: String,
+      required: false
     },
     image: {
-        type: String,
-        required: false,
+      type: String,
+      required: false,
     },
     creatorID: {
-        type: String,
-        required: false
+      type: String,
+      required: false
     },
     steps: {
-        type: [recipeStepSchema],
-        required: false
+      type: [{
+        relatedRecipeID: String,
+        stepId: Number,
+        stepType: String,
+        description: String,
+        ingredientIds: [String],
+        image: String,
+        stepAlternate: [String]
+      }],
+      required: false
     },
-    ratings: {
-        type: [ratingSchema],
-        required: false
-    },
-    comments: {
-        type: [commentSchema],
-        required: false
+    reviews: {
+      type: [{
+        authorId: { type: String },
+        comment: { type: String, default: null },
+        commentLikes: { type: [Boolean], required: false },
+        inResponseToId: { type: String, default: null },
+        rating: { type: Number, default: null },
+        createdAt: { type: Date, default: null },
+        updatedAt: { type: Date, default: null }
+      }],
+      required: false
     },
     secret: {
-        type: Boolean,
-        required: false
+      type: Boolean,
+      required: false
     },
     secretViewerIDs: {
-        type: [String],
-        required: false
+      type: [String],
+      required: false
     },
     ingredients: {
-      type: [ingredientSchema],
+      type: [{
+        ingredient: String,
+        ingredientId: String,
+        quantity: String
+      }],
       required: false
     },
     tags: {
@@ -54,7 +66,25 @@ export const recipeSchema = new Schema(
     description: {
       type: String,
       required: false
-    }
+    },
+    cookingTime: {
+      type: Number,
+      required: false
+    },
+    recipeFor: {
+      type: [String],
+      required: false
+    },
+    favoriteCount: {
+      type: Number,
+      required: false,
+      default: 0
+    },
+    saveCount: {
+      type: Number,
+      required: false,
+      default: 0
+    },
   },
   {
     timestamps: true,

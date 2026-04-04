@@ -5,12 +5,13 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 export default function PaginationComp({ totalPages, currentPage }: { totalPages: number, currentPage: number }) {
+    
     const router = useRouter();
     const [activePage, setPage] = useState<number>(currentPage);
 
     const handlePageChange = (page: number) => {
         setPage(page);
-        router.push(`/community?page=${page}`);
+        router.push(`/communities?page=${page}&size=5`);
     };
 
     return (

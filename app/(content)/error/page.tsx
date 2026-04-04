@@ -1,19 +1,28 @@
-'use client'
+import { getServerSession } from "next-auth/next";
+import ErrorPage from "./components/err-page";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import NavWrapper from "@/components/wrappers/navWrapper";
+import connectDB from "@/lib/mongodb";
+import { IUser } from "@/models/types/personal/user";
+import User from "@/models/user";
+import { serializeDoc } from "@/utils/data/seralize";
 
-import { useRouter } from "next/navigation"
-import { useEffect } from "react"
+export default async function Page() {
 
-export default function ErrorPage() {
+    const session = await getServerSession(authOptions);
+    let userInfo: IUser | null = null;
 
-    const router = useRouter();
+    if (session && session.user && session.user.email) {
 
-    useEffect(() => {
-        router.replace('/')
-    }, [router]);
+        await connectDB();
+        const userDoc = await User.findOne({ email: session.user.email }).lean();
+        userInfo = serializeDoc<IUser>(userDoc);
+
+    }
 
     return (
-        <section className="flex flex-col justify-start items-center w-full h-full gap-5 pt-10">
-            Error here
-        </section>
+        <NavWrapper loadingChild={null} userInfo={userInfo}>
+            <ErrorPage />
+        </NavWrapper>
     )
 }

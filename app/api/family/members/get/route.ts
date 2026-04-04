@@ -1,13 +1,13 @@
 import connectDB from "@/lib/mongodb";
-import { IUser } from "@/models/types/user";
+import { IUser } from "@/models/types/personal/user";
 import MongoUser from "@/models/user";
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { getServerSession } from "next-auth/next";
 import Family from "@/models/family";
-import { IFamily } from "@/models/types/family";
+import { IFamily } from "@/models/types/family/family";
 import { User } from "next-auth";
-import { IFamilyMember } from "@/models/types/familyMember";
+import { IFamilyMember } from "@/models/types/family/familyMember";
 
 export async function GET(req: NextRequest) {
     const secret = process.env.NEXTAUTH_SECRET || '';

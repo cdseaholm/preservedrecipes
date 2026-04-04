@@ -1,9 +1,7 @@
-import { Loader } from "@mantine/core";
-
-export function LoadingSpinner({ screen }: { screen: boolean }) {
+export function LoadingSpinner() {
     return (
-        <section className={`flex flex-row rounded-full animate-pulse ${screen ? 'min-h-screen min-w-screen' : 'h-full w-full'} justify-center items-center p-2`}>
-            <Loader color="orange" />
-        </section>
+        <div className="flex flex-col items-center justify-center h-full w-full">
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-900"></div>
+        </div>
     );
 }

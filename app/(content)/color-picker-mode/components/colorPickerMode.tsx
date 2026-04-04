@@ -8,6 +8,7 @@ import ThemeToggle from '@/components/buttons/themeToggle';
 import WelcomeSection from '../../homepage/sections/welcomeSection';
 import InfoTemplate from '../../homepage/sections/infoTemplate';
 import AboutSection from '../../homepage/sections/miscSection';
+import ContentWrapper from '@/components/wrappers/contentWrapper';
 
 const MyInfoIcon = forwardRef<HTMLDivElement>(
   (props, ref) => (
@@ -25,18 +26,16 @@ export default function ColorPickerMode() {
   const bgImage = `bg-[url(/images/istockphoto-recipebook.jpg)]`;
   const defaultColors = [
     { name: 'mainBack', defaultColor: "#f9f4ef" },
-    { name: 'mainContent', defaultColor: "#fffffe" },
-    { name: 'altContent', defaultColor: "#eaddcf" },
+    { name: 'cardBack', defaultColor: "#fffffe" },
     { name: 'accent', defaultColor: "#f25042" },
     { name: 'highlight', defaultColor: "#8c7851" },
     { name: 'altBack', defaultColor: "#fffffe" },
     { name: 'mainText', defaultColor: "#8B4513" },
     { name: 'lightText', defaultColor: "#ffffff" },
-    { name: 'darkText', defaultColor: "#000000" },
   ] as { name: string, defaultColor: string }[]
 
   return (
-    <div className="flex flex-col justify-start items-center w-full">
+    <ContentWrapper containedChild={false} paddingNeeded={true}>
       <div className='flex flex-col w-full md:w-4/5 md:ml-[20%]'>
         <section className={`flex flex-col justify-start items-center w-full overflow-hidden bg-mainBack h-content ${bgImage} bg-no-repeat bg-cover`}>
           <WelcomeSection />
@@ -65,6 +64,6 @@ export default function ColorPickerMode() {
         </div>
         {defaultColors.map((color, index) => <CustomColorPicker colorName={color.name} defaultColor={color.defaultColor} key={index} />)}
       </aside>
-    </div>
+    </ContentWrapper>
   );
 }

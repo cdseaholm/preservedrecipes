@@ -1,6 +1,6 @@
 import { useFamilyStore } from "@/context/familyStore";
-import { IInvite } from "@/models/types/invite";
-import { IUser } from "@/models/types/user";
+import { IInvite } from "@/models/types/misc/invite";
+import { IUser } from "@/models/types/personal/user";
 
 export async function OpenInvite({ token }: { token: string }) {
 

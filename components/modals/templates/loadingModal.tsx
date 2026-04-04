@@ -6,7 +6,7 @@ export default function LoadingModal({ open }: { open: boolean }) {
             <div className={`relative p-4 w-full max-w-md max-h-full`}>
                 <div className={`relative bg-white rounded-lg shadow-sm dark:bg-gray-700`}>
                     <main style={{ minWidth: '30vw', minHeight: '30vh' }} className="flex flex-col justify-center items-center">
-                        <LoadingSpinner screen={false} />
+                        <LoadingSpinner />
                     </main>
                 </div>
             </div>

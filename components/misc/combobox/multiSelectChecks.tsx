@@ -6,7 +6,7 @@ import { countries } from '../flags/flags';
 import { UseFormReturnType } from '@mantine/form';
 import { HeritageType } from '@/models/types/inAppCreations/heritage';
 import { FlagIcon } from '../flags/flagIcon';
-import { FamilyFormType } from '@/components/forms/familyForm';
+import { FamilyFormType } from '@/components/forms/family/familyForm';
 
 const heritages = countries as HeritageType[];
 

@@ -1,17 +1,20 @@
 @import 'tailwindcss';
+@import "uploadthing/tw/v4";
+@source "../node_modules/@uploadthing/react/dist";
 
 @theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-mainBack: var(--mainBack);
-  --color-mainContent: var(--mainContent);
-  --color-altContent: var(--altContent);
+  --color-cardBack: var(--cardBack);
   --color-accent: var(--accent);
+  --color-accentMuted: var(--accentMuted);
   --color-highlight: var(--highlight);
   --color-altBack: var(--altBack);
   --color-mainText: var(--mainText);
   --color-lightText: var(--lightText);
-  --color-darkText: var(--darkText);
+  --color-linkText: var(--linkText);
+  --color-golden: var(--golden);
 }
 
 /*
@@ -24,6 +27,74 @@
 */
 
 :root {
+  --background: #FFFDF7;        /* Warm off-white, like old book paper that's never been pure white */
+  --mainBack:   #FAF4E8;        /* Very subtle cream — this is your new "page" color */
+  --altBack:    #F8E6D3;        /* Slightly warmer cream for recipe cards, footers, etc. */
+
+  --cardBack:    #FFFDF7;        /* Recipe cards themselves — same as background or one shade lighter */
+  --cardBorder: #E8D8C4;        /* Gentle aged-paper border */
+
+  /* The hero color — this is what makes it feel alive instead of dry */
+  --accent:     #E85D3A;         /* Warm tomato-red that screams "Grandma's recipe box ribbon" */
+  --accentMuted: #F2785C;      /* Softer version for hovers, secondary buttons */
+
+  /* Rich browns that feel like coffee stains and wooden spoons */
+  --highlight:  #8B4513;        /* Saddle brown — use sparingly for headings, "Grandma's name", etc. */
+
+  /* Text */
+  --foreground: #2C1A0D;        /* Rich dark brown — almost black but much warmer than #171717 */
+  --mainText:   #4A2C14;        /* Body text — feels like it was typed on a typewriter */
+  --lightText:  #FFFDF7;
+  --linkText:  #4b97eeff;        /* Burnt orange for links and emphasis */
+
+  /* Subtle golden undertones for that sun-through-the-kitchen-window feel */
+  --golden:     #D4A574;        /* Use extremely sparingly — maybe for "Pinned" stars or premium badge */
+}
+
+.dark {
+  /* Dark mode should feel like looking at the cookbook by lamplight — cozy, not modern tech */
+  --background: #1C120C;        /* Deep coffee brown */
+  --mainBack:   #2D2015;
+  --altBack:    #3A2A1A;
+
+  --cardBack:    #342618;
+  --cardBorder: #4A3726;
+
+  --accent:     #FF6B57;        /* Brighter warm red that pops beautifully on dark */
+  --accentMuted: #FF8B7B;
+
+  --highlight:  #8B4513;
+
+  --foreground: #FAF4E8;
+  --mainText:   #E8D8C4;
+  --lightText:  #6B3410;        /* Warm golden orange for dark mode headings */
+  --linkText:  #4b97eeff;
+
+  --golden:     #FFB84D;
+}
+
+
+/* button color scheme ideas
+
+          // Primary: "Add Recipe" — like the red ribbon on the recipe box
+          "bg-[var(--accent)] hover:bg-[#d94f33] text-white shadow-sm hover:shadow-md":
+            variant === 'primary',
+
+          // Secondary: "Upload Photo" — warm cream with red text
+          "bg-[var(--mainBack)] hover:bg-[#f8e6d3] text-[var(--accent)] border border-[#e8d8c4]":
+            variant === 'secondary',
+
+          // Subtle: "Edit" / "Delete" — barely there, like pencil notes
+          "bg-transparent hover:bg-[var(--altBack)] text-[var(--highlight)]":
+            variant === 'subtle',
+
+          // Danger: "Delete Recipe" — deep red, but still warm
+          "bg-[#9a3412] hover:bg-[#7f2a0d] text-white":
+            variant === 'danger',
+            
+        */
+
+/* :root {
   --background: #ffffff;
   --foreground: #171717;
   --mainBack: #f9f4ef;
@@ -49,7 +120,7 @@
   --mainText: #ffffff;
   --lightText: #000000;
   --darkText: #ffffff;
-}
+}*/
 
 @media (prefers-color-scheme: dark) {
   :root {
@@ -59,17 +130,20 @@
 }
 
 @layer utilities {
-    .scrollbar-thin::-webkit-scrollbar {
+  
+  .scrollbar-thin::-webkit-scrollbar {
+    position: absolute;
     scrollbar-width: thin;
-    scrollbar-color: rgba(0, 0, 0, 0.5) transparent;
+    scrollbar-color: rgba(0, 0, 0, 0.5);
   }
 
   .scrollbar-webkit {
     &::-webkit-scrollbar {
       width: 8px;
+      position: absolute;
     }
     &::-webkit-scrollbar-track {
-      background: var(--mainBack);
+      background: transparent;
     }
     &::-webkit-scrollbar-thumb {
       background-color: rgba(0, 0, 0, 0.5);

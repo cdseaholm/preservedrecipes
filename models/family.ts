@@ -1,6 +1,5 @@
 import mongoose, { Model, Schema } from "mongoose";
-import { IFamily } from "./types/family";
-import { recipeSchema } from "./recipe";
+import { IFamily } from "./types/family/family";
 import { heritageSchema } from "./heritage";
 import { familyMemberSchema } from "./familyMember";
 
@@ -14,8 +13,8 @@ export const familySchema = new Schema(
             type: [heritageSchema],
             required: false,
         },
-        recipes: {
-            type: [recipeSchema],
+        recipeIDs: {
+            type: [String],
             required: false,
         },
         familyMembers: {

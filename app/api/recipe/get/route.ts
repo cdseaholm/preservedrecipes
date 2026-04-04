@@ -1,13 +1,14 @@
 import connectDB from "@/lib/mongodb";
-import { IUser } from "@/models/types/user";
+import { IUser } from "@/models/types/personal/user";
 import MongoUser from "@/models/user";
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { getServerSession } from "next-auth/next";
 import { User } from "next-auth";
 import Recipe from "@/models/recipe";
-import { IRecipe } from "@/models/types/recipe";
 import { ObjectId } from "mongodb";
+import { IRecipe } from "@/models/types/recipes/recipe";
+import { authOptions } from "../../auth/[...nextauth]/route";
 
 export async function GET(req: NextRequest) {
     const secret = process.env.NEXTAUTH_SECRET || '';
@@ -16,7 +17,8 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ status: 401, message: 'Incorrect secret', recipes: [] as IRecipe[] });
     }
 
-    const session = await getServerSession({ req, secret });
+    const session = await getServerSession(authOptions);
+    console.log('API Route - Session:', session);
     const token = await getToken({ req, secret });
 
     if (!session) {
@@ -53,7 +55,7 @@ export async function GET(req: NextRequest) {
             return recipe;
         });
 
-        const recipes = await Promise.all(recipePromises);
+        const recipes = await Promise.all(recipePromises) as IRecipe[];
         const filteredRecipes = recipes.filter(recipe => recipe !== null);
 
         return NextResponse.json({ status: 200, message: 'Success!', recipes: filteredRecipes });
