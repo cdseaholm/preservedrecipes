@@ -1,5 +1,5 @@
 import { useFamilyStore } from "@/context/familyStore";
-import { IFamily } from "@/models/types/family";
+import { IFamily } from "@/models/types/family/family";
 import { toast } from "sonner";
 
 export async function EditFamDetails({ famId, newName }: { famId: string, newName: string }, headers: HeadersInit) {

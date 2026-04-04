@@ -1,7 +1,7 @@
 import connectDB from "@/lib/mongodb";
 import Invite from "@/models/invite";
-import { IInvite } from "@/models/types/invite";
-import { IUser } from "@/models/types/user";
+import { IInvite } from "@/models/types/misc/invite";
+import { IUser } from "@/models/types/personal/user";
 import MongoUser from "@/models/user";
 import { NextRequest, NextResponse } from "next/server";
 

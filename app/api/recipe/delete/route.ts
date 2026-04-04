@@ -1,13 +1,12 @@
 import connectDB from "@/lib/mongodb";
 import Recipe from "@/models/recipe";
-import { IRecipe } from "@/models/types/recipe";
-import { IUser } from "@/models/types/user";
+import { IUser } from "@/models/types/personal/user";
 import MongoUser from "@/models/user";
 import { getServerSession, User } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt"
-import { revalidatePath } from "next/cache";
 import { ObjectId } from "mongodb";
+import Family from "@/models/family";
 
 export async function DELETE(req: NextRequest) {
 
@@ -39,26 +38,39 @@ export async function DELETE(req: NextRequest) {
             return NextResponse.json({ status: 404, message: 'User not found' });
         }
 
-        const items = body.itemsToDelete as IRecipe[];
+        const items = body.itemsToDelete as string[];
 
-        const deletePromises = items.map(async (item: IRecipe) => {
-            await Recipe.deleteOne({ _id: new ObjectId(item._id) });
+        if (items.length === 0) {
+            return NextResponse.json({ status: 400, message: 'No items to delete' });
+        }
+
+        const deletePromises = items.map(async (item: string) => {
+            await Recipe.deleteOne({ _id: new ObjectId(item) });
         });
 
         await Promise.all(deletePromises);
 
-        const newUserIDs = user.recipeIDs.filter((id: string) => !items.some((item: IRecipe) => item._id === id));
+        const newUserIDs = user.recipeIDs.filter((id: string) => !items.some((item: string) => item === id));
 
         await MongoUser.updateOne(
             { _id: new ObjectId(user._id) },
             { $set: { recipeIDs: newUserIDs } }
         );
 
-        revalidatePath('(content)/profile');
+        if (user.userFamilyID) {
+            const family = await Family.findById(user.userFamilyID);
+            if (family) {
+                const newFamilyRecipeIDs = family.recipeIDs.filter((id: string) => !items.some((item: string) => item === id));
+                await Family.updateOne(
+                    { _id: new ObjectId(family._id) },
+                    { $set: { recipeIDs: newFamilyRecipeIDs } }
+                );
+            }
+        }
 
         return NextResponse.json({ status: 200, message: 'Success!' });
 
     } catch (error: any) {
-        return NextResponse.json({ status: 500, message: 'Error creating recipe' });
+        return NextResponse.json({ status: 500, message: 'Error deleting recipe' });
     }
 }

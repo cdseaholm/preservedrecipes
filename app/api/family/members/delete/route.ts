@@ -1,5 +1,5 @@
 import connectDB from "@/lib/mongodb";
-import { IUser } from "@/models/types/user";
+import { IUser } from "@/models/types/personal/user";
 import MongoUser from "@/models/user";
 import { getServerSession, User } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
@@ -7,7 +7,7 @@ import { getToken } from "next-auth/jwt"
 import { revalidatePath } from "next/cache";
 import { ObjectId } from "mongodb";
 import Family from "@/models/family";
-import { IFamilyMember } from "@/models/types/familyMember";
+import { IFamilyMember } from "@/models/types/family/familyMember";
 
 export async function DELETE(req: NextRequest) {
 

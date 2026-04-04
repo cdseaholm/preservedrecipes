@@ -1,7 +1,7 @@
-import { IUser } from "@/models/types/user"
+import { IUser } from "@/models/types/personal/user"
 import { toast } from "sonner";
 import { SaltAndHashPassword } from "../../userHelpers/saltAndHash";
-import { IInvite } from "@/models/types/invite";
+import { IInvite } from "@/models/types/misc/invite";
 
 export default async function RegisterHelper({ namePassed, emailPassed, pwPassed, invite }: { namePassed: string, emailPassed: string, pwPassed: string, invite: IInvite | null }) {
 

@@ -1,16 +1,15 @@
 import connectDB from "@/lib/mongodb";
 import Recipe from "@/models/recipe";
-import { IRecipe } from "@/models/types/recipe";
-import { IUser } from "@/models/types/user";
+import { IUser } from "@/models/types/personal/user";
 import MongoUser from "@/models/user";
 import { getServerSession, User } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt"
 import { revalidatePath } from "next/cache";
 import { ObjectId } from "mongodb";
-import { IFamily } from "@/models/types/family";
+import { IFamily } from "@/models/types/family/family";
 import Family from "@/models/family";
-import { IFamilyMember } from "@/models/types/familyMember";
+import { IFamilyMember } from "@/models/types/family/familyMember";
 
 export async function DELETE(req: NextRequest) {
 
@@ -51,9 +50,8 @@ export async function DELETE(req: NextRequest) {
 
         await Promise.all(deleteMemberPromises);
 
-        const deleteRecipePromises = item.recipes.map(async (recipe: IRecipe) => {
-            const recipeID = new ObjectId(recipe._id)
-            await Recipe.deleteOne({ _id: recipeID });
+        const deleteRecipePromises = item.recipeIDs.map(async (recipeID: string) => {
+            await Recipe.deleteOne({ _id: new ObjectId(recipeID) });
         });
 
         await Promise.all(deleteRecipePromises);

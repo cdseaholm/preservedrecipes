@@ -1,13 +1,14 @@
 import connectDB from "@/lib/mongodb";
-import { IUser } from "@/models/types/user";
+import { IUser } from "@/models/types/personal/user";
 import MongoUser from "@/models/user";
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { getServerSession } from "next-auth/next";
 import Family from "@/models/family";
-import { IFamily } from "@/models/types/family";
+import { IFamily } from "@/models/types/family/family";
 import { User } from "next-auth";
-import { IRecipe } from "@/models/types/recipe";
+import { IRecipe } from "@/models/types/recipes/recipe";
+import Recipe from "@/models/recipe";
 
 export async function GET(req: NextRequest) {
     const secret = process.env.NEXTAUTH_SECRET || '';
@@ -45,9 +46,14 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ status: 404, message: 'User family not found', familyRecipes: [] as IRecipe[] })
         }
 
-        const recipeIDs = famHub.recipes as IRecipe[];
+        const recipeIDs = famHub.recipeIDs as string[];
 
-        return NextResponse.json({ status: 200, message: 'Success!', familyRecipes: recipeIDs });
+        const familyRecipes = await Promise.all(recipeIDs.map(async (id: string) => {
+            const recipe = await Recipe.findById(id) as IRecipe;
+            return recipe;
+        }));
+
+        return NextResponse.json({ status: 200, message: 'Success!', familyRecipes: familyRecipes });
     } catch (error) {
         return NextResponse.json({ status: 500, message: 'Internal Server Error', familyRecipes: [] as IRecipe[] });
     }

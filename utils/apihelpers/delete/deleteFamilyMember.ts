@@ -1,10 +1,10 @@
 import { useFamilyStore } from "@/context/familyStore";
 import { useUserStore } from "@/context/userStore";
-import { IFamily } from "@/models/types/family";
-import { IUser } from "@/models/types/user";
+import { IFamily } from "@/models/types/family/family";
+import { IUser } from "@/models/types/personal/user";
 import { toast } from "sonner";
 import { HelperResponse } from "./deleteUser";
-import { IFamilyMember } from "@/models/types/familyMember";
+import { IFamilyMember } from "@/models/types/family/familyMember";
 
 export default async function AttemptDeleteFamilyMember({ toDelete, adminToRemove }: { toDelete: IFamilyMember[], adminToRemove: boolean }, headers: HeadersInit): Promise<HelperResponse> {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL as string : '';

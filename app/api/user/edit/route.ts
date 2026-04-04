@@ -1,64 +1,98 @@
 import connectDB from "@/lib/mongodb";
-import { IUser } from "@/models/types/user";
+import { IUser } from "@/models/types/personal/user";
 import MongoUser from "@/models/user";
-import { getServerSession, User } from "next-auth";
+import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt"
-import { revalidatePath } from "next/cache";
+import { authOptions } from "../../auth/[...nextauth]/route";
+import { IFamily } from "@/models/types/family/family";
+import Family from "@/models/family";
+import { ObjectId } from "mongodb";
+import { compareSync } from "bcrypt-ts";
+
+// Helper function to update family member info
+async function updateFamilyMember(
+    familyID: string,
+    userID: string,
+    field: 'familyMemberName' | 'familyMemberEmail',
+    value: string
+) {
+    if (!familyID) return;
+
+    const family = await Family.findOne({ _id: new ObjectId(familyID) }) as IFamily | null;
+    if (!family?.familyMembers?.length) return;
+
+    const memberIndex = family.familyMembers.findIndex(mem => mem.familyMemberID === userID);
+    if (memberIndex === -1) return;
+
+    // Update the specific field
+    family.familyMembers[memberIndex][field] = value;
+
+    await Family.updateOne(
+        { _id: family._id },
+        { $set: { familyMembers: family.familyMembers } }
+    );
+}
 
 export async function PUT(req: NextRequest) {
+    const session = await getServerSession(authOptions);
 
-    const secret = process.env.NEXTAUTH_SECRET ? process.env.NEXTAUTH_SECRET : '';
-
-    if (secret === '') {
-        return NextResponse.json({ status: 401, message: 'Unauthorized' });
-    }
-
-    const session = await getServerSession({ req, secret })
-    const token = await getToken({ req, secret });
-
-    if (!session || !token) {
+    if (!session?.user?.email) {
         return NextResponse.json({ status: 401, message: 'Unauthorized' });
     }
 
     try {
         const body = await req.json();
-        const which = body.which as string;
-        const toEdit = body.itemToEdit as string;
-        await connectDB();
-        const userSesh = session?.user as User;
-        const email = userSesh ? userSesh.email : '';
-        if (email === '') {
-            return NextResponse.json({ status: 401, message: 'Unauthorized' });
-        }
+        const { which, itemToEdit, passwordEntered } = body as { which: 'name' | 'email', itemToEdit: string, passwordEntered: string };
 
-        const user = await MongoUser.findOne({ email: email }) as IUser;
+        await connectDB();
+
+        const user = await MongoUser.findOne({ email: session.user.email }) as IUser | null;
 
         if (!user) {
             return NextResponse.json({ status: 404, message: 'User not found' });
         }
 
-        const existingUserWithEmail = await MongoUser.findOne({ email: toEdit }) as IUser;
+        const passwordMatch = compareSync(passwordEntered, user.password);
 
-        if (existingUserWithEmail !== null) {
-            return NextResponse.json({ status: 402, message: 'User already exists with that email' });
+        if (!passwordMatch) {
+            console.log('Incorrect password entered for user edit:', session.user.email);
+            return NextResponse.json({ status: 403, message: 'Incorrect password' });
         }
 
-        if (user._id.toString() !== token.sub) {
-            return NextResponse.json({ status: 401, message: 'Unauthorized' });
-        }
+        console.log(`Editing user ${session.user.email}: field ${which} to ${itemToEdit}`);
 
+        // Handle name update
         if (which === 'name') {
-            await MongoUser.updateOne({ _id: user._id }, { $set: { name: toEdit } });
-        } else {
-            await MongoUser.updateOne({ _id: user._id }, { $set: { email: toEdit } });
+            console.log('Updating name to ', itemToEdit);
+            await MongoUser.updateOne({ _id: user._id }, { $set: { name: itemToEdit } });
+            await updateFamilyMember(user.userFamilyID, user._id.toString(), 'familyMemberName', itemToEdit);
+            return NextResponse.json({ status: 200, message: 'Success!' });
         }
 
-        revalidatePath('(content)/profile');
+        // Handle email update
+        if (which === 'email') {
+            console.log('Updating email to ', itemToEdit);
+            const existingUser = await MongoUser.findOne({ email: itemToEdit }) as IUser | null;
 
-        return NextResponse.json({ status: 200, message: 'Success!' });
+            if (existingUser) {
+                return NextResponse.json({ status: 402, message: 'User already exists with that email' });
+            }
+
+            await MongoUser.updateOne({ _id: user._id }, { $set: { email: itemToEdit } });
+            await updateFamilyMember(user.userFamilyID, user._id.toString(), 'familyMemberEmail', itemToEdit);
+            return NextResponse.json({ status: 200, message: 'Success!' });
+        }
+
+        if (which === 'password') {
+            console.log('Updating password');
+            await MongoUser.updateOne({ _id: user._id }, { $set: { password: itemToEdit } });
+            return NextResponse.json({ status: 200, message: 'Success!' });
+        }
+
+        return NextResponse.json({ status: 400, message: 'Invalid field to update' });
 
     } catch (error: any) {
+        console.error('Error editing user:', error);
         return NextResponse.json({ status: 500, message: 'Error editing user' });
     }
 }

@@ -1,8 +1,5 @@
 import mongoose, { Model, Schema } from "mongoose";
-import { recipeSchema } from "./recipe";
-import { ICommunity } from "./types/community";
-import { postSchema } from "./post";
-import { permissionSchema } from "./permission";
+import { ICommunity } from "./types/community/community";
 
 export const communitySchema = new Schema(
     {
@@ -10,24 +7,45 @@ export const communitySchema = new Schema(
             type: String,
             required: false,
         },
-        creatorIDs: {
+        adminIDs: {
             type: [String],
             required: false,
         },
-        communityMemberIDs: {
-            type: [permissionSchema],
-            required: false
-        },
-        recipes: {
-            type: [recipeSchema],
+        creatorID: {
+            type: String,
             required: false,
         },
-        public: {
-            type: Boolean,
+        communityMemberIDs: {
+            type: [String],
             required: false
         },
-        posts: {
-            type: [postSchema],
+        privacyLevel: {
+            type: String,
+            enum: ['public', 'private', 'hidden', 'restricted', 'passwordProtected'],
+            required: false
+        },
+        communityPassword: {
+            type: String,
+            required: false
+        },
+        tags: {
+            type: [String],
+            required: false
+        },
+        description: {
+            type: String,
+            required: false
+        },
+        postIDs: {
+            type: [String],
+            required: false
+        },
+        recipeIDs: {
+            type: [String],
+            required: false
+        },
+        requestIDs: {
+            type: [String],
             required: false
         }
     },

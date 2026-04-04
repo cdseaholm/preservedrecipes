@@ -1,12 +1,22 @@
 import { useFamilyStore } from "@/context/familyStore";
 import { useUserStore } from "@/context/userStore";
-import { IFamily } from "@/models/types/family";
-import { IUser } from "@/models/types/user";
+import { IFamily } from "@/models/types/family/family";
+import { IUser } from "@/models/types/personal/user";
 import { toast } from "sonner";
 import { HelperResponse } from "./deleteUser";
 
 export default async function AttemptDeleteFamily({ toDelete }: { toDelete: IFamily }, headers: HeadersInit): Promise<HelperResponse> {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL as string : '';
+
+    if (!baseUrl || baseUrl.length === 0 || baseUrl === '') {
+        return { status: false, message: 'Failed to delete family, No URL' };
+    }
+    
+
+    if (!toDelete || !toDelete._id) {
+        return { status: false, message: 'No family to delete' };
+    }
+    
     const urlToDelete = `${baseUrl}/api/family/delete`;
 
     try {

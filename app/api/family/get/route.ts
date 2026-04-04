@@ -1,19 +1,19 @@
 import connectDB from "@/lib/mongodb";
-import { IUser } from "@/models/types/user";
+import { IUser } from "@/models/types/personal/user";
 import MongoUser from "@/models/user";
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { getServerSession } from "next-auth/next";
 import { User } from "next-auth";
 import Family from "@/models/family";
-import { IFamily } from "@/models/types/family";
+import { IFamily } from "@/models/types/family/family";
 import { ObjectId } from "mongodb";
 
 export async function GET(req: NextRequest) {
     const secret = process.env.NEXTAUTH_SECRET || '';
 
     if (!secret) {
-        return NextResponse.json({ status: 401, message: 'Incorrect secret', userInfo: {} as IUser });
+        return NextResponse.json({ status: 401, message: 'Incorrect secret', family: {} as IUser });
     }
 
     const session = await getServerSession({ req, secret });

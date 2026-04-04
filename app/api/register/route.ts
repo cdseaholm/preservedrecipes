@@ -1,10 +1,10 @@
 import connectDB from "@/lib/mongodb";
 import Family from '@/models/family';
 import Invite from '@/models/invite';
-import { IFamily } from '@/models/types/family';
-import { IFamilyMember } from '@/models/types/familyMember';
-import { IInvite } from '@/models/types/invite';
-import { IUser } from '@/models/types/user';
+import { IFamily } from '@/models/types/family/family';
+import { IFamilyMember } from '@/models/types/family/familyMember';
+import { IInvite } from "@/models/types/misc/invite";
+import { IUser } from '@/models/types/personal/user';
 import User from '@/models/user';
 import { ObjectId } from 'mongodb';
 import { NextRequest, NextResponse } from 'next/server';

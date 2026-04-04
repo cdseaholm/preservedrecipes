@@ -1,16 +1,16 @@
 import connectDB from "@/lib/mongodb";
-import { IUser } from "@/models/types/user";
+import { IUser } from "@/models/types/personal/user";
 import MongoUser from "@/models/user";
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { getServerSession } from "next-auth/next";
 import { User } from "next-auth";
-import { IInvite } from "@/models/types/invite";
 import Family from "@/models/family";
 import { ObjectId } from "mongodb";
-import { IFamily } from "@/models/types/family";
-import { IFamilyMember } from "@/models/types/familyMember";
+import { IFamily } from "@/models/types/family/family";
+import { IFamilyMember } from "@/models/types/family/familyMember";
 import Invite from "@/models/invite";
+import { IInvite } from "@/models/types/misc/invite";
 
 export async function POST(req: NextRequest) {
 

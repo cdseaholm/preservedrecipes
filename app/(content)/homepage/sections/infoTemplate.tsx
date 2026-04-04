@@ -1,9 +1,10 @@
 'use client'
 
-import { useStateStore } from "@/context/stateStore";
+import { useWindowSizes } from "@/context/width-height-store";
 import { AiOutlineProfile } from "react-icons/ai";
 import { GiFamilyTree } from "react-icons/gi";
 import { RiUserCommunityLine } from "react-icons/ri";
+import { toast } from "sonner";
 
 const GridWrapper = ({ children, back }: { children: React.ReactNode, back: string }) => {
   return (
@@ -23,13 +24,15 @@ const TabBox = ({ children }: { children: React.ReactNode }) => {
 
 const ContentBox = ({ contentString, contentElement, index }: { contentString: string, contentElement: React.ReactNode, index: number }) => {
   return (
-    <div className="flex flex-col justify-between items-center p-2 w-full h-full">
+    <div className="flex flex-col justify-between items-center p-2 w-full h-full space-y-2" key={index}>
       <div className='flex flex-row w-full h-[90%] justify-center items-center border border-accent/60'>
         {contentElement}
       </div>
-      <div className={`flex flex-row w-full items-center ${index === 1 ? 'text-mainContent hover:text-mainText justify-start' : 'text-blue-400 justify-end hover:text-black/70'} hover:underline cursor-pointer`}>
-        {contentString}
-      </div>
+      <button type="button" className={`flex flex-row w-content bg-accent rounded-xl hover:bg-[#d94f33] items-center justify-center cursor-pointer shadow-sm hover:shadow-md`} onClick={() => toast.success('Feature coming soon!')}>
+        <p className="text-white font-semibold hover:underline text-center w-full p-2 cursor-pointer">
+          {contentString}
+        </p>
+      </button>
     </div>
   );
 };
@@ -55,7 +58,7 @@ const Texts = [
 ] as string[][];
 
 export default function InfoTemplate({ tab }: { tab: string }) {
-  const width = useStateStore(s => s.widthQuery);
+  const { width } = useWindowSizes();
   const back = tab === 'family' ? 'altBack' : 'mainBack';
   const index = tab === 'recipes' ? 0 : tab === 'family' ? 1 : 2;
   const contentString = Content[index][1] as string;

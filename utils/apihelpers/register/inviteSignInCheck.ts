@@ -1,7 +1,7 @@
 import { useFamilyStore } from "@/context/familyStore";
 import { useUserStore } from "@/context/userStore";
-import { IFamilyMember } from "@/models/types/familyMember";
-import { IInvite } from "@/models/types/invite";
+import { IFamilyMember } from "@/models/types/family/familyMember";
+import { IInvite } from "@/models/types/misc/invite";
 
 export async function InviteRegCheck({ invite }: { invite: IInvite }) {
 

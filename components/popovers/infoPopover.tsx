@@ -1,6 +1,6 @@
 'use client'
 
-import { useStateStore } from "@/context/stateStore";
+import { useWindowSizes } from "@/context/width-height-store";
 import { Popover } from "@mantine/core"
 import { forwardRef } from "react";
 import { GoInfo } from "react-icons/go";
@@ -19,7 +19,7 @@ MyInfoIcon.displayName = 'MyInfoIcon';
 
 export default function InfoPopover({ title, infoOne, infoTwo }: { title: string, infoOne: string, infoTwo: string }) {
 
-    const width = useStateStore(s => s.widthQuery);
+    const { width } = useWindowSizes();
 
     return (
         <div className='flex flex-row justify-between items-center px-2 space-x-2'>

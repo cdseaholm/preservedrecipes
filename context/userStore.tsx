@@ -1,8 +1,8 @@
 
-import { ICommunity } from '@/models/types/community';
-import { IRecipe } from '@/models/types/recipe';
-import { ISuggestion } from '@/models/types/suggestion';
-import { IUser } from '@/models/types/user';
+import { ICommunity } from '@/models/types/community/community';
+import { IInquiry } from '@/models/types/misc/inquiry';
+import { IUser } from '@/models/types/personal/user';
+import { IRecipe } from '@/models/types/recipes/recipe';
 import { create } from 'zustand';
 
 interface UserStore {
@@ -12,8 +12,8 @@ interface UserStore {
     setUserRecipes: (userRecipes: IRecipe[]) => void;
     userCommunities: ICommunity[];
     setUserCommunities: (userCommunities: ICommunity[]) => void;
-    suggestions: ISuggestion[];
-    setSuggestions: (suggestions: ISuggestion[]) => void;
+    inquiries: IInquiry[];
+    setInquiries: (inquiries: IInquiry[]) => void;
 
 }
 
@@ -24,6 +24,6 @@ export const useUserStore = create<UserStore>((set) => ({
     setUserRecipes: (recipes) => set({ userRecipes: recipes }),
     userCommunities: [] as ICommunity[],
     setUserCommunities: (communities) => set({ userCommunities: communities }),
-    suggestions: [] as ISuggestion[],
-    setSuggestions: (suggestionArray) => set({ suggestions: suggestionArray })
+    inquiries: [] as IInquiry[],
+    setInquiries: (inquiries) => set({ inquiries: inquiries })
 }));

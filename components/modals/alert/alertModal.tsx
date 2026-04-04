@@ -7,13 +7,14 @@ import ModalTemplate from "../templates/modalTemplate";
 import { useAlertStore } from "@/context/alertStore";
 import CancelButton from "@/components/buttons/cancelButton";
 import ActionButton from "@/components/buttons/basicActionButton";
+import { useWindowSizes } from "@/context/width-height-store";
 
 export default function AlertModal() {
 
     const alertModalOpen = useAlertStore(state => state.alertModalOpen);
     const setAlertModalOpen = useAlertStore(state => state.setAlertModalOpen);
     const resetZoom = useStateStore(state => state.handleZoomReset);
-    const width = useStateStore(state => state.widthQuery);
+    const { width } = useWindowSizes();
     const message = useAlertStore(state => state.alertMessage);
     const setConfirmation = useAlertStore(state => state.setAlertConfirm);
 
@@ -41,7 +42,7 @@ export default function AlertModal() {
                     </section>
                     <section className="flex flex-row w-full justify-evenly items-center pt-5">
                         <CancelButton handleCancel={handleCancel} />
-                        <ActionButton buttonTitle="Confirm" action={handleConfirm} />
+                        <ActionButton buttonTitle="Confirm" action={handleConfirm} width="w-1/5" />
                     </section>
                 </ModalTemplate>
             </Modal>

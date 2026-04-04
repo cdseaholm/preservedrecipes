@@ -1,14 +1,13 @@
 import connectDB from "@/lib/mongodb";
 import Family from "@/models/family";
-import { IFamily } from "@/models/types/family";
-import { IUser } from "@/models/types/user";
+import { IFamily } from "@/models/types/family/family";
+import { IUser } from "@/models/types/personal/user";
 import MongoUser from "@/models/user";
 import { getServerSession, User } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt"
-import { IRecipe } from "@/models/types/recipe";
-import { IFamilyMember } from "@/models/types/familyMember";
-import { FamilyFormType } from "@/components/forms/familyForm";
+import { IFamilyMember } from "@/models/types/family/familyMember";
+import { FamilyFormType } from "@/components/forms/family/familyForm";
 
 export async function POST(req: NextRequest) {
 
@@ -55,7 +54,7 @@ export async function POST(req: NextRequest) {
 
         const insertedFamily = await Family.create({
             name: family.name,
-            recipes: [] as IRecipe[],
+            recipeIDs: [] as string[],
             familyMembers: initialMembers,
             heritage: family.heritage
         }) as IFamily;

@@ -1,14 +1,13 @@
 import connectDB from "@/lib/mongodb";
 import Recipe from "@/models/recipe";
-import { IComment } from "@/models/types/comment";
-import { IRecipe } from "@/models/types/recipe";
-import { IUser } from "@/models/types/user";
+import { IUser } from "@/models/types/personal/user";
 import MongoUser from "@/models/user";
 import { getServerSession, User } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt"
 import { revalidatePath } from "next/cache";
-import { RecipeFormType } from "@/components/forms/recipe/recipeForm";
+import { IRecipe } from "@/models/types/recipes/recipe";
+import { IReview } from "@/models/types/misc/review";
 
 export async function PUT(req: NextRequest) {
 
@@ -44,20 +43,25 @@ export async function PUT(req: NextRequest) {
             return NextResponse.json({ status: 401, message: 'Unauthorized', recipeReturned: {} as IRecipe });
         }
 
-        const recipe = body.recipePassed as RecipeFormType;
+        const recipe = body.recipePassed as IRecipe;
         const newRecipe = {
             name: recipe.name,
-            recipeType: recipe.type,
             image: '',
             creatorID: user._id.toString(),
             steps: recipe.steps,
-            rating: -1,
-            comments: [] as IComment[],
+            reviews: [] as IReview[],
             secret: recipe.secret,
             secretViewerIDs: recipe.secretViewerIDs,
             tags: recipe.tags,
             ingredients: recipe.ingredients,
-            description: recipe.description
+            description: recipe.description,
+            cookingTime: recipe.cookingTime,
+            recipeFor: recipe.recipeFor,
+            //make sure when fetching recipes, if creatorID is empty, this suggests deleted user, add "Deleted User" as name
+            favoriteCount: recipe.favoriteCount,
+            saveCount: recipe.saveCount,
+            createdAt: recipe.createdAt,
+            updatedAt: recipe.updatedAt
         } as IRecipe;
 
         const insertedRecipe = await Recipe.create(newRecipe);

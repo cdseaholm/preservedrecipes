@@ -1,25 +1,23 @@
 import connectDB from "@/lib/mongodb";
-import { IUser } from "@/models/types/user";
-import MongoUser from "@/models/user";
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { getServerSession } from "next-auth/next";
 import { User } from "next-auth";
-import Recipe from "@/models/recipe";
-import { IRecipe } from "@/models/types/recipe";
+import Community from "@/models/community";
+import { ICommunity } from "@/models/types/community/community";
 
 export async function GET(req: NextRequest) {
     const secret = process.env.NEXTAUTH_SECRET || '';
 
     if (!secret) {
-        return NextResponse.json({ status: 401, message: 'Incorrect secret', userInfo: {} as IUser });
+        return NextResponse.json({ status: 401, message: 'Incorrect secret', communities: [] as ICommunity[] });
     }
 
     const session = await getServerSession({ req, secret });
     const token = await getToken({ req, secret });
 
     if (!session || !token) {
-        return NextResponse.json({ status: 401, message: 'Unauthorized', recipes: [] as IRecipe[] });
+        return NextResponse.json({ status: 401, message: 'Unauthorized', communities: [] as ICommunity[] });
     }
 
     try {
@@ -28,30 +26,18 @@ export async function GET(req: NextRequest) {
         const userSesh = session?.user as User;
         const email = userSesh?.email || '';
         if (!email) {
-            return NextResponse.json({ status: 401, message: 'Unauthorized', recipes: [] as IRecipe[] });
+            return NextResponse.json({ status: 401, message: 'Unauthorized', communities: [] as ICommunity[] });
         }
 
-        const user = await MongoUser.findOne({ email }) as IUser;
+        const communities = await Community.find({}) as ICommunity[];
 
-        if (!user) {
-            return NextResponse.json({ status: 404, message: 'User not found', recipes: [] as IRecipe[] });
+        if (!communities || communities.length === 0) {
+            return NextResponse.json({ status: 404, message: 'No communities found', communities: [] as ICommunity[] })
         }
 
-        const recipeIDs = user.recipeIDs;
-        const recipePromises = recipeIDs.map(async (id) => {
-            const recipe = await Recipe.findOne({ id }) as IRecipe;
-            return recipe;
-        });
-        const recipes = await Promise.all(recipePromises);
-
-        if (!recipes) {
-            return NextResponse.json({ status: 404, message: 'No recipes found', recipes: [] as IRecipe[] })
-        }
-
-        const filteredRecipes = recipes.filter(recipe => recipe !== null);
-
-        return NextResponse.json({ status: 200, message: 'Success!', recipes: filteredRecipes });
+        return NextResponse.json({ status: 200, message: 'Success!', communities: communities });
     } catch (error) {
-        return NextResponse.json({ status: 500, message: 'Internal Server Error', recipes: [] as IRecipe[] });
+
+        return NextResponse.json({ status: 500, message: 'Internal Server Error', communities: [] as ICommunity[] });
     }
 }

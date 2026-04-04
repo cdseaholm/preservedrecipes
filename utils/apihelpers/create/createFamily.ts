@@ -1,8 +1,8 @@
-import { FamilyFormType } from "@/components/forms/familyForm";
+import { FamilyFormType } from "@/components/forms/family/familyForm";
 import { useFamilyStore } from "@/context/familyStore";
 import { useUserStore } from "@/context/userStore";
-import { IFamily } from "@/models/types/family";
-import { IUser } from "@/models/types/user";
+import { IFamily } from "@/models/types/family/family";
+import { IUser } from "@/models/types/personal/user";
 
 
 export async function AttemptCreateFamily({ familyToAdd }: { familyToAdd: FamilyFormType }) {

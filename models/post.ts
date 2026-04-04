@@ -1,6 +1,5 @@
 import mongoose, { Model, Schema } from "mongoose";
-import { IPost } from "./types/post";
-import { commentSchema } from "./comment";
+import { IPost } from "./types/misc/post";
 
 export const postSchema = new Schema(
     {
@@ -12,12 +11,30 @@ export const postSchema = new Schema(
             type: String,
             required: false,
         },
+        type: {
+            type: String,
+            enum: ['recipe', 'text', 'image', 'video', 'link', 'other', null],
+            required: false,
+        },
+        relatedToID: {
+            type: String,
+            required: false
+        },
+        relatedToType: {
+            type: String,
+            enum: ['recipe', 'family', 'community', null],
+            required: false,
+        },
         creatorID: {
             type: String,
             required: false
         },
-        comments: {
-            type: [commentSchema],
+        commentIDs: {
+            type: [String],
+            required: false
+        },
+        ratingsIDs: {
+            type: [String],
             required: false
         },
         category: {
