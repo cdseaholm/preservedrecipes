@@ -36,7 +36,7 @@ export default function CommunityFilter({ searchParams, widthQuery, handleTransi
             pubOrPriv: status === '' ? 'all' : status,
             filterTags: filters,
         });
-    }, [searchParams]);
+    }, [searchParams, communityFilterForm]);
 
     const [searchTags, setSearchTags] = useState<string>('');
 

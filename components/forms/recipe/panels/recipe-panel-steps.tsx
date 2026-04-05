@@ -59,8 +59,8 @@ export default function RecipePanelSteps({ recipeForm }: { recipeForm: RecipeFor
                     ))
                 ) : (
                     <div key={'no-steps-text'} className="flex flex-col justify-center items-center rounded-md px-2 py-1 mr-2 mb-2 w-full">
-                        <p className="text-sm italic text-accent/70 text-center">No steps added yet. Click "Add Step" to begin.</p>
-                        <p className="text-sm italic text-accent/70 text-center">At least one step is required</p>
+                        <p className="text-sm italic text-accent/70 text-center">{`No steps added yet. Click "Add Step" to begin.`}</p>
+                        <p className="text-sm italic text-accent/70 text-center">{`At least one step is required`}</p>
                     </div>
                 )}
             </div>

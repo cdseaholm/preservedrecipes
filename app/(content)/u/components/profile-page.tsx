@@ -19,7 +19,7 @@ export default function ProfilePage({ user, familyData, reviews }: { user: IUser
         <NavWrapper userInfo={user} loadingChild={null}>
             <ContentWrapper containedChild={true} paddingNeeded={true}>
                 <div className={`p-1 w-full h-full flex flex-col justify-evenly items-center py-2`}>
-                    <h1 className="text-3xl font-bold">{user.name}'s Profile</h1>
+                    <h1 className="text-3xl font-bold">{`${user.name}'s Profile`}</h1>
                     <p className="text-lg">Family: {family}</p>
                     <div className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                         <div className="bg-secondaryBack p-4 rounded-lg shadow-md flex flex-col justify-center items-center">

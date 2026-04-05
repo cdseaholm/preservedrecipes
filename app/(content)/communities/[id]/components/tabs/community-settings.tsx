@@ -40,9 +40,9 @@ export default function CommunitySettings({ communityID, handleLoading }: { comm
         }
     }
 
-    const editCommunity = async () => {
-        //Future implementation for editing community details
-    }
+    // const editCommunity = async () => {
+    //     //Future implementation for editing community details
+    // }
 
     return (
         <div className="w-full h-full flex justify-center items-center">

@@ -1,7 +1,7 @@
 'use client'
 
 import { Fieldset } from "@mantine/core"
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import FamMemberComboBox from "../../misc/combobox/famMemberComboBox";
 import { MemberStatusEditType } from "@/models/types/family/familyMember";
 import { ChangeFamilyMemberStatusFormType } from "@/models/types/family/change-fam-types";
@@ -89,9 +89,9 @@ export default function ChangeFamMemberStatus({ editFamMemStatus }: { editFamMem
 
     };
 
-    const increaseShells = () => {
+    const increaseShells = useCallback(() => {
         setMemShells(memShells + 1);
-    };
+    }, [memShells]);
 
     const resetForm = () => {
         editFamMemStatus.clearErrors();
@@ -103,7 +103,7 @@ export default function ChangeFamMemberStatus({ editFamMemStatus }: { editFamMem
             increaseShells();
             modalInitiated.current = true;
         }
-    }, []);
+    }, [increaseShells]);
 
     console.log('MembersChosen: ', membersChosen);
     console.log('Members: ', editFamMemStatus.getValues().membersToEdit)

@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import connectDB from '@/lib/mongodb';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from "@/lib/auth/auth-options";
 import User from '@/models/user';
 import Ingredient from '@/models/ingredient';
 import { IIngredient, IngredientForForm } from '@/models/types/recipes/ingredient';

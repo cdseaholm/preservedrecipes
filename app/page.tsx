@@ -7,7 +7,7 @@ import { IUser } from '@/models/types/personal/user';
 import User from '@/models/user';
 import { serializeDoc } from '@/utils/data/seralize';
 import { getServerSession } from 'next-auth';
-import { authOptions } from './api/auth/[...nextauth]/route';
+import { authOptions } from "@/lib/auth/auth-options";
 
 export function generateMetadata(): Metadata {
 

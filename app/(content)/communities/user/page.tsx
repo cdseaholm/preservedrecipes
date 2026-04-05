@@ -3,7 +3,7 @@ import NavWrapper from "@/components/wrappers/navWrapper"
 import { IUser } from "@/models/types/personal/user";
 import { getServerSession } from "next-auth";
 import UserCommunitiesList from "./components/user-communities";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth/auth-options";
 import connectDB from "@/lib/mongodb";
 import Community from "@/models/community";
 import User from "@/models/user";

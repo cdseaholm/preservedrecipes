@@ -1,4 +1,4 @@
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth/auth-options";
 import NavWrapper from "@/components/wrappers/navWrapper";
 import connectDB from "@/lib/mongodb";
 import Recipe from "@/models/recipe";

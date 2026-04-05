@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import connectDB from '@/lib/mongodb';
 import Recipe from '@/models/recipe';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from "@/lib/auth/auth-options";
 import { IRecipe } from '@/models/types/recipes/recipe';
 import User from '@/models/user';
 import { IngredientForForm } from '@/models/types/recipes/ingredient';

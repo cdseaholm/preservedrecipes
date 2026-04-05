@@ -5,7 +5,7 @@ import Family from "@/models/family";
 import User from "@/models/user";
 import { serializeDoc } from "@/utils/data/seralize";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth/auth-options";
 import { IFamily } from "@/models/types/family/family";
 import { IUser } from "@/models/types/personal/user";
 import { redirect } from 'next/navigation';

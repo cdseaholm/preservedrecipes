@@ -5,7 +5,7 @@ import ContentWrapper from "@/components/wrappers/contentWrapper";
 import NavWrapper from "@/components/wrappers/navWrapper";
 import { useState } from "react";
 
-export default function sstSignInLanding() {
+export default function SignInLanding() {
 
     const [loading, setLoading] = useState(false);
 
