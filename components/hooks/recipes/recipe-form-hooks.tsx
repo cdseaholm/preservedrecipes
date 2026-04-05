@@ -260,7 +260,7 @@ export function useRecipeForm({ initialRecipe, userInfo }: { initialRecipe: IRec
         } else {
             form.reset();
         }
-    }, [initialRecipe]);
+    }, [form, initialRecipe]);
 
     useEffect(() => {
         if (initialRecipe && userInfo && userInfo.favoriteRecipeIDs && userInfo.favoriteRecipeIDs.length > 0) {
@@ -268,7 +268,7 @@ export function useRecipeForm({ initialRecipe, userInfo }: { initialRecipe: IRec
         } else {
             setIsFavorited(false);
         }
-    }, [initialRecipe?._id, userInfo?.favoriteRecipeIDs]);
+    }, [initialRecipe, userInfo, initialRecipe?._id, userInfo?.favoriteRecipeIDs]);
 
     return {
         form,

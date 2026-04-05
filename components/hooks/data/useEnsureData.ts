@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ensureDataLoaded } from '@/utils/data/optimized-init';
 
 type DataType = 'ingredients' | 'recipes' | 'family' | 'suggestions';
@@ -20,7 +20,7 @@ export function useEnsureData(dataType: DataType, autoLoad = false) {
     const [isReady, setIsReady] = useState(false);
     const urlToUse = process.env.NEXT_PUBLIC_BASE_URL || '';
 
-    const ensureReady = async () => {
+    const ensureReady = useCallback(async () => {
         if (isReady) return;
         
         setIsLoading(true);
@@ -32,13 +32,13 @@ export function useEnsureData(dataType: DataType, autoLoad = false) {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [isReady, dataType, urlToUse]);
 
     useEffect(() => {
         if (autoLoad) {
             ensureReady();
         }
-    }, [autoLoad]);
+    }, [autoLoad, ensureReady]);
 
     return { isReady, isLoading, ensureReady };
 }

@@ -82,7 +82,7 @@ export default function CreatePostForm({
             postForm.setFieldValue('type', 'recipe');
             postForm.setFieldValue('content', [recipeForPost._id]);
         }
-    }, [recipeForPost]);
+    }, [data, postForm, recipeForPost]);
 
     return (
         <form className="flex flex-col justify-start items-center h-content w-full space-y-4" onSubmit={postForm.onSubmit(handleCreatePost)}>

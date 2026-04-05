@@ -1,7 +1,7 @@
 import NavWrapper from "@/components/wrappers/navWrapper";
 import ColorPickerMode from "./components/colorPickerMode";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth/auth-options";
 import connectDB from "@/lib/mongodb";
 import { IUser } from "@/models/types/personal/user";
 import User from "@/models/user";
@@ -19,7 +19,7 @@ export default async function Page() {
 
     }
     return (
-        <NavWrapper loadingChild={null} userInfo={userInfo} subMenu={null} subMenuTitle={''}>
+        <NavWrapper loadingChild={null} userInfo={userInfo}>
             <ColorPickerMode />
         </NavWrapper>
     )

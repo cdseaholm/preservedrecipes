@@ -3,7 +3,7 @@ import { IUser } from "@/models/types/personal/user";
 import MongoUser from "@/models/user";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
-import { authOptions } from "../../auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth/auth-options";
 import { IFamily } from "@/models/types/family/family";
 import Family from "@/models/family";
 import { ObjectId } from "mongodb";

@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth/next";
 import ErrorPage from "./components/err-page";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth/auth-options";
 import NavWrapper from "@/components/wrappers/navWrapper";
 import connectDB from "@/lib/mongodb";
 import { IUser } from "@/models/types/personal/user";

@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from "@/lib/auth/auth-options";
 import { getServerSession } from 'next-auth';
 import SpecificCommunityPage from './components/specific-community-page';
 import connectDB from '@/lib/mongodb';

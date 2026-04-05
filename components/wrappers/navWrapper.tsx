@@ -27,7 +27,7 @@ export default function NavWrapper({ children, userInfo, loadingChild }: { child
         if (userInfo && (!currUserInfo || currUserInfo.email !== userInfo.email)) {
             setUserInfo(userInfo);
         }
-    }, [userInfo, setUserInfo]);
+    }, [userInfo, setUserInfo, currUserInfo, currUserInfo?.email, userInfo?.email]);
 
     return (
         <div className="flex flex-col justify-start items-center w-screen h-full overflow-hidden">

@@ -168,9 +168,7 @@ export default function MembersMain({
     return (
         <NavWrapper 
             loadingChild={null} 
-            userInfo={userInfo} 
-            subMenu={null} 
-            subMenuTitle={null}
+            userInfo={userInfo}
         >
             <ContentWrapper containedChild={true} paddingNeeded={true}>
                 {renderItem}
@@ -203,9 +201,9 @@ const MembersAndRequestsTabs = ({
     return (
         <>
             <SearchBar 
-                handleSearch={handleSearch} 
-                searchString={search === '' ? `Search ${tab}` : search} 
-                index={2} 
+                handleSearch={handleSearch}
+                searchString={search === '' ? `Search ${tab}` : search}
+                index={2} leftSection={null}
             />
             {filteredData.length > 0 ? (
                 filteredData.map((item, index) => (

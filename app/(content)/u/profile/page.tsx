@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth/auth-options";
 import connectDB from "@/lib/mongodb";
 import { IUser } from "@/models/types/personal/user";
 import User from "@/models/user";

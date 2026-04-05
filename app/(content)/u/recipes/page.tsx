@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { getServerSession } from "next-auth";
 import { IRecipe } from "@/models/types/recipes/recipe";
 import { IUser } from "@/models/types/personal/user";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth/auth-options";
 import connectDB from "@/lib/mongodb";
 import Recipe from "@/models/recipe";
 import { ObjectId } from "mongodb";

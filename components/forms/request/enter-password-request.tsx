@@ -70,8 +70,8 @@ export default function EnterPasswordRequest({ handleCancel, request, community,
         } else {
             requestForm.reset();
         }
-    }, [request?._id]);
-    console.log('Desc: ', community?.description);
+    }, [request, request?._id, request?.requestFor, request?.requesterID, requestForm]);
+
     const handleCancelClick = () => {
         requestForm.reset();
         requestForm.clearErrors();

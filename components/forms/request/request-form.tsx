@@ -42,7 +42,7 @@ export default function RequestForm({ handleCreateRequest, handleCancel, request
         } else {
             requestForm.reset();
         }
-    }, [request?._id]);
+    }, [request?._id, request?.requestFor, request?.requesterID, requestForm, request]);
 
     const handleCancelClick = () => {
         requestForm.reset();

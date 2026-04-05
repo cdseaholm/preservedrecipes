@@ -2,7 +2,7 @@ import { Metadata } from "next";
 
 import ContentWrapper from "@/components/wrappers/contentWrapper";
 import NavWrapper from "@/components/wrappers/navWrapper";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth/auth-options";
 import connectDB from "@/lib/mongodb";
 import { IUser } from "@/models/types/personal/user";
 import User from "@/models/user";

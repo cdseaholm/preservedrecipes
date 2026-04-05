@@ -8,7 +8,7 @@ import { User } from "next-auth";
 import Recipe from "@/models/recipe";
 import { ObjectId } from "mongodb";
 import { IRecipe } from "@/models/types/recipes/recipe";
-import { authOptions } from "../../auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth/auth-options";
 
 export async function GET(req: NextRequest) {
     const secret = process.env.NEXTAUTH_SECRET || '';

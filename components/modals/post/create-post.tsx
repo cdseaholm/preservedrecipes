@@ -5,7 +5,7 @@ import { Modal } from "@mantine/core"
 import { toast } from "sonner";
 import { useModalStore } from "@/context/modalStore";
 import LoadingOverlayComponent from "@/components/misc/loading/loading-overlay";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { IPost } from "@/models/types/misc/post";
 import { useForm } from "@mantine/form";
 import CreatePostForm from "@/components/forms/post/create-post-form";
@@ -34,7 +34,7 @@ export default function CreatePostModal({
     const resetZoom = useStateStore(state => state.handleZoomReset);
     const currCommunity = useCommunityStore(state => state.community);
 
-    const getInitialPostValues = (): IPost => {
+    const getInitialPostValues = useCallback((): IPost => {
         // Priority 1: Backup post (user was creating a recipe)
         if (recipeForPostAndPostBackup?.backupPost) {
             return recipeForPostAndPostBackup.backupPost;
@@ -59,7 +59,7 @@ export default function CreatePostModal({
             createdAt: '',
             updatedAt: '',
         };
-    };
+    }, [recipeForPostAndPostBackup, recipeForPostAndPostBackup?.backupPost, recipeForPostAndPostBackup?.recipe, currCommunity, openPostModal, recipeForPostAndPostBackup?.recipe]);
 
     const postForm = useForm({
         mode: 'uncontrolled',
@@ -179,7 +179,7 @@ export default function CreatePostModal({
                 });
             }
         }
-    }, [openPostModal]);
+    }, [getInitialPostValues, postForm, recipeForPostAndPostBackup, recipeForPostAndPostBackup?.backupPost, recipeForPostAndPostBackup?.recipe, setRecipeForPostAndPostBackup, openPostModal]);
 
     return (
         <Modal

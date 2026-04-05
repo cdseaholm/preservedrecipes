@@ -1,6 +1,5 @@
 
 import { Metadata } from "next";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import connectDB from "@/lib/mongodb";
 import { IUser } from "@/models/types/personal/user";
 import User from "@/models/user";
@@ -8,6 +7,7 @@ import { serializeDoc } from "@/utils/data/seralize";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import SignInLanding from "@/app/(content)/login/components/sign-in-landing";
+import { authOptions } from "@/lib/auth/auth-options";
 
 export const metadata: Metadata = {
     title: 'Login Page',

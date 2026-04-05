@@ -53,7 +53,7 @@ export default function InquiryForm({ handleCreateInquiry, handleCancel, inquiry
         } else {
             inquiryForm.reset();
         }
-    }, [inquiry?._id]);
+    }, [inquiry, inquiryForm, inquiry?._id]);
 
     const handleCancelClick = () => {
         inquiryForm.reset();

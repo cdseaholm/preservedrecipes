@@ -46,7 +46,7 @@ export default function RequestModal() {
             resetZoom(width, false);
             setRequestToJoinCommunity(null);
         }
-    }, [userInfo, requestToJoinCommunity]);
+    }, [userInfo, requestToJoinCommunity, resetZoom, width, setRequestToJoinCommunity]);
 
     // ✅ Early return if null - prevents rendering with null values
     if (!requestToJoinCommunity || !userInfo) {
