@@ -1,11 +1,10 @@
 'use client'
 
-import React, { Suspense, useEffect } from 'react';
+import React, { Suspense } from 'react';
 import { LoadingSpinner } from '@/components/misc/loadingSpinner';
 import WelcomeSection from '@/app/(content)/homepage/sections/welcomeSection';
 import dynamic from 'next/dynamic';
 import InfoTemplate from '../sections/infoTemplate';
-import { useStateStore } from '@/context/stateStore';
 import ContentWrapper from '@/components/wrappers/contentWrapper';
 
 const AboutSection = dynamic(() => import('@/app/(content)/homepage/sections/miscSection'));
@@ -14,14 +13,6 @@ const sectionClass = `flex flex-col justify-center px-4 py-32 items-center w-ful
 const bgImage = `bg-[url(/images/istockphoto-recipebook.jpg)]`;
 
 export default function Homepage() {
-
-    const setGlobalLoading = useStateStore(state => state.setGlobalLoading);
-
-    useEffect(() => {
-
-        setGlobalLoading(false);
-
-    }, [setGlobalLoading]);
 
 
     return (

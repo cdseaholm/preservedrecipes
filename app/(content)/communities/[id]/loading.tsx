@@ -6,7 +6,7 @@ export default function Loading() {
             <LoadingOverlay
                 visible={true}
                 zIndex={1000}
-                overlayProps={{ radius: "sm", blur: 2 }}
+                overlayProps={{ radius: "sm", blur: 0, bg: '#E8D8C4' }}
             />
         </Box>
     );
