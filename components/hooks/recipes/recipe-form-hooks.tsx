@@ -3,7 +3,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { useForm } from "@mantine/form";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { IRecipe } from "@/models/types/recipes/recipe";
 import { IngredientForForm } from "@/models/types/recipes/ingredient";
@@ -236,9 +236,8 @@ export function useRecipeForm({ initialRecipe, userInfo }: { initialRecipe: IRec
         }
     }
 
-
-    useEffect(() => {
-        if (initialRecipe) {
+    const handleInitRecipe = useCallback((reset: boolean, initialRecipe: IRecipe | null) => {
+        if (!reset && initialRecipe) {
             form.setValues({
                 _id: initialRecipe._id || '',
                 name: initialRecipe.name || '',
@@ -250,17 +249,19 @@ export function useRecipeForm({ initialRecipe, userInfo }: { initialRecipe: IRec
                 image: initialRecipe.image || '',
                 creatorID: initialRecipe.creatorID || '',
                 reviews: initialRecipe.reviews || [],
-                recipeFor: initialRecipe.recipeFor || ['personal'],
-                secret: initialRecipe.secret || false,
-                secretViewerIDs: initialRecipe.secretViewerIDs || [],
-                cookingTime: initialRecipe.cookingTime || 0,
-                createdAt: initialRecipe.createdAt || '',
-                updatedAt: initialRecipe.updatedAt || '',
             });
         } else {
             form.reset();
         }
-    }, [form, initialRecipe]);
+    }, [form]);
+
+    useEffect(() => {
+        if (initialRecipe) {
+            handleInitRecipe(false, initialRecipe);
+        } else {
+            handleInitRecipe(true, null);
+        }
+    }, [initialRecipe?._id]);
 
     useEffect(() => {
         if (initialRecipe && userInfo && userInfo.favoriteRecipeIDs && userInfo.favoriteRecipeIDs.length > 0) {

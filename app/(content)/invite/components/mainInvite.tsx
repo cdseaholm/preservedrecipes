@@ -185,7 +185,7 @@ export default function InvitePage({ token, userInfo }: { token: string | null, 
         <NavWrapper loadingChild={<LoadingOverlay
             visible={loading}
             zIndex={1000}
-            overlayProps={{ radius: "sm", blur: 2 }}
+            overlayProps={{ radius: "sm", blur: 0, bg: '#E8D8C4' }}
         />} userInfo={userInfo}>
             <ContentWrapper containedChild={true} paddingNeeded={true}>
                 <h1>Register</h1>

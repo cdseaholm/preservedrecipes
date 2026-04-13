@@ -3,7 +3,7 @@
 import { IUser } from "@/models/types/personal/user";
 import AppHeader from "../nav/header/appHeader";
 import { useUserStore } from "@/context/userStore";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import RouterTransitionWrapper from "./dynamicWrappers/routerTransitionWrapper";
 import TextureWrapper from "./texture-wrapper";
 import { ScrollArea } from "@mantine/core";
@@ -23,11 +23,15 @@ export default function NavWrapper({ children, userInfo, loadingChild }: { child
         }
     }
 
-    useEffect(() => {
+    const handleUser = useCallback(() => {
         if (userInfo && (!currUserInfo || currUserInfo.email !== userInfo.email)) {
             setUserInfo(userInfo);
         }
     }, [userInfo, setUserInfo, currUserInfo, currUserInfo?.email, userInfo?.email]);
+
+    useEffect(() => {
+        handleUser();
+    }, [handleUser]);
 
     return (
         <div className="flex flex-col justify-start items-center w-screen h-full overflow-hidden">
