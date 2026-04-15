@@ -39,7 +39,7 @@ export default function NavWrapper({ children, userInfo, loadingChild }: { child
             <TextureWrapper>
                 <AppHeader handleMenuToggle={handleMenuToggle} openMenu={openMenu} userInfo={userInfo} />
                 <main className={`h-full w-full pt-[60px] flex flex-col justify-start items-center bg-mainBack/30`}>
-                    <ScrollArea w={'100%'} scrollbarSize={10} className="z-3">
+                    <ScrollArea w={'100%'} scrollbarSize={10} className="z-3" p={0}>
                         <RouterTransitionWrapper />
                         {children}
                         <MainFooter />

@@ -3,6 +3,7 @@
 import ContentWrapper from "@/components/wrappers/contentWrapper";
 import NavWrapper from "@/components/wrappers/navWrapper";
 import { IUser } from "@/models/types/personal/user";
+import AboutSection from "@/app/(content)/homepage/sections/aboutSection";
 
 export default function AboutPage({ userInfo }: { userInfo: IUser | null }) {
 
@@ -11,7 +12,13 @@ export default function AboutPage({ userInfo }: { userInfo: IUser | null }) {
     return (
         <NavWrapper loadingChild={null} userInfo={userInfo}>
             <ContentWrapper containedChild={false} paddingNeeded={true}>
-                <p className={aboutTextClass}>
+                <AboutSection aboutTextClass={aboutTextClass} />
+            </ContentWrapper>
+        </NavWrapper>
+    )
+}
+
+{/* <p className={aboutTextClass}>
                     {`${<span className="text-2xl md:text-3xl text-accent font-serif font-bold leading-none">
                         P
                     </span>}
@@ -39,8 +46,4 @@ export default function AboutPage({ userInfo }: { userInfo: IUser | null }) {
                     t its heart, Preserved Recipes is about connection through food.
                     The kind that happens across kitchen tables, across miles, across years.
                     We're here to help those connections last.`}
-                </p>
-            </ContentWrapper>
-        </NavWrapper>
-    )
-}
+                </p> */}
