@@ -261,7 +261,7 @@ export function useRecipeForm({ initialRecipe, userInfo }: { initialRecipe: IRec
         } else {
             handleInitRecipe(true, null);
         }
-    }, [initialRecipe?._id]);
+    }, [initialRecipe?._id, handleInitRecipe, initialRecipe]);
 
     useEffect(() => {
         if (initialRecipe && userInfo && userInfo.favoriteRecipeIDs && userInfo.favoriteRecipeIDs.length > 0) {

@@ -5,10 +5,8 @@ import { Popover } from '@mantine/core';
 import { GoInfo } from 'react-icons/go';
 import { forwardRef } from 'react';
 import ThemeToggle from '@/components/buttons/themeToggle';
-import WelcomeSection from '../../homepage/sections/welcomeSection';
-import InfoTemplate from '../../homepage/sections/infoTemplate';
-import AboutSection from '../../homepage/sections/miscSection';
 import ContentWrapper from '@/components/wrappers/contentWrapper';
+import Homepage from '../../homepage/components/mainHome';
 
 const MyInfoIcon = forwardRef<HTMLDivElement>(
   (props, ref) => (
@@ -22,8 +20,8 @@ MyInfoIcon.displayName = 'MyInfoIcon';
 
 export default function ColorPickerMode() {
 
-  const sectionClass = `flex flex-col justify-center px-4 py-32 items-center w-full overflow-hidden`;
-  const bgImage = `bg-[url(/images/istockphoto-recipebook.jpg)]`;
+  // const sectionClass = `flex flex-col justify-center px-4 py-32 items-center w-full overflow-hidden`;
+  // const bgImage = `bg-[url(/images/istockphoto-recipebook.jpg)]`;
   const defaultColors = [
     { name: 'mainBack', defaultColor: "#f9f4ef" },
     { name: 'cardBack', defaultColor: "#fffffe" },
@@ -36,20 +34,7 @@ export default function ColorPickerMode() {
 
   return (
     <ContentWrapper containedChild={false} paddingNeeded={true}>
-      <div className='flex flex-col w-full md:w-4/5 md:ml-[20%]'>
-        <section className={`flex flex-col justify-start items-center w-full overflow-hidden bg-mainBack h-content ${bgImage} bg-no-repeat bg-cover`}>
-          <WelcomeSection />
-        </section>
-        <section className={`${sectionClass} bg-altBack/60`}>
-          <InfoTemplate tab={'recipes'} />
-        </section>
-        <section className={`${sectionClass} bg-mainBack`}>
-          <InfoTemplate tab={'family'} />
-        </section>
-        <section className={`${sectionClass} bg-altBack/60`}>
-          <AboutSection id="about-section" />
-        </section>
-      </div>
+      <Homepage />
       <aside className='flex w-full h-1/3 flex-col md:w-1/5 md:h-full p-4 fixed md:left-0 bottom-0 md:top-0 z-40 bg-mainBack overflow-auto border-t border-black text-mainText'>
         <div className='flex flex-row justify-between items-center px-2'>
           <Popover width={200} position='bottom-start' withArrow shadow-sm="md">

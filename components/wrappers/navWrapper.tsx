@@ -27,7 +27,7 @@ export default function NavWrapper({ children, userInfo, loadingChild }: { child
         if (userInfo && (!currUserInfo || currUserInfo.email !== userInfo.email)) {
             setUserInfo(userInfo);
         }
-    }, [userInfo, setUserInfo, currUserInfo, currUserInfo?.email, userInfo?.email]);
+    }, [userInfo, setUserInfo, currUserInfo]);
 
     useEffect(() => {
         handleUser();
