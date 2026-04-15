@@ -59,7 +59,7 @@ export default function CreatePostModal({
             createdAt: '',
             updatedAt: '',
         };
-    }, [recipeForPostAndPostBackup, recipeForPostAndPostBackup?.backupPost, recipeForPostAndPostBackup?.recipe, currCommunity, openPostModal, recipeForPostAndPostBackup?.recipe]);
+    }, [recipeForPostAndPostBackup, currCommunity, openPostModal]);
 
     const postForm = useForm({
         mode: 'uncontrolled',

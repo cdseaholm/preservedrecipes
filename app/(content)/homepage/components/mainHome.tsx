@@ -1,16 +1,12 @@
 'use client'
 
-import React, { Suspense } from 'react';
-import { LoadingSpinner } from '@/components/misc/loadingSpinner';
+import React from 'react';
 import WelcomeSection from '@/app/(content)/homepage/sections/welcomeSection';
 import HowItWorksSection from '@/app/(content)/homepage/sections/howItWorksSection';
 import FeaturesSection from '@/app/(content)/homepage/sections/featuresSection';
-import TestimonialsSection from '@/app/(content)/homepage/sections/testimonialsSection';
 import PricingTeaserSection from '@/app/(content)/homepage/sections/pricingTeaserSection';
 import CTASection from '@/app/(content)/homepage/sections/ctaSection';
-import dynamic from 'next/dynamic';
 import ContentWrapper from '@/components/wrappers/contentWrapper';
-import AboutSection from '@/app/(content)/homepage/sections/aboutSection';
 
 const sectionClass = `flex flex-col justify-center px-4 py-20 md:py-32 items-center w-full min-w-screen overflow-hidden`;
 const bgImage = `bg-[url(/images/istockphoto-recipebook.jpg)]`;

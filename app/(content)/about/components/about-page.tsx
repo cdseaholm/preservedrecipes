@@ -7,12 +7,12 @@ import AboutSection from "@/app/(content)/homepage/sections/aboutSection";
 
 export default function AboutPage({ userInfo }: { userInfo: IUser | null }) {
 
-    const aboutTextClass = "max-w-5xl mx-auto bg-altBack/80 backdrop-blur-md rounded-2xl shadow-2xl text-lg md:text-xl lg:text-2xl leading-relaxed px-6 py-10 md:px-12 md:py-14 m-4 text-center font-light relative overflow-hidden before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-br before:from-[#F8E6D3]/30 before:via-transparent before:to-[#E85D3A]/5 before:opacity-60 before:pointer-events-none";
+    // const aboutTextClass = "max-w-5xl mx-auto bg-altBack/80 backdrop-blur-md rounded-2xl shadow-2xl text-lg md:text-xl lg:text-2xl leading-relaxed px-6 py-10 md:px-12 md:py-14 m-4 text-center font-light relative overflow-hidden before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-br before:from-[#F8E6D3]/30 before:via-transparent before:to-[#E85D3A]/5 before:opacity-60 before:pointer-events-none";
 
     return (
         <NavWrapper loadingChild={null} userInfo={userInfo}>
             <ContentWrapper containedChild={false} paddingNeeded={true}>
-                <AboutSection aboutTextClass={aboutTextClass} />
+                <AboutSection />
             </ContentWrapper>
         </NavWrapper>
     )
