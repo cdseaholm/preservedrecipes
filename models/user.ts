@@ -10,6 +10,9 @@ export const userSchema = new Schema(
     email: {
       type: String,
       required: true,
+      trim: true,
+      lowercase: true,
+      unique: true,
     },
     password: {
       type: String,
@@ -42,6 +45,14 @@ export const userSchema = new Schema(
     resetPasswordExpires: {
       type: String,
       default: '',
+    },
+    bio: {
+      type: String,
+      default: '', 
+    },
+    profileImage: {
+      type: String,
+      default: '', 
     },
   },
   {

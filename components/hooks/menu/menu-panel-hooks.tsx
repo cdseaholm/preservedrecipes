@@ -64,7 +64,6 @@ export default function MenuPanelHooks() {
             closeOnEscape: true,
             title: 'Are you sure you want to sign out?',
             labels: { confirm: 'Sign out', cancel: 'Cancel' },
-            onCancel: () => console.log('Cancel'),
             onConfirm: () => signingOut(),
         });
     };

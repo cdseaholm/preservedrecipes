@@ -3,29 +3,25 @@ import { useState, useEffect } from 'react';
 export function useWindowSizes() {
     const [width, setWidth] = useState(0);
     const [height, setHeight] = useState(0);
+    const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
-        setWidth(window.innerWidth);
-        setHeight(window.innerHeight);
+        setMounted(true);
 
         const handleResize = () => {
             setWidth(window.innerWidth);
             setHeight(window.innerHeight);
         };
+
+        handleResize();
+
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
     return {
-        width: width,
-        height: height,
+        width,
+        height,
+        mounted,
     };
 }
-
-// return {
-//         width: width,
-//         isMobile: width < 640,
-//         isTablet: width >= 640 && width < 1024,
-//         isDesktop: width >= 1024,
-//         height: height,
-//     };

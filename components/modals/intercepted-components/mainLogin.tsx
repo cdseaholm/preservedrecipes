@@ -36,16 +36,11 @@ export default function SignInPage({ handleCancel, handleLoading }: { handleCanc
             }
 
             const values = signInForm.getValues();
-            const email = values.email;
+            const email = values.email.trim().toLowerCase();
             const password = values.password;
             const validation = signInForm.validate();
 
             if (Object.keys(validation.errors).length > 0) {
-                handleLoading(false);
-                return;
-            }
-
-            if (!validation) {
                 handleLoading(false);
                 return;
             }

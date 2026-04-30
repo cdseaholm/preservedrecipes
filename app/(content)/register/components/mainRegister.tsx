@@ -1,6 +1,5 @@
 'use client'
 
-import RegisterHelper from "@/utils/apihelpers/register/registerHelper";
 import { useState } from "react";
 import { toast } from "sonner";
 import { IUser } from "@/models/types/personal/user";
@@ -14,6 +13,7 @@ import NavWrapper from "@/components/wrappers/navWrapper";
 import ContentWrapper from "@/components/wrappers/contentWrapper";
 import { LoadingOverlay } from "@mantine/core";
 import { useWindowSizes } from "@/context/width-height-store";
+import { CreateUser } from "@/utils/server-actions/user";
 
 export default function RegisterPage({ userInfo }: { userInfo: IUser | null }) {
 
@@ -39,7 +39,7 @@ export default function RegisterPage({ userInfo }: { userInfo: IUser | null }) {
 
             const values = registerForm.getValues();
             const name = values.name;
-            const email = values.email;
+            const email = values.email.trim().toLowerCase();
             const password = values.password;
             const validation = registerForm.validate();
 
@@ -49,40 +49,43 @@ export default function RegisterPage({ userInfo }: { userInfo: IUser | null }) {
             }
 
             let attemptStatus = false;
-            let createdUser = {} as IUser;
 
-            let signInAttempt = await RegisterHelper({ namePassed: name, emailPassed: email, pwPassed: password, invite: null }) as { status: boolean, newUser: IUser };
+            let registerAttempt = await CreateUser({ name: name, email: email, password: password, route: '/u/profile' }) as { status: boolean, message: string, newUser: IUser | null };
 
-            if (!signInAttempt) {
+            if (!registerAttempt) {
                 toast.error('Error registering');
                 setLoading(false);
                 return
             }
 
-            attemptStatus = signInAttempt.status;
-            createdUser = signInAttempt.newUser;
+            attemptStatus = registerAttempt.status;
 
-            if (attemptStatus === false || createdUser === {} as IUser) {
-                toast.error('Error Registering');
+            if (!attemptStatus) {
+                toast.error(registerAttempt.message || 'Error registering');
                 setLoading(false);
                 return;
-            } else {
-
-                let signInAttempt = await SignInHelper({ emailPassed: email, pwPassed: password }) as { status: boolean };
-
-                if (!signInAttempt) {
-                    toast.error('Error signing in');
-                    setLoading(false);
-                    return;
-                }
-
-                toast.success('Registered and Signed in!');
-                registerForm.reset();
-                registerForm.clearErrors();
-                await update();
-                resetZoom(width, false);
-                router.push('/profile')
             }
+
+            if (!registerAttempt.newUser) {
+                toast.error('Error registering, no user created');
+                setLoading(false);
+                return;
+            }
+
+            let signInAttempt = await SignInHelper({ emailPassed: email, pwPassed: password }) as { status: boolean };
+
+            if (!signInAttempt || !signInAttempt.status) {
+                toast.error('Error signing in');
+                setLoading(false);
+                return;
+            }
+
+            toast.success('Registered and Signed in!');
+            registerForm.reset();
+            registerForm.clearErrors();
+            await update();
+            resetZoom(width, false);
+            router.push('/u/profile');
 
         } catch (error) {
             setLoading(false);

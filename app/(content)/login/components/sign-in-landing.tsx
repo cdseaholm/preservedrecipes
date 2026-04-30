@@ -3,14 +3,17 @@
 import SignInPage from "@/components/modals/intercepted-components/mainLogin";
 import ContentWrapper from "@/components/wrappers/contentWrapper";
 import NavWrapper from "@/components/wrappers/navWrapper";
+import { LoadingOverlay } from "@mantine/core";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function SignInLanding() {
 
     const [loading, setLoading] = useState(false);
+    const router = useRouter();
 
     const handleCancel = () => {
-        // Implement cancel logic if needed
+        router.push('/');
     }
 
     const handleLoading = (loadState: boolean) => {
@@ -18,7 +21,7 @@ export default function SignInLanding() {
     }
 
     return (
-        <NavWrapper loadingChild={loading} userInfo={null}>
+        <NavWrapper loadingChild={<LoadingOverlay visible={loading} />} userInfo={null}>
             <ContentWrapper containedChild={false} paddingNeeded={true}>
                 <SignInPage handleCancel={handleCancel} handleLoading={handleLoading} />
             </ContentWrapper>

@@ -54,7 +54,7 @@ export default function SignInForm({ handleSignIn, handleCancel }: { handleSignI
                 />
             </Fieldset>
             <section className="flex flex-row w-full justify-evenly items-center pt-5">
-                <CancelButton handleCancel={() => { () => { signInForm.reset(); signInForm.clearErrors(); handleCancel();  }}} />
+                <CancelButton handleCancel={() => { signInForm.reset(); signInForm.clearErrors(); handleCancel(); }} />
                 <SubmitButton buttonTitle={'Sign In'} />
             </section>
         </form>
