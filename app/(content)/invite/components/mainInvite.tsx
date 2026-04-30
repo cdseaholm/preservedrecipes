@@ -45,7 +45,7 @@ export default function InvitePage({ token, userInfo }: { token: string | null, 
     const [loading, setLoading] = useState<boolean>(false);
 
     const currentUser = session ? session.user as User : {} as User;
-    const currentEmail = currentUser ? currentUser.email as string : '';
+    const currentEmail = currentUser?.email?.trim().toLowerCase() || '';
 
     if (token === null) {
         forwardRef.current = '/register';
@@ -67,7 +67,7 @@ export default function InvitePage({ token, userInfo }: { token: string | null, 
 
             const values = inviteRegisterForm.getValues();
             const name = values.name;
-            const email = values.email;
+            const email = values.email.trim().toLowerCase();
             const password = values.password;
             const validation = inviteRegisterForm.validate();
 
@@ -87,7 +87,7 @@ export default function InvitePage({ token, userInfo }: { token: string | null, 
 
             const attemptStatus = registerHelp.status as boolean;
 
-            if (!attemptStatus || !attemptStatus) {
+            if (!attemptStatus) {
                 toast.error('Error Registering status false');
                 setLoading(false);
                 return;
@@ -103,7 +103,7 @@ export default function InvitePage({ token, userInfo }: { token: string | null, 
 
             const signInAttempt = await SignInHelper({ emailPassed: email, pwPassed: password }) as { status: boolean };
 
-            if (!signInAttempt) {
+            if (!signInAttempt || !signInAttempt.status) {
                 toast.error('Error signing in');
                 setLoading(false);
                 return;
@@ -134,7 +134,7 @@ export default function InvitePage({ token, userInfo }: { token: string | null, 
             await update();
             setLoading(false)
             resetZoom(width, false);
-            router.push('/profile')
+            router.push('/u/profile')
 
         } catch (error) {
             setLoading(false);
@@ -156,10 +156,10 @@ export default function InvitePage({ token, userInfo }: { token: string | null, 
                 return;
             }
 
-            const inviteEmail = inviteExists.invite.email;
+            const inviteEmail = inviteExists.invite.email.trim().toLowerCase();
 
             if (inviteExists && session && currentEmail !== inviteEmail) {
-                forwardRef.current = '/profile';
+                forwardRef.current = '/u/profile';
                 forward();
                 setGlobalToast(`Make sure you're signed into the proper account to accept this invite`);
                 return;

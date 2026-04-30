@@ -27,8 +27,9 @@ export default function InviteSignInModal({ session, handleUpdate }: { session: 
     const invite = useFamilyStore(state => state.invite);
     const router = useRouter();
     const currentUser = session ? session.user : null;
-    const currentEmail = currentUser ? currentUser.email : '';
-    const accepting = session !== null && invite !== null && currentEmail === invite.email ? true : false;
+    const currentEmail = currentUser?.email?.trim().toLowerCase() || '';
+    const inviteEmail = invite?.email.trim().toLowerCase() || '';
+    const accepting = session !== null && invite !== null && currentEmail === inviteEmail;
     const [loading, setLoading] = useState(false)
 
     const InviteCheckFunc = async () => {
@@ -67,14 +68,14 @@ export default function InviteSignInModal({ session, handleUpdate }: { session: 
                 if (invite === null) {
                     setGlobalToast("You are already signed in!");
                     setLoading(false);
-                    router.replace('/profile');
+                    router.replace('/u/profile');
                     return;
                 }
 
-                if (invite.email !== currentEmail) {
+                if (inviteEmail !== currentEmail) {
                     setGlobalToast("Sign in as the intended user to receive this invite!");
                     setLoading(false);
-                    router.replace('/profile');
+                    router.replace('/u/profile');
                     return;
                 }
 
@@ -89,15 +90,9 @@ export default function InviteSignInModal({ session, handleUpdate }: { session: 
 
 
                 const values = inviteSignInForm.getValues();
-                const email = values.email;
+                const email = values.email.trim().toLowerCase();
                 const password = values.password;
                 const validation = inviteSignInForm.validate();
-
-                if (!validation) {
-                    toast.error('Issue with validation')
-                    setLoading(false);
-                    return;
-                }
 
                 if (Object.keys(validation.errors).length > 0) {
                     inviteSignInForm.setErrors(validation.errors)
@@ -138,7 +133,7 @@ export default function InviteSignInModal({ session, handleUpdate }: { session: 
         setLoading(false);
         setOpenInviteSignInModal(false);
         if (invited) {
-            router.replace('/profile')
+            router.replace('/u/profile')
         }
     }
 

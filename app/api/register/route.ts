@@ -13,8 +13,9 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     await connectDB();
+    const normalizedEmail = body.emailPassed?.trim().toLowerCase();
 
-    if (!body.emailPassed) {
+    if (!normalizedEmail) {
       return NextResponse.json({ status: 402, message: "Email is required", newUser: {} as IUser });
     }
     if (!body.saltedPW) {
@@ -24,7 +25,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ status: 402, message: "Name is required", newUser: {} as IUser });
     }
 
-    const existingUser = await User.findOne({ email: body.emailPassed });
+    const existingUser = await User.findOne({ email: normalizedEmail });
 
     if (existingUser) {
       return NextResponse.json({ status: 404, message: "User already exists", newUser: {} as IUser });
@@ -62,20 +63,29 @@ export async function POST(req: NextRequest) {
 
     const user = await User.create({
       name: body.namePassed,
-      email: body.emailPassed,
+      email: normalizedEmail,
       password: body.saltedPW,
       userFamilyID: userFamID,
       recipeIDs: [] as string[],
+      savedRecipeIDs: [] as string[],
+      favoriteRecipeIDs: [] as string[],
       communityIDs: [] as string[],
-      ratings: [] as number[],
+      bio: '',
+      profileImage: '',
+      resetPasswordExpires: '',
+      resetPasswordToken: '',
     }) as IUser;
 
     if (!user) {
       return NextResponse.json({ status: 406, message: "Error creating user", newUser: {} as IUser });
     }
 
-    return NextResponse.json({ status: 200, message: "Success!", newUser: user as IUser });
+    return NextResponse.json({ status: 200, message: "Success!", newUser: JSON.parse(JSON.stringify(user)) as IUser });
   } catch (error) {
+    const mongoError = error as { code?: number };
+    if (mongoError.code === 11000) {
+      return NextResponse.json({ status: 404, message: "User already exists", newUser: {} as IUser });
+    }
     return NextResponse.json({ status: 500, message: "Error catch", newUser: {} as IUser });
   }
 }

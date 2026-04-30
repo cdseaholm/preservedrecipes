@@ -14,4 +14,6 @@ export interface IUser {
   favoriteRecipeIDs: string[];
   resetPasswordToken: string;
   resetPasswordExpires: string;
+  bio: string;
+  profileImage: string;
 }

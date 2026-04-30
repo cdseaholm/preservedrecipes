@@ -15,10 +15,11 @@ export const authOptions: NextAuthOptions = {
             authorize: async (credentials) => {
                 try {
                     const { email, password } = credentials as Record<string, string>;
-                    if (!email || !password) return null;
+                    const normalizedEmail = email?.trim().toLowerCase();
+                    if (!normalizedEmail || !password) return null;
 
                     await connectDB();
-                    const user = await MongoUser.findOne({ email });
+                    const user = await MongoUser.findOne({ email: normalizedEmail });
                     if (!user) return null;
 
                     const validPassword = await VerifyPassword(password, user.password);

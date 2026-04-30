@@ -6,8 +6,9 @@ import { IInvite } from "@/models/types/misc/invite";
 export default async function RegisterHelper({ namePassed, emailPassed, pwPassed, invite }: { namePassed: string, emailPassed: string, pwPassed: string, invite: IInvite | null }) {
 
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL as string : '';
+    const normalizedEmail = emailPassed?.trim().toLowerCase();
 
-    if (!namePassed || !emailPassed || !pwPassed || baseUrl === '') {
+    if (!namePassed || !normalizedEmail || !pwPassed || baseUrl === '') {
  
         return {
             status: false, newUser: null
@@ -29,7 +30,7 @@ export default async function RegisterHelper({ namePassed, emailPassed, pwPassed
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ namePassed: namePassed, emailPassed: emailPassed, saltedPW: saltedPW, invite: invite })
+            body: JSON.stringify({ namePassed: namePassed, emailPassed: normalizedEmail, saltedPW: saltedPW, invite: invite })
         });
 
         if (!res || res.status !== 200) {
@@ -41,7 +42,7 @@ export default async function RegisterHelper({ namePassed, emailPassed, pwPassed
 
         const data = await res.json();
         let userToReturn = null;
-        if (!data) {
+        if (!data || data.status !== 200) {
             return { status: false, newUser: userToReturn };
         }
 
