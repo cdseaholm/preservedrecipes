@@ -15,6 +15,14 @@
   --color-lightText: var(--lightText);
   --color-linkText: var(--linkText);
   --color-golden: var(--golden);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
 }
 
 /*
@@ -49,6 +57,14 @@
 
   /* Subtle golden undertones for that sun-through-the-kitchen-window feel */
   --golden:     #D4A574;        /* Use extremely sparingly — maybe for "Pinned" stars or premium badge */
+  --primary: var(--accent);
+  --primary-foreground: var(--lightText);
+  --secondary: var(--altBack);
+  --secondary-foreground: var(--mainText);
+  --accent-foreground: var(--lightText);
+  --destructive: #9a3412;
+  --input: var(--cardBorder);
+  --ring: var(--accent);
 }
 
 .dark {
@@ -71,6 +87,14 @@
   --linkText:  #4b97eeff;
 
   --golden:     #FFB84D;
+  --primary: var(--accent);
+  --primary-foreground: #1C120C;
+  --secondary: var(--altBack);
+  --secondary-foreground: var(--mainText);
+  --accent-foreground: #1C120C;
+  --destructive: #dc2626;
+  --input: var(--cardBorder);
+  --ring: var(--accent);
 }
 
 

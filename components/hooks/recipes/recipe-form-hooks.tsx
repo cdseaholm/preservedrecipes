@@ -3,7 +3,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { useForm } from "@mantine/form";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { IRecipe } from "@/models/types/recipes/recipe";
 import { IngredientForForm } from "@/models/types/recipes/ingredient";
@@ -12,6 +12,27 @@ import { CreateRecipe, UpdateRecipe, DeleteRecipes } from "@/utils/server-action
 import { IUser } from "@/models/types/personal/user";
 import { UpdateUser } from "@/utils/server-actions/user";
 import { useUserStore } from "@/context/userStore";
+
+const getRecipeFormValues = (recipe: IRecipe | null): IRecipe => ({
+    _id: recipe?._id || '',
+    name: recipe?.name || '',
+    description: recipe?.description || '',
+    ingredients: recipe?.ingredients || [],
+    steps: recipe?.steps || [],
+    recipeType: recipe?.recipeType || '',
+    tags: recipe?.tags || [],
+    image: recipe?.image || '',
+    creatorID: recipe?.creatorID || '',
+    reviews: recipe?.reviews || [],
+    recipeFor: recipe?.recipeFor || ['personal'],
+    secret: recipe?.secret || false,
+    secretViewerIDs: recipe?.secretViewerIDs || [],
+    cookingTime: recipe?.cookingTime || 0,
+    favoriteCount: recipe?.favoriteCount || 0,
+    saveCount: recipe?.saveCount || 0,
+    createdAt: recipe?.createdAt || '',
+    updatedAt: recipe?.updatedAt || '',
+});
 
 export function useRecipeForm({ initialRecipe, userInfo }: { initialRecipe: IRecipe | null, userInfo: IUser | null }) {
 
@@ -22,27 +43,11 @@ export function useRecipeForm({ initialRecipe, userInfo }: { initialRecipe: IRec
     const [isFavorited, setIsFavorited] = useState(false);
     const pathname = usePathname();
     const setUserInfo = useUserStore(state => state.setUserInfo);
+    const initializedRecipeKeyRef = useRef<string | null>(null);
 
     const form = useForm({
         mode: 'uncontrolled',
-        initialValues: {
-            _id: initialRecipe?._id || '',
-            name: initialRecipe?.name || '',
-            description: initialRecipe?.description || '',
-            ingredients: initialRecipe?.ingredients || [],
-            steps: initialRecipe?.steps || [],
-            recipeType: initialRecipe?.recipeType || '',
-            tags: initialRecipe?.tags || [],
-            image: initialRecipe?.image || '',
-            creatorID: initialRecipe?.creatorID || '',
-            reviews: initialRecipe?.reviews || [],
-            recipeFor: initialRecipe?.recipeFor || ['personal'],
-            secret: initialRecipe?.secret || false,
-            secretViewerIDs: initialRecipe?.secretViewerIDs || [],
-            cookingTime: initialRecipe?.cookingTime || 0,
-            createdAt: initialRecipe?.createdAt || '',
-            updatedAt: initialRecipe?.updatedAt || '',
-        } as IRecipe,
+        initialValues: getRecipeFormValues(initialRecipe),
         validate: {
             name: (value) =>
                 value ? (value.length > 100 ? 'Invalid name too long' : null) : 'Name cannot be empty',
@@ -71,6 +76,8 @@ export function useRecipeForm({ initialRecipe, userInfo }: { initialRecipe: IRec
             }
         }
     });
+    const formRef = useRef(form);
+    formRef.current = form;
 
     const handleCreate = async (redirectPath = '/u/recipes') => {
         if (!userInfo) {
@@ -236,32 +243,24 @@ export function useRecipeForm({ initialRecipe, userInfo }: { initialRecipe: IRec
         }
     }
 
-    const handleInitRecipe = useCallback((reset: boolean, initialRecipe: IRecipe | null) => {
-        if (!reset && initialRecipe) {
-            form.setValues({
-                _id: initialRecipe._id || '',
-                name: initialRecipe.name || '',
-                description: initialRecipe.description || '',
-                ingredients: initialRecipe.ingredients || [],
-                steps: initialRecipe.steps || [],
-                recipeType: initialRecipe.recipeType || '',
-                tags: initialRecipe.tags || [],
-                image: initialRecipe.image || '',
-                creatorID: initialRecipe.creatorID || '',
-                reviews: initialRecipe.reviews || [],
-            });
-        } else {
-            form.reset();
-        }
-    }, [form]);
-
     useEffect(() => {
-        if (initialRecipe) {
-            handleInitRecipe(false, initialRecipe);
-        } else {
-            handleInitRecipe(true, null);
+        const recipeKey = initialRecipe
+            ? `${initialRecipe._id}:${initialRecipe.updatedAt || ''}`
+            : 'new-recipe';
+
+        if (initializedRecipeKeyRef.current === recipeKey) {
+            return;
         }
-    }, [initialRecipe?._id, initialRecipe, handleInitRecipe]);
+
+        const nextValues = getRecipeFormValues(initialRecipe);
+        const currentForm = formRef.current;
+        initializedRecipeKeyRef.current = recipeKey;
+        currentForm.setInitialValues(nextValues);
+        currentForm.setValues(nextValues);
+        currentForm.resetDirty(nextValues);
+        currentForm.resetTouched();
+        currentForm.clearErrors();
+    }, [initialRecipe?._id, initialRecipe?.updatedAt]);
 
     useEffect(() => {
         if (initialRecipe && userInfo && userInfo.favoriteRecipeIDs && userInfo.favoriteRecipeIDs.length > 0) {
