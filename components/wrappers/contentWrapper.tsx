@@ -11,7 +11,7 @@ export default function ContentWrapper({ children, containedChild, paddingNeeded
 
     const toRender = (
         <div 
-            className={`flex flex-col justify-start items-center ${widthToUse} ${heightToUse} ${paddingNeeded ? 'px-3 pb-4 pt-2 sm:px-5' : ''}`}
+            className={`flex flex-col justify-start items-center ${widthToUse} ${heightToUse} ${paddingNeeded ? 'px-3 pb-4 pt-8 sm:px-5' : ''}`}
             style={containedChild ? { minHeight: 0 } : undefined}
         >
             {children}

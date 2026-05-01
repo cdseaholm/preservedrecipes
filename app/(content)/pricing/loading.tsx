@@ -2,7 +2,7 @@ import { Box, LoadingOverlay } from "@mantine/core";
 
 export default function Loading() {
     return (
-        <Box pos={'relative'} w={'100%'} h={'100%'}>
+        <Box pos={'relative'} w={'100dvw'} h={'100dvh'}>
             <LoadingOverlay
                 visible={true}
                 zIndex={1000}

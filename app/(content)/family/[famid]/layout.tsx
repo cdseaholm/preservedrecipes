@@ -1,8 +1,10 @@
 import ContentWrapper from "@/components/wrappers/contentWrapper";
 import NavWrapper from "@/components/wrappers/navWrapper";
-import { getSessionUser, getFamilyById } from "@/lib/data/family";
+import { getFamilyById } from "@/lib/data/family";
+import { getSessionUser } from "@/lib/data/user";
 import { redirect } from "next/navigation";
 import FamilyTabs from "./components/family-tabs";
+import FamilyStackTemplate from "./components/family-stack-template";
 
 export default async function FamilyLayout({ params, children }: { params: Promise<{ famid: string }>, children: React.ReactNode }) {
     const { famid } = await params;
@@ -14,10 +16,11 @@ export default async function FamilyLayout({ params, children }: { params: Promi
 
     return (
         <NavWrapper loadingChild={null} userInfo={user}>
-            <ContentWrapper containedChild={true} paddingNeeded={true}>
-                <FamilyTabs family={family} famid={famid}>
+            <ContentWrapper containedChild={false} paddingNeeded={true}>
+                <FamilyStackTemplate user={user} family={family}>
+                    <FamilyTabs famid={famid} />
                     {children}
-                </FamilyTabs>
+                </FamilyStackTemplate>
             </ContentWrapper>
         </NavWrapper>
     )
