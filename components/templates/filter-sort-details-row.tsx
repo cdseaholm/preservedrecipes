@@ -10,7 +10,7 @@ export default function FilterAndSortDetailsRow({ filterLabel, sortLabel }: { fi
     };
 
     return (
-        <div className="flex flex-row items-end justify-start gap-4 text-mainText/80 w-full text-end h-[20px] my-1 px-2">
+        <div className="flex flex-row items-end justify-start text-mainText/80 w-full text-end h-full pt-2 px-2">
             <p className="text-mainText/80 text-sm md:text-base">
                 {filterLabel ? `Filtered: ${formatLabel(filterLabel)}` : ''}
             </p>

@@ -243,24 +243,24 @@ export function useRecipeForm({ initialRecipe, userInfo }: { initialRecipe: IRec
         }
     }
 
-    useEffect(() => {
-        const recipeKey = initialRecipe
-            ? `${initialRecipe._id}:${initialRecipe.updatedAt || ''}`
-            : 'new-recipe';
+    const recipeKey = initialRecipe
+        ? `${initialRecipe._id}:${initialRecipe.updatedAt || ''}`
+        : 'new-recipe';
 
+    useEffect(() => {
         if (initializedRecipeKeyRef.current === recipeKey) {
             return;
         }
 
-        const nextValues = getRecipeFormValues(initialRecipe);
+        const initialRecipeValues = getRecipeFormValues(initialRecipe);
         const currentForm = formRef.current;
         initializedRecipeKeyRef.current = recipeKey;
-        currentForm.setInitialValues(nextValues);
-        currentForm.setValues(nextValues);
-        currentForm.resetDirty(nextValues);
+        currentForm.setInitialValues(initialRecipeValues);
+        currentForm.setValues(initialRecipeValues);
+        currentForm.resetDirty(initialRecipeValues);
         currentForm.resetTouched();
         currentForm.clearErrors();
-    }, [initialRecipe?._id, initialRecipe?.updatedAt]);
+    }, [recipeKey, initialRecipe]);
 
     useEffect(() => {
         if (initialRecipe && userInfo && userInfo.favoriteRecipeIDs && userInfo.favoriteRecipeIDs.length > 0) {
