@@ -8,9 +8,7 @@ import "@/app/globals.css";
 import AuthWrapper from "@/components/wrappers/authwrapper";
 import StateWrapper from "@/components/wrappers/stateWrapper";
 import ToasterWrapper from "@/components/wrappers/dynamicWrappers/toasterWrapper";
-//import ColorScriptWrapper from "@/components/wrappers/dynamicWrappers/colorScriptWrapper";
 import { ColorSchemeScript, MantineProvider, mantineHtmlProps } from '@mantine/core';
-//import MantineWrapper from "@/components/wrappers/dynamicWrappers/mantineWrapper"; was trying to dynamically import mantine provider
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from 'uploadthing/server';
 import { ourFileRouter } from './api/uploadthing/core';

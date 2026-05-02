@@ -56,8 +56,7 @@ export default function FamilyDashboard({ family }: { family: IFamily }) {
     ];
 
     return (
-        <>
-
+        <Stack gap="lg" style={{ flex: 1, minHeight: 0 }} w="100%">
             <Box>
                 <Text fw={700} mb="md">Overview</Text>
                 <SimpleGrid cols={{ base: 1, xs: 2, md: 4 }} spacing="md">
@@ -90,7 +89,7 @@ export default function FamilyDashboard({ family }: { family: IFamily }) {
 
             <Divider />
 
-            <Box p="md" className="rounded-md border border-dashed border-accent/30 bg-mainBack/50">
+            <Box p="md" style={{ flex: 1 }} className="rounded-md border border-dashed border-accent/30 bg-mainBack/50">
                 <Group justify="space-between" mb="xs">
                     <Text fw={700}>Family Activity</Text>
                     <Badge variant="light" color="gray">Coming soon</Badge>
@@ -99,6 +98,6 @@ export default function FamilyDashboard({ family }: { family: IFamily }) {
                     Recent shared recipes, new members, and family updates will appear here once activity tracking is added.
                 </Text>
             </Box>
-        </>
+        </Stack>
     )
 }

@@ -1,7 +1,6 @@
 'use client'
 
 import BasicSort from "@/components/buttons/filter-and-sorts/basic-sort";
-import { Pagination, Group } from "@mantine/core";
 import { useState } from "react";
 import { BiMinus, BiPlus } from "react-icons/bi";
 import PostCard from "../post-card";
@@ -13,6 +12,7 @@ import { IUser } from "@/models/types/personal/user";
 import { ICommunity } from "@/models/types/community/community";
 import { sortValueKey } from "@/components/buttons/filter-and-sorts/community-sort";
 import { useWindowSizes } from "@/context/width-height-store";
+import ContentWrapper from "@/components/wrappers/contentWrapper";
 
 export default function InCommunityTab({ tab, posts, recipes, admins, userInfo, community, creator, members }: { tab: 'posts' | 'members' | 'community-settings' | 'user-settings', posts: IPost[], recipes: IRecipe[], admins: IUser[] | null, creator: IUser | null, userInfo: IUser | null, community: ICommunity, members: IUser[] | null }) {
     console.log('Tab: ', tab);
@@ -28,9 +28,11 @@ export default function InCommunityTab({ tab, posts, recipes, admins, userInfo, 
     ////////////////////////////////////////
 
     //const setOpenCreatePostModal = useModalStore(state => state.setOpenCreatePostModal);
-    const { width, height } = useWindowSizes();
+    const { width } = useWindowSizes();
     const widthToUse = width <= 300 ? 'w-[300px]' : 'w-full';
-    const heightToUse = height < 700 ? 'h-[500px]' : `h-[70dvh]`;
+    const itemsPerPage = 5;
+    const totalItems = tab === 'posts' ? posts.length : tab === 'members' ? (members?.length ?? 0) : 1;
+    const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
     const isMember = userInfo && community && community.communityMemberIDs ? (community.communityMemberIDs.includes(userInfo._id) || community.adminIDs.includes(userInfo._id) || community.creatorID === userInfo._id) : false;
     //
     // Keeping recipes around because may use it with posts
@@ -54,7 +56,8 @@ export default function InCommunityTab({ tab, posts, recipes, admins, userInfo, 
     }
 
     const toRender = (
-        <div className={`flex flex-col justify-start items-center ${widthToUse} ${heightToUse} bg-mainBack/30 px-3 pb-4 pt-2 sm:px-5`}>
+        <ContentWrapper containedChild={false} paddingNeeded={true}>
+        <div className={`flex flex-col justify-start items-center ${widthToUse} min-h-[74dvh] bg-mainBack/30 rounded-md`}>
 
             {/**Maybe need to take sort out for certain tabs */}
 
@@ -65,34 +68,21 @@ export default function InCommunityTab({ tab, posts, recipes, admins, userInfo, 
             </div>
             {/**Need to update number of pages later */}
             <ListWrapper
-                numberOfPages={Math.ceil(posts.length / 5)}
+                numberOfPages={totalPages}
                 isPending={false}
                 currentPage={currentPage}
+                onPageChange={setCurrentPage}
                 searchBar={null} editButtons={undefined}            >
-                <CardView data={tab === 'posts' ? posts : tab === 'members' ? members : { creator: creator, admins: admins }} filter={filter} currentPage={currentPage} currTab={tab} isMember={isMember} community={community} />
+                <CardView data={tab === 'posts' ? posts : tab === 'members' ? members : { creator: creator, admins: admins }} filter={filter} currentPage={currentPage} currTab={tab} isMember={isMember} community={community} itemsPerPage={itemsPerPage} />
             </ListWrapper>
-            {posts && posts.length > 1 ? (
-                <div className="w-full flex justify-center mt-4">
-                    <Pagination.Root total={Math.ceil(posts.length / 5)} value={currentPage} onChange={setCurrentPage}>
-                        <Group gap={5} justify='center'>
-                            <Pagination.First />
-                            <Pagination.Previous />
-                            <Pagination.Items />
-                            <Pagination.Next />
-                            <Pagination.Last />
-                        </Group>
-                    </Pagination.Root>
-                </div>
-            ) : (
-                null
-            )}
         </div>
+        </ContentWrapper>
     )
 
     return toRender;
 }
 
-const CardView = ({ data, filter, currentPage, currTab, isMember, community }: { data: IPost[] | IUser[] | { creator: IUser | null, admins: IUser[] | null } | null, filter: string, currentPage: number, currTab: 'posts' | 'members' | 'community-settings' | 'user-settings', isMember: boolean, community: ICommunity | null }) => {
+const CardView = ({ data, filter, currentPage, currTab, isMember, community, itemsPerPage }: { data: IPost[] | IUser[] | { creator: IUser | null, admins: IUser[] | null } | null, filter: string, currentPage: number, currTab: 'posts' | 'members' | 'community-settings' | 'user-settings', isMember: boolean, community: ICommunity | null, itemsPerPage: number }) => {
     if (!community || !data) {
         return null;
     } else if (currTab === 'posts') {
@@ -107,7 +97,7 @@ const CardView = ({ data, filter, currentPage, currTab, isMember, community }: {
                     } else {
                         return 0;
                     }
-                }).slice((currentPage - 1) * 5, currentPage * 5).map((post, index) => (
+                }).slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((post, index) => (
                     <PostCard key={post._id} index={index} post={post} communityId={community._id} />
                 ))
             ) : (
@@ -128,7 +118,7 @@ const CardView = ({ data, filter, currentPage, currTab, isMember, community }: {
                     } else {
                         return 0;
                     }
-                }).map((member) => (
+                }).slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((member) => (
                     <UserCard key={member._id} user={member} />
                 ))
             ) : (

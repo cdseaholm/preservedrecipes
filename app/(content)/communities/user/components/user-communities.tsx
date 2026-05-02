@@ -20,11 +20,14 @@ export default function UserCommunitiesList({ userCommunities }: { userCommuniti
 
     const [edit, setEdit] = useState(false);
     const [communitySearch, setCommunitySearch] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const communitiesPerPage = 10;
     
     // ✅ Use Set of community IDs instead of boolean array
     const [checkedCommunities, setCheckedCommunities] = useState<Set<string>>(new Set());
 
     const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
+        setCurrentPage(1);
         setCommunitySearch(e.currentTarget.value);
     }
 
@@ -85,6 +88,8 @@ export default function UserCommunitiesList({ userCommunities }: { userCommuniti
     const filteredCommunities = userCommunities.filter((community) =>
         community.name.toLowerCase().includes(communitySearch.toLowerCase().trim())
     );
+    const totalPages = Math.max(1, Math.ceil(filteredCommunities.length / communitiesPerPage));
+    const visibleCommunities = filteredCommunities.slice((currentPage - 1) * communitiesPerPage, currentPage * communitiesPerPage);
 
     return (
         <ContentWrapper containedChild={true} paddingNeeded={true}>
@@ -126,11 +131,11 @@ export default function UserCommunitiesList({ userCommunities }: { userCommuniti
                     handleSearch={handleSearch}
                     searchString={communitySearch || 'Search your communities'}
                     index={3} leftSection={null} />}
-                numberOfPages={1}
+                numberOfPages={totalPages}
                 isPending={false}
-                currentPage={1} editButtons={undefined}            >
-                {filteredCommunities.length > 0 ? (
-                    filteredCommunities.map((community, index) => (
+                currentPage={currentPage} onPageChange={setCurrentPage} editButtons={undefined}            >
+                {visibleCommunities.length > 0 ? (
+                    visibleCommunities.map((community, index) => (
                         <InSearchItemButton 
                             key={community._id}
                             item={community.name}

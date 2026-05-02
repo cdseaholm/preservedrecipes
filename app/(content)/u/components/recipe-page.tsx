@@ -19,6 +19,7 @@ import dynamic from "next/dynamic";
 import FilterAndSortDetailsRow from "@/components/templates/filter-sort-details-row";
 import CardTemplate from "@/components/templates/card-template";
 import { Checkbox } from "@mantine/core";
+import { useState } from "react";
 
 const FilterModal = dynamic(() => import("@/components/modals/filter/filter-modal"), { ssr: false });
 const SortModal = dynamic(() => import("@/components/modals/sort/sort-modal"), { ssr: false });
@@ -74,6 +75,10 @@ export default function RecipePage({
     const { handleOpenRecipeModal } = MenuPanelHooks();
     const buttonClass = `flex flex-row items-start hover:bg-accent/20 rounded-md space-x-2 w-full cursor-pointer py-4`;
     const textClass = `text-base md:text-lg lg:text-xl font-medium`;
+    const recipesPerPage = 8;
+    const [currentPage, setCurrentPage] = useState(1);
+    const totalPages = Math.max(1, Math.ceil(filteredAndSorted.length / recipesPerPage));
+    const visibleRecipes = filteredAndSorted.slice((currentPage - 1) * recipesPerPage, currentPage * recipesPerPage);
 
     return (
         <>
@@ -87,12 +92,16 @@ export default function RecipePage({
                         sortLabel={sort}
                     />
                     <ListWrapper
-                        numberOfPages={1}
+                        numberOfPages={totalPages}
                         isPending={false}
-                        currentPage={1}
+                        currentPage={currentPage}
+                        onPageChange={setCurrentPage}
                         searchBar={
                             <SearchBarAndMenu
-                                handleSearch={(e) => setRecipeSearch(e.currentTarget.value)}
+                                handleSearch={(e) => {
+                                    setCurrentPage(1);
+                                    setRecipeSearch(e.currentTarget.value);
+                                }}
                                 searchString={recipeSearch || 'Search your recipes'}
                                 index={2}
                                 leftSection={
@@ -131,8 +140,8 @@ export default function RecipePage({
                             </div>
                         )}
                     >
-                        {filteredAndSorted.length > 0 ? (
-                            filteredAndSorted.map((recipe, index) => (
+                        {visibleRecipes.length > 0 ? (
+                            visibleRecipes.map((recipe, index) => (
                                 <InSearchItemButton
                                     key={recipe._id}
                                     item={recipe.name}

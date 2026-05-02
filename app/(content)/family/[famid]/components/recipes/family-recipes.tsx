@@ -14,6 +14,7 @@ import FilterAndSortDetailsRow from "@/components/templates/filter-sort-details-
 import ChooseRecipeModal from "@/components/modals/recipe/choose-recipe"
 import FamilyRecipesSearchBar from "./family-recipes-search-bar"
 import { FamilyRecipeInSearchItems, FamilyRecipesCheckboxes } from "./family-recipes-extra-comps"
+import { useState } from "react"
 
 export default function FamilyRecipes({
     userInfo,
@@ -58,6 +59,10 @@ export default function FamilyRecipes({
     )?.permissionStatus === 'Admin';
 
     const { handleOpenRecipeModal } = MenuPanelHooks();
+    const recipesPerPage = 8;
+    const [currentPage, setCurrentPage] = useState(1);
+    const totalPages = Math.max(1, Math.ceil(filteredAndSorted.length / recipesPerPage));
+    const visibleRecipes = filteredAndSorted.slice((currentPage - 1) * recipesPerPage, currentPage * recipesPerPage);
 
     return (
         <>
@@ -66,9 +71,10 @@ export default function FamilyRecipes({
                 sortLabel={sort}
             />
             <ListWrapper
-                numberOfPages={1}
+                numberOfPages={totalPages}
                 isPending={false}
-                currentPage={1}
+                currentPage={currentPage}
+                onPageChange={setCurrentPage}
                 searchBar={
                     <FamilyRecipesSearchBar
                         recipeSearch={recipeSearch}
@@ -80,7 +86,10 @@ export default function FamilyRecipes({
                         handleOpenRecipeModal={handleOpenRecipeModal}
                         userInfo={userInfo}
                         adminPermission={adminPermission}
-                        setRecipeSearch={setRecipeSearch}
+                        setRecipeSearch={(search) => {
+                            setCurrentPage(1);
+                            setRecipeSearch(search);
+                        }}
                     />
                 }
                 editButtons={edit && (
@@ -92,8 +101,8 @@ export default function FamilyRecipes({
                     />
                 )}
             >
-                {filteredAndSorted.length > 0 ? (
-                    filteredAndSorted.map((recipe, index) => (
+                {visibleRecipes.length > 0 ? (
+                    visibleRecipes.map((recipe, index) => (
                         <FamilyRecipeInSearchItems
                             key={recipe._id}
                             recipe={recipe}
