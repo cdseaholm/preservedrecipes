@@ -94,7 +94,7 @@ export default function MainFooter() {
     });
 
     return (
-        <footer className="bg-[#694b33ff]/20 backdrop-blur-sm border-t border-accent w-full py-12 min-h-[30vh] flex flex-col justify-start items-start md:items-center h-content mt-12">
+        <footer className="bg-[#694b33ff]/20 backdrop-blur-sm border-t border-accent w-full py-12 min-h-[30vh] flex flex-col justify-start items-start md:items-center h-content mt-8">
             <div className="flex flex-col justify-start items-start space-y-12 sm:flex-row sm:justify-start sm:items-start sm:space-x-8 md:space-x-12 w-full h-content sm:px-12">
                 {sectionsMapped}
             </div>

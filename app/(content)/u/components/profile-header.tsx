@@ -43,7 +43,9 @@ export default function ProfileHeader({ user, familyData, completeness }: Profil
     };
 
     return (
-        <Card shadow="md" padding="xl" radius="md" withBorder>
+        <Card shadow="md" padding="xl" radius="md" withBorder style={{
+            minHeight: '28dvh'
+        }}>
             <Stack gap="md">
                 {/* Top Section */}
                 <Group justify="space-between" wrap="nowrap">

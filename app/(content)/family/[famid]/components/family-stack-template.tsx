@@ -2,7 +2,7 @@
 
 import { IFamily } from "@/models/types/family/family"
 import { IUser } from "@/models/types/personal/user"
-import { Container, Card, Stack, Group, ThemeIcon, Badge, Title, rem, Text } from "@mantine/core"
+import { Card, Stack, Group, ThemeIcon, Badge, Title, rem, Text } from "@mantine/core"
 import { IconUsers } from "@tabler/icons-react"
 
 export default function FamilyStackTemplate({ children, user, family }: { children: React.ReactNode, user: IUser, family: IFamily }) {
@@ -12,8 +12,8 @@ export default function FamilyStackTemplate({ children, user, family }: { childr
     const currentMember = members.find(member => member.familyMemberID === user._id || member.familyMemberEmail === user.email);
 
     return (
-        <Container size="xl" px="sm" style={{ height: '100%', display: 'flex', flexDirection: 'column' }} w={"100%"}>
-            <Card shadow="md" padding="xl" radius="md" withBorder w={'100%'}>
+        <div className="flex flex-col justify-start items-center px-2 w-full min-h-[75dvh]">
+            <Card shadow="md" padding="xl" radius="md" withBorder w={'100%'} className="flex flex-1 flex-col">
                 <Stack gap="lg" style={{ flex: 1, minHeight: 0 }} w={'100%'}>
                     <Group justify="space-between" align="flex-start" gap="md">
                         <Stack gap={6}>
@@ -46,9 +46,11 @@ export default function FamilyStackTemplate({ children, user, family }: { childr
                             )}
                         </Group>
                     </Group>
-                    {children}
+                    <Stack gap="lg" style={{ flex: 1, minHeight: 0 }} w={'100%'}>
+                        {children}
+                    </Stack>
                 </Stack>
             </Card>
-        </Container>
+        </div>
     )
 }

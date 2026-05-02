@@ -21,8 +21,7 @@ import {
     Stack,
     Container,
     Box,
-    rem,
-    ScrollArea
+    rem
 } from "@mantine/core";
 import { 
     IconChartLine, 
@@ -91,7 +90,7 @@ export default function ProfilePage({
         <NavWrapper userInfo={user} loadingChild={null}>
             <ContentWrapper containedChild={true} paddingNeeded={true}>
                 <Container size="xl" px="sm" style={{ height: '100%', display: 'flex', flexDirection: 'column' }} w={"100%"}>
-                    <Stack gap="lg" style={{ flex: 1, minHeight: 0 }}>
+                    <Stack gap="lg" style={{ flex: 1, minHeight: '75dvh' }}>
                         {/* Profile Header */}
                         <ProfileHeader
                             user={user}
@@ -107,7 +106,7 @@ export default function ProfilePage({
                             withBorder 
                             style={{ 
                                 flex: 1,
-                                minHeight: 0,
+                                minHeight: '0',
                                 display: 'flex',
                                 flexDirection: 'column'
                             }}
@@ -167,58 +166,41 @@ export default function ProfilePage({
                                     </Tabs.Tab>
                                 </Tabs.List>
 
-                                <Box 
-                                    pt="xl" 
-                                    style={{ 
-                                        flex: 1,
-                                        minHeight: 0,
-                                        position: 'relative'
-                                    }}
-                                >
-                                    <Tabs.Panel value="activity" style={{ height: '100%' }}>
-                                        <ScrollArea h="100%" offsetScrollbars>
-                                            <RecentActivity 
-                                                recentRecipes={recentRecipes} 
-                                                reviews={reviews} 
-                                            />
-                                        </ScrollArea>
+                                <Box pt="xl" style={{ flex: 1, minHeight: 0, position: 'relative' }}>
+                                    <Tabs.Panel value="activity">
+                                        <RecentActivity 
+                                            recentRecipes={recentRecipes} 
+                                            reviews={reviews} 
+                                        />
                                     </Tabs.Panel>
 
-                                    <Tabs.Panel value="stats" style={{ height: '100%' }}>
-                                        <ScrollArea h="100%" offsetScrollbars>
-                                            <ProfileStats
-                                                recipeCount={recipeCount}
-                                                communityCount={communityCount}
-                                                favoriteCount={favoriteCount}
-                                                ratingsGiven={ratingsGiven}
-                                                commentsMade={commentsMade}
-                                                timeBeingMember={timeBeingMember}
-                                            />
-                                        </ScrollArea>
+                                    <Tabs.Panel value="stats">
+                                        <ProfileStats
+                                            recipeCount={recipeCount}
+                                            communityCount={communityCount}
+                                            favoriteCount={favoriteCount}
+                                            ratingsGiven={ratingsGiven}
+                                            commentsMade={commentsMade}
+                                            timeBeingMember={timeBeingMember}
+                                        />
                                     </Tabs.Panel>
 
-                                    <Tabs.Panel value="history" style={{ height: '100%' }}>
-                                        <ScrollArea h="100%" offsetScrollbars>
-                                            <HistoryTabContent
-                                                recipesCreated={recentRecipes}
-                                                communitiesCreated={communitiesCreated}
-                                                communitiesJoined={communitiesJoined}
-                                                inquiriesMade={inquiries}
-                                                reviews={reviews}
-                                            />
-                                        </ScrollArea>
+                                    <Tabs.Panel value="history">
+                                        <HistoryTabContent
+                                            recipesCreated={recentRecipes}
+                                            communitiesCreated={communitiesCreated}
+                                            communitiesJoined={communitiesJoined}
+                                            inquiriesMade={inquiries}
+                                            reviews={reviews}
+                                        />
                                     </Tabs.Panel>
 
-                                    <Tabs.Panel value="inquiries" style={{ height: '100%' }}>
-                                        <ScrollArea h="100%" offsetScrollbars>
-                                            <InquiryTabContent />
-                                        </ScrollArea>
+                                    <Tabs.Panel value="inquiries">
+                                        <InquiryTabContent />
                                     </Tabs.Panel>
 
-                                    <Tabs.Panel value="settings" style={{ height: '100%' }}>
-                                        <ScrollArea h="100%" offsetScrollbars>
-                                            <SettingsTab />
-                                        </ScrollArea>
+                                    <Tabs.Panel value="settings">
+                                        <SettingsTab />
                                     </Tabs.Panel>
                                 </Box>
                             </Tabs>

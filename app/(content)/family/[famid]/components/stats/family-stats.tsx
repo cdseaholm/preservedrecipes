@@ -9,7 +9,7 @@ export default function FamilyStats({ family }: { family: IFamily }) {
     const members = family.familyMembers?.length ?? 0;
 
     return (
-        <div className="w-full grid grid-cols-2 gap-4 flex flex-row justify-center items-center my-4">
+        <div className="w-full flex-1 min-h-[40dvh] grid grid-cols-1 sm:grid-cols-2 gap-4 justify-center items-stretch my-4">
             <div className="bg-secondaryBack p-4 rounded-lg shadow-md flex flex-col justify-center items-center">
                 <h2 className="text-xl font-semibold">Recipes</h2>
                 <p className="text-2xl">{recipeCount}</p>

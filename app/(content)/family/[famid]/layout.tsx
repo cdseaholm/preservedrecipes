@@ -1,17 +1,19 @@
 import ContentWrapper from "@/components/wrappers/contentWrapper";
 import NavWrapper from "@/components/wrappers/navWrapper";
-import { getFamilyById } from "@/lib/data/family";
+import { getValidatedFamilyAccess } from "@/lib/data/family";
 import { getSessionUser } from "@/lib/data/user";
 import { redirect } from "next/navigation";
 import FamilyTabs from "./components/family-tabs";
 import FamilyStackTemplate from "./components/family-stack-template";
 
 export default async function FamilyLayout({ params, children }: { params: Promise<{ famid: string }>, children: React.ReactNode }) {
+
     const { famid } = await params;
+    const { family } = await getValidatedFamilyAccess(famid);
     const user = await getSessionUser();
+
     if (!user) redirect("/");
 
-    const family = await getFamilyById(famid);
     if (!family || family._id !== user.userFamilyID) redirect("/");
 
     return (

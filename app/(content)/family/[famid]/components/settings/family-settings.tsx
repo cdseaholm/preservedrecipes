@@ -45,7 +45,7 @@ export default function FamilySettings({ userFamAdminPrivs, family, userInfo }: 
     }
 
     const buttonItems =
-        <div className="flex flex-col justify-start items-center space-y-12 pt-12 w-full">
+        <div className="flex flex-col justify-start items-center space-y-12 pt-12 w-full flex-1 min-h-[40dvh]">
             <h1 className="text-xl md:text-2xl underline">Account Settings</h1>
 
             {userFamAdminPrivs && <ActionButton buttonTitle="Change Family name" action={() => submitChange({ changeFamNameForm: changeFamNameForm, userFamAdminPrivs: userFamAdminPrivs, family: family })} width="w-4/5 sm:w-3/5 md:w-1/2" />}

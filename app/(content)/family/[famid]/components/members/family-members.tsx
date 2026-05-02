@@ -16,6 +16,7 @@ import Link from "next/link"
 import { BiCheck, BiPencil, BiPlus, BiChevronRight } from "react-icons/bi"
 import { FaRegTrashAlt } from "react-icons/fa"
 import ListWrapper from "@/components/wrappers/list-wrapper"
+import { useState } from "react"
 
 export default function FamilyMembers({ userInfo, family }: { userInfo: IUser, family: IFamily }) {
 
@@ -28,6 +29,13 @@ export default function FamilyMembers({ userInfo, family }: { userInfo: IUser, f
     const familyID = userInfo ? userInfo.userFamilyID : '';
     const setOpenAddFamMemsModal = useModalStore(state => state.setOpenAddFamMemsModal);
     const adminPermission = userInfo && family ? family.familyMembers.find((mem) => mem.familyMemberEmail === userInfo.email)?.permissionStatus === 'Admin' : false;
+    const membersPerPage = 10;
+    const [currentPage, setCurrentPage] = useState(1);
+    const filteredMembers = members
+        .map((member, originalIndex) => ({ member, originalIndex }))
+        .filter(({ member }) => member.familyMemberName === '' ? member.familyMemberEmail.toLowerCase().includes(familySearch.toLowerCase().trim()) : member.familyMemberName.toLowerCase().includes(familySearch.toLowerCase().trim()));
+    const totalPages = Math.max(1, Math.ceil(filteredMembers.length / membersPerPage));
+    const visibleMembers = filteredMembers.slice((currentPage - 1) * membersPerPage, currentPage * membersPerPage);
 
     const handleCreatePass = () => {
         setOpenAddFamMemsModal(true)
@@ -52,8 +60,11 @@ export default function FamilyMembers({ userInfo, family }: { userInfo: IUser, f
                 rightLabel="Family Member Actions"
             />
 
-            <ListWrapper searchBar={<SearchBar handleSearch={handleFamilyMemberSearch} searchString={familySearch === '' ? 'Search your Family Members' : familySearch} index={1} leftSection={null} />}
-                currentPage={1} isPending={false} numberOfPages={1} editButtons={undefined}            >
+            <ListWrapper searchBar={<SearchBar handleSearch={(event) => {
+                setCurrentPage(1);
+                handleFamilyMemberSearch(event);
+            }} searchString={familySearch === '' ? 'Search your Family Members' : familySearch} index={1} leftSection={null} />}
+                currentPage={currentPage} isPending={false} numberOfPages={totalPages} onPageChange={setCurrentPage} editButtons={undefined}            >
                 <div className={`flex flex-row w-[100%] items-center justify-start space-x-2 ${edit ? 'pl-3' : 'px-4'} text-sm lg:text-md p-2 text-start border-b border-accent/30`}>
                     {edit ? (<Checkbox checked={allCheck} onChange={handleCheckAllFam} style={{ cursor: 'pointer' }} className={`cursor-pointer w-content`} aria-label="Edit checkbox" />) : (null)}
                     <p className={`w-2/5 font-semibold text-base`}>Name:</p>
@@ -62,12 +73,12 @@ export default function FamilyMembers({ userInfo, family }: { userInfo: IUser, f
                     {edit ? null : <BiChevronRight height={'auto'} width={'auto'} className="h-fit w-fit text-transparent" size={16} />}
                 </div>
                 {
-                    members.length > 0 ? (
-                        members.filter((member) => member.familyMemberName === '' ? member.familyMemberEmail : member.familyMemberName.toLowerCase().includes(familySearch.toLowerCase().trim())).map((item, index) => (
-                            <div key={index} className={`flex flex-row w-[100%] items-center justify-start ${edit ? 'pl-3' : 'px-4'} text-sm lg:text-base hover:bg-gray-200 hover:text-highlight p-2 text-start border border-accent/30 rounded-md mt-1 cursor-pointer`}>
+                    visibleMembers.length > 0 ? (
+                        visibleMembers.map(({ member: item, originalIndex }, index) => (
+                            <div key={originalIndex} className={`flex flex-row w-[100%] items-center justify-start ${edit ? 'pl-3' : 'px-4'} text-sm lg:text-base hover:bg-gray-200 hover:text-highlight p-2 text-start border border-accent/30 rounded-md mt-1 cursor-pointer`}>
                                 {edit ? (
                                     <div className={`flex flex-row w-full h-content text-ellipsis text-start justify-start space-x-2 cursor-pointer`}>
-                                        <Checkbox checked={famChecked[index]} className="cursor-pointer w-content" aria-label="Edit checkbox" onClick={() => handleCheckedFam(index)} />
+                                        <Checkbox checked={famChecked[originalIndex]} className="cursor-pointer w-content" aria-label="Edit checkbox" onClick={() => handleCheckedFam(originalIndex)} />
                                         <ul className={`w-2/5`}>{edit ? null : `${index + 1}. `}{item.familyMemberName === '' ? 'No name' : item.familyMemberName}</ul>
                                         <ul className={`w-2/5`}>{item.familyMemberEmail === '' ? 'No email' : item.familyMemberEmail}</ul>
                                         <ul className={`w-1/5`}>{item.permissionStatus ? item.permissionStatus : 'Guest'}</ul>
