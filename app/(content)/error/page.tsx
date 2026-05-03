@@ -1,27 +1,21 @@
-import { getServerSession } from "next-auth/next";
 import ErrorPage from "./components/err-page";
-import { authOptions } from "@/lib/auth/auth-options";
 import NavWrapper from "@/components/wrappers/navWrapper";
-import connectDB from "@/lib/mongodb";
-import { IUser } from "@/models/types/personal/user";
-import User from "@/models/user";
-import { serializeDoc } from "@/utils/data/seralize";
+import { getSessionUser } from "@/lib/data/user";
+import { Metadata } from "next";
+import { createPageMetadata } from "@/lib/metadata";
+
+export const metadata: Metadata = createPageMetadata({
+    title: "Something Went Wrong",
+    description: "A Preserved Recipes error page for recovering from an issue and returning to the app.",
+    robots: { index: false, follow: false },
+});
 
 export default async function Page() {
 
-    const session = await getServerSession(authOptions);
-    let userInfo: IUser | null = null;
-
-    if (session && session.user && session.user.email) {
-
-        await connectDB();
-        const userDoc = await User.findOne({ email: session.user.email }).lean();
-        userInfo = serializeDoc<IUser>(userDoc);
-
-    }
+    const userInfo = await getSessionUser();
 
     return (
-        <NavWrapper loadingChild={null} userInfo={userInfo}>
+        <NavWrapper userInfo={userInfo}>
             <ErrorPage />
         </NavWrapper>
     )

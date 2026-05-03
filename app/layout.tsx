@@ -12,24 +12,22 @@ import { ColorSchemeScript, MantineProvider, mantineHtmlProps } from '@mantine/c
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from 'uploadthing/server';
 import { ourFileRouter } from './api/uploadthing/core';
+import { defaultSiteMetadata } from '@/lib/metadata';
 
 //const inter = Inter({ subsets: ["latin"] });
 //<html lang="en" className={inter.className} suppressHydrationWarning>
+
+export const metadata = defaultSiteMetadata;
 
 export default function RootLayout({
   children
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   return (
     <html lang="en" {...mantineHtmlProps}>
       <head>
         <ColorSchemeScript />
-        <title>Preserved Recipes</title>
-        <meta name="description" content="Preserved Recipes - Share and Discover Time-Honored Recipes" />
-        {/**Will need to change favicon in public/images */}
-        <link rel="icon" href="/images/favicon.png" type="image/png"/>
       </head>
       <body className="overflow-hidden">
         <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />

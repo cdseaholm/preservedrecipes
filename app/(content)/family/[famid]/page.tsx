@@ -1,14 +1,23 @@
-import { redirect } from "next/navigation";
 import FamilyDashboard from "./components/dashboard/dashboard";
-import { getFamilyById } from "@/lib/data/family";
-import { toast } from "sonner";
+import { getValidatedFamilyAccess } from "@/lib/data/family";
+import { Metadata } from "next";
+import { createPageMetadata } from "@/lib/metadata";
 
-export default async function Page({ params }: { params: Promise<{ famid: string }> }) {
+type FamilyPageParams = { params: Promise<{ famid: string }> };
+
+export async function generateMetadata({ params }: FamilyPageParams): Promise<Metadata> {
     const { famid } = await params;
-    const family = await getFamilyById(famid);
-    if (!family) {
-        toast.error('Family not found. Please join a family or create one first.')
-        redirect('/')
-    }
+    const { family } = await getValidatedFamilyAccess(famid);
+
+    return createPageMetadata({
+        title: `${family.name} Dashboard`,
+        description: `View the ${family.name} family recipe dashboard, including family activity, recipes, members, and shared history.`,
+        robots: { index: false, follow: true },
+    });
+}
+
+export default async function Page({ params }: FamilyPageParams) {
+    const { famid } = await params;
+    const { family } = await getValidatedFamilyAccess(famid);
     return <FamilyDashboard family={family} />
 }

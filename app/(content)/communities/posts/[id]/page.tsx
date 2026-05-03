@@ -1,37 +1,51 @@
 
 import { redirect } from 'next/navigation';
-import { authOptions } from "@/lib/auth/auth-options";
-import { getServerSession } from 'next-auth';
 import connectDB from '@/lib/mongodb';
-import { IUser } from '@/models/types/personal/user';
-import User from '@/models/user';
 import { serializeDoc } from '@/utils/data/seralize';
 import { IPost } from '@/models/types/misc/post';
 import Post from '@/models/post';
 import PostView from '../components/post-view';
+import { Metadata } from 'next';
+import { getSessionUser } from '@/lib/data/user';
+import { createPageMetadata } from '@/lib/metadata';
 
-export default async function Page({ params }: { params: Promise<{ post_id: string }> }) {
+type CommunityPostPageParams = { params: Promise<{ id: string }> };
 
-    const session = await getServerSession(authOptions);
+export async function generateMetadata({ params }: CommunityPostPageParams): Promise<Metadata> {
+    const { id } = await params;
 
-    const { post_id } = await params;
+    try {
+        await connectDB();
+        const postDoc = await Post.findById(id).select('name content').lean();
+        const post = postDoc ? serializeDoc<IPost>(postDoc) : null;
 
-    if (!post_id) {
+        return createPageMetadata({
+            title: post?.name || "Community Post",
+            description: post?.content?.join(" ").slice(0, 155) || "Read this Preserved Recipes community post and its related recipe conversation.",
+        });
+    } catch {
+        return createPageMetadata({
+            title: "Community Post",
+            description: "Read this Preserved Recipes community post and its related recipe conversation.",
+        });
+    }
+}
+
+export default async function Page({ params }: CommunityPostPageParams) {
+
+    const { id } = await params;
+
+    if (!id) {
         redirect("/communities");
     }
 
-    let userInfo: IUser | null = null;
+    const userInfo = await getSessionUser();
 
     try {
 
         await connectDB();
 
-        if (session && session.user && session.user.email) {
-            const userDoc = await User.findOne({ email: session.user.email }).lean();
-            userInfo = serializeDoc<IUser>(userDoc);
-        }
-
-        const postDoc = await Post.findById(post_id).lean() as IPost | null;
+        const postDoc = await Post.findById(id).lean() as IPost | null;
 
         if (!postDoc) {
             redirect("/communities");

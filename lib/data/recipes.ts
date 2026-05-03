@@ -8,7 +8,13 @@ import { cache } from "react";
 
 export const getRecipesByIds = cache(async (ids: string[]): Promise<IRecipe[]> => {
     if (!ids.length) return [];
-    const docs = await Recipe.find({ _id: { $in: ids.map(id => new ObjectId(id)) } }).lean();
+    const objectIds = Array.from(new Set(ids))
+        .filter(id => ObjectId.isValid(id))
+        .map(id => new ObjectId(id));
+
+    if (!objectIds.length) return [];
+
+    const docs = await Recipe.find({ _id: { $in: objectIds } }).lean();
     return docs.map(doc => serializeDoc<IRecipe>(doc));
 })
 

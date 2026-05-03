@@ -1,6 +1,4 @@
 import { redirect } from 'next/navigation';
-import { authOptions } from "@/lib/auth/auth-options";
-import { getServerSession } from 'next-auth';
 import SpecificCommunityPage from './components/specific-community-page';
 import connectDB from '@/lib/mongodb';
 import { IUser } from '@/models/types/personal/user';
@@ -13,12 +11,40 @@ import Post from '@/models/post';
 import Recipe from '@/models/recipe';
 import { IRecipe } from '@/models/types/recipes/recipe';
 import { isValidObjectId } from 'mongoose';
+import { Metadata } from 'next';
+import { getSessionUser } from '@/lib/data/user';
+import { createPageMetadata } from '@/lib/metadata';
 
-export default async function Page({ params }: { params: Promise<{ id: string }> }) {
+type CommunityPageParams = { params: Promise<{ id: string }> };
 
-    const session = await getServerSession(authOptions);
+export async function generateMetadata({ params }: CommunityPageParams): Promise<Metadata> {
+    const { id } = await params;
 
-    if (!session || !session.user?.email) {
+    try {
+        await connectDB();
+        const communityDoc = isValidObjectId(id)
+            ? await Community.findById(id).select('name description privacyLevel').lean()
+            : null;
+        const community = communityDoc ? serializeDoc<ICommunity>(communityDoc) : null;
+
+        return createPageMetadata({
+            title: community?.name || "Community",
+            description: community?.description || "View this Preserved Recipes community, including its recipes, posts, members, and shared cooking activity.",
+            robots: community?.privacyLevel === 'public' ? undefined : { index: false, follow: true },
+        });
+    } catch {
+        return createPageMetadata({
+            title: "Community",
+            description: "View a Preserved Recipes community and its shared recipes, posts, members, and cooking activity.",
+        });
+    }
+}
+
+export default async function Page({ params }: CommunityPageParams) {
+
+    const userInfo = await getSessionUser();
+
+    if (!userInfo) {
         redirect("/")
     }
 
@@ -28,16 +54,9 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         redirect("/");
     }
 
-    let userInfo: IUser | null = null;
-
     try {
 
         await connectDB();
-
-        if (session && session.user && session.user.email) {
-            const userDoc = await User.findOne({ email: session.user.email }).lean();
-            userInfo = serializeDoc<IUser>(userDoc);
-        }
 
         const communityDoc = await Community.findById(id).lean() as ICommunity | null;
 
@@ -53,23 +72,32 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
             redirect("/");
         }
 
-        const creatorDoc = community.creatorID && isValidObjectId(community.creatorID)
-            ? await User.findById(community.creatorID).lean()
-            : null;
-
         const validAdminIDs = community.adminIDs.filter(id => id && isValidObjectId(id));
-        const adminsDocs = validAdminIDs.length > 0
-            ? await User.find({ _id: { $in: validAdminIDs } }).lean()
-            : [];
-        const userRecipeDocs = await Recipe.find({ creatorID: userInfo?._id }).lean() as IRecipe[] | [];   
-        const communityMembers = await User.find({ _id: { $in: community.communityMemberIDs.filter(id => id && isValidObjectId(id)) } }).lean() as IUser[] | [];
-
-        const postsDocs = await Post.find({ relatedToID: community._id }).lean() as IPost[] | [];
-
+        const validMemberIDs = community.communityMemberIDs.filter(id => id && isValidObjectId(id));
         const validRecipeIDs = community.recipeIDs.filter(id => id && isValidObjectId(id));
-        const recipeDocs = validRecipeIDs.length > 0
-            ? await Recipe.find({ _id: { $in: validRecipeIDs } }).lean()
-            : [];
+        const [
+            creatorDoc,
+            adminsDocs,
+            userRecipeDocs,
+            communityMembers,
+            postsDocs,
+            recipeDocs,
+        ] = await Promise.all([
+            community.creatorID && isValidObjectId(community.creatorID)
+                ? User.findById(community.creatorID).lean()
+                : null,
+            validAdminIDs.length > 0
+                ? User.find({ _id: { $in: validAdminIDs } }).lean()
+                : [],
+            Recipe.find({ creatorID: userInfo._id }).lean(),
+            validMemberIDs.length > 0
+                ? User.find({ _id: { $in: validMemberIDs } }).lean()
+                : [],
+            Post.find({ relatedToID: community._id }).lean(),
+            validRecipeIDs.length > 0
+                ? Recipe.find({ _id: { $in: validRecipeIDs } }).lean()
+                : [],
+        ]);
 
         const creator = creatorDoc ? serializeDoc<IUser>(creatorDoc) : null;
         const admins = adminsDocs ? adminsDocs.map(serializeDoc<IUser>) : [];

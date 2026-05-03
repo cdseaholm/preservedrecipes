@@ -12,8 +12,25 @@ import { IUserView } from '@/models/types/family/member-view';
 import Review from '@/models/review';
 import { IReview } from '@/models/types/misc/review';
 import { getValidatedFamilyAccess } from '@/lib/data/family';
+import { Metadata } from 'next';
+import { createPageMetadata } from '@/lib/metadata';
 
-export default async function Page({ params }: { params: Promise<{ famid: string; id: string }> }) {
+type FamilyMemberPageParams = { params: Promise<{ famid: string; id: string }> };
+
+export async function generateMetadata({ params }: FamilyMemberPageParams): Promise<Metadata> {
+    const { famid, id } = await params;
+    const { family } = await getValidatedFamilyAccess(famid);
+    const memberFound = family.familyMembers.find(m => m.familyMemberID === id);
+    const memberName = memberFound?.familyMemberName || "Family Member";
+
+    return createPageMetadata({
+        title: `${memberName} - ${family.name}`,
+        description: `View ${memberName}'s shared family member profile, public recipes, reviews, and communities in ${family.name}.`,
+        robots: { index: false, follow: true },
+    });
+}
+
+export default async function Page({ params }: FamilyMemberPageParams) {
 
     const { famid, id } = await params;
     const { family } = await getValidatedFamilyAccess(famid);
@@ -37,24 +54,18 @@ export default async function Page({ params }: { params: Promise<{ famid: string
 
         const member = serializeDoc<IUser>(userDoc);
 
-        const [publicCommunities, publicRecipes] = await Promise.all([
-            Promise.all(
-                member.communityIDs.map(async (commID) => {
-                    const commData = await Community.findById(commID).lean();
-                    return commData && commData.privacyLevel === 'public' ? serializeDoc<ICommunity>(commData) : null;
-                })
-            ).then(results => results.filter(Boolean) as ICommunity[]),
-
-            Promise.all(
-                member.recipeIDs.map(async (recipeID) => {
-                    const recipeData = await Recipe.findById(recipeID).lean();
-                    return recipeData && recipeData.secret === false ? serializeDoc<IRecipe>(recipeData) : null;
-                })
-            ).then(results => results.filter(Boolean) as IRecipe[])
+        const [publicCommunityDocs, publicRecipeDocs, reviewsDoc] = await Promise.all([
+            member.communityIDs.length > 0
+                ? Community.find({ _id: { $in: member.communityIDs }, privacyLevel: 'public' }).lean()
+                : [],
+            member.recipeIDs.length > 0
+                ? Recipe.find({ _id: { $in: member.recipeIDs }, secret: false }).lean()
+                : [],
+            Review.find({ authorId: member._id }).lean(),
         ]);
 
-        const reviewsDoc = await Review.find({ authorId: member._id }).lean();
-
+        const publicCommunities = publicCommunityDocs.map(doc => serializeDoc<ICommunity>(doc));
+        const publicRecipes = publicRecipeDocs.map(doc => serializeDoc<IRecipe>(doc));
         const reviews = reviewsDoc.map(doc => serializeDoc<IReview>(doc));
 
         const memberToView: IUserView = {

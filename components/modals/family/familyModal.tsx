@@ -10,9 +10,11 @@ import FamilyForm, { FamilyFormType } from "@/components/forms/family/familyForm
 import { useModalStore } from "@/context/modalStore";
 import { IFamily } from "@/models/types/family/family";
 import { errorType } from "@/models/types/misc/error";
-import { AttemptCreateFamily } from "@/utils/apihelpers/create/createFamily";
 import LoadingOverlayComponent from "@/components/misc/loading/loading-overlay";
 import { useWindowSizes } from "@/context/width-height-store";
+import { useFamilyStore } from "@/context/familyStore";
+import { useUserStore } from "@/context/userStore";
+import { CreateFamily } from "@/utils/server-actions/family/create";
 
 export default function ParentFamilyModal({ session, handleUpdate, handleCloseCreateFamily }: { session: Session | null, handleUpdate: () => Promise<void>, handleCloseCreateFamily: () => void }) {
 
@@ -22,6 +24,9 @@ export default function ParentFamilyModal({ session, handleUpdate, handleCloseCr
     const [childErrors, _setChildErrors] = useState<errorType[]>([] as errorType[]);
 
     const resetZoom = useStateStore(state => state.handleZoomReset);
+    const setFamily = useFamilyStore(state => state.setFamily);
+    const userInfo = useUserStore(state => state.userInfo);
+    const setUserInfo = useUserStore(state => state.setUserInfo);
 
     const handleCreateFamily = async ({ familyForm }: { familyForm: UseFormReturnType<FamilyFormType, (values: FamilyFormType) => FamilyFormType> }) => {
         setLoading(true);
@@ -52,14 +57,21 @@ export default function ParentFamilyModal({ session, handleUpdate, handleCloseCr
                 heritage: familyForm.getValues().heritage
             } as FamilyFormType
 
-            let creationAttempt = await AttemptCreateFamily({ familyToAdd: familyToPass }) as { status: boolean, message: string, newFamily: IFamily };
+            const creationAttempt = await CreateFamily(familyToPass, '/u/profile');
 
-            let attemptStatus = creationAttempt ? creationAttempt.status : false;
+            const attemptStatus = creationAttempt ? creationAttempt.success : false;
 
             if (attemptStatus === false) {
-                toast.error('Error creating family');
+                toast.error(creationAttempt?.message || 'Error creating family');
                 setLoading(false);
                 return;
+            }
+
+            if (creationAttempt.family) {
+                setFamily(creationAttempt.family as IFamily);
+                if (userInfo) {
+                    setUserInfo({ ...userInfo, userFamilyID: creationAttempt.family._id });
+                }
             }
 
             toast.success('Successfully created family!');

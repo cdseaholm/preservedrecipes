@@ -166,10 +166,7 @@ export default function MembersMain({
     );
 
     return (
-        <NavWrapper 
-            loadingChild={null} 
-            userInfo={userInfo}
-        >
+        <NavWrapper userInfo={userInfo}>
             <ContentWrapper containedChild={true} paddingNeeded={true}>
                 {renderItem}
             </ContentWrapper>

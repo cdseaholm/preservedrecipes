@@ -1,18 +1,15 @@
 import { Metadata } from "next";
 import InvitePage from "./components/mainInvite";
-import { authOptions } from "@/lib/auth/auth-options";
-import connectDB from "@/lib/mongodb";
-import { IUser } from "@/models/types/personal/user";
-import User from "@/models/user";
-import { serializeDoc } from "@/utils/data/seralize";
-import { getServerSession } from "next-auth";
+import { getSessionUser } from "@/lib/data/user";
+import { createPageMetadata } from "@/lib/metadata";
 
 export async function generateMetadata(): Promise<Metadata> {
 
-    return {
-        title: `Register Page`,
-        description: `Register page for those invited`
-    };
+    return createPageMetadata({
+        title: "Family Invite",
+        description: "Accept a Preserved Recipes invitation and join a family recipe space shared by someone you know.",
+        robots: { index: false, follow: false },
+    });
 }
 
 export default async function Page({
@@ -25,16 +22,7 @@ export default async function Page({
         return <section>Error with param</section>
     }
 
-    const session = await getServerSession(authOptions);
-    let userInfo: IUser | null = null;
-
-    if (session && session.user && session.user.email) {
-
-        await connectDB();
-        const userDoc = await User.findOne({ email: session.user.email }).lean();
-        userInfo = serializeDoc<IUser>(userDoc);
-
-    }
+    const userInfo = await getSessionUser();
 
     return (
             <InvitePage token={token} userInfo={userInfo} />

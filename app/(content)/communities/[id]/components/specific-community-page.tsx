@@ -10,13 +10,13 @@ import InCommunityTab from "./tabs/in-community-tab";
 import { useCommunityStore } from "@/context/communityStore";
 import UserSettingsTab from "./tabs/user-settings";
 import CommunitySettings from "./tabs/community-settings";
-import LoadingOverlayComponent from "@/components/misc/loading/loading-overlay";
 import { useUserStore } from "@/context/userStore";
 import { useSearchParams } from "next/navigation";
+import { useStateStore } from "@/context/stateStore";
 
 export default function SpecificCommunityPage({ userInfo, community, creator, admins, posts, recipes, userIsAdmin, userRecipes, members }: { userInfo: IUser | null, community: ICommunity, creator: IUser | null, admins: IUser[] | null, posts: IPost[], recipes: IRecipe[], userIsAdmin: boolean, userRecipes: IRecipe[], members: IUser[] | null }) {
 
-    const [loading, setLoading] = useState<boolean>(false);
+    const setGlobalLoading = useStateStore(state => state.setGlobalLoading);
     const searchParams = useSearchParams();
     
     // ✅ Read tab from URL query params
@@ -24,7 +24,7 @@ export default function SpecificCommunityPage({ userInfo, community, creator, ad
     const [activeTab, setActiveTab] = useState<'posts' | 'members' | 'community-settings' | 'user-settings'>(tabFromUrl || 'posts');
 
     const handleLoading = (state: boolean) => {
-        setLoading(state);
+        setGlobalLoading(state);
     }
     const setCurrCommunity = useCommunityStore(state => state.setCommunity);
     const setLocalAdmins = useCommunityStore(state => state.setAdmins);
@@ -79,7 +79,7 @@ export default function SpecificCommunityPage({ userInfo, community, creator, ad
     )
 
     return (
-        <NavWrapper loadingChild={<LoadingOverlayComponent visible={loading} />} userInfo={userInfo}>
+        <NavWrapper userInfo={userInfo}>
             
             {tabRelatedItem}
 

@@ -1,14 +1,14 @@
 'use client'
 
 import ActionButton from "@/components/buttons/basicActionButton"
-import FamilySettingsHooks from "@/components/hooks/family/family-settings-hooks"
+import FamilySettingsHooks from "@/app/(content)/family/[famid]/hooks/family-settings-hooks"
 import { useNavigation } from "@/components/hooks/menu/use-navigation-hook"
 import { useFamilyStore } from "@/context/familyStore"
 import { useUserStore } from "@/context/userStore"
 import { IFamily } from "@/models/types/family/family"
 import { IUser } from "@/models/types/personal/user"
-import { LeaveFamily } from "@/utils/apihelpers/edit/leave-family"
 import { FaRegTrashAlt, FaSignOutAlt } from "react-icons/fa"
+import { LeaveFamily } from "@/utils/server-actions/family/members"
 
 
 export default function FamilySettings({ userFamAdminPrivs, family, userInfo }: { userFamAdminPrivs: boolean, family: IFamily, userInfo: IUser }) {
@@ -27,12 +27,12 @@ export default function FamilySettings({ userFamAdminPrivs, family, userInfo }: 
         }
         const confirmLeave = confirm("Are you sure you want to leave the family?");
         if (confirmLeave) {
-            const leaving = await LeaveFamily({ userid: userInfo._id, famid: family._id });
+            const leaving = await LeaveFamily(family._id, '/');
             if (!leaving) {
                 alert("Error leaving family. Please try again later.");
                 return;
             }
-            if (leaving.status === 200) {
+            if (leaving.success) {
                 setFamily({} as IFamily);
                 const newUserInfo = { ...userInfo, userFamilyID: '' };
                 setUserInfo(newUserInfo);

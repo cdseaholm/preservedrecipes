@@ -37,8 +37,6 @@ export default function MenuPanelHooks() {
                 setOpenCreateRecipeModal({type: 'edit', recipe: recipe, from: from, fromId: null});
             } else if (recipe === null) {
                 setOpenCreateRecipeModal({type: 'create', recipe: null, from: from, fromId: null});
-            } else if (userInfo && recipe && userInfo._id !== recipe.creatorID) {
-                setOpenCreateRecipeModal({type: 'view', recipe: recipe, from: from, fromId: null});
             } else {
                 toast.error('Failed to load recipe data. Please try again.');
             }

@@ -17,6 +17,7 @@ import CommunityFilter from "@/components/buttons/filter-and-sorts/community-fil
 import PageSpecButtonBox from "@/components/buttons/page-spec-button-box/page-spec-button-box";
 import ListWrapper from "@/components/wrappers/list-wrapper";
 import { useWindowSizes } from "@/context/width-height-store";
+import { useStateStore } from "@/context/stateStore";
 
 export default function CommunityMain({
   userCommunities,
@@ -46,7 +47,7 @@ export default function CommunityMain({
   const setUserInfo = useUserStore(state => state.setUserInfo);
   const setUserCommunities = useUserStore(state => state.setUserCommunities);
   const setCommunities = useDataStore(state => state.setCommunities);
-  const [loading, setLoading] = useState(false);
+  const setGlobalLoading = useStateStore(state => state.setGlobalLoading);
   
   // Get from Zustand store (always up-to-date)
   const storedCommunities = useDataStore(state => state.communities);
@@ -120,7 +121,7 @@ export default function CommunityMain({
     const endIndex = startIndex + itemsPerPage;
     const currentCommunities = communities.slice(startIndex, endIndex);
 
-    setLoading(false);
+    setGlobalLoading(false);
 
     //can add this to return if needed later: filteredAndSorted: communities, 
     return { 
@@ -128,10 +129,10 @@ export default function CommunityMain({
       currentCommunities,
       currentCommunityTags
     };
-  }, [storedCommunities, searchText, initialFilter, initialStatus, initialSort, currentPage, itemsPerPage]);
+  }, [storedCommunities, searchText, initialFilter, initialStatus, initialSort, currentPage, itemsPerPage, setGlobalLoading]);
 
   const handleTransiton = (url: string) => {
-    setLoading(true);
+    setGlobalLoading(true);
     router.push(url);
   }
 
@@ -166,7 +167,7 @@ export default function CommunityMain({
   }, [userInfo, userCommunities, allCommunities, setUserInfo, setUserCommunities, setCommunities]);
 
   return (
-    <NavWrapper userInfo={userInfo} loadingChild={loading}>
+    <NavWrapper userInfo={userInfo}>
       <ContentWrapper containedChild={true} paddingNeeded={true}>
         <PageSpecButtonBox
           leftHandButtons={

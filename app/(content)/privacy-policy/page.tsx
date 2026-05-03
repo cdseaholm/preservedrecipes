@@ -1,27 +1,20 @@
-import { authOptions } from "@/lib/auth/auth-options";
 import NavWrapper from "@/components/wrappers/navWrapper";
-import connectDB from "@/lib/mongodb";
-import { IUser } from "@/models/types/personal/user";
-import User from "@/models/user";
-import { serializeDoc } from "@/utils/data/seralize";
-import { getServerSession } from "next-auth";
 import PrivacyPolicyPage from "./components/privpol-page";
+import { getSessionUser } from "@/lib/data/user";
+import { Metadata } from "next";
+import { createPageMetadata } from "@/lib/metadata";
+
+export const metadata: Metadata = createPageMetadata({
+    title: "Privacy Policy",
+    description: "Learn how Preserved Recipes handles account data, recipe content, family information, and community activity.",
+});
 
 export default async function Page() {
 
-    const session = await getServerSession(authOptions);
-    let userInfo: IUser | null = null;
-
-    if (session && session.user && session.user.email) {
-
-        await connectDB();
-        const userDoc = await User.findOne({ email: session.user.email }).lean();
-        userInfo = serializeDoc<IUser>(userDoc);
-
-    }
+    const userInfo = await getSessionUser();
 
     return (
-        <NavWrapper loadingChild={null} userInfo={userInfo}>
+        <NavWrapper userInfo={userInfo}>
             <PrivacyPolicyPage />
         </NavWrapper>
     );

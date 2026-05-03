@@ -4,7 +4,6 @@ import { CloseButton, Tabs } from "@mantine/core";
 import { RecipeFormType } from "@/models/types/recipes/review";
 import RecipePanelSteps from "./panels/recipe-panel-steps";
 import RecipePanelExtras from "./panels/recipe-panel-extras";
-import RecipePanelReviews from "./panels/recipe-panel-reviews";
 import RecipePanelIngredients from "./panels/recipe-panel-ingredients";
 import RecipePanelInfo from "./panels/recipe-panel-info";
 import { IIngredient } from "@/models/types/recipes/ingredient";
@@ -41,7 +40,7 @@ export default function RecipeForm({
                         <div className="w-full flex flex-row justify-between items-center mb-4">
                                 <div className="flex flex-row items-center justify-start gap-2">
                                         <h2 className="text-lg font-semibold">{formType === 'edit' ? 'Edit Recipe' : 'Create Recipe'}</h2>
-                                        {formType === 'view' || formType === 'edit' ? <button type="button" onClick={favoriteRecipe} className={`${isFavorited ? "text-red-500" : "text-gray-500"} cursor-pointer`} title={isFavorited ? "Remove from favorites" : "Add to favorites"}>{isFavorited ? <IoHeart size={22}/> : <IoHeartOutline size={22}/>}</button> : null}
+                                        {formType === 'edit' ? <button type="button" onClick={favoriteRecipe} className={`${isFavorited ? "text-red-500" : "text-gray-500"} cursor-pointer`} title={isFavorited ? "Remove from favorites" : "Add to favorites"}>{isFavorited ? <IoHeart size={22} /> : <IoHeartOutline size={22} />}</button> : null}
                                 </div>
                                 <CloseButton onClick={handleCancel} title="Close Recipe Form" size="lg" iconSize={24} />
                         </div>
@@ -50,14 +49,13 @@ export default function RecipeForm({
                                 <Tabs.Tab value="ingredients">Ingredients</Tabs.Tab>
                                 <Tabs.Tab value="instructions">Instructions</Tabs.Tab>
                                 <Tabs.Tab value="extras">Extras</Tabs.Tab>
-                                {formType !== 'view' && <Tabs.Tab value="finalize">{`Finalize and ${formType === 'edit' ? 'Save' : 'Create'}`}</Tabs.Tab>}
-                                {formType === 'view' && <Tabs.Tab value="reviews">Reviews</Tabs.Tab>}
+                                <Tabs.Tab value="finalize">{`Finalize and ${formType === 'edit' ? 'Save' : 'Create'}`}</Tabs.Tab>
                         </Tabs.List>
                         <Tabs.Panel value="info" w={'100%'}>
                                 <RecipePanelInfo recipeForm={recipeForm} />
                         </Tabs.Panel>
                         <Tabs.Panel value="ingredients" w={'100%'}>
-                                <RecipePanelIngredients recipeForm={recipeForm} ingredientNames={ingredientNames}/>
+                                <RecipePanelIngredients recipeForm={recipeForm} ingredientNames={ingredientNames} />
                         </Tabs.Panel>
                         <Tabs.Panel value="instructions" w={'100%'}>
                                 <RecipePanelSteps recipeForm={recipeForm} />
@@ -65,12 +63,14 @@ export default function RecipeForm({
                         <Tabs.Panel value="extras" w={'100%'}>
                                 <RecipePanelExtras recipeForm={recipeForm} />
                         </Tabs.Panel>
-                        {formType !== 'view' && <Tabs.Panel value="finalize" w={'100%'}>
+                        <Tabs.Panel value="finalize" w={'100%'}>
                                 <RecipePanelFinalize recipeForm={recipeForm} handleCreate={handleCreate} handleEdit={handleEdit} formType={formType} attemptedToCreate={attemptedToCreate} handleDelete={handleDelete} />
-                        </Tabs.Panel>}
-                        {formType === 'view' && <Tabs.Panel value="reviews" w={'100%'}>
-                                <RecipePanelReviews recipeForm={recipeForm} />
-                        </Tabs.Panel>}
+                        </Tabs.Panel>
                 </Tabs>
         )
 }
+
+
+//                         {formType === 'view' && <Tabs.Panel value="reviews" w={'100%'}>
+//                                 <RecipePanelReviews recipeForm={recipeForm} />
+//                         </Tabs.Panel>}

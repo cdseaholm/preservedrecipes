@@ -22,14 +22,14 @@ export default function SubMenuDrop({ subMenu }: { subMenu: { title: string, onC
     return (
         <Menu shadow="md" width={dropdownWidth} variant="light" position="bottom-start">
             <Menu.Target>
-                <div className="flex flex-col items-center justify-center py-1 px-2 w-1/4 sm:w-1/5 md:w-1/6 lg:w-1/8 rounded-md bg-accent/20 hover:bg-accent/40 cursor-pointer">
+                <div className="flex flex-row items-center justify-center p-2 w-1/4 sm:w-1/5 md:w-1/6 lg:w-1/8 rounded-md bg-accent/20 hover:bg-accent/40 cursor-pointer h-[40px]">
                     <BsLightningCharge />
                     <span className="text-xs">Actions</span>
                 </div>
             </Menu.Target>
 
             <Menu.Dropdown w={dropdownWidth} bg={'white'} p={0} classNames={{ dropdown: 'border-0 p-0' }} style={{borderRadius: '8px'}}>
-                <div className="flex flex-col justify-start items-start w-full bg-accent/10 border border-accent/30 rounded-md py-2 px-2 space-y-2">
+                <div className="flex flex-col justify-start items-start w-full bg-accent/10 border border-accent/30 rounded-md p-2 space-y-2">
                     {Object.entries(groupedItems).map(([label, items]) => (
                         <div key={label} className="w-full">
                             <Menu.Label>

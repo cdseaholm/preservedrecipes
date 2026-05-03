@@ -2,8 +2,23 @@
 import FamilyRecipes from "../components/recipes/family-recipes";
 import { getValidatedFamilyAccess } from "@/lib/data/family";
 import { getRecipesByIds, getAllIngredients } from "@/lib/data/recipes";
+import { Metadata } from "next";
+import { createPageMetadata } from "@/lib/metadata";
 
-export default async function Page({ params }: { params: Promise<{ famid: string }> }) {
+type FamilyRecipesPageParams = { params: Promise<{ famid: string }> };
+
+export async function generateMetadata({ params }: FamilyRecipesPageParams): Promise<Metadata> {
+    const { famid } = await params;
+    const { family } = await getValidatedFamilyAccess(famid);
+
+    return createPageMetadata({
+        title: `${family.name} Recipes`,
+        description: `Browse and manage recipes shared with the ${family.name} family space on Preserved Recipes.`,
+        robots: { index: false, follow: true },
+    });
+}
+
+export default async function Page({ params }: FamilyRecipesPageParams) {
     const { famid } = await params;
     const { user, family } = await getValidatedFamilyAccess(famid);
 

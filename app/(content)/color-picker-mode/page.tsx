@@ -1,25 +1,19 @@
 import NavWrapper from "@/components/wrappers/navWrapper";
 import ColorPickerMode from "./components/colorPickerMode";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth/auth-options";
-import connectDB from "@/lib/mongodb";
-import { IUser } from "@/models/types/personal/user";
-import User from "@/models/user";
-import { serializeDoc } from "@/utils/data/seralize";
+import { getSessionUser } from "@/lib/data/user";
+import { Metadata } from "next";
+import { createPageMetadata } from "@/lib/metadata";
+
+export const metadata: Metadata = createPageMetadata({
+    title: "Color Picker Mode",
+    description: "Customize the Preserved Recipes color experience with a focused color picker mode for testing interface palettes.",
+});
 
 export default async function Page() {
-    const session = await getServerSession(authOptions);
-    let userInfo: IUser | null = null;
+    const userInfo = await getSessionUser();
 
-    if (session && session.user && session.user.email) {
-
-        await connectDB();
-        const userDoc = await User.findOne({ email: session.user.email }).lean();
-        userInfo = serializeDoc<IUser>(userDoc);
-
-    }
     return (
-        <NavWrapper loadingChild={null} userInfo={userInfo}>
+        <NavWrapper userInfo={userInfo}>
             <ColorPickerMode />
         </NavWrapper>
     )

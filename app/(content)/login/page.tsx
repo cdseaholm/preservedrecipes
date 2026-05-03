@@ -1,33 +1,22 @@
 
 import { Metadata } from "next";
-import connectDB from "@/lib/mongodb";
-import { IUser } from "@/models/types/personal/user";
-import User from "@/models/user";
-import { serializeDoc } from "@/utils/data/seralize";
-import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import SignInLanding from "@/app/(content)/login/components/sign-in-landing";
-import { authOptions } from "@/lib/auth/auth-options";
+import { getSessionUser } from "@/lib/data/user";
+import { createPageMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
-    title: 'Login Page',
-    description: 'A page dedicated to allow users to login.',
-}
+export const metadata: Metadata = createPageMetadata({
+    title: "Log In",
+    description: "Log in to Preserved Recipes to manage recipes, family spaces, communities, saved recipes, and account settings.",
+    robots: { index: false, follow: true },
+});
 
 export default async function Page() {
 
-    const session = await getServerSession(authOptions);
-    let userInfo: IUser | null = null;
+    const userInfo = await getSessionUser();
 
-    if (session && session.user && session.user.email) {
-
-        await connectDB();
-        const userDoc = await User.findOne({ email: session.user.email }).lean();
-        userInfo = serializeDoc<IUser>(userDoc);
-        if (userInfo && userInfo.email === session.user.email) {
-            redirect('/u/profile');
-        }
-
+    if (userInfo) {
+        redirect('/u/profile');
     }
 
     return (

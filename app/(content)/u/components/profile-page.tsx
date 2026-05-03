@@ -87,7 +87,7 @@ export default function ProfilePage({
     const iconStyle = { width: rem(16), height: rem(16) };
 
     return (
-        <NavWrapper userInfo={user} loadingChild={null}>
+        <NavWrapper userInfo={user}>
             <ContentWrapper containedChild={true} paddingNeeded={true}>
                 <Container size="xl" px="sm" style={{ height: '100%', display: 'flex', flexDirection: 'column' }} w={"100%"}>
                     <Stack gap="lg" style={{ flex: 1, minHeight: '75dvh' }}>

@@ -1,18 +1,22 @@
 
 import { redirect } from 'next/navigation';
-import { getServerSession } from 'next-auth';
-import { IUser } from '@/models/types/personal/user';
 import { ICommunity } from '@/models/types/community/community';
 import CommunityMain from './components/communityMain';
 import connectDB from '@/lib/mongodb';
 import Community from '@/models/community';
-import User from '@/models/user';
 import { serializeDoc } from '@/utils/data/seralize';
+import { Metadata } from 'next';
+import { getSessionUser } from '@/lib/data/user';
+import { createPageMetadata } from '@/lib/metadata';
+
+export const metadata: Metadata = createPageMetadata({
+  title: "Communities",
+  description: "Browse Preserved Recipes communities for shared cooking interests, recipe collections, posts, and group activity.",
+});
 
 export default async function Page(props: { searchParams: Promise<{ page?: string, size?: string, search?: string, sort?: string, filter?: string[], status?: string }> }) {
 
   const searchParams = await props.searchParams;
-  const session = await getServerSession();
 
   if (!searchParams.page || !searchParams.size) {
     redirect('/communities?page=1&size=10');
@@ -29,14 +33,10 @@ export default async function Page(props: { searchParams: Promise<{ page?: strin
   try {
     await connectDB();
 
-    let user = null as IUser | null;
-    if (session && session.user && session.user.email) {
-      const userDoc = await User.findOne({ email: session.user.email }).lean() as IUser;
-      user = serializeDoc<IUser>(userDoc);
-    }
-
-    // Fetch recipes if user has any
-    const allCommunitiesDocs = await Community.find({}).lean();
+    const [user, allCommunitiesDocs] = await Promise.all([
+      getSessionUser(),
+      Community.find({}).lean(),
+    ]);
     const allCommunities = allCommunitiesDocs.map(doc => serializeDoc<ICommunity>(doc));
     const nonHiddenCommunities = allCommunities.filter(community => community.privacyLevel !== 'hidden');
 

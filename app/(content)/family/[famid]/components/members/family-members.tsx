@@ -1,6 +1,6 @@
 'use client'
 
-import FamilyMemberHooks from "@/components/hooks/family/family-member-hooks"
+import FamilyMemberHooks from "@/app/(content)/family/[famid]/hooks/family-member-hooks"
 import { useModalStore } from "@/context/modalStore"
 import { IFamily } from "@/models/types/family/family"
 import { IFamilyMember } from "@/models/types/family/familyMember"
