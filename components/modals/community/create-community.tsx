@@ -5,7 +5,7 @@ import { Modal } from "@mantine/core"
 import { toast } from "sonner";
 import { useModalStore } from "@/context/modalStore";
 import LoadingOverlayComponent from "@/components/misc/loading/loading-overlay";
-import CreateCommunityHooks from "@/components/hooks/community/create-community-hooks";
+import CreateCommunityHooks from "@/app/(content)/communities/hooks/create-community-hooks";
 import CreateCommunityForm from "@/components/forms/community/create-community-form";
 import { useWindowSizes } from "@/context/width-height-store";
 

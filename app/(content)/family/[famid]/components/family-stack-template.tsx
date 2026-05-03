@@ -1,15 +1,25 @@
 'use client'
 
+import { useFamilyStore } from "@/context/familyStore"
+import { useUserStore } from "@/context/userStore"
 import { IFamily } from "@/models/types/family/family"
 import { IUser } from "@/models/types/personal/user"
 import { Card, Stack, Group, ThemeIcon, Badge, Title, rem, Text } from "@mantine/core"
 import { IconUsers } from "@tabler/icons-react"
+import { useEffect } from "react"
 
 export default function FamilyStackTemplate({ children, user, family }: { children: React.ReactNode, user: IUser, family: IFamily }) {
 
+    const setFamily = useFamilyStore(state => state.setFamily);
+    const setUserInfo = useUserStore(state => state.setUserInfo);
     const members = family.familyMembers ?? [];
     const heritage = family.heritage ?? [];
     const currentMember = members.find(member => member.familyMemberID === user._id || member.familyMemberEmail === user.email);
+
+    useEffect(() => {
+        setFamily(family);
+        setUserInfo(user);
+    }, [family, setFamily, setUserInfo, user]);
 
     return (
         <div className="flex flex-col justify-start items-center px-2 w-full min-h-[75dvh]">

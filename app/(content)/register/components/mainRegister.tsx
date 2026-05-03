@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from "react";
 import { toast } from "sonner";
 import { IUser } from "@/models/types/personal/user";
 import SignInHelper from "@/utils/userHelpers/signInHelper";
@@ -11,29 +10,28 @@ import { RegisterFormType } from "@/models/types/misc/register";
 import RegisterForm from "@/components/forms/personal/registerForm";
 import NavWrapper from "@/components/wrappers/navWrapper";
 import ContentWrapper from "@/components/wrappers/contentWrapper";
-import { LoadingOverlay } from "@mantine/core";
 import { useWindowSizes } from "@/context/width-height-store";
 import { CreateUser } from "@/utils/server-actions/user";
 
 export default function RegisterPage({ userInfo }: { userInfo: IUser | null }) {
 
     const { data: session, update } = useSession();
-    const [loading, setLoading] = useState<boolean>(false);
     const resetZoom = useStateStore(state => state.handleZoomReset);
+    const setGlobalLoading = useStateStore(state => state.setGlobalLoading);
     const { width } = useWindowSizes();
     const router = useRouter();
 
 
     const handleRegister = async ({ registerForm }: { registerForm: RegisterFormType }) => {
 
-        setLoading(true)
+        setGlobalLoading(true)
         try {
 
             registerForm.clearErrors();
 
             if (session) {
                 toast.warning("You are already signed in!");
-                setLoading(false);
+                setGlobalLoading(false);
                 return;
             }
 
@@ -44,7 +42,7 @@ export default function RegisterPage({ userInfo }: { userInfo: IUser | null }) {
             const validation = registerForm.validate();
 
             if (Object.keys(validation.errors).length > 0) {
-                setLoading(false);
+                setGlobalLoading(false);
                 return;
             }
 
@@ -54,7 +52,7 @@ export default function RegisterPage({ userInfo }: { userInfo: IUser | null }) {
 
             if (!registerAttempt) {
                 toast.error('Error registering');
-                setLoading(false);
+                setGlobalLoading(false);
                 return
             }
 
@@ -62,13 +60,13 @@ export default function RegisterPage({ userInfo }: { userInfo: IUser | null }) {
 
             if (!attemptStatus) {
                 toast.error(registerAttempt.message || 'Error registering');
-                setLoading(false);
+                setGlobalLoading(false);
                 return;
             }
 
             if (!registerAttempt.newUser) {
                 toast.error('Error registering, no user created');
-                setLoading(false);
+                setGlobalLoading(false);
                 return;
             }
 
@@ -76,7 +74,7 @@ export default function RegisterPage({ userInfo }: { userInfo: IUser | null }) {
 
             if (!signInAttempt || !signInAttempt.status) {
                 toast.error('Error signing in');
-                setLoading(false);
+                setGlobalLoading(false);
                 return;
             }
 
@@ -88,14 +86,14 @@ export default function RegisterPage({ userInfo }: { userInfo: IUser | null }) {
             router.push('/u/profile');
 
         } catch (error) {
-            setLoading(false);
+            setGlobalLoading(false);
             return;
         }
     }
 
     return (
 
-        <NavWrapper loadingChild={<LoadingOverlay visible={loading} />} userInfo={userInfo}>
+        <NavWrapper userInfo={userInfo}>
             <ContentWrapper containedChild={true} paddingNeeded={true}>
                 <h1 className="text-xl md:text-2xl underline">Register</h1>
                 <RegisterForm handleRegister={handleRegister} />

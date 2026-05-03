@@ -1,38 +1,33 @@
 
 import NavWrapper from "@/components/wrappers/navWrapper"
-import { IUser } from "@/models/types/personal/user";
-import { getServerSession } from "next-auth";
 import UserCommunitiesList from "./components/user-communities";
-import { authOptions } from "@/lib/auth/auth-options";
 import connectDB from "@/lib/mongodb";
 import Community from "@/models/community";
-import User from "@/models/user";
 import { serializeDoc } from "@/utils/data/seralize";
 import { ObjectId } from "mongodb";
 import { redirect } from "next/navigation";
 import { ICommunity } from "@/models/types/community/community";
+import { Metadata } from "next";
+import { getSessionUser } from "@/lib/data/user";
+import { createPageMetadata } from "@/lib/metadata";
+
+export const metadata: Metadata = createPageMetadata({
+    title: "My Communities",
+    description: "View the Preserved Recipes communities you belong to and return to shared posts, recipes, and members.",
+    robots: { index: false, follow: true },
+});
 
 export default async function Page() {
 
-    const session = await getServerSession(authOptions);
+    const user = await getSessionUser();
 
-    if (!session || !session.user?.email) {
+    if (!user) {
         redirect("/")
     }
 
     try {
         await connectDB();
 
-        // Query database directly - no API route needed!
-        const userDoc = await User.findOne({ email: session.user.email }).lean() as IUser;
-
-        if (!userDoc) {
-            redirect("/");
-        }
-
-        const user = serializeDoc<IUser>(userDoc);
-
-        // Fetch recipes if user has any
         let userCommunities: ICommunity[] = [];
         if (user.communityIDs && user.communityIDs.length > 0) {
             const communityDocs = await Community.find({
@@ -44,7 +39,7 @@ export default async function Page() {
         }
 
         return (
-            <NavWrapper loadingChild={null} userInfo={user}>
+            <NavWrapper userInfo={user}>
                 <UserCommunitiesList userCommunities={userCommunities} />
             </NavWrapper>
         )

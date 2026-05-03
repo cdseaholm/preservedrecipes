@@ -1,4 +1,3 @@
-import { authOptions } from "@/lib/auth/auth-options";
 import NavWrapper from "@/components/wrappers/navWrapper";
 import connectDB from "@/lib/mongodb";
 import Recipe from "@/models/recipe";
@@ -8,7 +7,6 @@ import User from "@/models/user";
 import { serializeDoc } from "@/utils/data/seralize";
 import { ObjectId } from "mongodb";
 import { Metadata } from "next";
-import { getServerSession } from "next-auth/next";
 import { redirect } from "next/navigation";
 import ViewPage from "../../components/view-page";
 import Community from "@/models/community";
@@ -16,30 +14,46 @@ import { ICommunity } from "@/models/types/community/community";
 import { IUserView } from "@/models/types/family/member-view";
 import Family from "@/models/family";
 import { IFamily } from "@/models/types/family/family";
+import { getSessionUser } from "@/lib/data/user";
+import { createPageMetadata } from "@/lib/metadata";
 
+type UserViewPageParams = { params: Promise<{ id: string }> };
 
+export async function generateMetadata({ params }: UserViewPageParams): Promise<Metadata> {
+    const { id } = await params;
 
-export async function generateMetadata(): Promise<Metadata> {
-    const session = await getServerSession(authOptions);
-    const user = session?.user;
-    const userName = user?.name || '';
+    try {
+        await connectDB();
+        const userDoc = ObjectId.isValid(id)
+            ? await User.findById(id).select('name').lean()
+            : null;
+        const user = userDoc ? serializeDoc<IUser>(userDoc) : null;
+        const userName = user?.name || '';
 
-    return {
-        title: userName ? `${userName}'s Recipes - Preserved Recipes` : 'Recipes - Preserved Recipes',
-        description: userName ? `Recipe page for ${userName} on Preserved Recipes` : 'Recipe page on Preserved Recipes',
-    };
+        return createPageMetadata({
+            title: userName ? `${userName}'s Public Profile` : "Public Profile",
+            description: userName
+                ? `View ${userName}'s public recipes, public communities, and shared Preserved Recipes profile details.`
+                : "View a Preserved Recipes member's public recipes, public communities, and shared profile details.",
+        });
+    } catch {
+        return createPageMetadata({
+            title: "Public Profile",
+            description: "View a Preserved Recipes member's public recipes, public communities, and shared profile details.",
+        });
+    }
 }
 
-export default async function Page({ params }: { params: Promise<{ userid: string }> }) {
-    const session = await getServerSession(authOptions);
+export default async function Page({ params }: UserViewPageParams) {
+    const viewer = await getSessionUser();
 
-    if (!session || !session.user?.email) {
+    if (!viewer) {
         redirect("/")
     }
 
-    const { userid } = await params;
+    const { id: userid } = await params;
 
-    if (!userid) {
+    if (!userid || !ObjectId.isValid(userid)) {
         redirect("/");
     }
 
@@ -59,62 +73,32 @@ export default async function Page({ params }: { params: Promise<{ userid: strin
             redirect("/");
         }
 
-        if (session.user.email === user.email) {
+        if (viewer.email === user.email) {
             redirect("/u/profile");
         }
 
-        let publicCommunities: ICommunity[] = [];
-
-        const communityPromise = Promise.all(
-            (user.communityIDs || []).map(async (commID) => {
-                const commData = await Community.findById(commID).lean();
-                const serializedComm = commData ? serializeDoc<ICommunity>(commData) : null;
-                if (serializedComm && serializedComm.privacyLevel === 'public') {
-                    publicCommunities.push(serializedComm);
-                }
-                return serializedComm;
-            })
-        ).then(results => results.filter(Boolean) as ICommunity[]);
-
-        const publicRecipesPromise = Promise.all(
-            (user.recipeIDs || []).map(async (recipeID) => {
-                const recipeData = await Recipe.findById(recipeID).lean();
-                return recipeData && recipeData.secret === false ? serializeDoc<IRecipe>(recipeData) : null;
-            })
-        ).then(results => results.filter(Boolean) as IRecipe[]);
-
-        const familyPromise = user.userFamilyID
-            ? (async () => {
-                const familyData = await Family.findById(user.userFamilyID).lean();
-                return familyData ? serializeDoc<IFamily>(familyData) : null;
-            })()
-            : Promise.resolve(null);
-
-        const [allCommunities, publicRecipes, fetchedFamily] = await Promise.all([
-            communityPromise,
-            publicRecipesPromise,
-            familyPromise
+        const [publicCommunityDocs, publicRecipeDocs, fetchedFamilyDoc] = await Promise.all([
+            user.communityIDs.length > 0
+                ? Community.find({ _id: { $in: user.communityIDs }, privacyLevel: 'public' }).lean()
+                : [],
+            user.recipeIDs.length > 0
+                ? Recipe.find({ _id: { $in: user.recipeIDs }, secret: false }).lean()
+                : [],
+            user.userFamilyID
+                ? Family.findById(user.userFamilyID).lean()
+                : null,
         ]);
 
-        let familyInfo: IFamily | null = fetchedFamily ?? null;
+        const publicCommunities = publicCommunityDocs.map(doc => serializeDoc<ICommunity>(doc));
+        const publicRecipes = publicRecipeDocs.map(doc => serializeDoc<IRecipe>(doc));
+        let familyInfo: IFamily | null = fetchedFamilyDoc ? serializeDoc<IFamily>(fetchedFamilyDoc) : null;
         let overlappingCommunities: ICommunity[] | null = null;
 
-        if (session.user && session.user.email) {
-            const viewerDoc = await User.findOne({ email: session.user.email }).lean() as IUser;
+        const viewCommunityIDs = viewer.communityIDs || [];
+        overlappingCommunities = publicCommunities.filter(comm => viewCommunityIDs.includes(comm._id));
 
-            if (viewerDoc) {
-
-                const viewer = serializeDoc<IUser>(viewerDoc);
-                const viewCommunityIDs = viewer.communityIDs || [];
-                overlappingCommunities = allCommunities.filter(comm => viewCommunityIDs.includes(comm._id));
-
-                if (viewer.userFamilyID && user.userFamilyID && viewer.userFamilyID === user.userFamilyID) {
-                    const familyDoc = await Family.findById(user.userFamilyID).lean();
-                    if (familyDoc) {
-                        familyInfo = serializeDoc<IFamily>(familyDoc);
-                    }
-                }
-            }
+        if (!viewer.userFamilyID || !user.userFamilyID || viewer.userFamilyID !== user.userFamilyID) {
+            familyInfo = null;
         }
 
         const memberToView: IUserView = {
@@ -129,7 +113,7 @@ export default async function Page({ params }: { params: Promise<{ userid: strin
         };
 
         return (
-            <NavWrapper loadingChild={null} userInfo={user}>
+            <NavWrapper userInfo={viewer}>
                 <ViewPage
                     memberToView={memberToView}
                 />

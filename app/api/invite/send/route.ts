@@ -15,8 +15,10 @@ import { IInvite } from "@/models/types/misc/invite";
 import { ObjectId } from "mongodb";
 import MongoUser from "@/models/user";
 import InviteTemplate from "@/emails/invite-template-email";
+import { authOptions } from "@/lib/auth/auth-options";
 
 type ItemType = { newMember: IFamilyMember, newToken: string };
+const allowedPermissions = new Set(['Guest', 'Member', 'Admin']);
 
 async function prepareInvite({ email, familyID, inviteTokenCreated }: { email: NewMembers, familyID: string, inviteTokenCreated: string }) {
     const futureFamilyMem = await MongoUser.findOne({ email: email.email }) as IUser;
@@ -65,7 +67,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ status: 401, message: 'Incorrect secret', famMembersReturned: [] as IFamilyMember[] });
     }
 
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
     const token = await getToken({ req, secret });
 
     if (!session) {
@@ -97,18 +99,43 @@ export async function POST(req: NextRequest) {
         const familyIdObject = new ObjectId(familyID);
 
         const thisFamily = await Family.findOne({ _id: familyIdObject }) as IFamily;
+        const actingUser = await MongoUser.findOne({ email: senderEmail }) as IUser;
 
         if (!thisFamily) {
             return NextResponse.json({ status: 403, message: 'No family found' });
         }
 
+        if (!actingUser || actingUser.userFamilyID !== familyID) {
+            return NextResponse.json({ status: 403, message: 'Unauthorized family access', famMembersReturned: [] as IFamilyMember[] });
+        }
+
+        const actingMember = thisFamily.familyMembers.find(member =>
+            member.familyMemberID === actingUser._id.toString() || member.familyMemberEmail === actingUser.email
+        );
+
+        if (actingMember?.permissionStatus !== 'Admin') {
+            return NextResponse.json({ status: 403, message: 'Admin privileges required', famMembersReturned: [] as IFamilyMember[] });
+        }
+
         const prevMembers = thisFamily.familyMembers as IFamilyMember[];
         const newItems: ItemType[] = [];
+        const existingEmails = new Set(prevMembers.map(member => member.familyMemberEmail.trim().toLowerCase()));
+        const queuedEmails = new Set<string>();
 
         for (const email of sendToEmails.newMembers) {
+            const normalizedEmail = email.email?.trim().toLowerCase();
+            if (!normalizedEmail || !/^\S+@\S+$/.test(normalizedEmail)) continue;
+            if (!allowedPermissions.has(email.permissions)) continue;
+            if (existingEmails.has(normalizedEmail) || queuedEmails.has(normalizedEmail)) continue;
+
+            queuedEmails.add(normalizedEmail);
             const inviteTokenCreated = crypto.randomBytes(20).toString('hex');
             try {
-                const { newMember, inviteToken } = await prepareInvite({ email, familyID, inviteTokenCreated });
+                const { newMember, inviteToken } = await prepareInvite({
+                    email: { ...email, email: normalizedEmail },
+                    familyID,
+                    inviteTokenCreated
+                });
                 newItems.push({ newMember: newMember, newToken: inviteToken });
             } catch (error: any) {
                 console.log('Issue with: ', email.email, error.message);

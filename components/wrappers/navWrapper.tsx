@@ -8,9 +8,11 @@ import RouterTransitionWrapper from "./dynamicWrappers/routerTransitionWrapper";
 import TextureWrapper from "./texture-wrapper";
 import { ScrollArea } from "@mantine/core";
 import MainFooter from "../nav/footer/footer";
+import LoadingOverlayComponent from "../misc/loading/loading-overlay";
+import { useStateStore } from "@/context/stateStore";
 
-export default function NavWrapper({ children, userInfo, loadingChild }: { children: React.ReactNode, userInfo: IUser | null, loadingChild: React.ReactNode | null }) {
-
+export default function NavWrapper({ children, userInfo }: { children: React.ReactNode, userInfo: IUser | null }) {
+    const globalLoading = useStateStore(state => state.globalLoading)
     const currUserInfo = useUserStore(state => state.userInfo);
     const setUserInfo = useUserStore(state => state.setUserInfo);
     const [openMenu, setOpenMenu] = useState<'main' | 'sub' | null>(null);
@@ -35,7 +37,7 @@ export default function NavWrapper({ children, userInfo, loadingChild }: { child
 
     return (
         <div className="flex flex-col justify-start items-center w-screen h-full overflow-hidden">
-            {loadingChild}
+            <LoadingOverlayComponent visible={globalLoading} />
             <TextureWrapper>
                 <AppHeader handleMenuToggle={handleMenuToggle} openMenu={openMenu} userInfo={userInfo} />
                 <main className={`h-full w-full pt-[60px] flex flex-col justify-start items-center bg-mainBack/30`}>

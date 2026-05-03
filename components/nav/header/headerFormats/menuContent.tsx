@@ -22,6 +22,7 @@ export default function MenuContent({ session, profile, signOutElement, signIn, 
 
     const { handleSignOutClick, handleSignInClick } = MenuPanelHooks();
     const setIsNavigating = useStateStore(state => state.setIsNavigating);
+    const isAuthenticated = Boolean(session || userData?._id);
     const familyRoute = userData ? `/family/${userData.userFamilyID}` : '/'
 
     const handleNavigationClick = (event: MouseEvent<HTMLAnchorElement>) => {
@@ -45,18 +46,18 @@ export default function MenuContent({ session, profile, signOutElement, signIn, 
     ]
 
     const buttons = [
-        session && { value: 'Recipes', label: 'Recipes', icon: recipes, href: '/u/recipes' },
-        session && userData?.userFamilyID && { value: 'Family', label: 'Family', icon: fam, href: familyRoute },
+        isAuthenticated && { value: 'Recipes', label: 'Recipes', icon: recipes, href: '/u/recipes' },
+        isAuthenticated && userData?.userFamilyID && { value: 'Family', label: 'Family', icon: fam, href: familyRoute },
         { value: 'Communities', label: 'Communities', icon: communities, href: '/communities' },
         { value: 'About', label: 'About', icon: <MdInfoOutline />, href: '/about' },
         { value: 'Pricing', label: 'Pricing', icon: <MdOutlineAttachMoney />, href: '/pricing' }
     ];
 
     const authButtons = [
-        session && { value: 'Profile', label: 'Profile', icon: profile, href: '/u/profile' },
-        session && { value: 'SignOut', label: 'Sign Out', icon: signOutElement, onClick: () => { handleSignOutClick(); closeDrawer(); } },
-        !session && { value: 'SignIn', label: 'Sign In', icon: signIn, onClick: () => { handleSignInClick(); closeDrawer(); } },
-        !session && { value: 'Register', label: 'Register', icon: <TfiWrite />, href: '/register' },
+        isAuthenticated && { value: 'Profile', label: 'Profile', icon: profile, href: '/u/profile' },
+        isAuthenticated && { value: 'SignOut', label: 'Sign Out', icon: signOutElement, onClick: () => { handleSignOutClick(); closeDrawer(); } },
+        !isAuthenticated && { value: 'SignIn', label: 'Sign In', icon: signIn, onClick: () => { handleSignInClick(); closeDrawer(); } },
+        !isAuthenticated && { value: 'Register', label: 'Register', icon: <TfiWrite />, href: '/register' },
     ];
 
     const buttonClass = `flex flex-row items-center px-6 hover:bg-accent/20 rounded-md space-x-2 w-full cursor-pointer`;

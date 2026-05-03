@@ -71,7 +71,7 @@ export default function RecentActivity({ recentRecipes, reviews }: RecentActivit
                                 <p className="font-medium">
                                     Created a new recipe: 
                                     <Link 
-                                        href={`/u/recipes/${(activity.data as IRecipe)._id}`}
+                                        href={`/view/recipe/${(activity.data as IRecipe)._id}`}
                                         className="text-accent hover:underline ml-1"
                                     >
                                         {(activity.data as IRecipe).name}

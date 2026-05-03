@@ -11,7 +11,7 @@ import InSearchItemButton from "@/components/buttons/inSearchItemButton";
 import DeleteButton from "@/components/buttons/deleteButton";
 import { BiCheck } from "react-icons/bi";
 import { FaRegTrashAlt } from "react-icons/fa";
-import { useRecipeList } from "@/components/hooks/recipes/recipe-list-hooks";
+import { useRecipeList } from "@/app/(content)/u/recipes/hooks/recipe-list-hooks";
 import SearchBarAndMenu from "@/components/misc/searchBox/searchBar";
 import SubMenuDrop from "@/components/nav/header/subMenu/sub-menu-drop";
 import MenuPanelHooks from "@/components/hooks/menu/menu-panel-hooks";
@@ -20,6 +20,8 @@ import FilterAndSortDetailsRow from "@/components/templates/filter-sort-details-
 import CardTemplate from "@/components/templates/card-template";
 import { Checkbox } from "@mantine/core";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useStateStore } from "@/context/stateStore";
 
 const FilterModal = dynamic(() => import("@/components/modals/filter/filter-modal"), { ssr: false });
 const SortModal = dynamic(() => import("@/components/modals/sort/sort-modal"), { ssr: false });
@@ -52,6 +54,8 @@ export default function RecipePage({
     ingredients: IIngredient[];
 }) {
 
+    const router = useRouter();
+    const setGlobalLoading = useStateStore(state => state.setGlobalLoading);
     const {
         edit,
         checkedRecipes,
@@ -83,7 +87,6 @@ export default function RecipePage({
     return (
         <>
             <NavWrapper
-                loadingChild={null}
                 userInfo={userInfo}
             >
                 <ContentWrapper containedChild paddingNeeded>
@@ -106,7 +109,7 @@ export default function RecipePage({
                                 index={2}
                                 leftSection={
                                     edit ? (
-                                        <button type="button" onClick={toggleEdit} className={`h-content w-1/3 sm:w-1/4 md:w-1/5 flex flex-row p-1 justify-center items-center hover:bg-gray-100 hover:text-blue-300 text-blue-500 rounded-md text-sm sm:text-base space-x-1 cursor-pointer`} aria-label="Toggle Edit">
+                                        <button type="button" onClick={toggleEdit} className={`flex flex-row items-center justify-center py-1 px-2 w-1/4 sm:w-1/5 md:w-1/6 lg:w-1/8 bg-stone-100 cursor-pointer hover:bg-stone-300 hover:text-blue-300 text-blue-500 rounded-md text-sm sm:text-base cursor-pointer`} aria-label="Toggle Edit">
                                             <BiCheck />
                                             <p>{'Done'}</p>
                                         </button>
@@ -148,7 +151,10 @@ export default function RecipePage({
                                     handleChecked={() => toggleChecked(recipe._id)}
                                     edit={edit}
                                     checked={checkedRecipes.has(recipe._id)}
-                                    handleSeeItem={() => handleOpenRecipeModal(recipe, userInfo, 'personal')}
+                                    handleSeeItem={() => {
+                                        setGlobalLoading(true);
+                                        router.push(`/view/recipe/${recipe._id}`)
+                                    }}
                                 >
                                     <CardTemplate
                                         recipeProps={recipe}

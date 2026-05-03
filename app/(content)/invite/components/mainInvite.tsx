@@ -17,7 +17,6 @@ import InviteRegisterForm from "@/components/forms/family/inviteRegisterForm";
 import { InviteRegCheck } from "@/utils/apihelpers/register/inviteSignInCheck";
 import { useAlertStore } from "@/context/alertStore";
 import { useUserStore } from "@/context/userStore";
-import { LoadingOverlay } from "@mantine/core";
 import { IInvite } from "@/models/types/misc/invite";
 import ContentWrapper from "@/components/wrappers/contentWrapper";
 import NavWrapper from "@/components/wrappers/navWrapper";
@@ -30,6 +29,7 @@ export default function InvitePage({ token, userInfo }: { token: string | null, 
 
     const setGlobalToast = useAlertStore(state => state.setGlobalToast);
     const resetZoom = useStateStore(state => state.handleZoomReset);
+    const setGlobalLoading = useStateStore(state => state.setGlobalLoading);
     const { width } = useWindowSizes();
     const forwardRef = useRef('');
 
@@ -42,7 +42,6 @@ export default function InvitePage({ token, userInfo }: { token: string | null, 
 
 
     const [invite, setInvite] = useState<IInvite | null>(null);
-    const [loading, setLoading] = useState<boolean>(false);
 
     const currentUser = session ? session.user as User : {} as User;
     const currentEmail = currentUser?.email?.trim().toLowerCase() || '';
@@ -54,14 +53,14 @@ export default function InvitePage({ token, userInfo }: { token: string | null, 
 
     const handleRegister = async ({ inviteRegisterForm }: { inviteRegisterForm: UseFormReturnType<InviteRegisterFormType, (values: InviteRegisterFormType) => InviteRegisterFormType> }) => {
 
-        setLoading(true);
+        setGlobalLoading(true);
         try {
 
             inviteRegisterForm.clearErrors();
 
             if (session) {
                 toast.warning("You are already signed in!");
-                setLoading(false);
+                setGlobalLoading(false);
                 return;
             }
 
@@ -73,7 +72,7 @@ export default function InvitePage({ token, userInfo }: { token: string | null, 
 
             if (Object.keys(validation.errors).length > 0) {
                 inviteRegisterForm.setErrors(validation.errors);
-                setLoading(false);
+                setGlobalLoading(false);
                 return;
             }
 
@@ -81,7 +80,7 @@ export default function InvitePage({ token, userInfo }: { token: string | null, 
 
             if (!registerHelp) {
                 toast.error('Error registering regsiter null');
-                setLoading(false);
+                setGlobalLoading(false);
                 return
             }
 
@@ -89,7 +88,7 @@ export default function InvitePage({ token, userInfo }: { token: string | null, 
 
             if (!attemptStatus) {
                 toast.error('Error Registering status false');
-                setLoading(false);
+                setGlobalLoading(false);
                 return;
             }
 
@@ -97,7 +96,7 @@ export default function InvitePage({ token, userInfo }: { token: string | null, 
 
             if (!createdUser) {
                 toast.error('Error creatin user');
-                setLoading(false);
+                setGlobalLoading(false);
                 return;
             }
 
@@ -105,7 +104,7 @@ export default function InvitePage({ token, userInfo }: { token: string | null, 
 
             if (!signInAttempt || !signInAttempt.status) {
                 toast.error('Error signing in');
-                setLoading(false);
+                setGlobalLoading(false);
                 return;
             }
 
@@ -116,13 +115,13 @@ export default function InvitePage({ token, userInfo }: { token: string | null, 
 
                 if (!inviteCheck) {
                     toast.error('Invite null');
-                    setLoading(false)
+                    setGlobalLoading(false)
                     return;
                 }
 
                 if (inviteCheck.status === false) {
                     toast.error(inviteCheck.message);
-                    setLoading(false)
+                    setGlobalLoading(false)
                     return;
                 }
 
@@ -132,12 +131,12 @@ export default function InvitePage({ token, userInfo }: { token: string | null, 
             inviteRegisterForm.reset();
             inviteRegisterForm.clearErrors();
             await update();
-            setLoading(false)
+            setGlobalLoading(false)
             resetZoom(width, false);
             router.push('/u/profile')
 
         } catch (error) {
-            setLoading(false);
+            setGlobalLoading(false);
             return;
         }
     }
@@ -182,11 +181,7 @@ export default function InvitePage({ token, userInfo }: { token: string | null, 
     }, [token, currentEmail, session, setGlobalToast, forward]);
 
     return (
-        <NavWrapper loadingChild={<LoadingOverlay
-            visible={loading}
-            zIndex={1000}
-            overlayProps={{ radius: "sm", blur: 0, bg: '#E8D8C4' }}
-        />} userInfo={userInfo}>
+        <NavWrapper userInfo={userInfo}>
             <ContentWrapper containedChild={true} paddingNeeded={true}>
                 <h1>Register</h1>
                 {invite && <p>You have been invited to join a family!</p>}

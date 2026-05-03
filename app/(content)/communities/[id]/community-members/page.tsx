@@ -1,7 +1,5 @@
 
 import { redirect } from 'next/navigation';
-import { authOptions } from "@/lib/auth/auth-options";
-import { getServerSession } from 'next-auth';
 import connectDB from '@/lib/mongodb';
 import { IUser } from '@/models/types/personal/user';
 import User from '@/models/user';
@@ -12,12 +10,39 @@ import { CommunityMember } from '@/models/types/community/community-member';
 import Request from '@/models/requests';
 import { IRequest, IRequesterInfo } from '@/models/types/misc/request';
 import MembersMain from './components/members-main';
+import { Metadata } from 'next';
+import { getSessionUser } from '@/lib/data/user';
+import { createPageMetadata } from '@/lib/metadata';
 
-export default async function Page({ params }: { params: Promise<{ id: string }> }) {
+type CommunityMembersPageParams = { params: Promise<{ id: string }> };
 
-    const session = await getServerSession(authOptions);
+export async function generateMetadata({ params }: CommunityMembersPageParams): Promise<Metadata> {
+    const { id } = await params;
 
-    if (!session || !session.user?.email) {
+    try {
+        await connectDB();
+        const communityDoc = await Community.findById(id).select('name privacyLevel').lean();
+        const community = communityDoc ? serializeDoc<ICommunity>(communityDoc) : null;
+
+        return createPageMetadata({
+            title: community?.name ? `${community.name} Members` : "Community Members",
+            description: "Review members, join requests, and permissions for a Preserved Recipes community.",
+            robots: community?.privacyLevel === 'public' ? undefined : { index: false, follow: true },
+        });
+    } catch {
+        return createPageMetadata({
+            title: "Community Members",
+            description: "Review members, join requests, and permissions for a Preserved Recipes community.",
+            robots: { index: false, follow: true },
+        });
+    }
+}
+
+export default async function Page({ params }: CommunityMembersPageParams) {
+
+    const userInfo = await getSessionUser();
+
+    if (!userInfo) {
         redirect("/")
     }
 
@@ -27,16 +52,9 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         redirect("/");
     }
 
-    let userInfo: IUser | null = null;
-
     try {
 
         await connectDB();
-
-        if (session && session.user && session.user.email) {
-            const userDoc = await User.findOne({ email: session.user.email }).lean();
-            userInfo = serializeDoc<IUser>(userDoc);
-        }
 
         const communityDoc = await Community.findById(id).lean() as ICommunity | null;
 

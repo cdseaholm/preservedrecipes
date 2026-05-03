@@ -6,11 +6,12 @@ import { useModalStore } from "@/context/modalStore";
 import { useDataStore } from "@/context/dataStore";
 import RecipeForm from "@/components/forms/recipe/recipeForm";
 import { RecipeFormContextType } from "@/models/types/recipes/recipe";
-import { useRecipeForm } from "@/components/hooks/recipes/recipe-form-hooks";
+import { useRecipeForm } from "@/app/(content)/u/recipes/hooks/recipe-form-hooks";
 import { useStateStore } from "@/context/stateStore";
 import { toast } from "sonner";
 import { useUserStore } from "@/context/userStore";
 import { useWindowSizes } from "@/context/width-height-store";
+import { usePathname, useRouter } from "next/navigation";
 
 export default function RecipeDrawer({ openRecipeForm }: { openRecipeForm: RecipeFormContextType }) {
 
@@ -19,6 +20,8 @@ export default function RecipeDrawer({ openRecipeForm }: { openRecipeForm: Recip
     const resetZoom = useStateStore(state => state.handleZoomReset);
     const { width } = useWindowSizes();
     const userInfo = useUserStore(state => state.userInfo);
+    const pathname = usePathname();
+    const router = useRouter();
 
     const {
         form,
@@ -35,13 +38,14 @@ export default function RecipeDrawer({ openRecipeForm }: { openRecipeForm: Recip
     const isEditMode = openRecipeForm.type === 'edit';
 
     const onSubmit = async () => {
+        const route = isEditMode ? pathname : '/u/recipes';
         if (isCreateMode) {
             const result = await handleCreate('/u/recipes');
             if (result.success) {
                 setOpenRecipeForm({ type: '', recipe: null, from: null, fromId: null });
             }
         } else if (isEditMode && openRecipeForm.recipe?._id) {
-            const result = await handleUpdate(openRecipeForm.recipe._id, '/u/recipes');
+            const result = await handleUpdate(openRecipeForm.recipe._id, route);
             if (result.success) {
                 setOpenRecipeForm({ type: '', recipe: null, from: null, fromId: null });
             }
@@ -50,9 +54,10 @@ export default function RecipeDrawer({ openRecipeForm }: { openRecipeForm: Recip
 
     const onDelete = async () => {
         if (openRecipeForm.recipe?._id) {
-            const result = await handleDelete(openRecipeForm.recipe._id, '/u/recipes');
+            const result = await handleDelete(openRecipeForm.recipe._id, pathname);
             if (result.success) {
                 setOpenRecipeForm({ type: '', recipe: null, from: null, fromId: null });
+                router.push('/u/recipes');
             }
         }
     };

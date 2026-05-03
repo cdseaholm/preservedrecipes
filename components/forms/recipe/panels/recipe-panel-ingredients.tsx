@@ -20,6 +20,7 @@ export default function RecipePanelIngredients({ recipeForm, ingredientNames }: 
     const [data, setData] = useState<IIngredient[]>(ingredientNames);
 
     const exactOptionMatch = data.some((item) => item.ingredient === search);
+    const createTempIngredientId = () => `temp-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
     const handleValueRemove = (val: string) => {
         const updatedIngredients = recipeForm.getValues().ingredients.filter((ing) => ing.ingredient !== val);
@@ -30,14 +31,16 @@ export default function RecipePanelIngredients({ recipeForm, ingredientNames }: 
         setSearch('');
 
         if (val === '$create') {
+            const trimmedSearch = search.trim();
+            const tempIngredientId = createTempIngredientId();
             const newIngredient = {
-                ingredientId: '',
-                ingredient: search,
+                ingredientId: tempIngredientId,
+                ingredient: trimmedSearch,
                 quantity: '',
             } as IngredientForForm;
             const standInIngredientData = {
-                _id: '',
-                ingredient: search,
+                _id: tempIngredientId,
+                ingredient: trimmedSearch,
             } as IIngredient
             setData((current) => [...current, standInIngredientData]);
             recipeForm.setFieldValue('ingredients', [...recipeForm.getValues().ingredients, newIngredient]);
@@ -70,7 +73,7 @@ export default function RecipePanelIngredients({ recipeForm, ingredientNames }: 
     const options = data.filter((item) => item.ingredient.toLowerCase().includes(search.trim().toLowerCase())).map((item) => {
         const active = recipeForm.getValues().ingredients.some((ing) => ing.ingredient === item.ingredient);
         return (
-            <Combobox.Option value={item.ingredient} key={item._id} active={active}>
+            <Combobox.Option value={item.ingredient} key={item._id || item.ingredient} active={active}>
                 <Group gap="sm">
                     {active ? <CheckIcon size={12} /> : null}
                     <span>{item.ingredient}</span>

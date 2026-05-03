@@ -17,7 +17,7 @@ export default async function FamilyLayout({ params, children }: { params: Promi
     if (!family || family._id !== user.userFamilyID) redirect("/");
 
     return (
-        <NavWrapper loadingChild={null} userInfo={user}>
+        <NavWrapper userInfo={user}>
             <ContentWrapper containedChild={false} paddingNeeded={true}>
                 <FamilyStackTemplate user={user} family={family}>
                     <FamilyTabs famid={famid} />

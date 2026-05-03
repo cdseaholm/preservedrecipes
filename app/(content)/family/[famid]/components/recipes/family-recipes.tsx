@@ -8,13 +8,17 @@ import { IRecipe } from "@/models/types/recipes/recipe"
 import { filterRecipesKey, sortRecipesKey } from "@/app/(content)/u/components/recipe-page"
 import FilterModal from "@/components/modals/filter/filter-modal"
 import SortModal from "@/components/modals/sort/sort-modal"
-import { useRecipeList } from "@/components/hooks/recipes/recipe-list-hooks";
+import { useRecipeList } from "@/app/(content)/u/recipes/hooks/recipe-list-hooks";
 import MenuPanelHooks from "@/components/hooks/menu/menu-panel-hooks"
 import FilterAndSortDetailsRow from "@/components/templates/filter-sort-details-row"
 import ChooseRecipeModal from "@/components/modals/recipe/choose-recipe"
 import FamilyRecipesSearchBar from "./family-recipes-search-bar"
-import { FamilyRecipeInSearchItems, FamilyRecipesCheckboxes } from "./family-recipes-extra-comps"
+import { FamilyRecipesCheckboxes } from "./family-recipes-extra-comps"
 import { useState } from "react"
+import InSearchItemButton from "@/components/buttons/inSearchItemButton"
+import CardTemplate from "@/components/templates/card-template"
+import { useRouter } from "next/navigation"
+import { useStateStore } from "@/context/stateStore"
 
 export default function FamilyRecipes({
     userInfo,
@@ -29,6 +33,9 @@ export default function FamilyRecipes({
     familyRecipes: IRecipe[];
     userRecipes: IRecipe[];
 }) {
+
+    const router = useRouter();
+    const setGlobalLoading = useStateStore(state => state.setGlobalLoading)
 
     const {
         edit,
@@ -103,16 +110,24 @@ export default function FamilyRecipes({
             >
                 {visibleRecipes.length > 0 ? (
                     visibleRecipes.map((recipe, index) => (
-                        <FamilyRecipeInSearchItems
+                        <InSearchItemButton
                             key={recipe._id}
-                            recipe={recipe}
-                            index={index}
-                            toggleChecked={toggleChecked}
-                            checkedRecipes={checkedRecipes}
+                            item={recipe.name}
+                            handleChecked={() => toggleChecked(recipe._id)}
                             edit={edit}
-                            handleOpenRecipeModal={handleOpenRecipeModal}
-                            userInfo={userInfo}
-                        />
+                            checked={checkedRecipes.has(recipe._id)}
+                            handleSeeItem={() => {
+                                setGlobalLoading(true)
+                                router.push(`/view/recipe/${recipe._id}`)
+                            }}
+                        >
+                            <CardTemplate
+                                recipeProps={recipe}
+                                communityProps={null}
+                                index={index}
+                                userInfo={userInfo}
+                            />
+                        </InSearchItemButton>
                     ))
                 ) : (
                     <ul className="p-2 text-start pl-7">Add a recipe to see it here</ul>

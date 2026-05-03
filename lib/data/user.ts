@@ -16,5 +16,5 @@ export const getSessionUser = cache(async (): Promise<IUser | null> => {
     await connectDB();
     const userDoc = await User.findOne({ email: session.user.email }).lean();
 
-    return userDoc ? serializeDoc<IUser>(userDoc) : null;
+    return userDoc ? { ...serializeDoc<IUser>(userDoc), password: '' } : null;
 });

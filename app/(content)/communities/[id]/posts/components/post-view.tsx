@@ -11,7 +11,7 @@ export default function PostView({ userInfo, post }: { post: IPost, userInfo: IU
     //will need to update the menu for the post specific options later
 
     return (
-        <NavWrapper loadingChild={null} userInfo={userInfo}>
+        <NavWrapper userInfo={userInfo}>
             <ContentWrapper containedChild={true} paddingNeeded={true}>
                 <div className="flex flex-row justify-between items-center w-full mb-4 px-6">
                     <button onClick={() => window.history.back()} className="text-sm text-blue-500 hover:underline cursor-pointer">Go Back</button>
