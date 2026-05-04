@@ -66,7 +66,7 @@ export async function generateMetadata({ params }: RecipeViewPageParams): Promis
     if (!ObjectId.isValid(recipeid)) {
         return createPageMetadata({
             title: "Recipe",
-            description: "View a preserved recipe, including ingredients, steps, notes, and recipe details.",
+            description: "View a preserved recipe, including ingredients, instructions, notes, and recipe details.",
         });
     }
 
@@ -77,13 +77,13 @@ export async function generateMetadata({ params }: RecipeViewPageParams): Promis
 
         return createPageMetadata({
             title: recipe?.name || "Recipe",
-            description: recipe?.description || "View this preserved recipe, including ingredients, steps, notes, and recipe details.",
+            description: recipe?.description || "View this preserved recipe, including ingredients, instructions, notes, and recipe details.",
             robots: recipe?.secret ? { index: false, follow: true } : undefined,
         });
     } catch {
         return createPageMetadata({
             title: "Recipe",
-            description: "View a preserved recipe, including ingredients, steps, notes, and recipe details.",
+            description: "View a preserved recipe, including ingredients, instructions, notes, and recipe details.",
         });
     }
 }

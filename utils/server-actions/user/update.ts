@@ -30,6 +30,10 @@ export async function UpdateUser(userId: string, userData: IUser, route: string)
             return { success: false, message: 'User not found' };
         }
 
+        if (user.email !== session.user.email || user._id.toString() !== userId) {
+            return { success: false, message: 'Unauthorized' };
+        }
+
         await User.findByIdAndUpdate(userId, {
             name: userData.name,
             password: userData.password,

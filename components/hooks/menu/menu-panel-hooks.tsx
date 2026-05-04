@@ -28,18 +28,19 @@ export default function MenuPanelHooks() {
     const { ensureReady: ensureIngredients, isLoading: loadingIngredients } = useEnsureData('ingredients');
     const [isPreparingModal, setIsPreparingModal] = useState(false);
 
-    // Handler to ensure ingredients loaded before opening recipe modal
     const handleOpenRecipeModal = async (recipe: IRecipe | null, userInfo: IUser | null, from: 'personal' | 'family' | 'community' | 'post' | null) => {
         setIsPreparingModal(true);
         try {
-            await ensureIngredients();
             if (userInfo && recipe && userInfo._id === recipe.creatorID) {
                 setOpenCreateRecipeModal({type: 'edit', recipe: recipe, from: from, fromId: null});
             } else if (recipe === null) {
                 setOpenCreateRecipeModal({type: 'create', recipe: null, from: from, fromId: null});
             } else {
                 toast.error('Failed to load recipe data. Please try again.');
+                return;
             }
+
+            await ensureIngredients();
         } catch (error) {
             console.error('Error loading ingredients:', error);
             toast.error('Failed to load recipe data. Please try again.');

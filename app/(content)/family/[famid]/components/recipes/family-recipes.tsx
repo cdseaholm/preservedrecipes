@@ -19,6 +19,7 @@ import InSearchItemButton from "@/components/buttons/inSearchItemButton"
 import CardTemplate from "@/components/templates/card-template"
 import { useRouter } from "next/navigation"
 import { useStateStore } from "@/context/stateStore"
+import { Button, Group } from "@mantine/core"
 
 export default function FamilyRecipes({
     userInfo,
@@ -130,7 +131,22 @@ export default function FamilyRecipes({
                         </InSearchItemButton>
                     ))
                 ) : (
-                    <ul className="p-2 text-start pl-7">Add a recipe to see it here</ul>
+                    <div className="flex w-full flex-col items-center justify-center gap-3 rounded-md border border-dashed border-accent/30 bg-mainBack/60 p-6 text-center">
+                        <p className="text-base font-semibold text-mainText">No family recipes found</p>
+                        <p className="max-w-md text-sm text-mainText/70">
+                            Add one of your recipes to this family space, create a new family recipe, or adjust the search and filters.
+                        </p>
+                        {adminPermission && (
+                            <Group justify="center" gap="sm">
+                                <Button type="button" variant="light" onClick={toggleChooseRecipe}>
+                                    Add existing
+                                </Button>
+                                <Button type="button" onClick={() => handleOpenRecipeModal(null, userInfo, 'family')}>
+                                    Create recipe
+                                </Button>
+                            </Group>
+                        )}
+                    </div>
                 )}
             </ListWrapper>
             {openFilter && (

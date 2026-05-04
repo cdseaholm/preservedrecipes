@@ -1,60 +1,81 @@
 'use client'
 
-import { Fieldset, NumberInput, TextInput, Textarea } from "@mantine/core";
-import { RecipePhotoUploader } from "@/components/buttons/uploadThing-button";
-import InfoPopover from "@/components/popovers/infoPopover";
+import { Button, Image, NumberInput, Textarea } from "@mantine/core";
+import { RecipePhotoUploader, UploadedRecipeImage } from "@/components/buttons/uploadThing-button";
 import { RecipeFormType } from "@/models/types/recipes/review";
+import { BiImageAdd } from "react-icons/bi";
 
-export default function RecipePanelInfo({ recipeForm }: { recipeForm: RecipeFormType }) {
+export default function RecipePanelInfo({ recipeForm, onImageUpload }: { recipeForm: RecipeFormType, onImageUpload: (file: UploadedRecipeImage) => void }) {
+    const image = recipeForm.getValues().image;
+
     return (
-        <Fieldset variant="filled" legend={<p className="text-base md:text-lg font-semibold mt-12">Define and Describe Your Recipe</p>}>
-            {/* <div className="flex flex-row w-full justify-end items-center">
-                <ErrorPopover errors={errors} width={width} />
-            </div> */}
-            <TextInput
-                id="modalRecipeName"
-                name="modalRecipeName"
-                label="Recipe Name"
-                placeholder="Grandma's Apple Pie"
-                mt={'md'}
-                withAsterisk
-                key={recipeForm.key('name')}
-                {...recipeForm.getInputProps('name')}
-                error={recipeForm.errors.name}
-                className="overflow-hidden whitespace-nowrap text-ellipsis"
-            />
+        <div className="flex flex-col gap-4">
+            <div>
+                <p className="text-sm font-semibold uppercase tracking-wide text-accent">Basics</p>
+                <h3 className="text-xl font-semibold text-mainText">Start with the story</h3>
+            </div>
+
+            <div className="overflow-hidden rounded-md border border-accent/20 bg-mainBack">
+                {image ? (
+                    <Image
+                        src={image}
+                        alt={recipeForm.getValues().name || 'Recipe image'}
+                        className="h-56 w-full object-cover sm:h-72"
+                        fallbackSrc="https://placehold.co/900x500?text=Recipe+Photo"
+                    />
+                ) : (
+                    <div className="flex h-48 flex-col items-center justify-center gap-2 bg-altBack/60 text-center text-mainText/70 sm:h-60">
+                        <BiImageAdd size={34} />
+                        <p className="text-sm font-medium">Add a recipe photo</p>
+                    </div>
+                )}
+                <div className="flex items-center justify-between gap-3 border-t border-accent/20 px-3 py-2">
+                    <p className="text-sm text-mainText/70">A photo makes the recipe easier to recognize later.</p>
+                    <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+                        {image && (
+                            <Button
+                                type="button"
+                                variant="subtle"
+                                color="red"
+                                size="xs"
+                                onClick={() => {
+                                    recipeForm.setFieldValue('image', '');
+                                    recipeForm.setFieldValue('imageKey', '');
+                                }}
+                            >
+                                Remove
+                            </Button>
+                        )}
+                        <RecipePhotoUploader onUploadComplete={onImageUpload} />
+                    </div>
+                </div>
+            </div>
+
             <Textarea
                 id="modalRecipeDescription"
                 name="modalRecipeDescription"
-                label="Recipe Description"
-                placeholder="Grandma's secret Apple Pie she made for us when we were younger"
-                className={`w-full text-xs sm:text-sm overflow-hidden whitespace-nowrap text-ellipsis`}
+                label="Description"
+                placeholder="A short note about where this recipe came from, when you make it, or what makes it special."
+                className="w-full"
                 autosize
-                minRows={6}
-                mt={'md'}
+                minRows={4}
                 key={recipeForm.key('description')}
                 error={recipeForm.errors.description}
                 {...recipeForm.getInputProps('description')}
             />
-            <div className="flex flex-row justify-between items-end w-full mt-4 space-x-4">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <NumberInput 
                     id="modalRecipeCookingTime"
                     name="modalRecipeCookingTime"
-                    label="Cooking Time (minutes)"
+                    label="Cooking time"
                     placeholder="45"
                     min={1}
+                    suffix=" minutes"
                     key={recipeForm.key('cookingTime')}
                     {...recipeForm.getInputProps('cookingTime')}
                     error={recipeForm.errors.cookingTime}
-                    className="flex-1"
-                    w={'auto'}
                 />
-                <div className="flex flex-col justify-end items-end w-1/4">
-                    <InfoPopover title="Recipe Image" infoOne="Upload a photo here for your recipe - Currently unavailable" infoTwo="This could be a picture of the recipe itself, or the finished product" />
-                    <RecipePhotoUploader test={true} />
-                </div>
-
             </div>
-        </Fieldset>
+        </div>
     );
 }

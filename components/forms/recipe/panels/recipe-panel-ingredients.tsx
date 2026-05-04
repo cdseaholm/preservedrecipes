@@ -2,8 +2,9 @@
 
 import { IIngredient, IngredientForForm } from "@/models/types/recipes/ingredient";
 import { RecipeFormType } from "@/models/types/recipes/review";
-import { CheckIcon, Combobox, Fieldset, Group, Pill, PillsInput, TextInput, useCombobox } from "@mantine/core";
+import { ActionIcon, Button, CheckIcon, Combobox, Group, Pill, PillsInput, TextInput, useCombobox } from "@mantine/core";
 import { useEffect, useState } from "react";
+import { BiPlus, BiTrash } from "react-icons/bi";
 
 export default function RecipePanelIngredients({ recipeForm, ingredientNames }: { recipeForm: RecipeFormType, ingredientNames: IIngredient[] }) {
 
@@ -17,9 +18,11 @@ export default function RecipePanelIngredients({ recipeForm, ingredientNames }: 
     });
 
     const [search, setSearch] = useState('');
+    const [quickIngredient, setQuickIngredient] = useState('');
+    const [quickQuantity, setQuickQuantity] = useState('');
     const [data, setData] = useState<IIngredient[]>(ingredientNames);
 
-    const exactOptionMatch = data.some((item) => item.ingredient === search);
+    const exactOptionMatch = data.some((item) => item.ingredient.toLowerCase() === search.trim().toLowerCase());
     const createTempIngredientId = () => `temp-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
     const handleValueRemove = (val: string) => {
@@ -62,6 +65,46 @@ export default function RecipePanelIngredients({ recipeForm, ingredientNames }: 
         combobox.closeDropdown();
     };
 
+    const handleQuickAdd = () => {
+        const ingredientName = quickIngredient.trim();
+        const quantity = quickQuantity.trim();
+
+        if (!ingredientName) {
+            return;
+        }
+
+        const existingIngredient = recipeForm.getValues().ingredients.find((ingredient) => (
+            ingredient.ingredient.toLowerCase() === ingredientName.toLowerCase()
+        ));
+
+        if (existingIngredient) {
+            const updatedIngredients = recipeForm.getValues().ingredients.map((ingredient) => (
+                ingredient.ingredient.toLowerCase() === ingredientName.toLowerCase()
+                    ? { ...ingredient, quantity: quantity || ingredient.quantity }
+                    : ingredient
+            ));
+            recipeForm.setFieldValue('ingredients', updatedIngredients);
+        } else {
+            const tempIngredientId = createTempIngredientId();
+            recipeForm.setFieldValue('ingredients', [
+                ...recipeForm.getValues().ingredients,
+                {
+                    ingredientId: tempIngredientId,
+                    ingredient: ingredientName,
+                    quantity,
+                    newIngredient: true,
+                } as IngredientForForm,
+            ]);
+            setData((current) => [
+                ...current,
+                { _id: tempIngredientId, ingredient: ingredientName } as IIngredient,
+            ]);
+        }
+
+        setQuickIngredient('');
+        setQuickQuantity('');
+    };
+
 
 
     const values = recipeForm.getValues().ingredients.map((item, index) => (
@@ -83,16 +126,28 @@ export default function RecipePanelIngredients({ recipeForm, ingredientNames }: 
     });
 
     useEffect(() => {
-        if (ingredientNames && ingredientNames.length > 0) {
-            setData(ingredientNames);
-        }
-    }, [ingredientNames]);
+        const selectedIngredients = recipeForm.getValues().ingredients.map((ingredient) => ({
+            _id: ingredient.ingredientId || ingredient.ingredient,
+            ingredient: ingredient.ingredient,
+        })) as IIngredient[];
+
+        const mergedIngredients = [...ingredientNames, ...selectedIngredients].filter((ingredient, index, allIngredients) => (
+            ingredient.ingredient &&
+            allIngredients.findIndex((item) => item.ingredient.toLowerCase() === ingredient.ingredient.toLowerCase()) === index
+        ));
+
+        setData(mergedIngredients);
+    }, [ingredientNames, recipeForm]);
 
     return (
-        <Fieldset variant="filled" className="flex flex-col justify-start items-center w-full h-full overflow-hidden" legend={<p className="text-base md:text-lg font-semibold mt-12">Ingredients</p>}>
+        <div className="flex w-full flex-col gap-4">
+            <div>
+                <p className="text-sm font-semibold uppercase tracking-wide text-accent">Ingredients</p>
+                <h3 className="text-xl font-semibold text-mainText">Build the shopping list</h3>
+            </div>
             <Combobox store={combobox} onOptionSubmit={handleValueSelect} withinPortal={false}>
                 <Combobox.DropdownTarget>
-                    <PillsInput onClick={() => combobox.openDropdown()} w={'100%'}>
+                    <PillsInput onClick={() => combobox.openDropdown()} w={'100%'} label="Add ingredients">
                         <Pill.Group>
                             {values}
 
@@ -140,21 +195,57 @@ export default function RecipePanelIngredients({ recipeForm, ingredientNames }: 
                 </Combobox.Dropdown>
             </Combobox>
 
-            <div className="flex flex-col justify-start items-start w-full h-[50dvh] mt-2 shadow-[inset_0_2px_8px_rgba(0,0,0,0.10),inset_0_-2px_8px_rgba(0,0,0,0.10)] border border-accent/30 rounded-md overflow-hidden">
-                <div className="grid grid-cols-3 w-full p-2 border-b border-accent/30 font-semibold text-sm sm:text-base gap-2 shadow-sm px-4 py-4 mb-2">
-                    <p className="col-span-1">Ingredient</p>
-                    <p className="col-span-2">Quantity</p>
-                </div>
-                <div className="flex flex-col justify-start items-start h-full w-full scrollbar-thin scrollbar-webkit overflow-auto overflow-y-auto overflow-x-hidden">
+            <div className="grid grid-cols-1 gap-2 rounded-md border border-accent/15 bg-mainBack/70 p-3 sm:grid-cols-[minmax(0,1fr)_minmax(160px,0.8fr)_auto] sm:items-end">
+                <TextInput
+                    label="Quick add"
+                    placeholder="Ingredient"
+                    value={quickIngredient}
+                    onChange={(event) => setQuickIngredient(event.currentTarget.value)}
+                    onKeyDown={(event) => {
+                        if (event.key === 'Enter') {
+                            event.preventDefault();
+                            handleQuickAdd();
+                        }
+                    }}
+                />
+                <TextInput
+                    label="Quantity"
+                    placeholder="2 cups"
+                    value={quickQuantity}
+                    onChange={(event) => setQuickQuantity(event.currentTarget.value)}
+                    onKeyDown={(event) => {
+                        if (event.key === 'Enter') {
+                            event.preventDefault();
+                            handleQuickAdd();
+                        }
+                    }}
+                />
+                <Button
+                    type="button"
+                    variant="light"
+                    leftSection={<BiPlus />}
+                    onClick={handleQuickAdd}
+                    disabled={!quickIngredient.trim()}
+                    className="w-full sm:w-auto"
+                >
+                    Add
+                </Button>
+            </div>
+
+            <div className="flex flex-col gap-2">
                     {recipeForm.getValues().ingredients.length > 0 ? (
                         recipeForm.getValues().ingredients.map((val, index) => (
-                            <div key={`${val.ingredient}-${index}-quantity-type`} className="grid grid-cols-3 w-full p-2 items-center flex flex-row border-b border-accent/20 gap-2 pb-2 px-4">
-                                <span title={val.ingredient} className="text-sm col-span-1 truncate">{val.ingredient}</span>
-                                <div className="col-span-2">
+                            <div key={`${val.ingredient}-${index}-quantity-type`} className="grid w-full grid-cols-1 gap-2 rounded-md border border-accent/15 bg-mainBack/70 p-3 sm:grid-cols-[minmax(0,1fr)_minmax(180px,1.4fr)_auto] sm:items-end">
+                                <div className="min-w-0">
+                                    <p className="text-xs font-semibold uppercase tracking-wide text-mainText/50">Ingredient</p>
+                                    <p title={val.ingredient} className="truncate text-sm font-medium text-mainText">{val.ingredient}</p>
+                                </div>
+                                <div>
                                     <TextInput
                                         id={`ingredientQuantity-${val.ingredient}-${index}-text`}
                                         name={`ingredientQuantity-${val.ingredient}-${index}-text`}
-                                        placeholder="e.g., 2 cups, 3 tbsp, etc."
+                                        label="Quantity"
+                                        placeholder="2 cups, 3 tbsp, to taste"
                                         key={recipeForm.key(`${val.ingredient}.quantity`)}
                                         onChange={(event) => {
                                             const updatedIngredients = recipeForm.getValues().ingredients.map((ing) => {
@@ -169,19 +260,26 @@ export default function RecipePanelIngredients({ recipeForm, ingredientNames }: 
                                         className="w-full"
                                     />
                                 </div>
+                                <ActionIcon
+                                    type="button"
+                                    variant="subtle"
+                                    color="red"
+                                    aria-label={`Remove ${val.ingredient}`}
+                                    onClick={() => handleValueRemove(val.ingredient)}
+                                    className="justify-self-end"
+                                >
+                                    <BiTrash />
+                                </ActionIcon>
                             </div>
                         ))
                     ) : (
-                        <div key={'no-ingredient-text'} className="flex flex-col justify-center items-center rounded-md px-2 py-1 mr-2 mb-2 w-full">
-                            <p className="text-sm italic text-accent/70 text-center">No ingredients added yet</p>
-                            <p className="text-sm italic text-accent/70 text-center">Begin typing in the search bar above</p>
-                            <p className="text-sm italic text-accent/70 text-center">You can either add ingredients previously made or create a new one by typing it there</p>
-                            <p className="text-sm italic text-accent/70 text-center">You are not required to add any, but it could help others perfect your recipe</p>
+                        <div key={'no-ingredient-text'} className="rounded-md border border-dashed border-accent/30 bg-mainBack/60 px-4 py-8 text-center">
+                            <p className="text-sm font-medium text-mainText">No ingredients yet</p>
+                            <p className="text-sm text-mainText/60">Search above, or type a new ingredient name and create it.</p>
                         </div>
                     )}
-                </div>
             </div>
-        </Fieldset>
+        </div>
     );
 
 }

@@ -9,6 +9,7 @@ import { IFamily } from "@/models/types/family/family"
 import { IUser } from "@/models/types/personal/user"
 import { FaRegTrashAlt, FaSignOutAlt } from "react-icons/fa"
 import { LeaveFamily } from "@/utils/server-actions/family/members"
+import { toast } from "sonner"
 
 
 export default function FamilySettings({ userFamAdminPrivs, family, userInfo }: { userFamAdminPrivs: boolean, family: IFamily, userInfo: IUser }) {
@@ -16,30 +17,30 @@ export default function FamilySettings({ userFamAdminPrivs, family, userInfo }: 
     const { navigate } = useNavigation();
     const { handleConfirmFam, submitChange, handleChangeStatuses, editFamMemStatusForm, changeFamNameForm } = FamilySettingsHooks();
     const numOfAdmins = family.familyMembers.filter(member => member.permissionStatus === 'Admin').length;
-    const adminApproved = userFamAdminPrivs && numOfAdmins > 1;
+    const leavingWouldRemoveOnlyAdmin = userFamAdminPrivs && numOfAdmins <= 1;
     const setFamily = useFamilyStore(s => s.setFamily);
     const setUserInfo = useUserStore(s => s.setUserInfo);
 
     const handleLeaveFamily = async () => {
-        if (!adminApproved) {
-            alert("You cannot leave the family as you are the only admin. Please assign another admin before leaving.");
+        if (leavingWouldRemoveOnlyAdmin) {
+            toast.error("Assign another admin before leaving this family.");
             return;
         }
         const confirmLeave = confirm("Are you sure you want to leave the family?");
         if (confirmLeave) {
             const leaving = await LeaveFamily(family._id, '/');
             if (!leaving) {
-                alert("Error leaving family. Please try again later.");
+                toast.error("Error leaving family. Please try again later.");
                 return;
             }
             if (leaving.success) {
                 setFamily({} as IFamily);
                 const newUserInfo = { ...userInfo, userFamilyID: '' };
                 setUserInfo(newUserInfo);
-                alert("You have left the family.");
-                window.location.href = "/";
+                toast.success("You have left the family.");
+                navigate("/");
             } else {
-                alert("Error leaving family: " + leaving.message);
+                toast.error("Error leaving family: " + leaving.message);
             }
         }
     }

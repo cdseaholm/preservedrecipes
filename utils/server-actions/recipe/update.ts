@@ -6,6 +6,8 @@ import { IRecipe } from '@/models/types/recipes/recipe';
 import { IngredientForForm } from '@/models/types/recipes/ingredient';
 import { CreateIngredient } from '../ingredient/create';
 import { cleanStringArray, getAuthenticatedUser, getRevalidationPath, isValidId } from './utils';
+import { DeleteUploadThingFiles } from '../uploadthing/delete-files';
+import { getUploadThingKeyFromUrl } from '@/utils/uploadthing/file-key';
 
 export async function UpdateRecipe(recipeId: string, recipeData: IRecipe, route: string) {
     if (!recipeData || !recipeId) {
@@ -26,7 +28,7 @@ export async function UpdateRecipe(recipeId: string, recipeData: IRecipe, route:
             return { success: false, message };
         }
 
-        const existingRecipe = await Recipe.findById(recipeId).select('creatorID').lean();
+        const existingRecipe = await Recipe.findById(recipeId).select('creatorID image imageKey').lean<IRecipe>();
         if (!existingRecipe) {
             return { success: false, message: 'Recipe not found' };
         }
@@ -59,12 +61,20 @@ export async function UpdateRecipe(recipeId: string, recipeData: IRecipe, route:
             recipeType: recipeData.recipeType,
             tags: recipeData.tags,
             image: recipeData.image,
+            imageKey: recipeData.imageKey || getUploadThingKeyFromUrl(recipeData.image),
             recipeFor: recipeData.recipeFor,
             secret: recipeData.secret,
             secretViewerIDs: recipeData.secret ? cleanStringArray(recipeData.secretViewerIDs) : [] as string[],
             cookingTime: recipeData.cookingTime,
             updatedAt: new Date(),
         }) as IRecipe;
+
+        const previousImageKey = existingRecipe.imageKey || getUploadThingKeyFromUrl(existingRecipe.image);
+        const nextImageKey = recipeData.imageKey || getUploadThingKeyFromUrl(recipeData.image);
+
+        if (previousImageKey && previousImageKey !== nextImageKey) {
+            await DeleteUploadThingFiles([previousImageKey]);
+        }
 
         revalidatePath(getRevalidationPath(route));
 

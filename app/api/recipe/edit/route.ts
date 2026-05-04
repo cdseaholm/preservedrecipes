@@ -8,6 +8,7 @@ import { getToken } from "next-auth/jwt"
 import { revalidatePath } from "next/cache";
 import { IRecipe } from "@/models/types/recipes/recipe";
 import { IReview } from "@/models/types/misc/review";
+import { getUploadThingKeyFromUrl } from "@/utils/uploadthing/file-key";
 
 export async function PUT(req: NextRequest) {
 
@@ -46,7 +47,8 @@ export async function PUT(req: NextRequest) {
         const recipe = body.recipePassed as IRecipe;
         const newRecipe = {
             name: recipe.name,
-            image: '',
+            image: recipe.image,
+            imageKey: recipe.imageKey || getUploadThingKeyFromUrl(recipe.image),
             creatorID: user._id.toString(),
             steps: recipe.steps,
             reviews: [] as IReview[],

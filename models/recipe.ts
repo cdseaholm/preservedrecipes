@@ -15,6 +15,10 @@ export const recipeSchema = new Schema(
       type: String,
       required: false,
     },
+    imageKey: {
+      type: String,
+      required: false,
+    },
     creatorID: {
       type: String,
       required: false

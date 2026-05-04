@@ -24,6 +24,7 @@ const getRecipeFormValues = (recipe: IRecipe | null): IRecipe => ({
     recipeType: recipe?.recipeType || '',
     tags: recipe?.tags || [],
     image: recipe?.image || '',
+    imageKey: recipe?.imageKey || '',
     creatorID: recipe?.creatorID || '',
     reviews: recipe?.reviews || [],
     recipeFor: recipe?.recipeFor || ['personal'],

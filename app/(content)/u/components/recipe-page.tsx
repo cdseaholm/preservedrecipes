@@ -18,7 +18,7 @@ import MenuPanelHooks from "@/components/hooks/menu/menu-panel-hooks";
 import dynamic from "next/dynamic";
 import FilterAndSortDetailsRow from "@/components/templates/filter-sort-details-row";
 import CardTemplate from "@/components/templates/card-template";
-import { Checkbox } from "@mantine/core";
+import { Button, Checkbox } from "@mantine/core";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useStateStore } from "@/context/stateStore";
@@ -165,7 +165,15 @@ export default function RecipePage({
                                 </InSearchItemButton>
                             ))
                         ) : (
-                            <ul className="p-2 text-start pl-7">Add a recipe to see it here</ul>
+                            <div className="flex w-full flex-col items-center justify-center gap-3 rounded-md border border-dashed border-accent/30 bg-mainBack/60 p-6 text-center">
+                                <p className="text-base font-semibold text-mainText">No recipes found</p>
+                                <p className="max-w-md text-sm text-mainText/70">
+                                    Create your first recipe, or adjust the search and filters to show more results.
+                                </p>
+                                <Button type="button" variant="light" onClick={() => handleOpenRecipeModal(null, userInfo, 'personal')}>
+                                    Create recipe
+                                </Button>
+                            </div>
                         )}
                     </ListWrapper>
                 </ContentWrapper>

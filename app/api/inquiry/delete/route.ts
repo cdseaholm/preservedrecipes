@@ -41,6 +41,11 @@ export async function DELETE(req: NextRequest) {
             return NextResponse.json({ status: 401, message: 'Unauthorized' });
         }
 
+        const adminEmail = process.env.ADMIN_USERNAME || 'cdseaholm@gmail.com';
+        if (user.email !== adminEmail) {
+            return NextResponse.json({ status: 403, message: 'Admin privileges are required' });
+        }
+
         const inquiries = body.itemsToDelete as IInquiry[];
 
         if (!inquiries || inquiries.length === 0 || !inquiries[0]._id) {

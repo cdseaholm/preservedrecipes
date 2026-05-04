@@ -1,69 +1,69 @@
 'use client'
 
-import { Fieldset, Menu, Textarea } from "@mantine/core";
-import { IoEllipsisHorizontal } from "react-icons/io5";
-import { BiPencil, BiTrash } from "react-icons/bi";
+import { ActionIcon, Button, Textarea } from "@mantine/core";
+import { BiPlus, BiTrash } from "react-icons/bi";
 import { RecipeFormType } from "@/models/types/recipes/review";
 import { IStep } from "@/models/types/recipes/step";
-import { useState } from "react";
 
 export default function RecipePanelSteps({ recipeForm }: { recipeForm: RecipeFormType }) {
 
-    const [editingStep, setEditingStep] = useState<number>(-1);
+    const addStep = () => {
+        const newStep = { stepId: recipeForm.getValues().steps.length, description: '' } as IStep;
+        const updatedSteps = [...recipeForm.getValues().steps, newStep];
+        recipeForm.setFieldValue('steps', updatedSteps);
+    };
 
     return (
-        <Fieldset variant="filled" className="flex flex-col justify-start items-center w-full h-full overflow-hidden" legend={<p className="text-base md:text-lg font-semibold mt-12">Recipe Steps</p>}>
-            <button type="button" className="flex flex-row w-full justify-end items-center cursor-pointer" onClick={() => {
-                const newStep = { stepId: recipeForm.getValues().steps.length, description: '' } as IStep;
-                const updatedSteps = [...recipeForm.getValues().steps, newStep];
-                recipeForm.setFieldValue('steps', updatedSteps);
-            }}>+ Add Step</button>
-            <div className="flex flex-col justify-start items-start w-full h-[50dvh] mt-2 shadow-[inset_0_2px_8px_rgba(0,0,0,0.10),inset_0_-2px_8px_rgba(0,0,0,0.10)] border border-accent/30 rounded-md scrollbar-thin scrollbar-webkit overflow-auto overflow-y-auto overflow-x-hidden">
+        <div className="flex w-full flex-col gap-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                    <p className="text-sm font-semibold uppercase tracking-wide text-accent">Instructions</p>
+                    <h3 className="text-xl font-semibold text-mainText">Write the instructions</h3>
+                </div>
+                <Button type="button" variant="light" leftSection={<BiPlus />} onClick={addStep}>
+                    Add instruction
+                </Button>
+            </div>
+            <div className="flex flex-col gap-3">
                 {recipeForm.getValues().steps && recipeForm.getValues().steps.length > 0 ? (
                     recipeForm.getValues().steps.map((step, index) => (
-                        <div key={`step-${index}-${step.stepId}`} className="grid grid-cols-5 w-full p-2 items-center flex flex-row border-b border-accent/20 gap-2 pb-2 px-4 h-content">
-                            <p className="text-xs sm:text-sm font-semibold span-cols-1">{`Step #${index + 1}:`}</p>
-                            <div className="col-span-3 w-full h-content">
+                        <div key={`step-${index}-${step.stepId}`} className="grid grid-cols-[auto_minmax(0,1fr)_auto] gap-3 rounded-md border border-accent/15 bg-mainBack/70 p-3">
+                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent text-sm font-semibold text-lightText">
+                                {index + 1}
+                            </div>
+                            <div className="min-w-0">
                                 <Textarea
-                                    className={`w-full text-xs sm:text-sm overflow-hidden whitespace-nowrap text-ellipsis span-cols-3`}
+                                    className="w-full"
                                     id={`modalStep-${index + 1}-description`}
                                     name={`modalStep-${index + 1}-description`}
-                                    placeholder="Enter your descriptions here"
+                                    placeholder="Describe this instruction"
                                     key={recipeForm.key(`steps.${index}.description`)}
                                     {...recipeForm.getInputProps(`steps.${index}.description`)}
-                                    minRows={editingStep === index ? 6 : 1}
+                                    autosize
+                                    minRows={2}
                                 />
                             </div>
-                            <div className="col-span-1 flex flex-row justify-end items-center space-x-2">
-                                <Menu shadow="md" width={200} closeOnClickOutside={true} closeOnItemClick={true}>
-                                    <Menu.Target>
-                                        <IoEllipsisHorizontal className="cursor-pointer" size={20} />
-                                    </Menu.Target>
-
-                                    <Menu.Dropdown>
-                                        <Menu.Item leftSection={<BiPencil size={14} />} onClick={() => {
-                                            setEditingStep(index);
-                                        }}>
-                                            Edit
-                                        </Menu.Item>
-                                        <Menu.Item leftSection={<BiTrash size={14} />} onClick={() => {
-                                            const updatedSteps = recipeForm.getValues().steps.filter((_, i) => i !== index).map((step, i) => ({ ...step, stepId: i }));
-                                            recipeForm.setFieldValue('steps', updatedSteps);
-                                        }}>
-                                            Delete
-                                        </Menu.Item>
-                                    </Menu.Dropdown>
-                                </Menu>
-                            </div>
+                            <ActionIcon
+                                type="button"
+                                variant="subtle"
+                                color="red"
+                                aria-label={`Delete instruction ${index + 1}`}
+                                onClick={() => {
+                                    const updatedSteps = recipeForm.getValues().steps.filter((_, i) => i !== index).map((step, i) => ({ ...step, stepId: i }));
+                                    recipeForm.setFieldValue('steps', updatedSteps);
+                                }}
+                            >
+                                <BiTrash />
+                            </ActionIcon>
                         </div>
                     ))
                 ) : (
-                    <div key={'no-steps-text'} className="flex flex-col justify-center items-center rounded-md px-2 py-1 mr-2 mb-2 w-full">
-                        <p className="text-sm italic text-accent/70 text-center">{`No steps added yet. Click "Add Step" to begin.`}</p>
-                        <p className="text-sm italic text-accent/70 text-center">{`At least one step is required`}</p>
+                    <div key={'no-steps-text'} className="rounded-md border border-dashed border-accent/30 bg-mainBack/60 px-4 py-8 text-center">
+                        <p className="text-sm font-medium text-mainText">No instructions yet</p>
+                        <p className="text-sm text-mainText/60">Add at least one instruction so someone else can recreate it.</p>
                     </div>
                 )}
             </div>
-        </Fieldset>
+        </div>
     );
 }

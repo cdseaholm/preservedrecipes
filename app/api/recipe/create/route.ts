@@ -10,6 +10,7 @@ import MongoUser from "@/models/user";
 import Community from "@/models/community";
 import { IIngredient, IngredientForForm } from "@/models/types/recipes/ingredient";
 import Ingredient from "@/models/ingredient";
+import { getUploadThingKeyFromUrl } from "@/utils/uploadthing/file-key";
 
 export async function POST(req: NextRequest) {
 
@@ -97,6 +98,7 @@ export async function POST(req: NextRequest) {
             cookingTime: recipe.cookingTime,
             recipeFor: recipe.recipeFor,
             image: recipe.image,
+            imageKey: recipe.imageKey || getUploadThingKeyFromUrl(recipe.image),
             creatorID: user._id.toString(),
             steps: recipe.steps,
             reviews: recipe.reviews,

@@ -1,43 +1,36 @@
 'use client'
 
-import { toast } from "sonner";
+import { Alert, Button, Group, Stack, Text, TextInput } from "@mantine/core";
+import { IconInfoCircle, IconMail, IconUser } from "@tabler/icons-react";
 
 export default function SettingsTab() {
     
     return (
-        <div className="bg-secondaryBack rounded-lg p-6 space-y-6">
+        <Stack gap="md" className="rounded-md bg-secondaryBack p-4 sm:p-6">
             <div>
-                <h2 className="text-2xl font-bold mb-4">Account Settings</h2>
-                <p className="text-gray-600 dark:text-gray-400">
-                    Full settings page coming soon. For now, use the Edit Profile button above.
-                </p>
+                <h2 className="mb-1 text-2xl font-bold">Account Settings</h2>
+                <Text c="dimmed" size="sm">
+                    Core profile editing is limited for the MVP. These controls are intentionally disabled until the account edit flow is finished.
+                </Text>
             </div>
 
-            <div className="space-y-4">
-                <div className="border-t border-gray-300 dark:border-gray-700 pt-4">
-                    <h3 className="font-semibold mb-2">Quick Actions</h3>
-                    <div className="space-y-2">
-                        <button
-                            onClick={() => toast.info("Feature coming soon")}
-                            className="w-full text-left px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors cursor-pointer"
-                        >
-                            Change Password
-                        </button>
-                        <button
-                            onClick={() => toast.info("Feature coming soon")}
-                            className="w-full text-left px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors cursor-pointer"
-                        >
-                            Privacy Settings
-                        </button>
-                        <button
-                            onClick={() => toast.info("Feature coming soon")}
-                            className="w-full text-left px-4 py-2 bg-red-100 dark:bg-red-900/20 text-red-600 rounded hover:bg-red-200 dark:hover:bg-red-900/30 transition-colors cursor-pointer"
-                        >
-                            Delete Account
-                        </button>
-                    </div>
-                </div>
+            <Alert icon={<IconInfoCircle size={18} />} color="yellow" variant="light">
+                Your profile, recipes, and family data are active. Password and account deletion tools are not yet enabled in-app.
+            </Alert>
+
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <TextInput label="Display name" placeholder="Coming soon" leftSection={<IconUser size={16} />} disabled />
+                <TextInput label="Email" placeholder="Coming soon" leftSection={<IconMail size={16} />} disabled />
             </div>
-        </div>
+
+            <Group justify="flex-start">
+                <Button type="button" variant="light" disabled>
+                    Change password
+                </Button>
+                <Button type="button" variant="light" color="red" disabled>
+                    Delete account
+                </Button>
+            </Group>
+        </Stack>
     );
 }

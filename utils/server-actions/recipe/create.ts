@@ -8,6 +8,7 @@ import { IngredientForForm } from '@/models/types/recipes/ingredient';
 import { CreateIngredient } from '../ingredient/create';
 import { IReview } from '@/models/types/misc/review';
 import { cleanStringArray, getAuthenticatedUser, getRevalidationPath } from './utils';
+import { getUploadThingKeyFromUrl } from '@/utils/uploadthing/file-key';
 
 export async function CreateRecipe(values: IRecipe, route: string) {
     if (!values) {
@@ -44,6 +45,7 @@ export async function CreateRecipe(values: IRecipe, route: string) {
             recipeType: values.recipeType,
             tags: values.tags,
             image: values.image,
+            imageKey: values.imageKey || getUploadThingKeyFromUrl(values.image),
             reviews: [] as IReview[],
             recipeFor: values.recipeFor,
             secret: values.secret,

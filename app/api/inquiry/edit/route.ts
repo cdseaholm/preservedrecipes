@@ -41,6 +41,11 @@ export async function PUT(req: NextRequest) {
             return NextResponse.json({ status: 401, message: 'Unauthorized', inquiriesReturned: null });
         }
 
+        const adminEmail = process.env.ADMIN_USERNAME || 'cdseaholm@gmail.com';
+        if (user.email !== adminEmail) {
+            return NextResponse.json({ status: 403, message: 'Admin privileges are required', inquiriesReturned: null });
+        }
+
         const inquiries = body.inquiriesToEdit as IInquiry[];
 
         if (!inquiries || inquiries.length === 0 || !inquiries[0]._id) {
@@ -49,13 +54,7 @@ export async function PUT(req: NextRequest) {
 
         for (const inq of inquiries) {
             await Inquiry.findByIdAndUpdate(inq._id, {
-                inquirerEmail: inq.inquirerEmail,
-                inquirerName: inq.inquirerName,
-                inquiryType: inq.inquiryType,
-                inquiryTitle: inq.inquiryTitle,
-                inquiryMessage: inq.inquiryMessage,
                 handled: inq.handled,
-                createdAt: inq.createdAt,
                 updatedAt: new Date()
             }) as IInquiry;
         }

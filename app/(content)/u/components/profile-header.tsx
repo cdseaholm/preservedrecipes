@@ -34,7 +34,8 @@ interface ProfileHeaderProps {
 
 export default function ProfileHeader({ user, familyData, completeness }: ProfileHeaderProps) {
     const router = useRouter();
-    const profileUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/u/profile/${user._id}`;
+    const profileUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/u/${user._id}/view`;
+    const openSettings = () => router.push('/u/profile?tab=settings');
 
     const getCompletenessColor = () => {
         if (completeness >= 75) return 'green';
@@ -71,7 +72,7 @@ export default function ProfileHeader({ user, familyData, completeness }: Profil
                                         bottom: 0,
                                         right: 0
                                     }}
-                                    onClick={() => router.push('/u/settings')}
+                                    onClick={openSettings}
                                 >
                                     <IconEdit size={14} />
                                 </ActionIcon>
@@ -104,7 +105,7 @@ export default function ProfileHeader({ user, familyData, completeness }: Profil
                             variant='filled'
                             color="blue.5"
                             leftSection={<IconEdit size={16} />}
-                            onClick={() => router.push('/u/settings')}
+                            onClick={openSettings}
                             w={rem(150)}
                         >
                             Edit Profile
@@ -133,7 +134,7 @@ export default function ProfileHeader({ user, familyData, completeness }: Profil
                         variant='filled'
                         color="blue.5"
                         leftSection={<IconEdit size={16} />}
-                        onClick={() => router.push('/u/settings')}
+                        onClick={openSettings}
                     >
                         Edit
                     </Button>
@@ -161,7 +162,7 @@ export default function ProfileHeader({ user, familyData, completeness }: Profil
                         size="sm"
                         c="dimmed"
                         fs="italic"
-                        onClick={() => router.push('/u/settings')}
+                        onClick={openSettings}
                         style={{ cursor: 'pointer' }}
                         className="hover:text-accent transition-colors"
                     >
@@ -191,7 +192,7 @@ export default function ProfileHeader({ user, familyData, completeness }: Profil
                             size="xs"
                             c="accent"
                             style={{ cursor: 'pointer' }}
-                            onClick={() => router.push('/u/settings')}
+                            onClick={openSettings}
                             className="hover:underline"
                         >
                             Complete your profile to unlock all features →
