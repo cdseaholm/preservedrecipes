@@ -4,11 +4,7 @@ import { useUserStore } from "@/context/userStore";
 
 export async function AttemptCreateInquiry({ inquiry, email }: { inquiry: IInquiry, email: string }) {
 
-    const urlToUse = process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL as string : '';
-
-    if (!urlToUse || urlToUse.length === 0 || urlToUse === '') {
-        return { status: false, message: 'Failed Creation, No URL' };
-    }
+    const urlToUse = process.env.NEXT_PUBLIC_BASE_URL || '';
 
     if (!email || email.length === 0 || email === '' || !inquiry) {
         return { status: false, message: 'Failed Creation, Invalid Email or Inquiry' };
@@ -28,7 +24,6 @@ export async function AttemptCreateInquiry({ inquiry, email }: { inquiry: IInqui
         }
 
         const data = await res.json().catch(() => {
-            console.log('Inquiry creation rejected');
             return { status: false, message: 'Failed Creation, Invalid Response' };
         });
 
@@ -36,10 +31,11 @@ export async function AttemptCreateInquiry({ inquiry, email }: { inquiry: IInqui
             return { status: false, message: `Failed Creation, ${data?.message || 'Unknown Error'}` };
         }
 
-        const currInquirys = useUserStore.getState().inquiries || [];
-        useUserStore.getState().setInquiries([inquiry, ...currInquirys]);
+        const returnedInquiry = data.returnedInquiry as IInquiry | null;
+        const currInquiries = useUserStore.getState().inquiries || [];
+        useUserStore.getState().setInquiries([returnedInquiry || inquiry, ...currInquiries]);
 
-        return { status: true, message: `Created` };
+        return { status: true, message: `Created`, returnedInquiry };
 
     } catch (error: any) {
         return { status: false, message: `Failed creation` };

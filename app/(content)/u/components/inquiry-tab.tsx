@@ -1,66 +1,253 @@
 'use client'
 
-import { useState, ChangeEvent } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { IInquiry, InquiryFormType } from "@/models/types/misc/inquiry";
+import { IUser } from "@/models/types/personal/user";
 import { useInquiryActions } from "@/components/hooks/inquiry/inquiry-hooks";
-import SearchBar from "@/components/misc/searchBox/searchBar";
-import { toast } from "sonner";
+import { useUserStore } from "@/context/userStore";
+import {
+    ActionIcon,
+    Badge,
+    Button,
+    Card,
+    Group,
+    Select,
+    Stack,
+    Text,
+    Textarea,
+    TextInput,
+    Tooltip,
+} from "@mantine/core";
+import { useForm } from "@mantine/form";
+import { IconBug, IconCheck, IconMessageCircle, IconSearch, IconTrash } from "@tabler/icons-react";
 
-export default function InquiryTabContent() {
-    
+type InquiryTabContentProps = {
+    initialInquiries: IInquiry[];
+    user: IUser;
+    isAdmin: boolean;
+};
+
+const inquiryTypeOptions = [
+    { value: 'General', label: 'General' },
+    { value: 'Bug Report', label: 'Bug report' },
+    { value: 'Feature Request', label: 'Feature request' },
+    { value: 'Suggestion', label: 'Suggestion' },
+    { value: 'Other', label: 'Other' },
+];
+
+export default function InquiryTabContent({ initialInquiries, user, isAdmin }: InquiryTabContentProps) {
     const [search, setSearch] = useState('');
-    const { storedInquiries } = useInquiryActions();
+    const [busyInquiryId, setBusyInquiryId] = useState<string | null>(null);
+    const { loading, createInquiry, editInquiries, deleteInquiries, storedInquiries } = useInquiryActions();
+    const setInquiries = useUserStore(state => state.setInquiries);
 
-    const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
-        setSearch(e.currentTarget.value);
+    const inquiryForm = useForm<InquiryFormType>({
+        mode: 'uncontrolled',
+        initialValues: {
+            id: '',
+            inquiryTitle: '',
+            inquirerName: user.name || '',
+            inquirerEmail: user.email || '',
+            inquiryType: '',
+            inquiryMessage: '',
+            handled: false,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        },
+        validate: {
+            inquiryType: (value) => value ? null : 'Choose a topic',
+            inquiryMessage: (value) => value.trim().length > 0 ? null : 'Add a message',
+        },
+    });
+
+    useEffect(() => {
+        setInquiries(initialInquiries);
+    }, [initialInquiries, setInquiries]);
+
+    const filteredInquiries = useMemo(() => {
+        const normalizedSearch = search.toLowerCase().trim();
+
+        return storedInquiries.filter((inquiry) => {
+            if (!normalizedSearch) return true;
+
+            return [
+                inquiry.inquiryTitle,
+                inquiry.inquiryType,
+                inquiry.inquiryMessage,
+                inquiry.inquirerName,
+                inquiry.inquirerEmail,
+            ].some(value => value?.toLowerCase().includes(normalizedSearch));
+        }).sort((a, b) => {
+            if (a.handled !== b.handled) {
+                return a.handled ? 1 : -1;
+            }
+
+            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        });
+    }, [search, storedInquiries]);
+
+    const handleCreate = async () => {
+        inquiryForm.setFieldValue('inquirerName', user.name || user.email);
+        inquiryForm.setFieldValue('inquirerEmail', user.email);
+
+        const created = await createInquiry({ inquiryForm, sessionPassed: null });
+
+        if (created) {
+            inquiryForm.setValues({
+                id: '',
+                inquiryTitle: '',
+                inquirerName: user.name || '',
+                inquirerEmail: user.email || '',
+                inquiryType: '',
+                inquiryMessage: '',
+                handled: false,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            });
+        }
     };
 
-    const searchedInquiries = storedInquiries.filter((item) =>
-        item.inquiryTitle.toLowerCase().includes(search.toLowerCase().trim())
-    );
+    const handleToggleHandled = async (inquiry: IInquiry) => {
+        setBusyInquiryId(inquiry._id);
+        await editInquiries([{ ...inquiry, handled: !inquiry.handled, updatedAt: new Date() }]);
+        setBusyInquiryId(null);
+    };
+
+    const handleDelete = async (inquiry: IInquiry) => {
+        const confirmed = window.confirm('Delete this inquiry?');
+        if (!confirmed) return;
+
+        setBusyInquiryId(inquiry._id);
+        await deleteInquiries([inquiry]);
+        setBusyInquiryId(null);
+    };
 
     return (
-        <div className="space-y-4">
-            <div className="flex justify-between items-center">
-                <SearchBar 
-                    handleSearch={handleSearch}
-                    searchString={search}
-                    index={1}
-                    leftSection={null}
-                />
-                <button
-                    onClick={() => toast.info("Create inquiry modal coming soon")}
-                    className="px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent/80 transition-colors text-sm"
-                >
-                    New Inquiry
-                </button>
-            </div>
-
-            <div className="space-y-2">
-                {searchedInquiries.length > 0 ? (
-                    searchedInquiries.map((inquiry, index) => (
-                        <div 
-                            key={inquiry._id}
-                            className="bg-secondaryBack p-4 rounded-lg shadow-md flex justify-between items-center"
-                        >
-                            <div className="flex-1">
-                                <p className="font-medium">{index + 1}. {inquiry.inquiryTitle}</p>
-                                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                                    {inquiry.inquiryType}
-                                </p>
-                            </div>
-                            <div className="flex items-center gap-4">
-                                <span className={`text-sm font-semibold ${inquiry.handled ? 'text-green-500' : 'text-red-500'}`}>
-                                    {inquiry.handled ? '✓ Completed' : '⏳ Pending'}
-                                </span>
-                            </div>
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+            <Card withBorder radius="md" padding="md" className="bg-secondaryBack">
+                <Stack gap="md">
+                    <Group gap="sm">
+                        <IconMessageCircle size={20} />
+                        <div>
+                            <Text fw={700}>Send feedback</Text>
+                            <Text size="sm" c="dimmed">
+                                Tell me about bugs, rough edges, ideas, or what is working well.
+                            </Text>
                         </div>
-                    ))
-                ) : (
-                    <div className="bg-secondaryBack p-8 rounded-lg text-center">
-                        <p className="text-gray-600 dark:text-gray-400">No inquiries found</p>
+                    </Group>
+
+                    <Select
+                        label="Topic"
+                        placeholder="Choose a topic"
+                        data={inquiryTypeOptions}
+                        leftSection={<IconBug size={16} />}
+                        key={inquiryForm.key('inquiryType')}
+                        error={inquiryForm.errors.inquiryType}
+                        {...inquiryForm.getInputProps('inquiryType')}
+                    />
+
+                    <Textarea
+                        label="Message"
+                        placeholder="What happened, what did you expect, or what would make this better?"
+                        autosize
+                        minRows={6}
+                        key={inquiryForm.key('inquiryMessage')}
+                        error={inquiryForm.errors.inquiryMessage}
+                        {...inquiryForm.getInputProps('inquiryMessage')}
+                    />
+
+                    <Button type="button" loading={loading} onClick={handleCreate}>
+                        Submit feedback
+                    </Button>
+                </Stack>
+            </Card>
+
+            <Stack gap="md">
+                <Group justify="space-between" align="flex-end" gap="sm">
+                    <div>
+                        <Text fw={700}>{isAdmin ? 'All inquiries' : 'Your inquiries'}</Text>
+                        <Text size="sm" c="dimmed">
+                            {isAdmin ? 'Admin view is showing feedback from every user.' : 'You can see feedback you have submitted.'}
+                        </Text>
                     </div>
-                )}
-            </div>
+                    {isAdmin && <Badge variant="light" color="accent">Admin</Badge>}
+                </Group>
+
+                <TextInput
+                    value={search}
+                    onChange={(event) => setSearch(event.currentTarget.value)}
+                    placeholder="Search feedback"
+                    leftSection={<IconSearch size={16} />}
+                />
+
+                <Stack gap="sm">
+                    {filteredInquiries.length > 0 ? (
+                        filteredInquiries.map((inquiry) => (
+                            <Card key={inquiry._id} withBorder radius="md" padding="md" className="bg-mainBack/60">
+                                <Group justify="space-between" align="flex-start" gap="sm" wrap="nowrap">
+                                    <Stack gap={6} className="min-w-0">
+                                        <Group gap="xs">
+                                            <Badge variant="light" color={inquiry.handled ? 'green' : 'yellow'}>
+                                                {inquiry.handled ? 'Handled' : 'Open'}
+                                            </Badge>
+                                            <Badge variant="outline" color="accent">
+                                                {inquiry.inquiryType}
+                                            </Badge>
+                                        </Group>
+                                        <Text fw={700} className="truncate" title={inquiry.inquiryTitle}>
+                                            {inquiry.inquiryTitle}
+                                        </Text>
+                                        <Text size="sm" c="dimmed">
+                                            {isAdmin ? `${inquiry.inquirerName} · ${inquiry.inquirerEmail}` : new Date(inquiry.createdAt).toLocaleDateString()}
+                                        </Text>
+                                        <Text size="sm" className="whitespace-pre-wrap">
+                                            {inquiry.inquiryMessage}
+                                        </Text>
+                                    </Stack>
+
+                                    {isAdmin && (
+                                        <Group gap={4} wrap="nowrap">
+                                            <Tooltip label={inquiry.handled ? 'Mark open' : 'Mark handled'}>
+                                                <ActionIcon
+                                                    type="button"
+                                                    variant="light"
+                                                    color={inquiry.handled ? 'gray' : 'green'}
+                                                    onClick={() => handleToggleHandled(inquiry)}
+                                                    loading={busyInquiryId === inquiry._id}
+                                                    disabled={busyInquiryId !== null && busyInquiryId !== inquiry._id}
+                                                    aria-label={inquiry.handled ? 'Mark inquiry open' : 'Mark inquiry handled'}
+                                                >
+                                                    <IconCheck size={16} />
+                                                </ActionIcon>
+                                            </Tooltip>
+                                            <Tooltip label="Delete">
+                                                <ActionIcon
+                                                    type="button"
+                                                    variant="light"
+                                                    color="red"
+                                                    onClick={() => handleDelete(inquiry)}
+                                                    loading={busyInquiryId === inquiry._id}
+                                                    disabled={busyInquiryId !== null && busyInquiryId !== inquiry._id}
+                                                    aria-label="Delete inquiry"
+                                                >
+                                                    <IconTrash size={16} />
+                                                </ActionIcon>
+                                            </Tooltip>
+                                        </Group>
+                                    )}
+                                </Group>
+                            </Card>
+                        ))
+                    ) : (
+                        <Card withBorder radius="md" padding="xl" className="bg-mainBack/60 text-center">
+                            <Text fw={700}>No feedback found</Text>
+                            <Text size="sm" c="dimmed">
+                                {search ? 'Try a different search.' : 'Submitted feedback will appear here.'}
+                            </Text>
+                        </Card>
+                    )}
+                </Stack>
+            </Stack>
         </div>
     );
 }

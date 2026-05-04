@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useState } from "react";
 import { IUser } from "@/models/types/personal/user";
 import { IFamily } from "@/models/types/family/family";
 import { IReview } from "@/models/types/misc/review";
@@ -30,6 +31,10 @@ import {
     IconMessageCircle, 
     IconSettings 
 } from "@tabler/icons-react";
+import { useSearchParams } from "next/navigation";
+import { useUserStore } from "@/context/userStore";
+
+const profileTabs = ['activity', 'stats', 'history', 'inquiries', 'settings'];
 
 interface ProfilePageProps {
     user: IUser;
@@ -38,6 +43,7 @@ interface ProfilePageProps {
     recentRecipes: IRecipe[];
     favoriteRecipes: IRecipe[];
     inquiries: IInquiry[];
+    userIsInquiryAdmin: boolean;
     communitiesCreated: ICommunity[];
     communitiesJoined: ICommunity[];
 }
@@ -48,13 +54,27 @@ export default function ProfilePage({
     reviews,
     recentRecipes,
     inquiries,
+    userIsInquiryAdmin,
     communitiesCreated,
     communitiesJoined
 }: ProfilePageProps) {
 
+    const searchParams = useSearchParams();
+    const requestedTab = searchParams.get('tab');
+    const [activeTab, setActiveTab] = useState(profileTabs.includes(requestedTab || '') ? requestedTab || 'activity' : 'activity');
+
+    useEffect(() => {
+        if (requestedTab && profileTabs.includes(requestedTab)) {
+            setActiveTab(requestedTab);
+        }
+    }, [requestedTab]);
+
     const recipeCount = user.recipeIDs?.length || 0;
     const communityCount = user.communityIDs?.length || 0;
     const favoriteCount = user.favoriteRecipeIDs?.length || 0;
+    const storedInquiries = useUserStore(state => state.inquiries);
+    const inquiriesForBadge = storedInquiries.length > 0 ? storedInquiries : inquiries;
+    const openInquiryCount = inquiriesForBadge.filter(inquiry => !inquiry.handled).length;
     const timeBeingMember = user.createdAt
         ? Math.floor((new Date().getTime() - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24))
         : 0;
@@ -112,7 +132,8 @@ export default function ProfilePage({
                             }}
                         >
                             <Tabs 
-                                defaultValue="activity" 
+                                value={activeTab}
+                                onChange={(value) => setActiveTab(value || 'activity')}
                                 variant="pills"
                                 radius="md"
                                 style={{ 
@@ -148,9 +169,9 @@ export default function ProfilePage({
                                         leftSection={<IconMessageCircle style={iconStyle} />}
                                         bd={'1px solid #ceb5a4ff'}
                                         rightSection={
-                                            inquiries.length > 0 ? (
+                                            openInquiryCount > 0 ? (
                                                 <Badge size="xs" variant="filled" color="red" circle>
-                                                    {inquiries.length}
+                                                    {openInquiryCount}
                                                 </Badge>
                                             ) : null
                                         }
@@ -196,7 +217,11 @@ export default function ProfilePage({
                                     </Tabs.Panel>
 
                                     <Tabs.Panel value="inquiries">
-                                        <InquiryTabContent />
+                                        <InquiryTabContent
+                                            initialInquiries={inquiries}
+                                            user={user}
+                                            isAdmin={userIsInquiryAdmin}
+                                        />
                                     </Tabs.Panel>
 
                                     <Tabs.Panel value="settings">

@@ -67,9 +67,9 @@ export default function FamilyMembers({ userInfo, family }: { userInfo: IUser, f
                 currentPage={currentPage} isPending={false} numberOfPages={totalPages} onPageChange={setCurrentPage} editButtons={undefined}            >
                 <div className={`flex flex-row w-[100%] items-center justify-start space-x-2 ${edit ? 'pl-3' : 'px-4'} text-sm lg:text-md p-2 text-start border-b border-accent/30`}>
                     {edit ? (<Checkbox checked={allCheck} onChange={handleCheckAllFam} style={{ cursor: 'pointer' }} className={`cursor-pointer w-content`} aria-label="Edit checkbox" />) : (null)}
-                    <p className={`w-2/5 font-semibold text-base`}>Name:</p>
-                    <p className={`w-2/5 font-semibold text-base`}>Email:</p>
-                    <p className={`w-1/5 font-semibold text-base`}>Role:</p>
+                    <p className={`w-2/5 truncate font-semibold text-sm sm:text-base`}>Name</p>
+                    <p className={`w-2/5 truncate font-semibold text-sm sm:text-base`}>Email</p>
+                    <p className={`w-1/5 truncate font-semibold text-sm sm:text-base`}>Role</p>
                     {edit ? null : <BiChevronRight height={'auto'} width={'auto'} className="h-fit w-fit text-transparent" size={16} />}
                 </div>
                 {
@@ -79,21 +79,29 @@ export default function FamilyMembers({ userInfo, family }: { userInfo: IUser, f
                                 {edit ? (
                                     <div className={`flex flex-row w-full h-content text-ellipsis text-start justify-start space-x-2 cursor-pointer`}>
                                         <Checkbox checked={famChecked[originalIndex]} className="cursor-pointer w-content" aria-label="Edit checkbox" onClick={() => handleCheckedFam(originalIndex)} />
-                                        <ul className={`w-2/5`}>{edit ? null : `${index + 1}. `}{item.familyMemberName === '' ? 'No name' : item.familyMemberName}</ul>
-                                        <ul className={`w-2/5`}>{item.familyMemberEmail === '' ? 'No email' : item.familyMemberEmail}</ul>
-                                        <ul className={`w-1/5`}>{item.permissionStatus ? item.permissionStatus : 'Guest'}</ul>
+                                        <ul className={`w-2/5 truncate`} title={item.familyMemberName || 'No name'}>{edit ? null : `${index + 1}. `}{item.familyMemberName === '' ? 'No name' : item.familyMemberName}</ul>
+                                        <ul className={`w-2/5 truncate`} title={item.familyMemberEmail || 'No email'}>{item.familyMemberEmail === '' ? 'No email' : item.familyMemberEmail}</ul>
+                                        <ul className={`w-1/5 truncate`} title={item.permissionStatus || 'Guest'}>{item.permissionStatus ? item.permissionStatus : 'Guest'}</ul>
                                     </div>
                                 ) : (
                                     <Link href={`/family/${familyID}/members/${item.familyMemberID}`} className={`flex flex-row w-full h-content text-ellipsis text-start items-center cursor-pointer justify-between`} aria-label="Specific item button">
-                                        <ul className={`w-2/5`}>{edit ? null : `${index + 1}. `}{item.familyMemberName === '' ? 'No name' : item.familyMemberName}</ul>
-                                        <ul className={`w-2/5`}>{item.familyMemberEmail === '' ? 'No email' : item.familyMemberEmail}</ul>
-                                        <ul className={`w-1/5`}>{item.permissionStatus ? item.permissionStatus : 'Guest'}</ul>
+                                        <ul className={`w-2/5 truncate`} title={item.familyMemberName || 'No name'}>{edit ? null : `${index + 1}. `}{item.familyMemberName === '' ? 'No name' : item.familyMemberName}</ul>
+                                        <ul className={`w-2/5 truncate`} title={item.familyMemberEmail || 'No email'}>{item.familyMemberEmail === '' ? 'No email' : item.familyMemberEmail}</ul>
+                                        <ul className={`w-1/5 truncate`} title={item.permissionStatus || 'Guest'}>{item.permissionStatus ? item.permissionStatus : 'Guest'}</ul>
                                         <BiChevronRight height={'auto'} width={'auto'} className="h-fit w-fit cursor-pointer" size={16} />
                                     </Link>
                                 )}
                             </div>
                         ))) : (
-                        <ul className="p-2 text-start pl-7">{`Add a Family Member to see them here`}</ul>
+                        <div className="flex w-full flex-col items-center justify-center gap-3 rounded-md border border-dashed border-accent/30 bg-mainBack/60 p-6 text-center">
+                            <p className="text-base font-semibold text-mainText">No family members found</p>
+                            <p className="max-w-md text-sm text-mainText/70">
+                                Invite a family member, or adjust the search to show more people.
+                            </p>
+                            {adminPermission && (
+                                <CreateButton onClick={handleCreatePass} icon={<BiPlus />} additionString="Add Family Member" />
+                            )}
+                        </div>
                     )
                 }
             </ListWrapper>

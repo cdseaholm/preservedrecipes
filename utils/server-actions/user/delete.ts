@@ -29,6 +29,10 @@ export async function DeleteUser(userId: string, route: string) {
             return { success: false, message: 'User not found' };
         }
 
+        if (user._id.toString() !== userId) {
+            return { success: false, message: 'Unauthorized' };
+        }
+
         await User.deleteOne({ _id: userId });
         revalidatePath(route);
 

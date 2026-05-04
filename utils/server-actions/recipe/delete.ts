@@ -4,6 +4,9 @@ import { revalidatePath } from 'next/cache';
 import Recipe from '@/models/recipe';
 import User from '@/models/user';
 import { getAuthenticatedUser, getRevalidationPath, isValidId } from './utils';
+import { IRecipe } from '@/models/types/recipes/recipe';
+import { DeleteUploadThingFiles } from '../uploadthing/delete-files';
+import { getUploadThingKeyFromUrl } from '@/utils/uploadthing/file-key';
 
 export async function DeleteRecipes(recipeIds: string[], route: string) {
     if (!recipeIds || recipeIds.length === 0) {
@@ -29,7 +32,7 @@ export async function DeleteRecipes(recipeIds: string[], route: string) {
         const ownedRecipes = await Recipe.find({
             _id: { $in: uniqueRecipeIds },
             creatorID: userId,
-        }).select('_id').lean();
+        }).select('_id image imageKey').lean<IRecipe[]>();
 
         const ownedRecipeIds = ownedRecipes.map(recipe => recipe._id.toString());
         if (ownedRecipeIds.length !== uniqueRecipeIds.length) {
@@ -37,6 +40,8 @@ export async function DeleteRecipes(recipeIds: string[], route: string) {
         }
 
         await Recipe.deleteMany({ _id: { $in: ownedRecipeIds }, creatorID: userId });
+
+        await DeleteUploadThingFiles(ownedRecipes.map(recipe => recipe.imageKey || getUploadThingKeyFromUrl(recipe.image)));
 
         await User.findByIdAndUpdate(user._id, {
             $pull: { recipeIDs: { $in: ownedRecipeIds } }

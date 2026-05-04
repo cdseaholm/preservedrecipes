@@ -44,12 +44,14 @@ export function useInquiryActions() {
 
         try {
 
-            if (!sessionPassed) {
+            const sessionToUse = sessionPassed || session;
+
+            if (!sessionToUse) {
                 toast.warning("You need to be signed in to make a inquiry!");
                 return false;
             }
 
-            const user = sessionPassed.user;
+            const user = sessionToUse.user;
             if (!user) {
                 toast.error("There is an issue with your account, please try signing out and back in.");
                 
@@ -72,8 +74,6 @@ export function useInquiryActions() {
             const validate = inquiryForm.validate();
 
             if (validate.hasErrors) {
-                console.log(validate.errors);
-                console.log(validate);
                 inquiryForm.setErrors(validate.errors);
                 return false;
             }
@@ -91,7 +91,7 @@ export function useInquiryActions() {
                 updatedAt: new Date(),
             } as IInquiry;
 
-            let creationAttempt = await AttemptCreateInquiry({ inquiry: inquiryToPass, email: email }) as { status: boolean, message: string, returnedInquiry: IInquiry | null };
+            let creationAttempt = await AttemptCreateInquiry({ inquiry: inquiryToPass, email: email }) as { status: boolean, message: string, returnedInquiry?: IInquiry | null };
 
             if (!creationAttempt) {
                 toast.error('Error creating inquiry');
@@ -103,7 +103,6 @@ export function useInquiryActions() {
 
             if (!attemptStatus) {
                 toast.error('Error creating inquiry');
-                console.log(creationAttempt ? creationAttempt.message : 'Error with message');
                 
                 return false;
             }

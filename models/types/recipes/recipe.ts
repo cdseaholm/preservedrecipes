@@ -14,6 +14,7 @@ export interface IRecipe {
     recipeType: string;
     tags: string[];
     image: string;
+    imageKey?: string;
     //make sure when fetching recipes, if creatorID is empty, this suggests deleted user, add "Deleted User" as name
     creatorID: string;
     reviews: IReview[];

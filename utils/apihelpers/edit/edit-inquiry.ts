@@ -5,11 +5,7 @@ import { IInquiry } from "@/models/types/misc/inquiry";
 
 export async function AttemptEditInquiry({ inquiriesToEdit }: { inquiriesToEdit: IInquiry[] }) {
 
-    const urlToUse = process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL as string : '';
-
-    if (!urlToUse || urlToUse.length === 0 || urlToUse === '') {
-        return { status: false, message: 'Failed Creation, No URL' };
-    }
+    const urlToUse = process.env.NEXT_PUBLIC_BASE_URL || '';
 
     if (!inquiriesToEdit || inquiriesToEdit.length === 0) {
         return { status: false, message: 'Failed Edit, Invalid Inquiries' };
@@ -29,9 +25,7 @@ export async function AttemptEditInquiry({ inquiriesToEdit }: { inquiriesToEdit:
             return { status: false, message: `Failed Creation, ${res.statusText}` };
         }
 
-        const data = await res.json().catch(() => {
-            console.log('Inquiry creation rejected')
-        });
+        const data = await res.json().catch(() => null);
 
         if (!data) {
             return { status: false, message: `Failed Creation, Invalid JSON response` };
@@ -43,7 +37,6 @@ export async function AttemptEditInquiry({ inquiriesToEdit }: { inquiriesToEdit:
             return { status: false, message: `Failed Edit, No Inquiry Returned` };
         }
 
-        console.log('Updated Inquiry:', updatedInquiries, useUserStore.getState().inquiries);
         useUserStore.getState().setInquiries([...updatedInquiries]);
 
         return { status: true, message: `Created` };

@@ -67,10 +67,8 @@ export default function InquiryForm({ handleCreateInquiry, handleCancel, inquiry
             className="w-full h-content"
             onSubmit={inquiryForm.onSubmit((values) => {
                 if (values.id === '') {
-                    console.log('values:', values);
                     handleCreateInquiry({ inquiryForm: inquiryForm });
                 } else {
-                    console.log('values:', values.id);
                     handleEditInquiries({
                         inquirysToEdit: [{
                             _id: values.id,

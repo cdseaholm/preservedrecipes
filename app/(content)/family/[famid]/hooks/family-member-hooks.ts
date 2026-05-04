@@ -86,6 +86,11 @@ export default function FamilyMemberHooks() {
             }
         });
 
+        if (memsToDelete.length === 0) {
+            toast.info('Select at least one family member first');
+            return;
+        }
+
         const admins = familyMembers.filter((mem) => mem.permissionStatus === 'Admin');
         const checkedAdmins = memsToDelete.filter(member => member.permissionStatus === 'Admin');
 
@@ -123,7 +128,6 @@ export default function FamilyMemberHooks() {
             modals.openConfirmModal({
                 title: `Caution! You have selected yourself to be removed from the family, are you sure you want to proceed${memsToDelete.length > 1 ? ` removing yourself and ${memsToDelete.length - 1} ${(memsToDelete.length - 1) > 1 ? 'others?' : 'other?'}` : '?'}`,
                 labels: { confirm: 'Continue', cancel: 'Cancel' },
-                onCancel: () => console.log('Cancel'),
                 onConfirm: () => {
                     adminToDelete = true;
                     proceedDeletion();
@@ -135,7 +139,6 @@ export default function FamilyMemberHooks() {
         modals.openConfirmModal({
             title: `Are you sure you want to proceed removing ${memsToDelete.length} ${memsToDelete.length > 1 ? ` members?` : `member?`}`,
             labels: { confirm: 'Continue', cancel: 'Cancel' },
-            onCancel: () => console.log('Cancel'),
             onConfirm: () => {
                 proceedDeletion();
             },

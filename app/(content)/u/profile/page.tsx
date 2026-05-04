@@ -40,6 +40,9 @@ export default async function Page() {
     try {
         await connectDB();
 
+        const adminEmail = process.env.ADMIN_USERNAME || 'cdseaholm@gmail.com';
+        const userIsInquiryAdmin = user.email === adminEmail;
+
         const [
             family,
             reviewsDoc,
@@ -59,7 +62,9 @@ export default async function Page() {
             user.favoriteRecipeIDs && user.favoriteRecipeIDs.length > 0
                 ? Recipe.find({ _id: { $in: user.favoriteRecipeIDs } }).lean()
                 : [],
-            Inquiry.find({ inquirerId: user._id }).lean(),
+            userIsInquiryAdmin
+                ? Inquiry.find({}).sort({ createdAt: -1 }).lean()
+                : Inquiry.find({ inquirerEmail: user.email }).sort({ createdAt: -1 }).lean(),
             Community.find({ creatorId: user._id }).lean(),
             user.communityIDs && user.communityIDs.length > 0
                 ? Community.find({ _id: { $in: user.communityIDs } }).lean()
@@ -87,6 +92,7 @@ export default async function Page() {
                 recentRecipes={recentRecipes}
                 favoriteRecipes={favoriteRecipes}
                 inquiries={inquiries}
+                userIsInquiryAdmin={userIsInquiryAdmin}
                 communitiesCreated={communitiesCreated}
                 communitiesJoined={communitiesJoined}
             />

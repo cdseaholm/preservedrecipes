@@ -4,11 +4,7 @@ import { HelperResponse } from "./deleteUser";
 import { IInquiry } from "@/models/types/misc/inquiry";
 
 export default async function AttemptDeleteInquiry({ toDelete }: { toDelete: IInquiry[] }): Promise<HelperResponse> {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL as string : '';
-
-    if (!baseUrl || baseUrl.length === 0 || baseUrl === '') {
-        return { status: false, message: 'Failed to delete inquiry, No URL' };
-    }
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
 
     const urlToDelete = `${baseUrl}/api/inquiry/delete`;
 

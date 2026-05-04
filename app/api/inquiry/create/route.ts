@@ -42,12 +42,14 @@ export async function POST(req: NextRequest) {
         }
 
         const inquiry = body.inquiryPassed as IInquiry;
+        const inquiryType = inquiry.inquiryType;
+        const inquiryTitle = inquiry.inquiryTitle || `${inquiryType} ${new Date().toLocaleDateString()}`;
 
         const newInquiry = await Inquiry.create({
-            inquirerEmail: inquiry.inquirerEmail,
-            inquirerName: inquiry.inquirerName,
-            inquiryType: inquiry.inquiryType,
-            inquiryTitle: inquiry.inquiryTitle,
+            inquirerEmail: user.email,
+            inquirerName: user.name || user.email,
+            inquiryType,
+            inquiryTitle,
             inquiryMessage: inquiry.inquiryMessage,
             handled: false,
             createdAt: new Date(),
@@ -58,7 +60,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ status: 500, message: 'Error creating' });
         }
 
-        return NextResponse.json({ status: 200, message: 'Success!' });
+        return NextResponse.json({ status: 200, message: 'Success!', returnedInquiry: newInquiry as IInquiry });
 
     } catch (error: any) {
         return NextResponse.json({ status: 500, message: 'Error creating inquiry' });

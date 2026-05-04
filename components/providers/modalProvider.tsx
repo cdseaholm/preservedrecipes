@@ -6,6 +6,7 @@ import { Session } from "next-auth";
 import dynamic from "next/dynamic";
 import { useAlertStore } from "@/context/alertStore";
 import { useCommunityStore } from "@/context/communityStore";
+import RecipeDrawer from "../modals/recipe/recipe-drawer";
 //import { useDataStore } from "@/context/dataStore";
 
 // Dynamically import all modals with ssr: false
@@ -17,7 +18,6 @@ const InviteSignInModal = dynamic(() => import("../modals/user/inviteSignIn"), {
 const CreateCommunityModal = dynamic(() => import("../modals/community/create-community"), { ssr: false });
 const AlertModal = dynamic(() => import("../modals/alert/alertModal"), { ssr: false });
 const RequestModal = dynamic(() => import("../modals/request/request-modal"), { ssr: false });
-const RecipeDrawer = dynamic(() => import("../modals/recipe/recipe-drawer"), { ssr: false });
 const CreatePostModal = dynamic(() => import("../modals/post/create-post"), { ssr: false });
 const EditCommunity = dynamic(() => import("../modals/community/edit-community"), { ssr: false });
 
