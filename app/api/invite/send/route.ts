@@ -16,15 +16,17 @@ import { ObjectId } from "mongodb";
 import MongoUser from "@/models/user";
 import InviteTemplate from "@/emails/invite-template-email";
 import { authOptions } from "@/lib/auth/auth-options";
+import { isInviteExpired, normalizeInviteEmail, removePendingInviteMember } from "@/lib/invite-utils";
 
 type ItemType = { newMember: IFamilyMember, newToken: string };
 const allowedPermissions = new Set(['Guest', 'Member', 'Admin']);
 
 async function prepareInvite({ email, familyID, inviteTokenCreated }: { email: NewMembers, familyID: string, inviteTokenCreated: string }) {
-    const futureFamilyMem = await MongoUser.findOne({ email: email.email }) as IUser;
+    const normalizedEmail = normalizeInviteEmail(email.email);
+    const futureFamilyMem = await MongoUser.findOne({ email: normalizedEmail }) as IUser;
 
     const thisInvite = await Invite.create({
-        email: email.email,
+        email: normalizedEmail,
         familyID: familyID,
         token: inviteTokenCreated,
     }) as IInvite;
@@ -49,7 +51,7 @@ async function prepareInvite({ email, familyID, inviteTokenCreated }: { email: N
 
         const newMember = {
             familyMemberName: '',
-            familyMemberEmail: email.email,
+            familyMemberEmail: normalizedEmail,
             familyMemberID: '',
             permissionStatus: email.permissions,
             memberConnected: false
@@ -96,6 +98,11 @@ export async function POST(req: NextRequest) {
         await connectDB();
         const sendToEmails = body.emails as NewFamMemFormType;
         const familyID = body.familyId as string;
+
+        if (!ObjectId.isValid(familyID)) {
+            return NextResponse.json({ status: 400, message: 'Invalid family id', famMembersReturned: [] as IFamilyMember[] });
+        }
+
         const familyIdObject = new ObjectId(familyID);
 
         const thisFamily = await Family.findOne({ _id: familyIdObject }) as IFamily;
@@ -117,16 +124,41 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ status: 403, message: 'Admin privileges required', famMembersReturned: [] as IFamilyMember[] });
         }
 
-        const prevMembers = thisFamily.familyMembers as IFamilyMember[];
+        const prevMembersRaw = thisFamily.familyMembers as IFamilyMember[];
+        const activePrevMembers: IFamilyMember[] = [];
+
+        for (const member of prevMembersRaw) {
+            const memberEmail = normalizeInviteEmail(member.familyMemberEmail);
+            if (member.memberConnected || !memberEmail) {
+                activePrevMembers.push(member);
+                continue;
+            }
+
+            const pendingInvite = await Invite.findOne({ familyID, email: memberEmail }) as IInvite | null;
+            if (pendingInvite && !isInviteExpired(pendingInvite)) {
+                activePrevMembers.push(member);
+                continue;
+            }
+
+            if (pendingInvite) {
+                await removePendingInviteMember(pendingInvite);
+                await Invite.deleteOne({ token: pendingInvite.token });
+            }
+        }
+
+        const prevMembers = activePrevMembers;
         const newItems: ItemType[] = [];
-        const existingEmails = new Set(prevMembers.map(member => member.familyMemberEmail.trim().toLowerCase()));
+        const existingEmails = new Set(prevMembers.map(member => normalizeInviteEmail(member.familyMemberEmail)));
         const queuedEmails = new Set<string>();
 
         for (const email of sendToEmails.newMembers) {
-            const normalizedEmail = email.email?.trim().toLowerCase();
+            const normalizedEmail = normalizeInviteEmail(email.email);
             if (!normalizedEmail || !/^\S+@\S+$/.test(normalizedEmail)) continue;
             if (!allowedPermissions.has(email.permissions)) continue;
             if (existingEmails.has(normalizedEmail) || queuedEmails.has(normalizedEmail)) continue;
+
+            const existingUser = await MongoUser.findOne({ email: normalizedEmail }) as IUser | null;
+            if (existingUser?.userFamilyID && existingUser.userFamilyID !== familyID) continue;
 
             queuedEmails.add(normalizedEmail);
             const inviteTokenCreated = crypto.randomBytes(20).toString('hex');
@@ -168,9 +200,11 @@ export async function POST(req: NextRequest) {
                 react: InviteTemplate({ senderName, familyName: thisFamily.name, inviteLink: `${url}/invite?token=${item.newToken}`, firstName: item.newMember.familyMemberEmail.split('@')[0] }),
             });
             if (!sent || !sent.data) {
+                await Invite.deleteOne({ token: item.newToken });
                 return NextResponse.json({ status: 500, message: `Errors with ${item.newMember.familyMemberEmail}`, famMembersReturned: [] as IFamilyMember[] });
             }
             if (sent && sent.error != null) {
+                await Invite.deleteOne({ token: item.newToken });
                 return NextResponse.json({ status: 500, message: `Errors with ${item.newMember.familyMemberEmail} ${sent.error}`, famMembersReturned: [] as IFamilyMember[] });
             }
         }

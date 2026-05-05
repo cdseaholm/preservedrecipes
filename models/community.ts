@@ -5,24 +5,25 @@ export const communitySchema = new Schema(
     {
         name: {
             type: String,
-            required: false,
+            required: true,
+            trim: true,
         },
         adminIDs: {
             type: [String],
-            required: false,
+            default: [],
         },
         creatorID: {
             type: String,
-            required: false,
+            required: true,
         },
         communityMemberIDs: {
             type: [String],
-            required: false
+            default: []
         },
         privacyLevel: {
             type: String,
             enum: ['public', 'private', 'hidden', 'restricted', 'passwordProtected'],
-            required: false
+            default: 'public'
         },
         communityPassword: {
             type: String,
@@ -30,7 +31,7 @@ export const communitySchema = new Schema(
         },
         tags: {
             type: [String],
-            required: false
+            default: []
         },
         description: {
             type: String,
@@ -38,15 +39,15 @@ export const communitySchema = new Schema(
         },
         postIDs: {
             type: [String],
-            required: false
+            default: []
         },
         recipeIDs: {
             type: [String],
-            required: false
+            default: []
         },
         requestIDs: {
             type: [String],
-            required: false
+            default: []
         }
     },
     {

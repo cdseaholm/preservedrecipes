@@ -17,6 +17,16 @@ export const requestSchema = new Schema(
             type: String,
             required: true,
         },
+        requesterName: {
+            type: String,
+            required: false,
+            default: '',
+        },
+        requesterEmail: {
+            type: String,
+            required: false,
+            default: '',
+        },
         message: {
             type: String,
             required: true,

@@ -1,46 +1,19 @@
 import connectDB from "@/lib/mongodb";
+import { getAuthedUser, isCommunityMember } from "@/lib/community-utils";
 import Community from "@/models/community";
 import { ICommunity } from "@/models/types/community/community";
-import { IUser } from "@/models/types/personal/user";
-import { getServerSession, User } from "next-auth";
-import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 import MongoUser from "@/models/user";
 import { compare } from "bcrypt-ts";
 
 export async function PUT(req: NextRequest) {
 
-    const secret = process.env.NEXTAUTH_SECRET ? process.env.NEXTAUTH_SECRET : '';
-
-    if (secret === '') {
-        return NextResponse.json({ status: 401, message: 'Unauthorized' });
-    }
-
-    const session = await getServerSession({ req, secret })
-    const token = await getToken({ req, secret });
-
-    if (!session || !token) {
-        return NextResponse.json({ status: 401, message: 'Unauthorized' });
-    }
+    const { error, user } = await getAuthedUser(req);
+    if (error || !user) return error || NextResponse.json({ status: 401, message: 'Unauthorized' });
 
     try {
         const body = await req.json();
         await connectDB();
-        const userSesh = session?.user as User;
-        const email = userSesh ? userSesh.email : '';
-        if (email === '') {
-            return NextResponse.json({ status: 401, message: 'Unauthorized' });
-        }
-
-        const user = await MongoUser.findOne({ email: email }) as IUser;
-
-        if (!user) {
-            return NextResponse.json({ status: 404, message: 'User not found' });
-        }
-
-        if (user._id.toString() !== token.sub) {
-            return NextResponse.json({ status: 401, message: 'Unauthorized' });
-        }
 
         const communityID = body.communityID as string;
 
@@ -60,14 +33,24 @@ export async function PUT(req: NextRequest) {
             return NextResponse.json({ status: 404, message: 'Community not found' });
         }
 
+        if (community.privacyLevel !== 'passwordProtected') {
+            return NextResponse.json({ status: 403, message: 'This community is not password protected' });
+        }
+
+        const userId = user._id.toString();
+
+        if (isCommunityMember(community, userId)) {
+            return NextResponse.json({ status: 200, message: 'Already a member' });
+        }
+
         const passwordMatch = await compare(passwordSent, community.communityPassword as string);
 
         if (!passwordMatch) {
             return NextResponse.json({ status: 403, message: 'Incorrect password' });
         }
 
-        await MongoUser.updateOne({ email: email }, { $push: { communityIDs: community._id.toString() } });
-        await Community.updateOne({ _id: community._id }, { $push: { communityMemberIDs: user._id.toString() } });
+        await MongoUser.updateOne({ _id: userId }, { $addToSet: { communityIDs: community._id.toString() } });
+        await Community.updateOne({ _id: community._id }, { $addToSet: { communityMemberIDs: userId } });
 
         return NextResponse.json({ status: 200, message: 'Success!' });
 

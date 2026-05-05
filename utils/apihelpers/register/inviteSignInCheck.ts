@@ -17,7 +17,7 @@ export async function InviteRegCheck({ invite }: { invite: IInvite }) {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ invite: invite }),
+            body: JSON.stringify({ token: invite.token }),
         });
 
         if (!response.ok) {

@@ -5,6 +5,7 @@ import { ICommunity } from "@/models/types/community/community";
 import { IPost } from "@/models/types/misc/post";
 import NavWrapper from "@/components/wrappers/navWrapper";
 import { IRecipe } from "@/models/types/recipes/recipe";
+import { IRequest } from "@/models/types/misc/request";
 import { useEffect, useState } from "react";
 import InCommunityTab from "./tabs/in-community-tab";
 import { useCommunityStore } from "@/context/communityStore";
@@ -14,14 +15,14 @@ import { useUserStore } from "@/context/userStore";
 import { useSearchParams } from "next/navigation";
 import { useStateStore } from "@/context/stateStore";
 
-export default function SpecificCommunityPage({ userInfo, community, creator, admins, posts, recipes, userIsAdmin, userRecipes, members }: { userInfo: IUser | null, community: ICommunity, creator: IUser | null, admins: IUser[] | null, posts: IPost[], recipes: IRecipe[], userIsAdmin: boolean, userRecipes: IRecipe[], members: IUser[] | null }) {
+export default function SpecificCommunityPage({ userInfo, community, creator, admins, posts, recipes, userIsAdmin, userRecipes, members, requests }: { userInfo: IUser | null, community: ICommunity, creator: IUser | null, admins: IUser[] | null, posts: IPost[], recipes: IRecipe[], userIsAdmin: boolean, userRecipes: IRecipe[], members: IUser[] | null, requests: IRequest[] }) {
 
     const setGlobalLoading = useStateStore(state => state.setGlobalLoading);
     const searchParams = useSearchParams();
     
     // ✅ Read tab from URL query params
-    const tabFromUrl = searchParams.get('tab') as 'posts' | 'members' | 'community-settings' | 'user-settings' | null;
-    const [activeTab, setActiveTab] = useState<'posts' | 'members' | 'community-settings' | 'user-settings'>(tabFromUrl || 'posts');
+    const tabFromUrl = searchParams.get('tab') as 'posts' | 'members' | 'community-settings' | 'user-settings' | 'requests' | null;
+    const [activeTab, setActiveTab] = useState<'posts' | 'members' | 'community-settings' | 'user-settings' | 'requests'>(tabFromUrl || 'posts');
 
     const handleLoading = (state: boolean) => {
         setGlobalLoading(state);
@@ -44,7 +45,7 @@ export default function SpecificCommunityPage({ userInfo, community, creator, ad
 
     // ✅ Update activeTab when URL changes
     useEffect(() => {
-        if (tabFromUrl && ['posts', 'members', 'community-settings', 'user-settings'].includes(tabFromUrl)) {
+        if (tabFromUrl && ['posts', 'members', 'community-settings', 'user-settings', 'requests'].includes(tabFromUrl)) {
             setActiveTab(tabFromUrl);
         }
     }, [tabFromUrl]);
@@ -72,15 +73,30 @@ export default function SpecificCommunityPage({ userInfo, community, creator, ad
     const displayCommunity = currCommunity._id ? currCommunity : community;
 
     const tabRelatedItem = (
-        activeTab === 'posts' ? <InCommunityTab tab="posts" posts={displayPosts} recipes={displayRecipes} admins={displayAdmins} creator={displayCreator} userInfo={userInfo} community={displayCommunity} members={members} /> :
-        activeTab === 'members' ? <InCommunityTab tab="members" posts={displayPosts} recipes={displayRecipes} admins={displayAdmins} creator={displayCreator} userInfo={userInfo} community={displayCommunity} members={members} /> :
+        activeTab === 'posts' ? <InCommunityTab tab="posts" posts={displayPosts} recipes={displayRecipes} admins={displayAdmins} creator={displayCreator} userInfo={userInfo} community={displayCommunity} members={members} userIsAdmin={userIsAdmin} requests={requests} /> :
+        activeTab === 'members' ? <InCommunityTab tab="members" posts={displayPosts} recipes={displayRecipes} admins={displayAdmins} creator={displayCreator} userInfo={userInfo} community={displayCommunity} members={members} userIsAdmin={userIsAdmin} requests={requests} /> :
+        activeTab === 'requests' ? <InCommunityTab tab="requests" posts={displayPosts} recipes={displayRecipes} admins={displayAdmins} creator={displayCreator} userInfo={userInfo} community={displayCommunity} members={members} userIsAdmin={userIsAdmin} requests={requests} /> :
         activeTab === 'community-settings' ? <CommunitySettings communityID={displayCommunity._id} handleLoading={handleLoading} /> :
-        <UserSettingsTab isAdmin={userIsAdmin} />
+        <UserSettingsTab isAdmin={userIsAdmin} community={displayCommunity} userInfo={userInfo} />
     )
 
     return (
         <NavWrapper userInfo={userInfo}>
-            
+            <div className="sticky top-0 z-20 flex w-full flex-wrap justify-center gap-2 bg-mainBack/95 px-3 py-2 shadow-sm">
+                {(['posts', 'members', ...(userIsAdmin ? ['requests', 'community-settings'] as const : []), 'user-settings'] as const).map(tab => (
+                    <button
+                        key={tab}
+                        type="button"
+                        onClick={() => {
+                            setActiveTab(tab);
+                            window.history.pushState({}, '', `/communities/${displayCommunity._id}?tab=${tab}`);
+                        }}
+                        className={`rounded-md px-3 py-2 text-xs sm:text-sm ${activeTab === tab ? 'bg-blue-500 text-white' : 'bg-cardBack text-mainText hover:bg-blue-50'}`}
+                    >
+                        {tab === 'community-settings' ? 'Settings' : tab === 'user-settings' ? 'Membership' : tab}
+                    </button>
+                ))}
+            </div>
             {tabRelatedItem}
 
         </NavWrapper>

@@ -14,7 +14,6 @@ import { UseFormReturnType } from "@mantine/form";
 import { OpenInvite } from "@/utils/apihelpers/register/openCheckInvite";
 import { User } from "next-auth";
 import InviteRegisterForm from "@/components/forms/family/inviteRegisterForm";
-import { InviteRegCheck } from "@/utils/apihelpers/register/inviteSignInCheck";
 import { useAlertStore } from "@/context/alertStore";
 import { useUserStore } from "@/context/userStore";
 import { IInvite } from "@/models/types/misc/invite";
@@ -76,6 +75,18 @@ export default function InvitePage({ token, userInfo }: { token: string | null, 
                 return;
             }
 
+            if (!invite) {
+                toast.error('Invite not found');
+                setGlobalLoading(false);
+                return;
+            }
+
+            if (email !== invite.email.trim().toLowerCase()) {
+                inviteRegisterForm.setFieldError('email', 'Use the email address this invite was sent to');
+                setGlobalLoading(false);
+                return;
+            }
+
             const registerHelp = await RegisterHelper({ namePassed: name, emailPassed: email, pwPassed: password, invite: invite }) as { status: boolean, newUser: IUser | null };
 
             if (!registerHelp) {
@@ -109,23 +120,6 @@ export default function InvitePage({ token, userInfo }: { token: string | null, 
             }
 
             useUserStore.getState().setUserInfo(createdUser)
-
-            if (invite) {
-                const inviteCheck = await InviteRegCheck({ invite: invite }) as { status: boolean, message: string };
-
-                if (!inviteCheck) {
-                    toast.error('Invite null');
-                    setGlobalLoading(false)
-                    return;
-                }
-
-                if (inviteCheck.status === false) {
-                    toast.error(inviteCheck.message);
-                    setGlobalLoading(false)
-                    return;
-                }
-
-            }
 
             toast.success('Registered and Signed in!');
             inviteRegisterForm.reset();

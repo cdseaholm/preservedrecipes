@@ -18,11 +18,13 @@ export async function AttemptCreateCommunity({ communityToAdd }: { communityToAd
         return { status: false, message: 'Failed Creation, No Community Data' };
     }
 
-    if (communityToAdd.privacyLevel === 'private' && (!communityToAdd.communityPassword || communityToAdd.communityPassword === '')) {
-        return { status: false, message: 'Failed Creation, Private communities must have a password' };
+    if (communityToAdd.privacyLevel === 'passwordProtected' && (!communityToAdd.communityPassword || communityToAdd.communityPassword === '')) {
+        return { status: false, message: 'Failed Creation, password protected communities must have a password' };
     }
 
-    const saltedPassword = await SaltAndHashPassword(communityToAdd.communityPassword as string);
+    const saltedPassword = communityToAdd.privacyLevel === 'passwordProtected'
+        ? await SaltAndHashPassword(communityToAdd.communityPassword as string)
+        : '';
     const communityPassed = {
         ...communityToAdd,
         communityPassword: saltedPassword,

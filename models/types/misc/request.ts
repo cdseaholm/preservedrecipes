@@ -7,6 +7,8 @@ export interface IRequest {
         id: string,
     };
     requesterID: string;
+    requesterName?: string;
+    requesterEmail?: string;
     message: string;
     status: 'pending' | 'approved' | 'rejected';
     createdAt: string;

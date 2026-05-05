@@ -21,20 +21,36 @@ export default function RequestModal() {
     const [loading, setLoading] = useState<boolean>(false);
     const resetZoom = useStateStore(state => state.handleZoomReset);
 
-    const handleCreate = async () => {
+    const handleCreate = async (message: string) => {
         setLoading(true);
-        toast.info("Submitting Request...");
-        // const created = await createRequestToJoinCommunity({ inquiryForm: inquiryForm, sessionPassed: session });
-        // if (created) {
-        //     setRequestToJoinCommunity(null);
-        //     resetZoom(widthQuery, false);
-        // }
+        try {
+            const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
+            const response = await fetch(`${baseUrl}/api/community/request`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    communityID: requestToJoinCommunity?.community._id,
+                    message,
+                }),
+            });
+            const data = await response.json();
+            if (!response.ok || data.status !== 200) {
+                toast.error(data.message || "Unable to send request");
+                setLoading(false);
+                return;
+            }
+            toast.success("Request sent to the community admins");
+            handleCancel();
+        } catch {
+            toast.error("Unable to send request");
+        }
         setLoading(false);
     }
 
     const handleCancel = () => {
         resetZoom(width, false);
         setRequestToJoinCommunity(null);
+        setLoading(false);
     }
 
     const handleLoading = (loading: boolean) => {

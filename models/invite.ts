@@ -5,7 +5,9 @@ export const inviteSchema = new Schema(
     {
         email: { 
             type: String, 
-            required: true 
+            required: true,
+            trim: true,
+            lowercase: true
         },
         familyID: { 
             type: String, 
@@ -13,7 +15,8 @@ export const inviteSchema = new Schema(
         },
         token: { 
             type: String, 
-            required: true 
+            required: true,
+            unique: true
         },
         createdAt: { 
             type: Date, 
