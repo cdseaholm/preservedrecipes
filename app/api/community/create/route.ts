@@ -1,50 +1,26 @@
 import connectDB from "@/lib/mongodb";
+import { getAuthedUser, sanitizeCommunityPayload } from "@/lib/community-utils";
 import Community from "@/models/community";
 import { ICommunity } from "@/models/types/community/community";
-import { IUser } from "@/models/types/personal/user";
 import MongoUser from "@/models/user";
-import { getServerSession, User } from "next-auth";
-import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
 
-    const secret = process.env.NEXTAUTH_SECRET ? process.env.NEXTAUTH_SECRET : '';
-
-    if (secret === '') {
-        return NextResponse.json({ status: 401, message: 'Unauthorized', communityReturned: {} as ICommunity });
-    }
-
-    const session = await getServerSession({ req, secret })
-    const token = await getToken({ req, secret });
-
-    if (!session || !token) {
-        return NextResponse.json({ status: 401, message: 'Unauthorized', communityReturned: {} as ICommunity });
-    }
+    const { error, user } = await getAuthedUser(req);
+    if (error || !user) return error || NextResponse.json({ status: 401, message: 'Unauthorized', communityReturned: {} as ICommunity });
 
     try {
         const body = await req.json();
         await connectDB();
-        const userSesh = session?.user as User;
-        const email = userSesh ? userSesh.email : '';
-        if (email === '') {
-            return NextResponse.json({ status: 401, message: 'Unauthorized', communityReturned: {} as ICommunity });
-        }
+        const community = sanitizeCommunityPayload(body.communityPassed as Partial<ICommunity>);
 
-        const user = await MongoUser.findOne({ email: email }) as IUser;
-
-        if (!user) {
-            return NextResponse.json({ status: 404, message: 'User not found', communityReturned: {} as ICommunity });
-        }
-
-        if (user._id.toString() !== token.sub) {
-            return NextResponse.json({ status: 401, message: 'Unauthorized', communityReturned: {} as ICommunity });
-        }
-
-        const community = body.communityPassed as ICommunity;
-
-        if (!community) {
+        if (!community.name || community.name.length < 3) {
             return NextResponse.json({ status: 400, message: 'Invalid community data', communityReturned: {} as ICommunity });
+        }
+
+        if (community.privacyLevel === 'passwordProtected' && !community.communityPassword) {
+            return NextResponse.json({ status: 400, message: 'Password protected communities need a password', communityReturned: {} as ICommunity });
         }
 
         const userId = user._id.toString();
@@ -58,7 +34,10 @@ export async function POST(req: NextRequest) {
             adminIDs: [userId],
             communityMemberIDs: [userId],
             creatorID: userId,
-        } as ICommunity;
+            postIDs: [],
+            recipeIDs: [],
+            requestIDs: [],
+        };
 
         const insertedCommunity = await Community.create(communityToAdd);
 
@@ -67,7 +46,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ status: 500, message: 'Error creating community', communityReturned: {} as ICommunity });
         }
 
-        await MongoUser.updateOne({ email: email }, { $push: { communityIDs: insertedCommunity._id.toString() } });
+        await MongoUser.updateOne({ _id: userId }, { $addToSet: { communityIDs: insertedCommunity._id.toString() } });
 
         return NextResponse.json({ status: 200, message: 'Success!', communityReturned: insertedCommunity as ICommunity });
 

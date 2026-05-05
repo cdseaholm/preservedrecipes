@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import Invite from '@/models/invite';
 import connectDB from "@/lib/mongodb";
-import { IInvite } from '@/models/types/misc/invite';
+import { findValidInviteByToken } from '@/lib/invite-utils';
 
 export async function GET(req: NextRequest) {
     try {
@@ -13,22 +12,13 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ status: 400, message: 'Invalid token' });
         }
 
-        const invite = await Invite.findOne({ token }) as IInvite;
+        const { invite, message } = await findValidInviteByToken(token);
 
         if (!invite) {
-            return NextResponse.json({ status: 400, message: 'Invalid or expired invite token' });
+            return NextResponse.json({ status: 400, message });
         }
 
-        // Check if the token has expired (older than 24 hours)
-        const now = new Date();
-        const createdAt = new Date(invite.createdAt);
-        const hoursDifference = Math.abs(now.getTime() - createdAt.getTime()) / 36e5;
-
-        if (hoursDifference > 24) {
-            return NextResponse.json({ status: 400, message: 'Expired invite token' });
-        }
-
-        return NextResponse.redirect(`/register?token=${token}`);
+        return NextResponse.redirect(new URL(`/invite?token=${token}`, req.url));
     } catch (error) {
         return NextResponse.json({ status: 500, message: 'Internal server error' });
     }

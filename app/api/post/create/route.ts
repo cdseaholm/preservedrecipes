@@ -1,9 +1,6 @@
 import connectDB from "@/lib/mongodb";
-import { IUser } from "@/models/types/personal/user";
-import MongoUser from "@/models/user";
-import { getServerSession, User } from "next-auth";
+import { COMMUNITY_POST_CATEGORIES, COMMUNITY_POST_TYPES, getAuthedUser, isCommunityMember, normalizeCommunityText } from "@/lib/community-utils";
 import { NextRequest, NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt"
 import { IPost } from "@/models/types/misc/post";
 import Community from "@/models/community";
 import Post from "@/models/post";
@@ -12,37 +9,12 @@ import { ObjectId } from "mongodb";
 
 export async function POST(req: NextRequest) {
 
-    const secret = process.env.NEXTAUTH_SECRET ? process.env.NEXTAUTH_SECRET : '';
-
-    if (secret === '') {
-        return NextResponse.json({ status: 401, message: 'Unauthorized', postReturned: null, communityReturned: null });
-    }
-
-    const session = await getServerSession({ req, secret })
-    const token = await getToken({ req, secret });
-
-    if (!session || !token) {
-        return NextResponse.json({ status: 401, message: 'Unauthorized', postReturned: null, communityReturned: null });
-    }
+    const { error, user } = await getAuthedUser(req);
+    if (error || !user) return error || NextResponse.json({ status: 401, message: 'Unauthorized', postReturned: null, communityReturned: null });
 
     try {
         const body = await req.json();
         await connectDB();
-        const userSesh = session?.user as User;
-        const email = userSesh ? userSesh.email : '';
-        if (email === '') {
-            return NextResponse.json({ status: 401, message: 'Unauthorized', postReturned: null, communityReturned: null });
-        }
-
-        const user = await MongoUser.findOne({ email: email }) as IUser;
-
-        if (!user) {
-            return NextResponse.json({ status: 404, message: 'User not found', postReturned: null, communityReturned: null });
-        }
-
-        if (user._id.toString() !== token.sub) {
-            return NextResponse.json({ status: 401, message: 'Unauthorized', postReturned: null, communityReturned: null });
-        }
 
         const postPassed = body.postPassed as IPost;
 
@@ -56,28 +28,43 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ status: 400, message: 'No related ID provided', postReturned: null, communityReturned: null });
         }
 
+        if (!COMMUNITY_POST_TYPES.includes(postPassed.type as any)) {
+            return NextResponse.json({ status: 400, message: 'Community posts must be recipe shares or text discussions', postReturned: null, communityReturned: null });
+        }
+
+        const postTitle = normalizeCommunityText(postPassed.name, 120);
+        const postContent = Array.isArray(postPassed.content) ? postPassed.content.map(item => normalizeCommunityText(item, 2000)).filter(Boolean) : [];
+        const postCategories = Array.isArray(postPassed.category)
+            ? postPassed.category.filter(category => COMMUNITY_POST_CATEGORIES.includes(category as any))
+            : [];
+
+        if (!postTitle || postContent.length === 0) {
+            return NextResponse.json({ status: 400, message: 'Post title and content are required', postReturned: null, communityReturned: null });
+        }
+
         const community = postPassed.relatedToType === 'community'
             ? await Community.findById(new ObjectId(relatedId)).lean() as ICommunity
             : null;
 
-            console.log('Related community:', community, relatedId);
-
         if (postPassed.relatedToType === 'community' && !community) {
-            //Later I will maybe need to think about handling different post types later on, but for now I will just return an error if the related community is not found
             return NextResponse.json({ status: 404, message: 'Related community not found', postReturned: null, communityReturned: null });
         }
 
+        if (community && !isCommunityMember(community, user._id.toString())) {
+            return NextResponse.json({ status: 403, message: 'Join this community before posting', postReturned: null, communityReturned: null });
+        }
+
         const newPost = await Post.create({
-            name: postPassed.name,
+            name: postTitle,
             image: postPassed.image,
             type: postPassed.type,
             creatorID: user._id.toString(),
             relatedToID: postPassed.relatedToID,
             relatedToType: postPassed.relatedToType,
             commentIDs: [],
-            ratingIDs: [],
-            category: postPassed.category,
-            content: postPassed.content,
+            ratingsIDs: [],
+            category: postCategories.length > 0 ? postCategories : ['recipe-question'],
+            content: postContent,
             updatedAt: new Date().toISOString(),
             createdAt: new Date().toISOString(),
         }) as IPost;
@@ -91,7 +78,7 @@ export async function POST(req: NextRequest) {
         const commPosts = community?.postIDs ? [...community.postIDs, newPost._id.toString()] : [newPost._id.toString()];
         let updatedCommunity: ICommunity | null = null;
         if (postPassed.relatedToType === 'community' && postPassed.relatedToID && community !== null) {
-            updatedCommunity = await Community.findByIdAndUpdate(postPassed.relatedToID, { postIDs: commPosts });
+            updatedCommunity = await Community.findByIdAndUpdate(postPassed.relatedToID, { postIDs: commPosts }, { new: true });
         }
 
         return NextResponse.json({ status: 200, message: 'Success!', postReturned: newPost, communityReturned: updatedCommunity });

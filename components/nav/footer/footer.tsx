@@ -38,7 +38,7 @@ export default function MainFooter() {
 
         (['Homepage', 'Communities',  'Contact']),
 
-        (['Terms Of Service', 'Privacy Policy', 'For Fun - Color Picker'])
+        (['Terms Of Service', 'Privacy Policy'])
     ];
 
     const relativeClicks = [
@@ -54,7 +54,7 @@ export default function MainFooter() {
 
         ([{ ref: '/homepage', aLabel: 'HomePage' }, { ref: '/communities', aLabel: 'Communities' }, { ref: '/contact', aLabel: 'Contact' }]),
 
-        ([{ ref: '/terms-of-service', aLabel: 'Terms Of Service' }, { ref: '/privacy-policy', aLabel: 'Privacy Policy' }, { ref: '/color-picker-mode', aLabel: 'Color Picker Mode' }])
+        ([{ ref: '/terms-of-service', aLabel: 'Terms Of Service' }, { ref: '/privacy-policy', aLabel: 'Privacy Policy' }])
     ]
 
     //extracting communities for now

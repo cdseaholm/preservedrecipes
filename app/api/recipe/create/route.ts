@@ -8,6 +8,7 @@ import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 import MongoUser from "@/models/user";
 import Community from "@/models/community";
+import { isCommunityMember } from "@/lib/community-utils";
 import { IIngredient, IngredientForForm } from "@/models/types/recipes/ingredient";
 import Ingredient from "@/models/ingredient";
 import { getUploadThingKeyFromUrl } from "@/utils/uploadthing/file-key";
@@ -62,6 +63,21 @@ export async function POST(req: NextRequest) {
         // Only validate typeId for family and community recipes
         if ((type === 'family' || type === 'community') && !typeId) {
             return NextResponse.json({ status: 400, message: 'Invalid typeId required for family/community recipes', recipeReturned: {} as IRecipe, returnedIngredients: [] as IIngredient[] });
+        }
+
+        if (type === 'community') {
+            if (recipe.secret) {
+                return NextResponse.json({ status: 403, message: 'Private recipes may not be added to communities', recipeReturned: {} as IRecipe, returnedIngredients: [] as IIngredient[] });
+            }
+
+            const community = await Community.findOne({ _id: typeId });
+            if (!community) {
+                return NextResponse.json({ status: 404, message: 'Community not found', recipeReturned: {} as IRecipe, returnedIngredients: [] as IIngredient[] });
+            }
+
+            if (!isCommunityMember(community, user._id.toString())) {
+                return NextResponse.json({ status: 403, message: 'Join this community before adding recipes', recipeReturned: {} as IRecipe, returnedIngredients: [] as IIngredient[] });
+            }
         }
 
         const processedIngredients: IngredientForForm[] = [];
@@ -140,6 +156,7 @@ export async function POST(req: NextRequest) {
                 //contigency
                 return NextResponse.json({ status: 206, message: 'Could not find community, otherwise created', recipeReturned: {} as IRecipe, returnedIngredients: [] as IIngredient[] });
             }
+
             const oldRecipes = community.recipeIDs;
             const newRecipes = [...oldRecipes, insertedRecipe._id.toString()] as string[];
             const updatedCommunity = await Community.updateOne({ _id: typeId }, { recipeIDs: newRecipes });

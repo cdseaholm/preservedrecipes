@@ -8,6 +8,8 @@ import Community from '@/models/community';
 import { ICommunity } from '@/models/types/community/community';
 import { IPost } from '@/models/types/misc/post';
 import Post from '@/models/post';
+import Request from '@/models/requests';
+import { IRequest } from '@/models/types/misc/request';
 import Recipe from '@/models/recipe';
 import { IRecipe } from '@/models/types/recipes/recipe';
 import { isValidObjectId } from 'mongoose';
@@ -82,6 +84,7 @@ export default async function Page({ params }: CommunityPageParams) {
             communityMembers,
             postsDocs,
             recipeDocs,
+            requestDocs,
         ] = await Promise.all([
             community.creatorID && isValidObjectId(community.creatorID)
                 ? User.findById(community.creatorID).lean()
@@ -97,6 +100,9 @@ export default async function Page({ params }: CommunityPageParams) {
             validRecipeIDs.length > 0
                 ? Recipe.find({ _id: { $in: validRecipeIDs } }).lean()
                 : [],
+            userIsAdmin && community.requestIDs.length > 0
+                ? Request.find({ _id: { $in: community.requestIDs }, status: 'pending' }).sort({ createdAt: -1 }).lean()
+                : [],
         ]);
 
         const creator = creatorDoc ? serializeDoc<IUser>(creatorDoc) : null;
@@ -105,6 +111,7 @@ export default async function Page({ params }: CommunityPageParams) {
         const recipes = recipeDocs ? recipeDocs.map(serializeDoc<IRecipe>) : [];
         const userRecipes = userRecipeDocs ? userRecipeDocs.map(serializeDoc<IRecipe>) : [];
         const members = communityMembers ? communityMembers.map(serializeDoc<IUser>) : [];
+        const requests = requestDocs ? requestDocs.map(serializeDoc<IRequest>) : [];
 
         return (
             <SpecificCommunityPage
@@ -117,6 +124,7 @@ export default async function Page({ params }: CommunityPageParams) {
                 userIsAdmin={userIsAdmin}
                 userRecipes={userRecipes}
                 members={members}
+                requests={requests}
             />
         )
 

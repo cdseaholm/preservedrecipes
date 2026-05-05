@@ -1,66 +1,95 @@
 'use client'
 
-
 import { useModalStore } from "@/context/modalStore";
 import { ICommunity } from "@/models/types/community/community";
 import { IUser } from "@/models/types/personal/user";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { BiLockAlt, BiMessageRounded, BiRightArrowAlt, BiShield, BiUserPlus } from "react-icons/bi";
 import { toast } from "sonner";
 
-export default function CommunityCard({ community, index, userInfo }: { community: ICommunity, index: number, userInfo: IUser | null }) {
+function privacyLabel(level: ICommunity['privacyLevel']) {
+    switch (level) {
+        case 'public':
+            return { text: 'Public', className: 'text-green-700 bg-green-50 border-green-200' };
+        case 'restricted':
+            return { text: 'Request', className: 'text-amber-700 bg-amber-50 border-amber-200' };
+        case 'passwordProtected':
+            return { text: 'Password', className: 'text-blue-700 bg-blue-50 border-blue-200' };
+        case 'hidden':
+            return { text: 'Hidden', className: 'text-gray-700 bg-gray-50 border-gray-200' };
+        default:
+            return { text: 'Invite only', className: 'text-red-700 bg-red-50 border-red-200' };
+    }
+}
 
+export default function CommunityCard({ community, index, userInfo }: { community: ICommunity, index: number, userInfo: IUser | null }) {
     const router = useRouter();
     const setRequestToJoinCommunity = useModalStore(state => state.setRequestToJoinCommunity);
-    const privacyClick = () => {
-        community.adminIDs.includes(userInfo?._id as string) || community.communityMemberIDs.includes(userInfo?._id as string) || userInfo?._id === community.creatorID ? (
-            router.push(`/communities/${community._id}`)
-        ) : community.privacyLevel === 'private' ? (
-            toast.info('This is a private community. You must know someone in the community to join.')
-        ) : community.privacyLevel === 'restricted' ? (
-            setRequestToJoinCommunity({ community: community, type: 'restricted' })
-        ) : (
-            setRequestToJoinCommunity({ community: community, type: 'passwordProtected' })
-        );
-    }
+    const userId = userInfo?._id || '';
+    const isMember = !!userId && (community.communityMemberIDs.includes(userId) || community.adminIDs.includes(userId) || community.creatorID === userId);
+    const label = privacyLabel(community.privacyLevel);
 
-    return (
-        userInfo && community.privacyLevel === 'public' ? (
-            <Link key={index} className="mb-4 w-full p-2 border border-mainText/40 bg-cardBack text-mainText text-center rounded-md flex flex-col h-full justify-between items-center hover:bg-slate-200 cursor-pointer" style={{ height: '8vh' }} href={`/communities/${community._id}`}>
-                <div className="flex flex-row justify-between items-center w-full h-fit text-sm md:text-base">
-                    <p>{community.name}</p>
-                    <p className={`text-green-400`}>{'Public'}</p>
+    const handleProtectedAction = () => {
+        if (!userInfo) {
+            toast.info('Sign in to join communities');
+            return;
+        }
+
+        if (isMember || community.privacyLevel === 'public') {
+            router.push(`/communities/${community._id}`);
+            return;
+        }
+
+        if (community.privacyLevel === 'restricted' || community.privacyLevel === 'private') {
+            setRequestToJoinCommunity({ community, type: 'restricted' });
+            return;
+        }
+
+        if (community.privacyLevel === 'passwordProtected') {
+            setRequestToJoinCommunity({ community, type: 'passwordProtected' });
+            return;
+        }
+
+        toast.info('This community is invite only');
+    };
+
+    const body = (
+        <article className="w-full border border-mainText/20 bg-cardBack text-mainText rounded-md p-3 sm:p-4 hover:border-blue-300 hover:bg-white/80 transition-colors">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div className="min-w-0 space-y-2 text-left">
+                    <div className="flex flex-wrap items-center gap-2">
+                        <h3 className="text-base sm:text-lg font-semibold truncate">{community.name}</h3>
+                        <span className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-xs ${label.className}`}>
+                            {community.privacyLevel === 'passwordProtected' ? <BiLockAlt /> : community.privacyLevel === 'restricted' ? <BiMessageRounded /> : <BiShield />}
+                            {label.text}
+                        </span>
+                    </div>
+                    <p className="line-clamp-2 text-sm text-mainText/70">{community.description || 'A recipe-focused community.'}</p>
+                    <div className="flex flex-wrap gap-2">
+                        {community.tags.slice(0, 4).map(tag => (
+                            <span key={`${community._id}-${tag}`} className="rounded-md bg-mainBack/70 px-2 py-1 text-xs text-mainText/70">{tag}</span>
+                        ))}
+                    </div>
                 </div>
-                <div className="flex flex-row justify-start items-center w-full h-fit space-x-5 text-xs md:text-sm">
-                    <p className="pl-4">{`Member Size: ${community.communityMemberIDs.length}`}</p>
-                </div>
-            </Link>
-        ) : (!userInfo || !userInfo._id || userInfo._id === '') ? (
-            <div key={index} className="mb-4 w-full p-2 border border-mainText/40 bg-cardBack text-mainText text-center rounded-md flex flex-col h-full justify-between items-center opacity-50" style={{ height: '8vh' }} aria-label="Private Community">
-                <div className="flex flex-row justify-between items-center w-full h-fit text-sm md:text-base">
-                    <p>{community.name}</p>
-                    <p className={`text-red-400`}>{'Private'}</p>
-                </div>
-                <div className="flex flex-row justify-start items-center w-full h-fit space-x-5 text-xs md:text-sm">
-                    <p className="pl-4">{`Member Size: ${community.communityMemberIDs.length}`}</p>
+                <div className="flex shrink-0 flex-row items-center justify-between gap-3 sm:flex-col sm:items-end">
+                    <p className="text-xs sm:text-sm text-mainText/65">{community.communityMemberIDs.length} members</p>
+                    <span className="inline-flex items-center gap-1 text-sm text-blue-600">
+                        {isMember || community.privacyLevel === 'public' ? 'Open' : 'Join'}
+                        {isMember || community.privacyLevel === 'public' ? <BiRightArrowAlt size={18} /> : <BiUserPlus size={18} />}
+                    </span>
                 </div>
             </div>
-        ) : (
-            <button key={index} className="mb-4 w-full p-2 border border-mainText/40 bg-cardBack text-mainText text-center rounded-md flex flex-col h-full justify-between items-center cursor-pointer" style={{ height: '8vh' }} aria-label="Private Community" onClick={() => privacyClick()}>
-                <div className="flex flex-row justify-between items-center w-full h-fit text-sm md:text-base">
-                    <p>{community.name}</p>
-                    {community.privacyLevel === 'passwordProtected' ? (
-                        <p className={`text-red-400`}>{'Private'}</p>
-                    ) : community.privacyLevel === 'restricted' ? (
-                        <p className={`text-yellow-400`}>{'Request'}</p>
-                    ) : (
-                        <p className={`text-red-400`}>{'Private'}</p>
-                    )}
-                </div>
-                <div className="flex flex-row justify-start items-center w-full h-fit space-x-5 text-xs md:text-sm">
-                    <p className="pl-4">{`Member Size: ${community.communityMemberIDs.length}`}</p>
-                </div>
-            </button>
-        )
-    )
+        </article>
+    );
+
+    return community.privacyLevel === 'public' || isMember ? (
+        <Link key={index} href={`/communities/${community._id}`} className="mb-3 block w-full">
+            {body}
+        </Link>
+    ) : (
+        <button key={index} type="button" onClick={handleProtectedAction} className="mb-3 block w-full cursor-pointer text-left" aria-label={`Join ${community.name}`}>
+            {body}
+        </button>
+    );
 }

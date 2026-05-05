@@ -51,17 +51,16 @@ export default function CreateCommunityForm({ handleCreateCommunity, handleCance
                     {...communityForm.getInputProps('privacyLevel')}
                     error={communityForm.errors.privacyLevel}
                 />
-                {communityForm.getValues().privacyLevel !== 'public' &&
+                {communityForm.getValues().privacyLevel === 'passwordProtected' &&
                     <PasswordInput
                         id="modalCommunityPassword"
                         name="modalCommunityPassword"
                         label={'Community Password'}
-                        placeholder="If your community is private, enter a password here"
+                        placeholder="Enter the password people need to join"
                         mt={'md'}
                         key={communityForm.key('communityPassword')}
                         {...communityForm.getInputProps('communityPassword')}
                         error={communityForm.errors.communityPassword}
-                        disabled={communityForm.getValues().privacyLevel === 'public'}
                     />
                 }
                 <MultiSelect

@@ -20,7 +20,7 @@ export const familyMemberSchema = new Schema(
             default: ''
         },
         memberConnected: {
-            type: String,
+            type: Boolean,
             default: false
         }
     },

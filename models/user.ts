@@ -20,7 +20,7 @@ export const userSchema = new Schema(
     },
     userFamilyID: {
       type: String,
-      default: {}
+      default: ''
     },
     recipeIDs: {
       type: [String],

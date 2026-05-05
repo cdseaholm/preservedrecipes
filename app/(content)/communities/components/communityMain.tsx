@@ -197,6 +197,11 @@ export default function CommunityMain({
           rightLabel="Add"
         />
 
+        <div className="mb-4 w-full">
+          <h1 className="text-xl sm:text-2xl font-semibold text-mainText">Communities</h1>
+          <p className="text-sm text-mainText/70">Find groups centered on recipes, food questions, cooking advice, and shared collections.</p>
+        </div>
+
         <ListWrapper 
           numberOfPages={totalPages}
           isPending={false}
