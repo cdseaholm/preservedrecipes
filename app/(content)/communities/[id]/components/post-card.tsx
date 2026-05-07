@@ -1,19 +1,46 @@
 'use client'
 
-
 import { IPost } from "@/models/types/misc/post";
+import { Badge, Card, Group, Text, ThemeIcon } from "@mantine/core";
+import { IconChevronRight, IconMessageCircle } from "@tabler/icons-react";
 import Link from "next/link";
-import { FiChevronRight } from "react-icons/fi";
 
 export default function PostCard({ index, post, communityId }: { index: number, post: IPost, communityId: string }) {
+    const preview = post.content?.find(item => item?.trim()) || '';
 
     return (
-        <Link key={index} className="mb-4 p-2 border border-mainText/40 bg-cardBack text-mainText text-center rounded-md flex flex-row w-full h-full justify-between items-center hover:bg-slate-200" style={{ height: '8vh' }} href={`/communities/${communityId}/posts/${post._id}`}>
-            <div className="flex flex-col justify-between items-start w-full h-full text-sm md:text-base">
-                <p>{post.name}</p>
-                <p>{post.category.length > 0 ? post.category[0] : 'Uncategorized'}</p>
-            </div>
-            <FiChevronRight size={20} />
-        </Link>
-    )
+        <Card
+            key={index}
+            component={Link}
+            href={`/communities/${communityId}/posts/${post._id}`}
+            withBorder
+            radius="md"
+            padding="md"
+            className="mb-3 w-full bg-mainBack/60 text-mainText transition-colors hover:bg-secondaryBack"
+        >
+            <Group justify="space-between" gap="md" wrap="nowrap">
+                <Group gap="sm" className="min-w-0" wrap="nowrap">
+                    <ThemeIcon variant="light" color="accent" radius="md">
+                        <IconMessageCircle size={18} />
+                    </ThemeIcon>
+                    <div className="min-w-0">
+                        <Group gap="xs">
+                            <Text fw={700} className="truncate">
+                                {post.name || 'Untitled post'}
+                            </Text>
+                            {post.category.length > 0 && (
+                                <Badge variant="light" color="gray">
+                                    {post.category[0]}
+                                </Badge>
+                            )}
+                        </Group>
+                        <Text size="sm" c="dimmed" className="truncate">
+                            {preview || `${post.commentIDs.length} comments · ${new Date(post.createdAt).toLocaleDateString()}`}
+                        </Text>
+                    </div>
+                </Group>
+                <IconChevronRight size={18} className="shrink-0 text-mainText/50" />
+            </Group>
+        </Card>
+    );
 }

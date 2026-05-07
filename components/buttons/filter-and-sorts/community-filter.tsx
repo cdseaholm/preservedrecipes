@@ -14,6 +14,7 @@ export default function CommunityFilter({ searchParams, widthQuery, handleTransi
     // Get current filters from URL
     const currentStatus = searchParams.get('status') || 'all';
     const currentFilters = searchParams.getAll('filter');
+    const currentFiltersKey = currentFilters.join('\u0000');
 
     const communityFilterForm = useForm({
         mode: 'uncontrolled',
@@ -25,9 +26,8 @@ export default function CommunityFilter({ searchParams, widthQuery, handleTransi
 
     // Sync form with URL params when they change
     useEffect(() => {
-        const status = searchParams.get('status') || 'all';
-        const filters = searchParams.getAll('filter');
-
+        const status = currentStatus;
+        const filters = currentFiltersKey ? currentFiltersKey.split('\u0000') : [];
         communityFilterForm.setInitialValues({
             pubOrPriv: status === '' ? 'all' : status,
             filterTags: filters,
@@ -36,7 +36,10 @@ export default function CommunityFilter({ searchParams, widthQuery, handleTransi
             pubOrPriv: status === '' ? 'all' : status,
             filterTags: filters,
         });
-    }, [searchParams, communityFilterForm]);
+        // Mantine's form instance is intentionally omitted here; including it
+        // causes this sync effect to run after every form state update.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentStatus, currentFiltersKey]);
 
     const [searchTags, setSearchTags] = useState<string>('');
 

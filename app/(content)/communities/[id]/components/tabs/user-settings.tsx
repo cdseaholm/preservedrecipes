@@ -2,7 +2,8 @@
 
 import { ICommunity } from "@/models/types/community/community";
 import { IUser } from "@/models/types/personal/user";
-import { BiLogOut, BiUserPlus } from "react-icons/bi";
+import { Button, Card, Group, Stack, Text, ThemeIcon } from "@mantine/core";
+import { IconLogin2, IconLogout2, IconShieldCheck, IconUsers } from "@tabler/icons-react";
 import { toast } from "sonner";
 
 export default function UserSettingsTab({ isAdmin, community, userInfo }: { isAdmin: boolean, community: ICommunity, userInfo: IUser | null }) {
@@ -11,8 +12,7 @@ export default function UserSettingsTab({ isAdmin, community, userInfo }: { isAd
 
     const joinPublic = async () => {
         try {
-            const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
-            const response = await fetch(`${baseUrl}/api/community/join`, {
+            const response = await fetch('/api/community/join', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ communityID: community._id }),
@@ -30,26 +30,37 @@ export default function UserSettingsTab({ isAdmin, community, userInfo }: { isAd
     };
 
     return (
-        <div className="flex min-h-[50dvh] w-full justify-center p-4">
-            <section className="w-full max-w-2xl rounded-md border border-mainText/15 bg-cardBack p-4">
-                <h2 className="text-lg font-semibold text-mainText">Membership</h2>
-                <p className="mt-1 text-sm text-mainText/70">
-                    {isMember ? 'You can post recipe discussions and share non-private recipes here.' : 'Join this public community before posting or sharing recipes.'}
-                </p>
-                <div className="mt-5 flex flex-wrap gap-2">
+        <Card withBorder radius="md" padding="lg" className="bg-secondaryBack">
+            <Group justify="space-between" align="flex-start" gap="md">
+                <Group gap="sm" align="flex-start" className="min-w-0">
+                    <ThemeIcon variant="light" color={isAdmin ? 'blue' : 'accent'} radius="md" size="lg">
+                        {isAdmin ? <IconShieldCheck size={20} /> : <IconUsers size={20} />}
+                    </ThemeIcon>
+                    <Stack gap={4} className="min-w-0">
+                        <Text fw={800}>{isAdmin ? 'Community admin' : isMember ? 'Community member' : 'Join this community'}</Text>
+                        <Text size="sm" c="dimmed">
+                            {isAdmin
+                                ? 'Admins can review requests and adjust community settings.'
+                                : isMember
+                                    ? 'You can post recipe discussions and share non-private recipes here.'
+                                    : 'Join this public community before posting or sharing recipes.'}
+                        </Text>
+                    </Stack>
+                </Group>
+
+                <Group gap="xs">
                     {!isMember && community.privacyLevel === 'public' && (
-                        <button onClick={joinPublic} type="button" className="inline-flex items-center gap-1 rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600">
-                            <BiUserPlus /> Join Community
-                        </button>
+                        <Button onClick={joinPublic} type="button" leftSection={<IconLogin2 size={16} />}>
+                            Join Community
+                        </Button>
                     )}
                     {isMember && !isAdmin && (
-                        <button onClick={() => toast.info('Leave community coming soon')} type="button" className="inline-flex items-center gap-1 rounded-md bg-red-600 px-4 py-2 text-white hover:bg-red-700">
-                            <BiLogOut /> Leave Community
-                        </button>
+                        <Button onClick={() => toast.info('Leave community coming soon')} type="button" color="red" variant="light" leftSection={<IconLogout2 size={16} />}>
+                            Leave Community
+                        </Button>
                     )}
-                    {isAdmin && <p className="text-sm text-mainText/70">Admins keep the community focused and review incoming requests.</p>}
-                </div>
-            </section>
-        </div>
-    )
+                </Group>
+            </Group>
+        </Card>
+    );
 }

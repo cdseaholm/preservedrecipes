@@ -11,7 +11,7 @@ import { useFamilyStore } from "@/context/familyStore";
 import { SendInvites } from "@/emails/send";
 import AddFamMemberForm from "@/components/forms/family/addFamMemForm";
 import { IFamily } from "@/models/types/family/family";
-import { NewFamilyMemberFormType, NewFamMemFormType } from "@/models/types/family/new-fam";
+import { NewFamMemFormType } from "@/models/types/family/new-fam";
 import LoadingOverlayComponent from "@/components/misc/loading/loading-overlay";
 import { useWindowSizes } from "@/context/width-height-store";
 
@@ -29,7 +29,7 @@ export default function AddFamMemsModal({ session, handleUpdate }: { session: Se
         return;
     }
 
-    const handleAddFamMem = async ({ addFamMemsForm }: { addFamMemsForm: NewFamilyMemberFormType }) => {
+    const handleAddFamMem = async ({ emails }: { emails: NewFamMemFormType }) => {
         setLoading(true);
         try {
 
@@ -39,34 +39,24 @@ export default function AddFamMemsModal({ session, handleUpdate }: { session: Se
                 return;
             }
 
-            if (!addFamMemsForm) {
-                toast.error("Something is wrong with your Suggestion information, please try again");
-                setLoading(false);
-                return;
-            }
-            const validate = addFamMemsForm.validate();
-
-            if (validate.hasErrors) {
-                addFamMemsForm.setErrors(validate.errors)
+            if (!emails.newMembers.length) {
+                toast.error("Add at least one email before creating invites");
                 setLoading(false);
                 return;
             }
 
             const familyIDToPass = family._id.toString() || '';
-            const emailsToSend = addFamMemsForm.getValues() as NewFamMemFormType
-
-
-            let invitesSent = await SendInvites({ emails: emailsToSend, familyId: familyIDToPass }) as { status: boolean, message: string };
+            let invitesSent = await SendInvites({ emails, familyId: familyIDToPass }) as { status: boolean, message: string };
 
             let attemptStatus = invitesSent ? invitesSent.status : false;
 
             if (attemptStatus === false) {
-                toast.error('Error Adding Members');
+                toast.error(invitesSent?.message || 'Error adding members');
                 setLoading(false);
                 return;
             }
 
-            toast.success('Successfully sent invites!');
+            toast.success(invitesSent.message || 'Successfully sent invites!');
             await handleUpdate();
             resetZoom(width, false);
             setOpenAddFamMemsModal(false)
