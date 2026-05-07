@@ -12,9 +12,12 @@ import { IRecipe } from "@/models/types/recipes/recipe";
 import { IInquiry } from "@/models/types/misc/inquiry";
 import Community from "@/models/community";
 import Inquiry from "@/models/inquiry";
+import Invite from "@/models/invite";
 import { ICommunity } from "@/models/types/community/community";
 import { getSessionUser } from "@/lib/data/user";
 import { createPageMetadata } from "@/lib/metadata";
+import { IInvite } from "@/models/types/misc/invite";
+import { isInviteExpired, normalizeInviteEmail } from "@/lib/invite-utils";
 
 export async function generateMetadata(): Promise<Metadata> {
     const user = await getSessionUser();
@@ -49,6 +52,7 @@ export default async function Page() {
             recentRecipesDoc,
             favoriteRecipesDoc,
             inquiriesDoc,
+            invitesDoc,
             communitiesCreatedDoc,
             communitiesJoinedDoc,
         ] = await Promise.all([
@@ -65,6 +69,7 @@ export default async function Page() {
             userIsInquiryAdmin
                 ? Inquiry.find({}).sort({ createdAt: -1 }).lean()
                 : Inquiry.find({ inquirerEmail: user.email }).sort({ createdAt: -1 }).lean(),
+            Invite.find({ email: normalizeInviteEmail(user.email) }).sort({ createdAt: -1 }).lean(),
             Community.find({ creatorId: user._id }).lean(),
             user.communityIDs && user.communityIDs.length > 0
                 ? Community.find({ _id: { $in: user.communityIDs } }).lean()
@@ -81,6 +86,22 @@ export default async function Page() {
         const recentRecipes = recentRecipesDoc.map(doc => serializeDoc<IRecipe>(doc));
         const favoriteRecipes = favoriteRecipesDoc.map(doc => serializeDoc<IRecipe>(doc));
         const inquiries = inquiriesDoc.map(doc => serializeDoc<IInquiry>(doc));
+        const activeInvites = invitesDoc
+            .map(doc => serializeDoc<IInvite>(doc))
+            .filter(invite => !isInviteExpired(invite));
+        const inviteFamilyIds = Array.from(new Set(activeInvites.map(invite => invite.familyID)));
+        const inviteFamiliesDoc = inviteFamilyIds.length > 0
+            ? await Family.find({ _id: { $in: inviteFamilyIds } }).select('name').lean()
+            : [];
+        const inviteFamilyNames = new Map(
+            inviteFamiliesDoc
+                .map(doc => serializeDoc<Pick<IFamily, '_id' | 'name'>>(doc))
+                .map(family => [family._id.toString(), family.name])
+        );
+        const familyInvites = activeInvites.map(invite => ({
+            ...invite,
+            familyName: inviteFamilyNames.get(invite.familyID) || 'Family',
+        }));
         const communitiesCreated = communitiesCreatedDoc.map(doc => serializeDoc<ICommunity>(doc));
         const communitiesJoined = communitiesJoinedDoc.map(doc => serializeDoc<ICommunity>(doc));
 
@@ -92,6 +113,7 @@ export default async function Page() {
                 recentRecipes={recentRecipes}
                 favoriteRecipes={favoriteRecipes}
                 inquiries={inquiries}
+                familyInvites={familyInvites}
                 userIsInquiryAdmin={userIsInquiryAdmin}
                 communitiesCreated={communitiesCreated}
                 communitiesJoined={communitiesJoined}

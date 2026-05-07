@@ -20,10 +20,47 @@ import { isInviteExpired, normalizeInviteEmail, removePendingInviteMember } from
 
 type ItemType = { newMember: IFamilyMember, newToken: string };
 const allowedPermissions = new Set(['Guest', 'Member', 'Admin']);
+const inviteResponse = (body: { status: number, message: string, famMembersReturned: IFamilyMember[] }, status = body.status) =>
+    NextResponse.json(body, { status });
+const inviteErrorMessage = (fallback: string, error: unknown) =>
+    error instanceof Error && error.message ? `${fallback}: ${error.message}` : fallback;
+const inviteServerError = (message: string, error?: unknown) => {
+    console.error(`[invite/send] ${message}`, error ?? '');
+    return inviteResponse({
+        status: 500,
+        message: inviteErrorMessage(message, error),
+        famMembersReturned: [] as IFamilyMember[],
+    });
+};
+const unverifiedConsumerDomains = new Set(['gmail.com', 'googlemail.com', 'yahoo.com', 'outlook.com', 'hotmail.com', 'icloud.com']);
+const productionInviteUrl = 'https://preservedrecipes.com';
 
-async function prepareInvite({ email, familyID, inviteTokenCreated }: { email: NewMembers, familyID: string, inviteTokenCreated: string }) {
+function getInviteBaseUrl() {
+    if (process.env.NODE_ENV === 'production') {
+        return process.env.NEXT_PUBLIC_BASE_URL || productionInviteUrl;
+    }
+
+    return process.env.NEXT_PUBLIC_INVITE_BASE_URL || productionInviteUrl;
+}
+
+function getInviteSender(emailFrom: string) {
+    const fromDomain = emailFrom.split('@')[1]?.toLowerCase() || '';
+
+    if (unverifiedConsumerDomains.has(fromDomain)) {
+        return {
+            error: `EMAIL_FROM uses ${fromDomain}, but Resend requires a verified sender domain. Use an address from a domain verified in Resend.`,
+            from: '',
+        };
+    }
+
+    return {
+        error: '',
+        from: emailFrom,
+    };
+}
+
+async function prepareInvite({ email, familyID, inviteTokenCreated, futureFamilyMem }: { email: NewMembers, familyID: string, inviteTokenCreated: string, futureFamilyMem: IUser | null }) {
     const normalizedEmail = normalizeInviteEmail(email.email);
-    const futureFamilyMem = await MongoUser.findOne({ email: normalizedEmail }) as IUser;
 
     const thisInvite = await Invite.create({
         email: normalizedEmail,
@@ -63,44 +100,44 @@ async function prepareInvite({ email, familyID, inviteTokenCreated }: { email: N
 }
 
 export async function POST(req: NextRequest) {
-    const secret = process.env.NEXTAUTH_SECRET || '';
-
-    if (!secret) {
-        return NextResponse.json({ status: 401, message: 'Incorrect secret', famMembersReturned: [] as IFamilyMember[] });
-    }
-
-    const session = await getServerSession(authOptions);
-    const token = await getToken({ req, secret });
-
-    if (!session) {
-        return NextResponse.json({ status: 401, message: 'Unauthorized from session', famMembersReturned: [] as IFamilyMember[] });
-    }
-
-    if (!token) {
-        return NextResponse.json({ status: 401, message: 'Unauthorized from token', famMembersReturned: [] as IFamilyMember[] });
-    }
-
-    const user = session.user;
-
-    if (!user) {
-        return NextResponse.json({ status: 401, message: 'Unauthorized from user', famMembersReturned: [] as IFamilyMember[] });
-    }
-
-    const senderEmail = user.email;
-    const senderName = user.name;
-
-    if (!senderEmail || !senderName) {
-        return NextResponse.json({ status: 401, message: 'Unauthorized from email', famMembersReturned: [] as IFamilyMember[] });
-    }
-
     try {
+        const secret = process.env.NEXTAUTH_SECRET || '';
+
+        if (!secret) {
+            return inviteResponse({ status: 401, message: 'Incorrect secret', famMembersReturned: [] as IFamilyMember[] });
+        }
+
+        const session = await getServerSession(authOptions);
+        const token = await getToken({ req, secret });
+
+        if (!session) {
+            return inviteResponse({ status: 401, message: 'Unauthorized from session', famMembersReturned: [] as IFamilyMember[] });
+        }
+
+        if (!token) {
+            return inviteResponse({ status: 401, message: 'Unauthorized from token', famMembersReturned: [] as IFamilyMember[] });
+        }
+
+        const user = session.user;
+
+        if (!user) {
+            return inviteResponse({ status: 401, message: 'Unauthorized from user', famMembersReturned: [] as IFamilyMember[] });
+        }
+
+        const senderEmail = user.email;
+        const senderName = user.name;
+
+        if (!senderEmail || !senderName) {
+            return inviteResponse({ status: 401, message: 'Unauthorized from email', famMembersReturned: [] as IFamilyMember[] });
+        }
+
         const body = await req.json();
         await connectDB();
         const sendToEmails = body.emails as NewFamMemFormType;
         const familyID = body.familyId as string;
 
         if (!ObjectId.isValid(familyID)) {
-            return NextResponse.json({ status: 400, message: 'Invalid family id', famMembersReturned: [] as IFamilyMember[] });
+            return inviteResponse({ status: 400, message: 'Invalid family id', famMembersReturned: [] as IFamilyMember[] });
         }
 
         const familyIdObject = new ObjectId(familyID);
@@ -109,11 +146,11 @@ export async function POST(req: NextRequest) {
         const actingUser = await MongoUser.findOne({ email: senderEmail }) as IUser;
 
         if (!thisFamily) {
-            return NextResponse.json({ status: 403, message: 'No family found' });
+            return inviteResponse({ status: 403, message: 'No family found', famMembersReturned: [] as IFamilyMember[] });
         }
 
         if (!actingUser || actingUser.userFamilyID !== familyID) {
-            return NextResponse.json({ status: 403, message: 'Unauthorized family access', famMembersReturned: [] as IFamilyMember[] });
+            return inviteResponse({ status: 403, message: 'Unauthorized family access', famMembersReturned: [] as IFamilyMember[] });
         }
 
         const actingMember = thisFamily.familyMembers.find(member =>
@@ -121,11 +158,20 @@ export async function POST(req: NextRequest) {
         );
 
         if (actingMember?.permissionStatus !== 'Admin') {
-            return NextResponse.json({ status: 403, message: 'Admin privileges required', famMembersReturned: [] as IFamilyMember[] });
+            return inviteResponse({ status: 403, message: 'Admin privileges required', famMembersReturned: [] as IFamilyMember[] });
         }
 
         const prevMembersRaw = thisFamily.familyMembers as IFamilyMember[];
         const activePrevMembers: IFamilyMember[] = [];
+        const pendingMemberEmails = prevMembersRaw
+            .filter(member => !member.memberConnected)
+            .map(member => normalizeInviteEmail(member.familyMemberEmail))
+            .filter(Boolean);
+        const pendingInvites = pendingMemberEmails.length > 0
+            ? await Invite.find({ familyID, email: { $in: pendingMemberEmails } }) as IInvite[]
+            : [];
+        const pendingInvitesByEmail = new Map(pendingInvites.map(invite => [normalizeInviteEmail(invite.email), invite]));
+        const expiredInviteTokens: string[] = [];
 
         for (const member of prevMembersRaw) {
             const memberEmail = normalizeInviteEmail(member.familyMemberEmail);
@@ -134,22 +180,32 @@ export async function POST(req: NextRequest) {
                 continue;
             }
 
-            const pendingInvite = await Invite.findOne({ familyID, email: memberEmail }) as IInvite | null;
+            const pendingInvite = pendingInvitesByEmail.get(memberEmail);
             if (pendingInvite && !isInviteExpired(pendingInvite)) {
                 activePrevMembers.push(member);
                 continue;
             }
 
             if (pendingInvite) {
-                await removePendingInviteMember(pendingInvite);
-                await Invite.deleteOne({ token: pendingInvite.token });
+                expiredInviteTokens.push(pendingInvite.token);
             }
+        }
+
+        if (expiredInviteTokens.length > 0) {
+            const expiredInviteTokenSet = new Set(expiredInviteTokens);
+            await Promise.all(
+                pendingInvites
+                    .filter(invite => expiredInviteTokenSet.has(invite.token))
+                    .map(invite => removePendingInviteMember(invite))
+            );
+            await Invite.deleteMany({ token: { $in: expiredInviteTokens } });
         }
 
         const prevMembers = activePrevMembers;
         const newItems: ItemType[] = [];
         const existingEmails = new Set(prevMembers.map(member => normalizeInviteEmail(member.familyMemberEmail)));
         const queuedEmails = new Set<string>();
+        const requestedInvites: NewMembers[] = [];
 
         for (const email of sendToEmails.newMembers) {
             const normalizedEmail = normalizeInviteEmail(email.email);
@@ -157,55 +213,88 @@ export async function POST(req: NextRequest) {
             if (!allowedPermissions.has(email.permissions)) continue;
             if (existingEmails.has(normalizedEmail) || queuedEmails.has(normalizedEmail)) continue;
 
-            const existingUser = await MongoUser.findOne({ email: normalizedEmail }) as IUser | null;
+            queuedEmails.add(normalizedEmail);
+            requestedInvites.push({ ...email, email: normalizedEmail });
+        }
+
+        const requestedEmails = requestedInvites.map(email => email.email);
+        const existingUsers = requestedEmails.length > 0
+            ? await MongoUser.find({ email: { $in: requestedEmails } }) as IUser[]
+            : [];
+        const existingUsersByEmail = new Map(existingUsers.map(user => [normalizeInviteEmail(user.email), user]));
+
+        for (const email of requestedInvites) {
+            const normalizedEmail = normalizeInviteEmail(email.email);
+            const existingUser = existingUsersByEmail.get(normalizedEmail) || null;
             if (existingUser?.userFamilyID && existingUser.userFamilyID !== familyID) continue;
 
-            queuedEmails.add(normalizedEmail);
             const inviteTokenCreated = crypto.randomBytes(20).toString('hex');
             try {
                 const { newMember, inviteToken } = await prepareInvite({
                     email: { ...email, email: normalizedEmail },
                     familyID,
-                    inviteTokenCreated
+                    inviteTokenCreated,
+                    futureFamilyMem: existingUser
                 });
                 newItems.push({ newMember: newMember, newToken: inviteToken });
             } catch (error: any) {
-                console.log('Issue with: ', email.email, error.message);
+                console.error('Issue preparing invite for:', email.email, error);
             }
         }
 
         if (newItems.length <= 0) {
-            return NextResponse.json({ status: 405, message: 'Issue with members', famMembersReturned: [] as IFamilyMember[] });
+            return inviteResponse({ status: 409, message: 'No new invites to send. These emails may already be members, already have pending invites, or belong to users in another family.', famMembersReturned: prevMembers });
         }
 
         const emailFrom = process.env.EMAIL_FROM ? process.env.EMAIL_FROM as string : '';
         const resendKey = process.env.RESEND_API_KEY ? process.env.RESEND_API_KEY as string : '';
-        const url = process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL as string : '';
+        const url = getInviteBaseUrl();
 
-        if (emailFrom === '' || resendKey === '' || url === '') {
-            return NextResponse.json({ status: 405, message: 'Issue with gmail setup', famMembersReturned: [] as IFamilyMember[] });
+        if (emailFrom === '' || url === '') {
+            const missingConfig = [
+                !emailFrom && 'EMAIL_FROM',
+                !url && 'NEXT_PUBLIC_BASE_URL',
+            ].filter(Boolean).join(', ');
+            return inviteServerError(`Issue with email setup. Missing: ${missingConfig}`);
+        }
+
+        const sender = getInviteSender(emailFrom);
+
+        if (sender.error) {
+            return inviteServerError(sender.error);
+        }
+
+        if (resendKey === '') {
+            return inviteServerError('Issue with email setup. Missing: RESEND_API_KEY');
         }
 
         const resend = new Resend(resendKey);
 
-        if (!resend) {
-            return NextResponse.json({ status: 500, message: 'Resend not initialized', famMembersReturned: [] as IFamilyMember[] });
-        }
-
         for (const item of newItems) {
             const sent: any = await resend.emails.send({
-                from: `Preserved Recipes <${emailFrom}>`,
-                to: item.newMember.familyMemberEmail,
-                subject: `Invitation from ${senderName}`,
-                react: InviteTemplate({ senderName, familyName: thisFamily.name, inviteLink: `${url}/invite?token=${item.newToken}`, firstName: item.newMember.familyMemberEmail.split('@')[0] }),
-            });
-            if (!sent || !sent.data) {
-                await Invite.deleteOne({ token: item.newToken });
-                return NextResponse.json({ status: 500, message: `Errors with ${item.newMember.familyMemberEmail}`, famMembersReturned: [] as IFamilyMember[] });
+                    from: `Preserved Recipes <${sender.from}>`,
+                    to: item.newMember.familyMemberEmail,
+                    subject: `Invitation from ${senderName}`,
+                    react: InviteTemplate({
+                        senderName,
+                        familyName: thisFamily.name,
+                        inviteLink: `${url}/invite?token=${item.newToken}`,
+                        firstName: item.newMember.familyMemberEmail.split('@')[0],
+                    }),
+                })
+                .catch(async (error: unknown) => {
+                    await Invite.deleteMany({ token: { $in: newItems.map(newItem => newItem.newToken) } });
+                    throw new Error(inviteErrorMessage(`Email send failed for ${item.newMember.familyMemberEmail}`, error));
+                });
+
+            if (sent?.error) {
+                await Invite.deleteMany({ token: { $in: newItems.map(newItem => newItem.newToken) } });
+                return inviteServerError(`Resend returned an error for ${item.newMember.familyMemberEmail}`, sent.error);
             }
-            if (sent && sent.error != null) {
-                await Invite.deleteOne({ token: item.newToken });
-                return NextResponse.json({ status: 500, message: `Errors with ${item.newMember.familyMemberEmail} ${sent.error}`, famMembersReturned: [] as IFamilyMember[] });
+
+            if (!sent?.data) {
+                await Invite.deleteMany({ token: { $in: newItems.map(newItem => newItem.newToken) } });
+                return inviteServerError(`Resend returned no data for ${item.newMember.familyMemberEmail}`, sent);
             }
         }
 
@@ -216,12 +305,16 @@ export async function POST(req: NextRequest) {
             ...membersToAdd
         ] as IFamilyMember[];
 
-        await Family.updateOne({ _id: familyIdObject }, { familyMembers: membersFused });
+        const updateResult = await Family.updateOne({ _id: familyIdObject }, { familyMembers: membersFused });
 
-        return NextResponse.json({ status: 200, message: 'Success', famMembersReturned: membersFused });
+        if (updateResult.matchedCount <= 0) {
+            await Invite.deleteMany({ token: { $in: newItems.map(newItem => newItem.newToken) } });
+            return inviteServerError('Invites sent, but family members could not be updated');
+        }
+
+        return inviteResponse({ status: 200, message: 'Success', famMembersReturned: membersFused });
 
     } catch (err) {
-        console.log(err)
-        return NextResponse.json({ status: 500, message: 'Internal Server Error', famMembersReturned: [] as IFamilyMember[] });
+        return inviteServerError('Internal Server Error', err);
     }
 }

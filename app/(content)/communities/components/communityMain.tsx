@@ -121,15 +121,17 @@ export default function CommunityMain({
     const endIndex = startIndex + itemsPerPage;
     const currentCommunities = communities.slice(startIndex, endIndex);
 
-    setGlobalLoading(false);
-
     //can add this to return if needed later: filteredAndSorted: communities, 
     return { 
       totalPages, 
       currentCommunities,
       currentCommunityTags
     };
-  }, [storedCommunities, searchText, initialFilter, initialStatus, initialSort, currentPage, itemsPerPage, setGlobalLoading]);
+  }, [storedCommunities, searchText, initialFilter, initialStatus, initialSort, currentPage, itemsPerPage]);
+
+  useEffect(() => {
+    setGlobalLoading(false);
+  }, [currentCommunities, setGlobalLoading]);
 
   const handleTransiton = (url: string) => {
     setGlobalLoading(true);

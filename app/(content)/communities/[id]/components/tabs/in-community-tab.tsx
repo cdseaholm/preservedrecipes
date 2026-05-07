@@ -2,12 +2,11 @@
 
 import BasicSort from "@/components/buttons/filter-and-sorts/basic-sort";
 import ListWrapper from "@/components/wrappers/list-wrapper";
-import ContentWrapper from "@/components/wrappers/contentWrapper";
 import { useModalStore } from "@/context/modalStore";
 import { useWindowSizes } from "@/context/width-height-store";
 import { ICommunity } from "@/models/types/community/community";
-import { IRequest } from "@/models/types/misc/request";
 import { IPost } from "@/models/types/misc/post";
+import { IRequest } from "@/models/types/misc/request";
 import { IUser } from "@/models/types/personal/user";
 import { IRecipe, RecipeFormContextType } from "@/models/types/recipes/recipe";
 import { sortValueKey } from "@/components/buttons/filter-and-sorts/community-sort";
@@ -15,13 +14,22 @@ import { useMemo, useState } from "react";
 import { BiBookAdd, BiCheck, BiMessageAdd, BiX } from "react-icons/bi";
 import { toast } from "sonner";
 import PostCard from "../post-card";
+import {
+    Badge,
+    Button,
+    Card,
+    Group,
+    Stack,
+    Text,
+    ThemeIcon,
+} from "@mantine/core";
+import { IconInbox, IconUserCircle } from "@tabler/icons-react";
 
 type TabName = 'posts' | 'members' | 'community-settings' | 'user-settings' | 'requests';
 
 export default function InCommunityTab({
     tab,
     posts,
-    recipes,
     userInfo,
     community,
     members,
@@ -45,7 +53,6 @@ export default function InCommunityTab({
     const setOpenPostModal = useModalStore(state => state.setOpenPostModal);
     const setOpenRecipeForm = useModalStore(state => state.setOpenRecipeForm);
     const itemsPerPage = 5;
-    const recipeCount = recipes.length;
     const isMember = !!userInfo && (community.communityMemberIDs.includes(userInfo._id) || community.adminIDs.includes(userInfo._id) || community.creatorID === userInfo._id);
 
     const totalItems = tab === 'posts' ? posts.length : tab === 'members' ? (members?.length ?? 0) : tab === 'requests' ? requests.length : 1;
@@ -93,56 +100,85 @@ export default function InCommunityTab({
     };
 
     return (
-        <ContentWrapper containedChild={false} paddingNeeded={true}>
-            <section className="mx-auto flex min-h-[74dvh] w-full max-w-5xl flex-col gap-4 rounded-md bg-mainBack/30 p-3 sm:p-5">
-                <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                    <div className="min-w-0">
-                        <h1 className="text-xl sm:text-2xl font-semibold text-mainText">{community.name}</h1>
-                        <p className="mt-1 max-w-2xl text-sm text-mainText/70">{community.description || 'A recipe-focused community.'}</p>
-                        <p className="mt-1 text-xs text-mainText/60">{recipeCount} shared recipes</p>
-                        <div className="mt-2 flex flex-wrap gap-2">
-                            {community.tags.map(tag => <span key={tag} className="rounded-md bg-cardBack px-2 py-1 text-xs text-mainText/70">{tag}</span>)}
-                        </div>
-                    </div>
-                    {tab === 'posts' && (
-                        <div className="flex flex-wrap gap-2">
-                            <button type="button" onClick={openCreatePost} className="inline-flex items-center gap-1 rounded-md bg-blue-500 px-3 py-2 text-sm text-white hover:bg-blue-600">
-                                <BiMessageAdd /> Post
-                            </button>
-                            <button type="button" onClick={openCreateRecipe} className="inline-flex items-center gap-1 rounded-md bg-green-600 px-3 py-2 text-sm text-white hover:bg-green-700">
-                                <BiBookAdd /> Recipe
-                            </button>
-                        </div>
-                    )}
-                </header>
-
-                <div className="flex flex-row justify-between items-end sm:space-x-4 w-full h-fit">
-                    {tab !== 'requests' && <BasicSort widthQuery={width} handleSort={(newSort) => setFilter(newSort || 'added_desc')} data={sortValueKey} defaultValue="added_desc" value={filter} />}
+        <Stack gap="md">
+            <Group justify="space-between" align="flex-end" gap="sm">
+                <div>
+                    <Text fw={700}>
+                        {tab === 'posts' ? 'Community posts' : tab === 'members' ? 'Members' : 'Join requests'}
+                    </Text>
+                    <Text size="sm" c="dimmed">
+                        {tab === 'posts'
+                            ? 'Share recipes, ask questions, and keep community conversations moving.'
+                            : tab === 'members'
+                                ? 'People connected to this community.'
+                                : 'Review pending requests from people who want to join.'}
+                    </Text>
                 </div>
 
-                <ListWrapper numberOfPages={totalPages} isPending={false} currentPage={currentPage} onPageChange={setCurrentPage} searchBar={null} editButtons={undefined}>
-                    {tab === 'posts' && <PostList posts={sortedPosts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)} communityId={community._id} />}
-                    {tab === 'members' && <MemberList members={(members || []).slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)} />}
-                    {tab === 'requests' && <RequestList requests={requests.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)} canManage={userIsAdmin} />}
-                </ListWrapper>
-            </section>
-        </ContentWrapper>
+                {tab === 'posts' && (
+                    <Group gap="xs">
+                        <Button type="button" onClick={openCreatePost} leftSection={<BiMessageAdd />} variant="filled">
+                            Post
+                        </Button>
+                        <Button type="button" onClick={openCreateRecipe} leftSection={<BiBookAdd />} color="green" variant="light">
+                            Recipe
+                        </Button>
+                    </Group>
+                )}
+            </Group>
+
+            {tab !== 'requests' && (
+                <Group justify="flex-end">
+                    <BasicSort widthQuery={width} handleSort={(newSort) => setFilter(newSort || 'added_desc')} data={sortValueKey} defaultValue="added_desc" value={filter} />
+                </Group>
+            )}
+
+            <ListWrapper numberOfPages={totalPages} isPending={false} currentPage={currentPage} onPageChange={setCurrentPage} searchBar={null} editButtons={null}>
+                {tab === 'posts' && <PostList posts={sortedPosts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)} communityId={community._id} />}
+                {tab === 'members' && <MemberList members={(members || []).slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)} />}
+                {tab === 'requests' && <RequestList requests={requests.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)} canManage={userIsAdmin} />}
+            </ListWrapper>
+        </Stack>
     );
 }
 
 function PostList({ posts, communityId }: { posts: IPost[], communityId: string }) {
-    if (posts.length === 0) return <p className="p-3 text-sm text-mainText/70">No posts yet. Share a recipe, ask a food question, or start a cooking discussion.</p>;
+    if (posts.length === 0) {
+        return (
+            <EmptyState
+                title="No posts yet"
+                description="Share a recipe, ask a food question, or start a cooking discussion."
+            />
+        );
+    }
+
     return posts.map((post, index) => <PostCard key={post._id} index={index} post={post} communityId={communityId} />);
 }
 
 function MemberList({ members }: { members: IUser[] }) {
-    if (members.length === 0) return <p className="p-3 text-sm text-mainText/70">No members found.</p>;
-    return members.map(member => (
-        <article key={member._id} className="mb-3 rounded-md border border-mainText/15 bg-cardBack p-3">
-            <h3 className="font-semibold text-mainText">{member.name}</h3>
-            <p className="text-sm text-mainText/65">{member.email}</p>
-        </article>
-    ));
+    if (members.length === 0) {
+        return <EmptyState title="No members found" description="Members will appear here after joining." />;
+    }
+
+    return (
+        <Stack gap="sm" w="100%">
+            {members.map(member => (
+                <Card key={member._id} withBorder radius="md" padding="md" className="w-full bg-mainBack/60">
+                    <Group justify="space-between" gap="sm">
+                        <Group gap="sm" className="min-w-0">
+                            <ThemeIcon variant="light" color="accent" radius="md">
+                                <IconUserCircle size={18} />
+                            </ThemeIcon>
+                            <div className="min-w-0">
+                                <Text fw={700} className="truncate">{member.name}</Text>
+                                <Text size="sm" c="dimmed" className="truncate">{member.email}</Text>
+                            </div>
+                        </Group>
+                    </Group>
+                </Card>
+            ))}
+        </Stack>
+    );
 }
 
 function RequestList({ requests, canManage }: { requests: IRequest[], canManage: boolean }) {
@@ -151,8 +187,7 @@ function RequestList({ requests, canManage }: { requests: IRequest[], canManage:
     const decide = async (requestID: string, action: 'approved' | 'rejected') => {
         setBusyId(requestID);
         try {
-            const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
-            const response = await fetch(`${baseUrl}/api/community/request`, {
+            const response = await fetch('/api/community/request', {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ requestID, action }),
@@ -171,27 +206,51 @@ function RequestList({ requests, canManage }: { requests: IRequest[], canManage:
         }
     };
 
-    if (requests.length === 0) return <p className="p-3 text-sm text-mainText/70">No pending admin messages.</p>;
+    if (requests.length === 0) {
+        return <EmptyState title="No pending requests" description="New join requests will appear here for admin review." />;
+    }
 
-    return requests.map(request => (
-        <article key={request._id} className="mb-3 rounded-md border border-mainText/15 bg-cardBack p-3">
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                <div>
-                    <h3 className="font-semibold text-mainText">{request.requesterName || 'Community request'}</h3>
-                    <p className="text-sm text-mainText/65">{request.requesterEmail}</p>
-                    <p className="mt-2 text-sm text-mainText/80">{request.message}</p>
-                </div>
-                {canManage && (
-                    <div className="flex gap-2">
-                        <button disabled={busyId === request._id} onClick={() => decide(request._id, 'approved')} className="inline-flex items-center gap-1 rounded-md bg-green-600 px-3 py-2 text-sm text-white disabled:opacity-50">
-                            <BiCheck /> Approve
-                        </button>
-                        <button disabled={busyId === request._id} onClick={() => decide(request._id, 'rejected')} className="inline-flex items-center gap-1 rounded-md bg-red-600 px-3 py-2 text-sm text-white disabled:opacity-50">
-                            <BiX /> Reject
-                        </button>
-                    </div>
-                )}
-            </div>
-        </article>
-    ));
+    return (
+        <Stack gap="sm" w="100%">
+            {requests.map(request => (
+                <Card key={request._id} withBorder radius="md" padding="md" className="w-full bg-mainBack/60">
+                    <Group justify="space-between" align="flex-start" gap="md">
+                        <Stack gap={6} className="min-w-0">
+                            <Group gap="xs">
+                                <Badge variant="light" color="yellow">Pending</Badge>
+                                <Text size="xs" c="dimmed">{new Date(request.createdAt).toLocaleDateString()}</Text>
+                            </Group>
+                            <Text fw={700}>{request.requesterName || 'Community request'}</Text>
+                            <Text size="sm" c="dimmed">{request.requesterEmail}</Text>
+                            <Text size="sm">{request.message}</Text>
+                        </Stack>
+                        {canManage && (
+                            <Group gap="xs" wrap="nowrap">
+                                <Button disabled={busyId === request._id} onClick={() => decide(request._id, 'approved')} color="green" leftSection={<BiCheck />}>
+                                    Approve
+                                </Button>
+                                <Button disabled={busyId === request._id} onClick={() => decide(request._id, 'rejected')} color="red" variant="light" leftSection={<BiX />}>
+                                    Reject
+                                </Button>
+                            </Group>
+                        )}
+                    </Group>
+                </Card>
+            ))}
+        </Stack>
+    );
+}
+
+function EmptyState({ title, description }: { title: string, description: string }) {
+    return (
+        <Card withBorder radius="md" padding="xl" className="w-full bg-mainBack/60 text-center">
+            <Stack gap="xs" align="center">
+                <ThemeIcon variant="light" color="accent" radius="xl" size="lg">
+                    <IconInbox size={18} />
+                </ThemeIcon>
+                <Text fw={700}>{title}</Text>
+                <Text size="sm" c="dimmed">{description}</Text>
+            </Stack>
+        </Card>
+    );
 }

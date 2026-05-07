@@ -1,14 +1,17 @@
-//ADMIN ONLY FOR THE COMMUNITY
+// ADMIN ONLY FOR THE COMMUNITY
 
 'use client';
 
 import { useCommunityStore } from "@/context/communityStore";
 import { AttemptDeleteCommunity } from "@/utils/apihelpers/delete/delete-community";
+import { Button, Card, Group, Stack, Text, ThemeIcon } from "@mantine/core";
+import { IconEdit, IconLockCog, IconTrash } from "@tabler/icons-react";
+import type { ReactNode } from "react";
 import { toast } from "sonner";
 
 export default function CommunitySettings({ communityID, handleLoading }: { communityID: string, handleLoading: (loading: boolean) => void }) {
-
     const setEditCommunity = useCommunityStore(state => state.setEditCommunity);
+
     const Delete = async () => {
         handleLoading(true);
         try {
@@ -24,31 +27,69 @@ export default function CommunitySettings({ communityID, handleLoading }: { comm
                 return;
             }
             toast.success('Community deleted successfully.');
-            //Redirect to home or communities page after deletion
             window.location.href = '/communities';
         } catch (error) {
             toast.error('An unexpected error occurred while deleting the community.');
             handleLoading(false);
         }
-    }
+    };
 
     const confirm = async () => {
-        //I will need to work in the idea of which admins may delete or not so that not just any admin can delete
-        const confirmed = window.confirm('Are you sure you want to proceed with this action? This action cannot be undone.');
+        const confirmed = window.confirm('Are you sure you want to delete this community? This action cannot be undone.');
         if (confirmed) {
             Delete();
         }
-    }
-
-    // const editCommunity = async () => {
-    //     //Future implementation for editing community details
-    // }
+    };
 
     return (
-        <div className="w-full h-full flex justify-center items-center">
-            <button onClick={() => setEditCommunity('edit-name')} type="button" className="px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors">Change Name</button>
-            <button onClick={() => setEditCommunity('edit-privacy-level')} type="button" className="ml-4 px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors">Change Privacy Level</button>
-            <button onClick={confirm} type="button" className="px-6 py-3 bg-red-800 text-white rounded-md hover:bg-red-900 transition-colors">Delete Community</button>
-        </div>
-    )
+        <Stack gap="md">
+            <Group justify="space-between" align="flex-end" gap="sm">
+                <div>
+                    <Text fw={700}>Community settings</Text>
+                    <Text size="sm" c="dimmed">Update core community details or remove the community.</Text>
+                </div>
+            </Group>
+
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+                <SettingsAction
+                    icon={<IconEdit size={18} />}
+                    title="Community name"
+                    description="Rename this community while keeping members, posts, and recipes intact."
+                    action={<Button type="button" variant="light" onClick={() => setEditCommunity('edit-name')}>Change name</Button>}
+                />
+                <SettingsAction
+                    icon={<IconLockCog size={18} />}
+                    title="Privacy"
+                    description="Adjust how people discover, join, or request access to this community."
+                    action={<Button type="button" variant="light" onClick={() => setEditCommunity('edit-privacy-level')}>Change privacy</Button>}
+                />
+                <SettingsAction
+                    icon={<IconTrash size={18} />}
+                    title="Delete"
+                    description="Permanently remove this community and return members to the community list."
+                    danger
+                    action={<Button type="button" color="red" variant="light" onClick={confirm}>Delete</Button>}
+                />
+            </div>
+        </Stack>
+    );
+}
+
+function SettingsAction({ icon, title, description, action, danger = false }: { icon: ReactNode, title: string, description: string, action: ReactNode, danger?: boolean }) {
+    return (
+        <Card withBorder radius="md" padding="md" className="bg-secondaryBack">
+            <Stack gap="sm" h="100%" justify="space-between">
+                <Stack gap="sm">
+                    <ThemeIcon variant="light" color={danger ? 'red' : 'accent'} radius="md">
+                        {icon}
+                    </ThemeIcon>
+                    <div>
+                        <Text fw={700}>{title}</Text>
+                        <Text size="sm" c="dimmed">{description}</Text>
+                    </div>
+                </Stack>
+                {action}
+            </Stack>
+        </Card>
+    );
 }

@@ -13,7 +13,7 @@ import ProfileStats from "./profile-stats";
 import RecentActivity from "./recent-activity";
 import ProfileHeader from "./profile-header";
 import HistoryTabContent from "./accountHistory";
-import InquiryTabContent from "./inquiry-tab";
+import ProfileInbox, { ProfileFamilyInvite } from "./profile-inbox";
 import SettingsTab from "./settings-page";
 import { 
     Tabs, 
@@ -28,13 +28,13 @@ import {
     IconChartLine, 
     IconChartBar, 
     IconHistory, 
-    IconMessageCircle, 
+    IconInbox, 
     IconSettings 
 } from "@tabler/icons-react";
 import { useSearchParams } from "next/navigation";
 import { useUserStore } from "@/context/userStore";
 
-const profileTabs = ['activity', 'stats', 'history', 'inquiries', 'settings'];
+const profileTabs = ['activity', 'stats', 'history', 'inbox', 'settings'];
 
 interface ProfilePageProps {
     user: IUser;
@@ -43,6 +43,7 @@ interface ProfilePageProps {
     recentRecipes: IRecipe[];
     favoriteRecipes: IRecipe[];
     inquiries: IInquiry[];
+    familyInvites: ProfileFamilyInvite[];
     userIsInquiryAdmin: boolean;
     communitiesCreated: ICommunity[];
     communitiesJoined: ICommunity[];
@@ -54,6 +55,7 @@ export default function ProfilePage({
     reviews,
     recentRecipes,
     inquiries,
+    familyInvites,
     userIsInquiryAdmin,
     communitiesCreated,
     communitiesJoined
@@ -61,13 +63,14 @@ export default function ProfilePage({
 
     const searchParams = useSearchParams();
     const requestedTab = searchParams.get('tab');
-    const [activeTab, setActiveTab] = useState(profileTabs.includes(requestedTab || '') ? requestedTab || 'activity' : 'activity');
+    const requestedProfileTab = requestedTab === 'inquiries' ? 'inbox' : requestedTab;
+    const [activeTab, setActiveTab] = useState(profileTabs.includes(requestedProfileTab || '') ? requestedProfileTab || 'activity' : 'activity');
 
     useEffect(() => {
-        if (requestedTab && profileTabs.includes(requestedTab)) {
-            setActiveTab(requestedTab);
+        if (requestedProfileTab && profileTabs.includes(requestedProfileTab)) {
+            setActiveTab(requestedProfileTab);
         }
-    }, [requestedTab]);
+    }, [requestedProfileTab]);
 
     const recipeCount = user.recipeIDs?.length || 0;
     const communityCount = user.communityIDs?.length || 0;
@@ -75,6 +78,7 @@ export default function ProfilePage({
     const storedInquiries = useUserStore(state => state.inquiries);
     const inquiriesForBadge = storedInquiries.length > 0 ? storedInquiries : inquiries;
     const openInquiryCount = inquiriesForBadge.filter(inquiry => !inquiry.handled).length;
+    const inboxCount = openInquiryCount + familyInvites.length;
     const timeBeingMember = user.createdAt
         ? Math.floor((new Date().getTime() - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24))
         : 0;
@@ -165,18 +169,18 @@ export default function ProfilePage({
                                         History
                                     </Tabs.Tab>
                                     <Tabs.Tab 
-                                        value="inquiries" 
-                                        leftSection={<IconMessageCircle style={iconStyle} />}
+                                        value="inbox" 
+                                        leftSection={<IconInbox style={iconStyle} />}
                                         bd={'1px solid #ceb5a4ff'}
                                         rightSection={
-                                            openInquiryCount > 0 ? (
+                                            inboxCount > 0 ? (
                                                 <Badge size="xs" variant="filled" color="red" circle>
-                                                    {openInquiryCount}
+                                                    {inboxCount}
                                                 </Badge>
                                             ) : null
                                         }
                                     >
-                                        Inquiries
+                                        Inbox
                                     </Tabs.Tab>
                                     <Tabs.Tab 
                                         value="settings" 
@@ -216,8 +220,9 @@ export default function ProfilePage({
                                         />
                                     </Tabs.Panel>
 
-                                    <Tabs.Panel value="inquiries">
-                                        <InquiryTabContent
+                                    <Tabs.Panel value="inbox">
+                                        <ProfileInbox
+                                            familyInvites={familyInvites}
                                             initialInquiries={inquiries}
                                             user={user}
                                             isAdmin={userIsInquiryAdmin}
