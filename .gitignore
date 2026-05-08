@@ -41,3 +41,7 @@ next-env.d.ts
 /notes.txt
 /package-lock.json.backup
 /package.json.backup
+
+# local seed and maintenance scripts
+/scripts/*.local.js
+/scripts/*.local.ts

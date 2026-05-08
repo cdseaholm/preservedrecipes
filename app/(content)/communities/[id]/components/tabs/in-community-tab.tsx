@@ -23,13 +23,17 @@ import {
     Text,
     ThemeIcon,
 } from "@mantine/core";
-import { IconInbox, IconUserCircle } from "@tabler/icons-react";
+import { IconBook2, IconClock, IconInbox, IconUserCircle } from "@tabler/icons-react";
+import Link from "next/link";
 
-type TabName = 'posts' | 'members' | 'community-settings' | 'user-settings' | 'requests';
+type TabName = 'posts' | 'recipes' | 'members' | 'community-settings' | 'user-settings' | 'requests';
 
 export default function InCommunityTab({
     tab,
     posts,
+    recipes,
+    admins,
+    creator,
     userInfo,
     community,
     members,
@@ -55,7 +59,23 @@ export default function InCommunityTab({
     const itemsPerPage = 5;
     const isMember = !!userInfo && (community.communityMemberIDs.includes(userInfo._id) || community.adminIDs.includes(userInfo._id) || community.creatorID === userInfo._id);
 
-    const totalItems = tab === 'posts' ? posts.length : tab === 'members' ? (members?.length ?? 0) : tab === 'requests' ? requests.length : 1;
+    const displayMembers = useMemo(() => {
+        const memberMap = new Map<string, IUser>();
+        [...(members || []), ...(admins || []), ...(creator ? [creator] : [])].forEach(member => {
+            if (member?._id) memberMap.set(member._id, member);
+        });
+        return Array.from(memberMap.values());
+    }, [admins, creator, members]);
+
+    const totalItems = tab === 'posts'
+        ? posts.length
+        : tab === 'recipes'
+            ? recipes.length
+            : tab === 'members'
+                ? displayMembers.length
+                : tab === 'requests'
+                    ? requests.length
+                    : 1;
     const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
 
     const sortedPosts = useMemo(() => {
@@ -63,6 +83,12 @@ export default function InCommunityTab({
             ? new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
             : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     }, [posts, filter]);
+
+    const sortedRecipes = useMemo(() => {
+        return [...recipes].sort((a, b) => filter === 'added_asc'
+            ? new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+            : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    }, [recipes, filter]);
 
     const openCreatePost = () => {
         if (!isMember) {
@@ -104,18 +130,26 @@ export default function InCommunityTab({
             <Group justify="space-between" align="flex-end" gap="sm">
                 <div>
                     <Text fw={700}>
-                        {tab === 'posts' ? 'Community posts' : tab === 'members' ? 'Members' : 'Join requests'}
+                        {tab === 'posts'
+                            ? 'Community posts'
+                            : tab === 'recipes'
+                                ? 'Shared recipes'
+                                : tab === 'members'
+                                    ? 'Members'
+                                    : 'Join requests'}
                     </Text>
                     <Text size="sm" c="dimmed">
                         {tab === 'posts'
                             ? 'Share recipes, ask questions, and keep community conversations moving.'
-                            : tab === 'members'
-                                ? 'People connected to this community.'
-                                : 'Review pending requests from people who want to join.'}
+                            : tab === 'recipes'
+                                ? 'Browse recipes added directly to this community.'
+                                : tab === 'members'
+                                    ? 'People connected to this community, including admins and the creator.'
+                                    : 'Review pending requests from people who want to join.'}
                     </Text>
                 </div>
 
-                {tab === 'posts' && (
+                {(tab === 'posts' || tab === 'recipes') && (
                     <Group gap="xs">
                         <Button type="button" onClick={openCreatePost} leftSection={<BiMessageAdd />} variant="filled">
                             Post
@@ -135,7 +169,8 @@ export default function InCommunityTab({
 
             <ListWrapper numberOfPages={totalPages} isPending={false} currentPage={currentPage} onPageChange={setCurrentPage} searchBar={null} editButtons={null}>
                 {tab === 'posts' && <PostList posts={sortedPosts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)} communityId={community._id} />}
-                {tab === 'members' && <MemberList members={(members || []).slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)} />}
+                {tab === 'recipes' && <RecipeList recipes={sortedRecipes.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)} userInfo={userInfo} />}
+                {tab === 'members' && <MemberList members={displayMembers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)} community={community} />}
                 {tab === 'requests' && <RequestList requests={requests.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)} canManage={userIsAdmin} />}
             </ListWrapper>
         </Stack>
@@ -155,28 +190,95 @@ function PostList({ posts, communityId }: { posts: IPost[], communityId: string 
     return posts.map((post, index) => <PostCard key={post._id} index={index} post={post} communityId={communityId} />);
 }
 
-function MemberList({ members }: { members: IUser[] }) {
+function RecipeList({ recipes, userInfo }: { recipes: IRecipe[], userInfo: IUser | null }) {
+    if (recipes.length === 0) {
+        return (
+            <EmptyState
+                title="No recipes yet"
+                description="Add a recipe to give this community something delicious to build around."
+            />
+        );
+    }
+
+    return (
+        <Stack gap="sm" w="100%">
+            {recipes.map(recipe => (
+                <Card
+                    key={recipe._id}
+                    component={Link}
+                    href={`/view/recipe/${recipe._id}`}
+                    withBorder
+                    radius="md"
+                    padding="md"
+                    className="w-full bg-mainBack/60 transition-colors hover:bg-secondaryBack"
+                >
+                    <Group justify="space-between" gap="md" wrap="nowrap">
+                        <Group gap="sm" className="min-w-0" wrap="nowrap">
+                            <ThemeIcon variant="light" color="accent" radius="md">
+                                <IconBook2 size={18} />
+                            </ThemeIcon>
+                            <div className="min-w-0">
+                                <Group gap="xs">
+                                    <Text fw={700} className="truncate">{recipe.name || 'Untitled recipe'}</Text>
+                                    {recipe.recipeType && (
+                                        <Badge variant="light" color="gray">
+                                            {recipe.recipeType}
+                                        </Badge>
+                                    )}
+                                </Group>
+                                <Text size="sm" c="dimmed" className="truncate">
+                                    {recipe.description || 'Community recipe'}
+                                </Text>
+                            </div>
+                        </Group>
+                        <Group gap="xs" wrap="nowrap" className="shrink-0">
+                            {recipe.cookingTime ? (
+                                <Badge variant="light" color="gray" leftSection={<IconClock size={12} />}>
+                                    {recipe.cookingTime} min
+                                </Badge>
+                            ) : null}
+                            {recipe.creatorID === userInfo?._id ? <Badge variant="light" color="blue">Yours</Badge> : null}
+                        </Group>
+                    </Group>
+                </Card>
+            ))}
+        </Stack>
+    );
+}
+
+function MemberList({ members, community }: { members: IUser[], community: ICommunity }) {
     if (members.length === 0) {
         return <EmptyState title="No members found" description="Members will appear here after joining." />;
     }
 
     return (
         <Stack gap="sm" w="100%">
-            {members.map(member => (
-                <Card key={member._id} withBorder radius="md" padding="md" className="w-full bg-mainBack/60">
-                    <Group justify="space-between" gap="sm">
-                        <Group gap="sm" className="min-w-0">
-                            <ThemeIcon variant="light" color="accent" radius="md">
-                                <IconUserCircle size={18} />
-                            </ThemeIcon>
-                            <div className="min-w-0">
-                                <Text fw={700} className="truncate">{member.name}</Text>
-                                <Text size="sm" c="dimmed" className="truncate">{member.email}</Text>
-                            </div>
+            {members.map(member => {
+                const isCreator = community.creatorID === member._id;
+                const isAdmin = community.adminIDs.includes(member._id) || isCreator;
+
+                return (
+                    <Card key={member._id} withBorder radius="md" padding="md" className="w-full bg-mainBack/60">
+                        <Group justify="space-between" gap="sm">
+                            <Group gap="sm" className="min-w-0">
+                                <ThemeIcon variant="light" color={isAdmin ? 'yellow' : 'accent'} radius="md">
+                                    <IconUserCircle size={18} />
+                                </ThemeIcon>
+                                <div className="min-w-0">
+                                    <Text fw={700} className="truncate">{member.name}</Text>
+                                    <Text size="sm" c="dimmed" className="truncate">{member.email}</Text>
+                                </div>
+                            </Group>
+                            <Group gap="xs" wrap="nowrap">
+                                {isCreator && <Badge variant="filled" color="accent">Creator</Badge>}
+                                <Badge variant="light" color={isAdmin ? 'yellow' : 'gray'}>
+                                    {isAdmin ? 'Admin' : 'Member'}
+                                </Badge>
+                            </Group>
                         </Group>
-                    </Group>
-                </Card>
-            ))}
+                    </Card>
+                );
+            })}
         </Stack>
     );
 }
