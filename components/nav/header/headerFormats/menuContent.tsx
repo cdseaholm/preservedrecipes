@@ -11,7 +11,6 @@ import { RiCommunityLine } from "react-icons/ri";
 import { TfiWrite } from "react-icons/tfi";
 import { IUser } from "@/models/types/personal/user";
 import Link from "next/link";
-import { toast } from "sonner";
 import { useStateStore } from "@/context/stateStore";
 
 const recipes = <PiCookieThin />;
@@ -62,8 +61,8 @@ export default function MenuContent({ session, profile, signOutElement, signIn, 
 
     const buttonClass = `flex flex-row items-center px-6 hover:bg-accent/20 rounded-md space-x-2 w-full cursor-pointer`;
     const textClass = `text-base md:text-lg lg:text-xl font-medium`;
-    const disabledButtonClass = `flex flex-row items-center px-6 rounded-md space-x-2 w-full bg-gray-300/50`;
-    const disabledTextClass = `text-base md:text-lg lg:text-xl font-medium text-gray-500`;
+    //const disabledButtonClass = `flex flex-row items-center px-6 rounded-md space-x-2 w-full bg-gray-300/50`;
+    //const disabledTextClass = `text-base md:text-lg lg:text-xl font-medium text-gray-500`;
 
     const menuContent = (
         <>
@@ -78,18 +77,10 @@ export default function MenuContent({ session, profile, signOutElement, signIn, 
             }} />
             {buttons.map((button) => (
                 button && (
-                    /**(button.value === 'Family' || button.value === 'Communities')*/
-                    (button.value === 'Communities') ? (
-                        <button key={button.value} onClick={() => toast.info('Communities is under construction')} className={`${disabledButtonClass} py-4 mb-2`} disabled={true} title="Under Construction">
-                            <span className={`${disabledTextClass}`}>{button.icon}</span>
-                            <span className={`${disabledTextClass}`}>{button.label}</span>
-                        </button>
-                    ) : (
-                        <Link key={button.value} href={button.href} onClick={handleNavigationClick} className={`${buttonClass} py-4 mb-2`}>
-                            <span className={`${textClass}`}>{button.icon}</span>
-                            <span className={`${textClass}`}>{button.label}</span>
-                        </Link>
-                    )
+                    <Link key={button.value} href={button.href} onClick={handleNavigationClick} className={`${buttonClass} py-4 mb-2`}>
+                        <span className={`${textClass}`}>{button.icon}</span>
+                        <span className={`${textClass}`}>{button.label}</span>
+                    </Link>
                 )
             ))}
             <Divider my={'md'} c={'dark'} w={'100%'} h={'1px'} style={{

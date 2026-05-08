@@ -11,30 +11,32 @@ import NavWrapper from "@/components/wrappers/navWrapper";
 import { ICommunity } from "@/models/types/community/community";
 import ProfileStats from "./profile-stats";
 import RecentActivity from "./recent-activity";
-import ProfileHeader from "./profile-header";
 import HistoryTabContent from "./accountHistory";
 import ProfileInbox, { ProfileFamilyInvite } from "./profile-inbox";
 import SettingsTab from "./settings-page";
+import UserSpaceTemplate from "./user-space-template";
+import UserSpaceTabs, { UserSpaceTab } from "./user-space-tabs";
 import { 
     Tabs, 
+    Button,
     Card, 
-    Badge,
-    Stack,
     Container,
+    Group,
     Box,
-    rem
+    Stack,
+    Text,
+    Divider,
 } from "@mantine/core";
 import { 
-    IconChartLine, 
-    IconChartBar, 
-    IconHistory, 
-    IconInbox, 
-    IconSettings 
+    IconHistory,
 } from "@tabler/icons-react";
 import { useSearchParams } from "next/navigation";
 import { useUserStore } from "@/context/userStore";
 
-const profileTabs = ['activity', 'stats', 'history', 'inbox', 'settings'];
+type ProfilePanel = UserSpaceTab | 'stats' | 'history';
+
+const profileTabs: ProfilePanel[] = ['activity', 'stats', 'history', 'inbox', 'settings'];
+const visibleTabs: UserSpaceTab[] = ['activity', 'inbox', 'stats', 'settings'];
 
 interface ProfilePageProps {
     user: IUser;
@@ -64,11 +66,11 @@ export default function ProfilePage({
     const searchParams = useSearchParams();
     const requestedTab = searchParams.get('tab');
     const requestedProfileTab = requestedTab === 'inquiries' ? 'inbox' : requestedTab;
-    const [activeTab, setActiveTab] = useState(profileTabs.includes(requestedProfileTab || '') ? requestedProfileTab || 'activity' : 'activity');
+    const [activeTab, setActiveTab] = useState<ProfilePanel>(profileTabs.includes(requestedProfileTab as ProfilePanel) ? requestedProfileTab as ProfilePanel : 'activity');
 
     useEffect(() => {
-        if (requestedProfileTab && profileTabs.includes(requestedProfileTab)) {
-            setActiveTab(requestedProfileTab);
+        if (requestedProfileTab && profileTabs.includes(requestedProfileTab as ProfilePanel)) {
+            setActiveTab(requestedProfileTab as ProfilePanel);
         }
     }, [requestedProfileTab]);
 
@@ -107,21 +109,22 @@ export default function ProfilePage({
     };
 
     const completeness = calculateCompleteness();
+    const activeVisibleTab = visibleTabs.includes(activeTab as UserSpaceTab) ? activeTab as UserSpaceTab : 'settings';
 
-    const iconStyle = { width: rem(16), height: rem(16) };
+    const handleMainTabChange = (tab: UserSpaceTab) => {
+        setActiveTab(tab);
+    };
+
+    const openUtilityPanel = (tab: 'stats' | 'history') => {
+        setActiveTab(tab);
+        window.history.pushState({}, '', `/u/profile?tab=${tab}`);
+    };
 
     return (
         <NavWrapper userInfo={user}>
             <ContentWrapper containedChild={true} paddingNeeded={true}>
-                <Container size="xl" px="sm" style={{ height: '100%', display: 'flex', flexDirection: 'column' }} w={"100%"}>
-                    <Stack gap="lg" style={{ flex: 1, minHeight: '75dvh' }}>
-                        {/* Profile Header */}
-                        <ProfileHeader
-                            user={user}
-                            familyData={familyData}
-                            completeness={completeness}
-                        />
-
+                <Container size="xl" px="sm" w="100%">
+                    <UserSpaceTemplate user={user} familyData={familyData} completeness={completeness}>
                         {/* Tabs Section - Takes remaining space */}
                         <Card 
                             shadow="sm" 
@@ -137,7 +140,7 @@ export default function ProfilePage({
                         >
                             <Tabs 
                                 value={activeTab}
-                                onChange={(value) => setActiveTab(value || 'activity')}
+                                onChange={(value) => setActiveTab((value || 'activity') as ProfilePanel)}
                                 variant="pills"
                                 radius="md"
                                 style={{ 
@@ -146,56 +149,16 @@ export default function ProfilePage({
                                     flexDirection: 'column'
                                 }}
                             >
-                                <Tabs.List grow>
-                                    <Tabs.Tab 
-                                        value="activity" 
-                                        leftSection={<IconChartLine style={iconStyle} />}
-                                        bd={'1px solid #ceb5a4ff'}
-                                    >
-                                        Activity
-                                    </Tabs.Tab>
-                                    <Tabs.Tab 
-                                        value="stats" 
-                                        leftSection={<IconChartBar style={iconStyle} />}
-                                        bd={'1px solid #ceb5a4ff'}
-                                    >
-                                        Stats
-                                    </Tabs.Tab>
-                                    <Tabs.Tab 
-                                        value="history" 
-                                        leftSection={<IconHistory style={iconStyle} />}
-                                        bd={'1px solid #ceb5a4ff'}
-                                    >
-                                        History
-                                    </Tabs.Tab>
-                                    <Tabs.Tab 
-                                        value="inbox" 
-                                        leftSection={<IconInbox style={iconStyle} />}
-                                        bd={'1px solid #ceb5a4ff'}
-                                        rightSection={
-                                            inboxCount > 0 ? (
-                                                <Badge size="xs" variant="filled" color="red" circle>
-                                                    {inboxCount}
-                                                </Badge>
-                                            ) : null
-                                        }
-                                    >
-                                        Inbox
-                                    </Tabs.Tab>
-                                    <Tabs.Tab 
-                                        value="settings" 
-                                        leftSection={<IconSettings style={iconStyle} />}
-                                        bd={'1px solid #ceb5a4ff'}
-                                    >
-                                        Settings
-                                    </Tabs.Tab>
-                                </Tabs.List>
+                                <UserSpaceTabs value={activeVisibleTab} inboxCount={inboxCount} showRecipesLink onTabChange={handleMainTabChange} />
+
+                                <Divider mt={12}/>
 
                                 <Box pt="xl" style={{ flex: 1, minHeight: 0, position: 'relative' }}>
                                     <Tabs.Panel value="activity">
-                                        <RecentActivity 
-                                            recentRecipes={recentRecipes} 
-                                            reviews={reviews} 
+                                        <DashboardOverview
+                                            recentRecipes={recentRecipes}
+                                            reviews={reviews}
+                                            onOpenHistory={() => openUtilityPanel('history')}
                                         />
                                     </Tabs.Panel>
 
@@ -211,6 +174,19 @@ export default function ProfilePage({
                                     </Tabs.Panel>
 
                                     <Tabs.Panel value="history">
+                                        <Card withBorder radius="md" padding="md" className="mb-4 bg-mainBack/60">
+                                            <button
+                                                type="button"
+                                                className="flex items-center gap-2 text-sm font-medium text-accent hover:underline"
+                                                onClick={() => {
+                                                    setActiveTab('activity');
+                                                    window.history.pushState({}, '', '/u/profile?tab=activity');
+                                                }}
+                                            >
+                                                <IconHistory size={16} />
+                                                Back to activity
+                                            </button>
+                                        </Card>
                                         <HistoryTabContent
                                             recipesCreated={recentRecipes}
                                             communitiesCreated={communitiesCreated}
@@ -235,9 +211,39 @@ export default function ProfilePage({
                                 </Box>
                             </Tabs>
                         </Card>
-                    </Stack>
+                    </UserSpaceTemplate>
                 </Container>
             </ContentWrapper>
         </NavWrapper>
+    );
+}
+
+function DashboardOverview({
+    recentRecipes,
+    reviews,
+    onOpenHistory,
+}: {
+    recentRecipes: IRecipe[];
+    reviews: IReview[];
+    onOpenHistory: () => void;
+}) {
+
+    return (
+        <Stack gap="xl" w={'100%'} h={'100%'}>
+            <section className="flex min-h-[520px] w-full flex-col rounded-md border border-accent/30 bg-cardBack">
+                <Group justify="space-between" align="center" gap="sm" className="p-4">
+                    <div className="min-w-0">
+                        <Text fw={800} size="lg">Recent activity</Text>
+                        <Text size="sm" c="dimmed">A quick look at what you have been preserving lately.</Text>
+                    </div>
+                    <Button type="button" variant="light" color="accent" leftSection={<IconHistory size={16} />} onClick={onOpenHistory} className="shrink-0">
+                        See more
+                    </Button>
+                </Group>
+                <div className="w-full flex-1 p-3 shadow-[inset_0_2px_8px_rgba(0,0,0,0.10),inset_0_-2px_8px_rgba(0,0,0,0.10)]">
+                    <RecentActivity recentRecipes={recentRecipes} reviews={reviews} limit={6} />
+                </div>
+            </section>
+        </Stack>
     );
 }

@@ -7,9 +7,10 @@ import Link from "next/link";
 interface RecentActivityProps {
     recentRecipes: IRecipe[];
     reviews: IReview[];
+    limit?: number;
 }
 
-export default function RecentActivity({ recentRecipes, reviews }: RecentActivityProps) {
+export default function RecentActivity({ recentRecipes, reviews, limit = 10 }: RecentActivityProps) {
     
     // Combine and sort activities by date
     const activities: Array<{
@@ -28,7 +29,7 @@ export default function RecentActivity({ recentRecipes, reviews }: RecentActivit
             data: review
         }))
     ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-     .slice(0, 10); // Show only last 10 activities
+     .slice(0, limit);
 
     if (activities.length === 0) {
         return (

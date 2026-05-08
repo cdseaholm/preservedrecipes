@@ -17,14 +17,13 @@ import {
     Card,
     Container,
     Group,
-    SimpleGrid,
     Stack,
     Tabs,
     Text,
-    ThemeIcon,
     rem,
 } from "@mantine/core";
 import {
+    IconArrowLeft,
     IconBook2,
     IconMessageCircle,
     IconSettings,
@@ -32,16 +31,16 @@ import {
     IconUserCog,
     IconUsers,
 } from "@tabler/icons-react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import type { ReactNode } from "react";
 import CommunitySettings from "./tabs/community-settings";
 import InCommunityTab from "./tabs/in-community-tab";
 import UserSettingsTab from "./tabs/user-settings";
 
-type CommunityTab = 'posts' | 'members' | 'community-settings' | 'user-settings' | 'requests';
+type CommunityTab = 'posts' | 'recipes' | 'members' | 'community-settings' | 'user-settings' | 'requests';
 
-const validTabs: CommunityTab[] = ['posts', 'members', 'community-settings', 'user-settings', 'requests'];
+const validTabs: CommunityTab[] = ['posts', 'recipes', 'members', 'community-settings', 'user-settings', 'requests'];
 const adminTabs: CommunityTab[] = ['community-settings', 'requests'];
 
 export default function SpecificCommunityPage({
@@ -109,11 +108,6 @@ export default function SpecificCommunityPage({
     const displayCreator = localCreator || creator;
     const displayCommunity = currCommunity._id ? currCommunity : community;
     const displayMembers = members || [];
-    const memberCount = new Set([
-        ...displayCommunity.communityMemberIDs,
-        ...displayCommunity.adminIDs,
-        displayCommunity.creatorID,
-    ].filter(Boolean)).size;
     const isMember = !!userInfo && (
         displayCommunity.communityMemberIDs.includes(userInfo._id) ||
         displayCommunity.adminIDs.includes(userInfo._id) ||
@@ -140,13 +134,18 @@ export default function SpecificCommunityPage({
                             <Stack gap="md">
                                 <Group justify="space-between" align="flex-start" gap="md">
                                     <Stack gap="sm" className="min-w-0">
-                                        <Group gap="xs">
-                                            <Badge variant="light" color={displayCommunity.privacyLevel === 'public' ? 'green' : 'yellow'}>
-                                                {displayCommunity.privacyLevel}
-                                            </Badge>
-                                            {isMember && <Badge variant="light" color="blue">Member</Badge>}
-                                            {userIsAdmin && <Badge variant="filled" color="accent">Admin</Badge>}
-                                        </Group>
+                                        <Button
+                                            component={Link}
+                                            href="/communities"
+                                            variant="subtle"
+                                            color="gray"
+                                            size="compact-sm"
+                                            leftSection={<IconArrowLeft style={iconStyle} />}
+                                            className="self-start"
+                                            onClick={() => setGlobalLoading(true)}
+                                        >
+                                            Back to communities
+                                        </Button>
                                         <div>
                                             <Text component="h1" fw={800} size="xl" className="text-mainText">
                                                 {displayCommunity.name}
@@ -166,29 +165,44 @@ export default function SpecificCommunityPage({
                                         )}
                                     </Stack>
 
-                                    <Button
-                                        type="button"
-                                        variant="light"
-                                        color="accent"
-                                        onClick={() => handleTabChange(isMember ? 'posts' : 'user-settings')}
-                                    >
-                                        {isMember ? 'Start sharing' : 'Join community'}
-                                    </Button>
+                                    <Stack gap="sm" className="min-w-0">
+                                        <Group gap="xs">
+                                            <Badge variant="light" color={displayCommunity.privacyLevel === 'public' ? 'green' : 'yellow'}>
+                                                {displayCommunity.privacyLevel}
+                                            </Badge>
+                                            {isMember && <Badge variant="light" color="blue">Member</Badge>}
+                                            {userIsAdmin && <Badge variant="filled" color="accent">Admin</Badge>}
+                                        </Group>
+                                        <Button
+                                            type="button"
+                                            variant="light"
+                                            color="accent"
+                                            onClick={() => handleTabChange(isMember ? 'posts' : 'user-settings')}
+                                        >
+                                            {isMember ? 'Start sharing' : 'Join community'}
+                                        </Button>
+                                    </Stack>
                                 </Group>
-
-                                <SimpleGrid cols={{ base: 2, sm: 4 }} spacing="sm">
-                                    <CommunityMetric icon={<IconMessageCircle size={18} />} label="Posts" value={displayPosts.length} />
-                                    <CommunityMetric icon={<IconBook2 size={18} />} label="Recipes" value={displayRecipes.length} />
-                                    <CommunityMetric icon={<IconUsers size={18} />} label="Members" value={memberCount || displayMembers.length} />
-                                    <CommunityMetric icon={<IconShieldCheck size={18} />} label="Admins" value={displayAdmins?.length || 0} />
-                                </SimpleGrid>
                             </Stack>
                         </Card>
 
                         <Card withBorder radius="md" padding="lg" className="bg-cardBack">
                             <Tabs value={activeTab} onChange={handleTabChange} variant="pills" radius="md">
                                 <Tabs.List grow>
-                                    <Tabs.Tab value="posts" leftSection={<IconMessageCircle style={iconStyle} />}>Posts</Tabs.Tab>
+                                    <Tabs.Tab
+                                        value="posts"
+                                        leftSection={<IconMessageCircle style={iconStyle} />}
+                                        rightSection={<Badge size="xs" variant="light" color="gray">{displayPosts.length}</Badge>}
+                                    >
+                                        Posts
+                                    </Tabs.Tab>
+                                    <Tabs.Tab
+                                        value="recipes"
+                                        leftSection={<IconBook2 style={iconStyle} />}
+                                        rightSection={<Badge size="xs" variant="light" color="gray">{displayRecipes.length}</Badge>}
+                                    >
+                                        Recipes
+                                    </Tabs.Tab>
                                     <Tabs.Tab value="members" leftSection={<IconUsers style={iconStyle} />}>Members</Tabs.Tab>
                                     {userIsAdmin && (
                                         <Tabs.Tab
@@ -206,6 +220,9 @@ export default function SpecificCommunityPage({
                                 <Box pt="lg">
                                     <Tabs.Panel value="posts">
                                         <InCommunityTab tab="posts" posts={displayPosts} recipes={displayRecipes} admins={displayAdmins} creator={displayCreator} userInfo={userInfo} community={displayCommunity} members={displayMembers} userIsAdmin={userIsAdmin} requests={requests} />
+                                    </Tabs.Panel>
+                                    <Tabs.Panel value="recipes">
+                                        <InCommunityTab tab="recipes" posts={displayPosts} recipes={displayRecipes} admins={displayAdmins} creator={displayCreator} userInfo={userInfo} community={displayCommunity} members={displayMembers} userIsAdmin={userIsAdmin} requests={requests} />
                                     </Tabs.Panel>
                                     <Tabs.Panel value="members">
                                         <InCommunityTab tab="members" posts={displayPosts} recipes={displayRecipes} admins={displayAdmins} creator={displayCreator} userInfo={userInfo} community={displayCommunity} members={displayMembers} userIsAdmin={userIsAdmin} requests={requests} />
@@ -230,21 +247,5 @@ export default function SpecificCommunityPage({
                 </Container>
             </ContentWrapper>
         </NavWrapper>
-    );
-}
-
-function CommunityMetric({ icon, label, value }: { icon: ReactNode, label: string, value: number }) {
-    return (
-        <Card withBorder radius="md" padding="sm" className="bg-mainBack/60">
-            <Group gap="sm" wrap="nowrap">
-                <ThemeIcon variant="light" color="accent" radius="md">
-                    {icon}
-                </ThemeIcon>
-                <div className="min-w-0">
-                    <Text size="xs" c="dimmed">{label}</Text>
-                    <Text fw={800}>{value}</Text>
-                </div>
-            </Group>
-        </Card>
     );
 }
