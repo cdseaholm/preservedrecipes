@@ -223,6 +223,7 @@ export function useRecipeList(allMixedRecipes: IRecipe[], userInfo: IUser | null
         }
         if (addAttempt.success) {
             router.refresh();
+            handleModalLoading(false);
         }
     };
 

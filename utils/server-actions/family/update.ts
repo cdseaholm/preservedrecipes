@@ -43,8 +43,9 @@ export async function UpdateFamilyMemberStatuses(familyId: string, membersToChan
     if (!(await verifyUserPassword(user, adminPassword))) return { success: false, message: "Password is incorrect", members: [] as IFamilyMember[] };
 
     try {
+        const currentMembers = family.familyMembers.map(existing => sanitizeFamilyMember(existing as IFamilyMember));
         const changeById = new Map(membersToChange.map(changed => [changed.familyMemberID, sanitizeFamilyMember(changed)]));
-        const updatedMembers = family.familyMembers.map(existing => {
+        const updatedMembers = currentMembers.map(existing => {
             const changed = changeById.get(existing.familyMemberID);
             if (!changed) return existing;
             return {
@@ -54,12 +55,12 @@ export async function UpdateFamilyMemberStatuses(familyId: string, membersToChan
         }) as IFamilyMember[];
 
         if (!updatedMembers.some(familyMember => familyMember.permissionStatus === "Admin")) {
-            return { success: false, message: "At least one admin is required", members: family.familyMembers };
+            return { success: false, message: "At least one admin is required", members: currentMembers };
         }
 
-        const existingIds = new Set(family.familyMembers.map(familyMember => familyMember.familyMemberID));
+        const existingIds = new Set(currentMembers.map(familyMember => familyMember.familyMemberID));
         if (membersToChange.some(changed => !existingIds.has(changed.familyMemberID))) {
-            return { success: false, message: "One or more members do not belong to this family", members: family.familyMembers };
+            return { success: false, message: "One or more members do not belong to this family", members: currentMembers };
         }
 
         await Family.updateOne({ _id: family._id }, { $set: { familyMembers: updatedMembers } });

@@ -28,12 +28,13 @@ export default async function AttemptDeleteUser(headers: HeadersInit): Promise<H
             }
         });
 
-        if (!response.ok) {
-            toast.error('Failed to delete user');
-            return { status: false, message: 'Failed to delete user' };
-        }
-
         const data = await response.json();
+
+        if (!response.ok) {
+            const message = data?.message || 'Failed to delete user';
+            toast.error(message);
+            return { status: false, message };
+        }
 
         if (!data) {
             return { status: false, message: 'Failed to delete user, data null' };

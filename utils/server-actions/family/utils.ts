@@ -26,14 +26,24 @@ export function normalizeEmail(email: string) {
     return email.trim().toLowerCase();
 }
 
+export function normalizeId(id: unknown) {
+    return id?.toString() ?? "";
+}
+
 export function getFamilyMember(family: IFamily, user: IUser) {
     return family.familyMembers?.find(member =>
-        member.familyMemberID === user._id || normalizeEmail(member.familyMemberEmail) === normalizeEmail(user.email)
+        normalizeId(member.familyMemberID) === normalizeId(user._id) || normalizeEmail(member.familyMemberEmail) === normalizeEmail(user.email)
     ) || null;
 }
 
 export function hasAdminPrivilege(member: IFamilyMember | null) {
     return member?.permissionStatus === "Admin";
+}
+
+export function hasConnectedMembership(member: IFamilyMember | null, user: IUser) {
+    if (!member?.memberConnected) return false;
+
+    return normalizeId(member.familyMemberID) === normalizeId(user._id) || normalizeEmail(member.familyMemberEmail) === normalizeEmail(user.email);
 }
 
 export async function getAuthenticatedFamilyContext(familyId: string) {
@@ -47,6 +57,8 @@ export async function getAuthenticatedFamilyContext(familyId: string) {
         return { user: null, family: null, member: null, message: "Invalid family ID" };
     }
 
+    const famIdString = normalizeId(familyId);
+
     await connectDB();
 
     const userDoc = await User.findOne({ email: session.user.email });
@@ -54,17 +66,13 @@ export async function getAuthenticatedFamilyContext(familyId: string) {
         return { user: null, family: null, member: null, message: "User not found" };
     }
 
-    if (userDoc.userFamilyID !== familyId) {
-        return { user: userDoc as IUser, family: null, member: null, message: "You do not belong to this family" };
-    }
-
-    const familyDoc = await Family.findById(familyId);
+    const familyDoc = await Family.findById(famIdString);
     if (!familyDoc) {
         return { user: userDoc as IUser, family: null, member: null, message: "Family not found" };
     }
 
     const member = getFamilyMember(familyDoc as IFamily, userDoc as IUser);
-    if (!member) {
+    if (!hasConnectedMembership(member, userDoc as IUser)) {
         return { user: userDoc as IUser, family: null, member: null, message: "You do not belong to this family" };
     }
 

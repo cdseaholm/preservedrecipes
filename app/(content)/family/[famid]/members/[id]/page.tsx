@@ -14,6 +14,7 @@ import { IReview } from '@/models/types/misc/review';
 import { getValidatedFamilyAccess } from '@/lib/data/family';
 import { Metadata } from 'next';
 import { createPageMetadata } from '@/lib/metadata';
+import { getFamilyMember, sanitizeFamilyMember } from '@/utils/server-actions/family/utils';
 
 type FamilyMemberPageParams = { params: Promise<{ famid: string; id: string }> };
 
@@ -33,13 +34,14 @@ export async function generateMetadata({ params }: FamilyMemberPageParams): Prom
 export default async function Page({ params }: FamilyMemberPageParams) {
 
     const { famid, id } = await params;
-    const { family } = await getValidatedFamilyAccess(famid);
+    const { user, family } = await getValidatedFamilyAccess(famid);
 
     try {
-        
+
         await connectDB();
 
         const memberFound = family.familyMembers.find(m => m.familyMemberID === id);
+        const currentMember = getFamilyMember(family, user);
 
         if (!memberFound) {
             redirect(`/family/${famid}/members`);
@@ -80,7 +82,12 @@ export default async function Page({ params }: FamilyMemberPageParams) {
         };
 
         return (
-            <SpecificMemberView memberToView={memberToView} />
+            <SpecificMemberView
+                memberToView={memberToView}
+                familyMember={sanitizeFamilyMember(memberFound)}
+                famId={famid}
+                canEditStatus={currentMember?.permissionStatus === "Admin"}
+            />
         )
 
     } catch (error) {

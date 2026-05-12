@@ -47,7 +47,7 @@ export async function LeaveFamily(familyId: string, route = "/") {
     const { user, family, member, message } = await getAuthenticatedFamilyContext(familyId);
     if (!user || !family || !member) return { success: false, message };
 
-    const remainingMembers = family.familyMembers.filter(familyMember => familyMember.familyMemberID !== user._id.toString());
+    const remainingMembers = family.familyMembers.filter(familyMember => familyMember !== member);
     if (member.permissionStatus === "Admin" && !remainingMembers.some(familyMember => familyMember.permissionStatus === "Admin")) {
         return { success: false, message: "Assign another admin before leaving this family" };
     }

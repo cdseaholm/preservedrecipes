@@ -18,7 +18,7 @@ import MenuPanelHooks from "@/components/hooks/menu/menu-panel-hooks";
 import dynamic from "next/dynamic";
 import FilterAndSortDetailsRow from "@/components/templates/filter-sort-details-row";
 import CardTemplate from "@/components/templates/card-template";
-import { Button, Checkbox, Container } from "@mantine/core";
+import { Button, Card, Checkbox } from "@mantine/core";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useStateStore } from "@/context/stateStore";
@@ -91,96 +91,107 @@ export default function RecipePage({
                 userInfo={userInfo}
             >
                 <ContentWrapper containedChild paddingNeeded>
-                    <Container size="xl" px="sm" w="100%">
-                        <UserSpaceTemplate user={userInfo} primaryActionLabel="View Profile" primaryActionHref="/u/profile">
-                            <FilterAndSortDetailsRow
-                                filterLabel={filter}
-                                sortLabel={sort}
-                            />
-                            <ListWrapper
-                                numberOfPages={totalPages}
-                                isPending={false}
-                                currentPage={currentPage}
-                                onPageChange={setCurrentPage}
-                                searchBar={
-                                    <SearchBarAndMenu
-                                        handleSearch={(e) => {
-                                            setCurrentPage(1);
-                                            setRecipeSearch(e.currentTarget.value);
-                                        }}
-                                        searchString={recipeSearch || 'Search your recipes'}
-                                        index={2}
-                                        leftSection={
-                                            edit ? (
-                                                <button type="button" onClick={toggleEdit} className={`flex flex-row items-center justify-center py-1 px-2 w-1/4 sm:w-1/5 md:w-1/6 lg:w-1/8 bg-stone-100 cursor-pointer hover:bg-stone-300 hover:text-blue-300 text-blue-500 rounded-md text-sm sm:text-base cursor-pointer`} aria-label="Toggle Edit">
-                                                    <BiCheck />
-                                                    <p>{'Done'}</p>
-                                                </button>
-                                            ) : (
-                                                <SubMenuDrop subMenu={
-                                                    [
-                                                        { title: 'Create New Recipe', onClick: () => handleOpenRecipeModal(null, userInfo, 'personal'), textClass: textClass, buttonClass: buttonClass, label: 'create' },
-                                                        { title: 'Bulk Edit', onClick: toggleEdit, textClass: textClass, buttonClass: buttonClass, label: 'edit' },
-                                                        { title: 'Filter', onClick: toggleFilter, textClass: textClass, buttonClass: buttonClass, label: 'view' },
-                                                        { title: 'Sort', onClick: toggleSort, textClass: textClass, buttonClass: buttonClass, label: 'view' },
-                                                    ]
-                                                } />
-                                            )
-                                        }
+                    <UserSpaceTemplate user={userInfo} primaryActionLabel="View Profile" primaryActionHref="/u/profile" />
+                    <Card
+                        shadow="sm"
+                        padding="md"
+                        radius="md"
+                        w={'100%'}
+                        withBorder
+                        style={{
+                            flex: 1,
+                            minHeight: '0',
+                            display: 'flex',
+                            flexDirection: 'column'
+                        }}
+                    >
+                        <FilterAndSortDetailsRow
+                            filterLabel={filter}
+                            sortLabel={sort}
+                        />
+                        <ListWrapper
+                            numberOfPages={totalPages}
+                            isPending={false}
+                            currentPage={currentPage}
+                            onPageChange={setCurrentPage}
+                            searchBar={
+                                <SearchBarAndMenu
+                                    handleSearch={(e) => {
+                                        setCurrentPage(1);
+                                        setRecipeSearch(e.currentTarget.value);
+                                    }}
+                                    searchString={recipeSearch || 'Search your recipes'}
+                                    index={2}
+                                    leftSection={
+                                        edit ? (
+                                            <button type="button" onClick={toggleEdit} className={`flex w-full flex-row items-center justify-center rounded-md bg-stone-100 px-2 py-1 text-sm text-blue-500 hover:bg-stone-300 hover:text-blue-300 sm:w-auto sm:text-base`} aria-label="Toggle Edit">
+                                                <BiCheck />
+                                                <p>{'Done'}</p>
+                                            </button>
+                                        ) : (
+                                            <SubMenuDrop subMenu={
+                                                [
+                                                    { title: 'Create New Recipe', onClick: () => handleOpenRecipeModal(null, userInfo, 'personal'), textClass: textClass, buttonClass: buttonClass, label: 'create' },
+                                                    { title: 'Bulk Edit', onClick: toggleEdit, textClass: textClass, buttonClass: buttonClass, label: 'edit' },
+                                                    { title: 'Filter', onClick: toggleFilter, textClass: textClass, buttonClass: buttonClass, label: 'view' },
+                                                    { title: 'Sort', onClick: toggleSort, textClass: textClass, buttonClass: buttonClass, label: 'view' },
+                                                ]
+                                            } />
+                                        )
+                                    }
+                                />
+                            }
+                            editButtons={edit && (
+                                <div className="flex flex-row justify-between items-center w-full px-4 py-6">
+                                    <Checkbox
+                                        checked={checkedRecipes.size === filteredAndSorted.length && filteredAndSorted.length > 0}
+                                        className="cursor-pointer w-content"
+                                        aria-label="Select all recipes checkbox"
+                                        label="Select All"
+                                        onClick={checkAll}
                                     />
-                                }
-                                editButtons={edit && (
-                                    <div className="flex flex-row justify-between items-center w-full px-4 py-6">
-                                        <Checkbox
-                                            checked={checkedRecipes.size === filteredAndSorted.length && filteredAndSorted.length > 0}
-                                            className="cursor-pointer w-content"
-                                            aria-label="Select all recipes checkbox"
-                                            label="Select All"
-                                            onClick={checkAll}
+                                    <DeleteButton
+                                        icon={<FaRegTrashAlt />}
+                                        label={`Delete ${checkedRecipes.size}`}
+                                        onClick={handleBulkDelete}
+                                    />
+                                </div>
+                            )}
+                        >
+                            {visibleRecipes.length > 0 ? (
+                                visibleRecipes.map((recipe, index) => (
+                                    <InSearchItemButton
+                                        key={recipe._id}
+                                        item={recipe.name}
+                                        handleChecked={() => toggleChecked(recipe._id)}
+                                        edit={edit}
+                                        checked={checkedRecipes.has(recipe._id)}
+                                        handleSeeItem={() => {
+                                            setGlobalLoading(true);
+                                            router.push(`/view/recipe/${recipe._id}`)
+                                        }}
+                                    >
+                                        <CardTemplate
+                                            recipeProps={recipe}
+                                            communityProps={null}
+                                            index={index}
+                                            userInfo={userInfo}
                                         />
-                                        <DeleteButton
-                                            icon={<FaRegTrashAlt />}
-                                            label={`Delete ${checkedRecipes.size}`}
-                                            onClick={handleBulkDelete}
-                                        />
-                                    </div>
-                                )}
-                            >
-                                {visibleRecipes.length > 0 ? (
-                                    visibleRecipes.map((recipe, index) => (
-                                        <InSearchItemButton
-                                            key={recipe._id}
-                                            item={recipe.name}
-                                            handleChecked={() => toggleChecked(recipe._id)}
-                                            edit={edit}
-                                            checked={checkedRecipes.has(recipe._id)}
-                                            handleSeeItem={() => {
-                                                setGlobalLoading(true);
-                                                router.push(`/view/recipe/${recipe._id}`)
-                                            }}
-                                        >
-                                            <CardTemplate
-                                                recipeProps={recipe}
-                                                communityProps={null}
-                                                index={index}
-                                                userInfo={userInfo}
-                                            />
-                                        </InSearchItemButton>
-                                    ))
-                                ) : (
-                                    <div className="flex w-full flex-col items-center justify-center gap-3 rounded-md border border-dashed border-accent/30 bg-mainBack/60 p-6 text-center">
-                                        <p className="text-base font-semibold text-mainText">No recipes found</p>
-                                        <p className="max-w-md text-sm text-mainText/70">
-                                            Create your first recipe, or adjust the search and filters to show more results.
-                                        </p>
-                                        <Button type="button" variant="light" onClick={() => handleOpenRecipeModal(null, userInfo, 'personal')}>
-                                            Create recipe
-                                        </Button>
-                                    </div>
-                                )}
-                            </ListWrapper>
-                        </UserSpaceTemplate>
-                    </Container>
+                                    </InSearchItemButton>
+                                ))
+                            ) : (
+                                <div className="flex w-full flex-col items-center justify-center gap-3 rounded-md border border-dashed border-accent/30 bg-mainBack/60 p-6 text-center">
+                                    <p className="text-base font-semibold text-mainText">No recipes found</p>
+                                    <p className="max-w-md text-sm text-mainText/70">
+                                        Create your first recipe, or adjust the search and filters to show more results.
+                                    </p>
+                                    <Button type="button" variant="light" onClick={() => handleOpenRecipeModal(null, userInfo, 'personal')}>
+                                        Create recipe
+                                    </Button>
+                                </div>
+                            )}
+                        </ListWrapper>
+                    </Card>
                 </ContentWrapper>
             </NavWrapper >
 

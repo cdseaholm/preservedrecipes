@@ -1,9 +1,9 @@
 'use client'
 
-import { useNavigation } from "@/components/hooks/menu/use-navigation-hook";
 import { useWindowSizes } from "@/context/width-height-store";
 import { Badge, Button, Divider, Group, Tabs, rem } from "@mantine/core";
 import { IconChartBar, IconChartLine, IconInbox, IconSettings, IconSquareChevronRight } from "@tabler/icons-react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 export type UserSpaceTab = 'activity' | 'inbox' | 'stats' | 'settings';
@@ -19,7 +19,7 @@ export default function UserSpaceTabs({
     showRecipesLink?: boolean;
     onTabChange?: (value: UserSpaceTab) => void;
 }) {
-    const { navigate } = useNavigation();
+    const router = useRouter();
     const { width } = useWindowSizes();
     const activeTab: UserSpaceTab = value || 'activity';
     const iconStyle = { width: rem(16), height: rem(16) };
@@ -88,7 +88,7 @@ export default function UserSpaceTabs({
                         bd="1px solid #ceb5a4ff"
                         radius="md"
                         rightSection={<IconSquareChevronRight size={18} />}
-                        onClick={() => navigate('/u/recipes')}
+                        onClick={() => router.push('/u/recipes')}
                         className={mobile ? 'w-full' : 'shrink-0'}
                     >
                         Recipes

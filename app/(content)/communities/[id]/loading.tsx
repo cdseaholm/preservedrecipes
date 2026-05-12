@@ -1,13 +1,5 @@
-import { Box, LoadingOverlay } from "@mantine/core";
+import PageLoadingPanel from "@/components/misc/loading/page-loading-panel";
 
 export default function Loading() {
-    return (
-        <Box pos={'relative'} w={'100%'} h={'100%'}>
-            <LoadingOverlay
-                visible={true}
-                zIndex={1000}
-                overlayProps={{ radius: "sm", blur: 0, bg: '#E8D8C4' }}
-            />
-        </Box>
-    );
+    return <PageLoadingPanel />;
 }

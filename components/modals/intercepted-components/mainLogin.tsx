@@ -55,22 +55,18 @@ export default function SignInPage({ handleCancel, handleLoading }: { handleCanc
                 return;
             }
 
-            await exit();
+            toast.success('Successful Sign in!');
+            await update();
+            resetZoom(width, false);
+            router.replace('/u/profile');
+            handleLoading(false);
+            setOpenSignInModal(false);
 
         } catch (error) {
             handleLoading(false);
             console.error('Error Signing in:', error);
             return;
         }
-    }
-
-    const exit = async () => {
-        toast.success('Successful Sign in!');
-        await update();
-        resetZoom(width, false);
-        handleLoading(false);
-        setOpenSignInModal(false);
-        router.replace('/u/profile')
     }
 
     return (

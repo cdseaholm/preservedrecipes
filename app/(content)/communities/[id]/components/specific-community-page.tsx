@@ -142,7 +142,6 @@ export default function SpecificCommunityPage({
                                             size="compact-sm"
                                             leftSection={<IconArrowLeft style={iconStyle} />}
                                             className="self-start"
-                                            onClick={() => setGlobalLoading(true)}
                                         >
                                             Back to communities
                                         </Button>
