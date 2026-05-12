@@ -12,7 +12,7 @@ export default function FilterAndSortDetailsRow({ filterLabel, sortLabel }: { fi
     if (!filterLabel && !sortLabel) return null;
 
     return (
-        <div className="flex flex-row items-end justify-start gap-2 text-mainText/80 w-full text-end px-2">
+        <div className="flex w-full flex-wrap items-end justify-start gap-x-2 gap-y-1 px-0 text-end text-mainText/80 sm:px-2">
             <p className="text-mainText/80 text-sm md:text-base">
                 {filterLabel ? `Filtered: ${formatLabel(filterLabel)}` : ''}
             </p>

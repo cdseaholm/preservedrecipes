@@ -28,14 +28,12 @@ import Link from "next/link";
 import { useEffect } from "react";
 
 export default function UserSpaceTemplate({
-    children,
     user,
     familyData,
     completeness,
     primaryActionLabel = 'Edit Profile',
     primaryActionHref = '/u/profile?tab=settings',
 }: {
-    children: React.ReactNode;
     user: IUser;
     familyData?: IFamily | null;
     completeness?: number;
@@ -52,10 +50,10 @@ export default function UserSpaceTemplate({
     }, [setUserInfo, user]);
 
     return (
-        <div className="flex min-h-[75dvh] w-full flex-col items-center justify-start px-2">
-            <Card shadow="md" padding="xl" radius="md" withBorder w="100%" className="flex flex-1 flex-col">
-                <Stack gap="lg" style={{ flex: 1, minHeight: 0 }} w="100%">
-                    <Group justify="space-between" align="flex-start" gap="md">
+        <div className="flex w-full flex-col items-center justify-start">
+            <Card shadow="md" padding="md" radius="md" withBorder w="100%" className="flex flex-1 flex-col">
+                <Stack gap="md" style={{ flex: 1, minHeight: 0 }} w="100%">
+                    <Group justify="space-between" align="flex-start" gap="md" wrap="wrap">
                         <Group gap="md" align="flex-start" className="min-w-0">
                             <Avatar
                                 src={user.profileImage}
@@ -89,7 +87,7 @@ export default function UserSpaceTemplate({
                             </Stack>
                         </Group>
 
-                        <Stack gap="xs" align="flex-end">
+                        <Stack gap="xs" align="flex-end" className="w-full sm:w-auto">
                             <Group gap="xs" visibleFrom="sm">
                                 <Button
                                     component={Link}
@@ -160,10 +158,6 @@ export default function UserSpaceTemplate({
                             )}
                         </CopyButton>
                     </Group>
-
-                    <Stack gap="lg" style={{ flex: 1, minHeight: 0 }} w="100%">
-                        {children}
-                    </Stack>
                 </Stack>
             </Card>
         </div>

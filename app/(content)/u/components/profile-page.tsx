@@ -16,18 +16,17 @@ import ProfileInbox, { ProfileFamilyInvite } from "./profile-inbox";
 import SettingsTab from "./settings-page";
 import UserSpaceTemplate from "./user-space-template";
 import UserSpaceTabs, { UserSpaceTab } from "./user-space-tabs";
-import { 
-    Tabs, 
+import {
+    Tabs,
     Button,
-    Card, 
-    Container,
+    Card,
     Group,
     Box,
     Stack,
     Text,
     Divider,
 } from "@mantine/core";
-import { 
+import {
     IconHistory,
 } from "@tabler/icons-react";
 import { useSearchParams } from "next/navigation";
@@ -123,96 +122,95 @@ export default function ProfilePage({
     return (
         <NavWrapper userInfo={user}>
             <ContentWrapper containedChild={true} paddingNeeded={true}>
-                <Container size="xl" px="sm" w="100%">
-                    <UserSpaceTemplate user={user} familyData={familyData} completeness={completeness}>
-                        {/* Tabs Section - Takes remaining space */}
-                        <Card 
-                            shadow="sm" 
-                            padding="lg" 
-                            radius="md" 
-                            withBorder 
-                            style={{ 
-                                flex: 1,
-                                minHeight: '0',
-                                display: 'flex',
-                                flexDirection: 'column'
-                            }}
-                        >
-                            <Tabs 
-                                value={activeTab}
-                                onChange={(value) => setActiveTab((value || 'activity') as ProfilePanel)}
-                                variant="pills"
-                                radius="md"
-                                style={{ 
-                                    height: '100%',
-                                    display: 'flex',
-                                    flexDirection: 'column'
-                                }}
-                            >
-                                <UserSpaceTabs value={activeVisibleTab} inboxCount={inboxCount} showRecipesLink onTabChange={handleMainTabChange} />
+                <UserSpaceTemplate user={user} familyData={familyData} completeness={completeness} />
+                {/* Tabs Section - Takes remaining space */}
+                <Card
+                    shadow="sm"
+                    padding="md"
+                    radius="md"
+                    w={'100%'}
+                    withBorder
+                    style={{
+                        flex: 1,
+                        minHeight: '0',
+                        display: 'flex',
+                        flexDirection: 'column'
+                    }}
+                >
+                    <Tabs
+                        value={activeTab}
+                        onChange={(value) => setActiveTab((value || 'activity') as ProfilePanel)}
+                        variant="pills"
+                        radius="md"
+                        w={'100%'}
+                        style={{
+                            height: '100%',
+                            display: 'flex',
+                            flexDirection: 'column'
+                        }}
+                    >
+                        <UserSpaceTabs value={activeVisibleTab} inboxCount={inboxCount} showRecipesLink onTabChange={handleMainTabChange} />
 
-                                <Divider mt={12}/>
+                        <Divider mt={12} />
 
-                                <Box pt="xl" style={{ flex: 1, minHeight: 0, position: 'relative' }}>
-                                    <Tabs.Panel value="activity">
-                                        <DashboardOverview
-                                            recentRecipes={recentRecipes}
-                                            reviews={reviews}
-                                            onOpenHistory={() => openUtilityPanel('history')}
-                                        />
-                                    </Tabs.Panel>
+                        <Box pt="sm" style={{ flex: 1, minHeight: 0, position: 'relative' }}>
+                            <Tabs.Panel value="activity">
+                                <DashboardOverview
+                                    recentRecipes={recentRecipes}
+                                    reviews={reviews}
+                                    onOpenHistory={() => openUtilityPanel('history')}
+                                />
+                            </Tabs.Panel>
 
-                                    <Tabs.Panel value="stats">
-                                        <ProfileStats
-                                            recipeCount={recipeCount}
-                                            communityCount={communityCount}
-                                            favoriteCount={favoriteCount}
-                                            ratingsGiven={ratingsGiven}
-                                            commentsMade={commentsMade}
-                                            timeBeingMember={timeBeingMember}
-                                        />
-                                    </Tabs.Panel>
+                            <Tabs.Panel value="stats">
+                                <ProfileStats
+                                    recipeCount={recipeCount}
+                                    communityCount={communityCount}
+                                    favoriteCount={favoriteCount}
+                                    ratingsGiven={ratingsGiven}
+                                    commentsMade={commentsMade}
+                                    timeBeingMember={timeBeingMember}
+                                />
+                            </Tabs.Panel>
 
-                                    <Tabs.Panel value="history">
-                                        <Card withBorder radius="md" padding="md" className="mb-4 bg-mainBack/60">
-                                            <button
-                                                type="button"
-                                                className="flex items-center gap-2 text-sm font-medium text-accent hover:underline"
-                                                onClick={() => {
-                                                    setActiveTab('activity');
-                                                    window.history.pushState({}, '', '/u/profile?tab=activity');
-                                                }}
-                                            >
-                                                <IconHistory size={16} />
-                                                Back to activity
-                                            </button>
-                                        </Card>
-                                        <HistoryTabContent
-                                            recipesCreated={recentRecipes}
-                                            communitiesCreated={communitiesCreated}
-                                            communitiesJoined={communitiesJoined}
-                                            inquiriesMade={inquiries}
-                                            reviews={reviews}
-                                        />
-                                    </Tabs.Panel>
+                            <Tabs.Panel value="history">
+                                <Card withBorder radius="md" padding="md" className="mb-4 bg-mainBack/60">
+                                    <button
+                                        type="button"
+                                        className="flex items-center gap-2 text-sm font-medium text-accent hover:underline"
+                                        onClick={() => {
+                                            setActiveTab('activity');
+                                            window.history.pushState({}, '', '/u/profile?tab=activity');
+                                        }}
+                                    >
+                                        <IconHistory size={16} />
+                                        Back to activity
+                                    </button>
+                                </Card>
+                                <HistoryTabContent
+                                    recipesCreated={recentRecipes}
+                                    communitiesCreated={communitiesCreated}
+                                    communitiesJoined={communitiesJoined}
+                                    inquiriesMade={inquiries}
+                                    reviews={reviews}
+                                />
+                            </Tabs.Panel>
 
-                                    <Tabs.Panel value="inbox">
-                                        <ProfileInbox
-                                            familyInvites={familyInvites}
-                                            initialInquiries={inquiries}
-                                            user={user}
-                                            isAdmin={userIsInquiryAdmin}
-                                        />
-                                    </Tabs.Panel>
+                            <Tabs.Panel value="inbox">
+                                <ProfileInbox
+                                    familyInvites={familyInvites}
+                                    initialInquiries={inquiries}
+                                    user={user}
+                                    isAdmin={userIsInquiryAdmin}
+                                />
+                            </Tabs.Panel>
 
-                                    <Tabs.Panel value="settings">
-                                        <SettingsTab />
-                                    </Tabs.Panel>
-                                </Box>
-                            </Tabs>
-                        </Card>
-                    </UserSpaceTemplate>
-                </Container>
+                            <Tabs.Panel value="settings">
+                                <SettingsTab />
+                            </Tabs.Panel>
+                        </Box>
+                    </Tabs>
+                </Card>
             </ContentWrapper>
         </NavWrapper>
     );
@@ -230,7 +228,7 @@ function DashboardOverview({
 
     return (
         <Stack gap="xl" w={'100%'} h={'100%'}>
-            <section className="flex min-h-[520px] w-full flex-col rounded-md border border-accent/30 bg-cardBack">
+            <section className="flex min-h-[420px] w-full flex-col rounded-md border border-accent/30 bg-cardBack sm:min-h-[520px]">
                 <Group justify="space-between" align="center" gap="sm" className="p-4">
                     <div className="min-w-0">
                         <Text fw={800} size="lg">Recent activity</Text>
@@ -240,7 +238,7 @@ function DashboardOverview({
                         See more
                     </Button>
                 </Group>
-                <div className="w-full flex-1 p-3 shadow-[inset_0_2px_8px_rgba(0,0,0,0.10),inset_0_-2px_8px_rgba(0,0,0,0.10)]">
+                <div className="w-full flex-1 p-0 shadow-none sm:p-3 sm:shadow-[inset_0_2px_8px_rgba(0,0,0,0.10),inset_0_-2px_8px_rgba(0,0,0,0.10)]">
                     <RecentActivity recentRecipes={recentRecipes} reviews={reviews} limit={6} />
                 </div>
             </section>

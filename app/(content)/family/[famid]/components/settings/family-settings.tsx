@@ -15,7 +15,7 @@ import { toast } from "sonner"
 export default function FamilySettings({ userFamAdminPrivs, family, userInfo }: { userFamAdminPrivs: boolean, family: IFamily, userInfo: IUser }) {
 
     const { navigate } = useNavigation();
-    const { handleConfirmFam, submitChange, handleChangeStatuses, editFamMemStatusForm, changeFamNameForm } = FamilySettingsHooks();
+    const { handleConfirmFam, submitChange, changeFamNameForm } = FamilySettingsHooks();
     const numOfAdmins = family.familyMembers.filter(member => member.permissionStatus === 'Admin').length;
     const leavingWouldRemoveOnlyAdmin = userFamAdminPrivs && numOfAdmins <= 1;
     const setFamily = useFamilyStore(s => s.setFamily);
@@ -50,8 +50,6 @@ export default function FamilySettings({ userFamAdminPrivs, family, userInfo }: 
             <h1 className="text-xl md:text-2xl underline">Account Settings</h1>
 
             {userFamAdminPrivs && <ActionButton buttonTitle="Change Family name" action={() => submitChange({ changeFamNameForm: changeFamNameForm, userFamAdminPrivs: userFamAdminPrivs, family: family })} width="w-4/5 sm:w-3/5 md:w-1/2" />}
-
-            {userFamAdminPrivs && <ActionButton buttonTitle="Add/Remove Admins" action={() => handleChangeStatuses({ editFamMemStatusForm: editFamMemStatusForm, family: family })} width="w-4/5 sm:w-3/5 md:w-1/2" />}
 
             {userFamAdminPrivs && <ActionButton buttonTitle="Edit Members" action={() => {
                 navigate(`/family/${family._id}/members`);

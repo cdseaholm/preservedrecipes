@@ -4,10 +4,8 @@ export default function ActionButton({ buttonTitle, action, width }: { buttonTit
             type='button' 
             className={`border border-neutral-200 rounded-md hover:bg-blue-200 bg-blue-400 p-2 ${width} text-xs sm:text-sm cursor-pointer`} 
             aria-label={buttonTitle} 
-            onClick={(e) => {
+            onClick={() => {
                 console.log(`ActionButton ${buttonTitle} clicked`);
-                e.preventDefault();
-                e.stopPropagation();
                 action();
             }}
         >

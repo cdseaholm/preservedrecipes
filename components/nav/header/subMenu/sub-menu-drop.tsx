@@ -20,9 +20,9 @@ export default function SubMenuDrop({ subMenu }: { subMenu: { title: string, onC
     const dropdownWidth = width > 500 ? '20rem' : '80dvw';
 
     return (
-        <Menu shadow="md" width={dropdownWidth} variant="light" position="bottom-start">
+        <Menu shadow="md" width={'auto'} variant="light" position="bottom-start">
             <Menu.Target>
-                <div className="flex flex-row items-center justify-center p-2 w-1/4 sm:w-1/5 md:w-1/6 lg:w-1/8 rounded-md bg-accent/20 hover:bg-accent/40 cursor-pointer h-[40px]">
+                <div className="flex flex-row items-center justify-center p-2 w-full sm:w-[20dvw] rounded-md bg-accent/20 hover:bg-accent/40 cursor-pointer h-[40px]">
                     <BsLightningCharge />
                     <span className="text-xs">Actions</span>
                 </div>

@@ -7,6 +7,10 @@ import { getToken } from "next-auth/jwt"
 import { ObjectId } from "mongodb";
 import Family from "@/models/family";
 
+function normalizeEmail(email: string | null | undefined) {
+    return email?.trim().toLowerCase() ?? "";
+}
+
 export async function DELETE(req: NextRequest) {
 
     const secret = process.env.NEXTAUTH_SECRET ? process.env.NEXTAUTH_SECRET : '';
@@ -37,11 +41,27 @@ export async function DELETE(req: NextRequest) {
         }
 
         const familyID = user.userFamilyID;
-        if (familyID !== '') {
-            await Family.updateOne(
-                { _id: new ObjectId(familyID) },
-                { $pull: { familyMembers: { familyMemberID: user._id.toString() } } }
-            );
+        if (familyID !== '' && ObjectId.isValid(familyID)) {
+            const family = await Family.findById(familyID);
+            const member = family?.familyMembers.find(familyMember =>
+                familyMember.familyMemberID === user._id.toString() ||
+                normalizeEmail(familyMember.familyMemberEmail) === normalizeEmail(user.email)
+            ) || null;
+
+            if (family && member) {
+                const remainingMembers = family.familyMembers.filter(familyMember => familyMember !== member);
+                if (member.permissionStatus === "Admin" && !remainingMembers.some(familyMember => familyMember.permissionStatus === "Admin")) {
+                    return NextResponse.json(
+                        { status: 409, message: "Assign another admin before deleting your profile" },
+                        { status: 409 }
+                    );
+                }
+
+                await Family.updateOne(
+                    { _id: family._id },
+                    { $set: { familyMembers: remainingMembers } }
+                );
+            }
         }
 
         await MongoUser.deleteOne({ _id: new ObjectId(user._id) });

@@ -65,6 +65,7 @@ export default function FamilyRecipes({
     const adminPermission = family.familyMembers.find(
         (mem) => mem.familyMemberEmail === userInfo.email
     )?.permissionStatus === 'Admin';
+    const familyMember = family.familyMembers.find((mem) => mem.familyMemberEmail === userInfo.email)?.permissionStatus !== 'Guest'
 
     const { handleOpenRecipeModal } = MenuPanelHooks();
     const recipesPerPage = 8;
@@ -136,7 +137,7 @@ export default function FamilyRecipes({
                         <p className="max-w-md text-sm text-mainText/70">
                             Add one of your recipes to this family space, create a new family recipe, or adjust the search and filters.
                         </p>
-                        {adminPermission && (
+                        {familyMember && (
                             <Group justify="center" gap="sm">
                                 <Button type="button" variant="light" onClick={toggleChooseRecipe}>
                                     Add existing

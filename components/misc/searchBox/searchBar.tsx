@@ -4,9 +4,13 @@ import { JSX } from "react"
 
 export default function SearchBarAndMenu({ handleSearch, searchString, index, leftSection }: { handleSearch: (input: React.ChangeEvent<HTMLInputElement>, index: number) => void, searchString: string, index: number, leftSection: JSX.Element | null }) {
     return (
-        <div className={`flex flex-row items-center w-full ${leftSection ? 'justify-between space-x-2' : 'justify-start'} border-b border-highlight/50 py-1 px-2 h-content`}>
-            {leftSection}
-            <input type="text" onChange={(e) => handleSearch(e, index)} className="flex flex-row w-full p-2 text-sm lg:text-base inset-shadow-sm rounded-md h-[40px]" placeholder={searchString} />
+        <div className={`flex w-full ${leftSection ? 'flex-col items-stretch justify-start gap-2 sm:flex-row sm:items-center sm:justify-between' : 'flex-row items-center justify-start'} py-1 px-0 sm:px-2 h-content`}>
+            {leftSection && (
+                <div className="flex shrink-0 items-center justify-start w-content">
+                    {leftSection}
+                </div>
+            )}
+            <input type="text" onChange={(e) => handleSearch(e, index)} className="flex h-[40px] w-full flex-row rounded-md border border-accent/20 p-2 text-sm inset-shadow-sm lg:text-base" placeholder={searchString} />
         </div>
     )
 }
