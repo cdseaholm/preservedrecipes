@@ -2,31 +2,24 @@ import connectDB from "@/lib/mongodb";
 import Inquiry from "@/models/inquiry";
 import { IInquiry } from "@/models/types/misc/inquiry";
 import { IUser } from "@/models/types/personal/user";
-import { getServerSession, User } from "next-auth";
-import { getToken } from "next-auth/jwt";
+import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import MongoUser from "@/models/user";
+import { normalizeAdminEmail } from "@/lib/admin";
+import { authOptions } from "@/lib/auth/auth-options";
+import { formatShortDate } from "@/lib/data-normalization";
 
 export async function POST(req: NextRequest) {
+    const session = await getServerSession(authOptions);
 
-    const secret = process.env.NEXTAUTH_SECRET ? process.env.NEXTAUTH_SECRET : '';
-
-    if (secret === '') {
-        return NextResponse.json({ status: 401, message: 'Unauthorized' });
-    }
-
-    const session = await getServerSession({ req, secret })
-    const token = await getToken({ req, secret });
-
-    if (!session || !token) {
+    if (!session?.user?.email) {
         return NextResponse.json({ status: 401, message: 'Unauthorized' });
     }
 
     try {
         const body = await req.json();
         await connectDB();
-        const userSesh = session?.user as User;
-        const email = userSesh ? userSesh.email : '';
+        const email = normalizeAdminEmail(session.user.email);
         if (email === '') {
             return NextResponse.json({ status: 401, message: 'Unauthorized' });
         }
@@ -37,16 +30,12 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ status: 404, message: 'User not found' });
         }
 
-        if (user._id.toString() !== token.sub) {
-            return NextResponse.json({ status: 401, message: 'Unauthorized' });
-        }
-
         const inquiry = body.inquiryPassed as IInquiry;
         const inquiryType = inquiry.inquiryType;
-        const inquiryTitle = inquiry.inquiryTitle || `${inquiryType} ${new Date().toLocaleDateString()}`;
+        const inquiryTitle = inquiry.inquiryTitle || `${inquiryType} ${formatShortDate(new Date())}`;
 
         const newInquiry = await Inquiry.create({
-            inquirerEmail: user.email,
+            inquirerEmail: normalizeAdminEmail(user.email),
             inquirerName: user.name || user.email,
             inquiryType,
             inquiryTitle,

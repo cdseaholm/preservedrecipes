@@ -1,3 +1,5 @@
+import { readApiResponse } from "../api-response";
+
 export async function AttemptDeleteCommunity(communityID: string) {
     const urlToUse = process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL as string : '';
 
@@ -17,10 +19,9 @@ export async function AttemptDeleteCommunity(communityID: string) {
             },
             body: JSON.stringify({ itemsToDelete: communityID })
         });
-        const data = await res.json();
-        if (!res.ok) {
-            return { status: false, message: data.message || 'Failed to delete community' };
-        }
+        const apiResponse = await readApiResponse(res, 'Failed to delete community');
+        if (!apiResponse.status) return { status: false, message: apiResponse.message };
+
         return { status: true, message: 'Community deleted successfully' };
     } catch (error) {
         return { status: false, message: 'Failed to delete community, unexpected error' };

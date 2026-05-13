@@ -16,6 +16,7 @@ import { isValidObjectId } from 'mongoose';
 import { Metadata } from 'next';
 import { getSessionUser } from '@/lib/data/user';
 import { createPageMetadata } from '@/lib/metadata';
+import { canViewCommunity, isCommunityAdmin } from '@/lib/community-utils';
 
 type CommunityPageParams = { params: Promise<{ id: string }> };
 
@@ -67,10 +68,9 @@ export default async function Page({ params }: CommunityPageParams) {
         }
 
         const community = serializeDoc<ICommunity>(communityDoc);
-        const userIsAdmin = userInfo && (community.adminIDs.includes(userInfo._id) || community.creatorID === userInfo._id) ? true : false;
-        const userIsMember = userInfo && community.communityMemberIDs.includes(userInfo._id) ? true : false;
+        const userIsAdmin = isCommunityAdmin(community, userInfo._id);
 
-        if (community.privacyLevel !== 'public' && (!userIsMember && !userIsAdmin)) {
+        if (!canViewCommunity(community, userInfo._id)) {
             redirect("/");
         }
 

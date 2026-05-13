@@ -8,6 +8,7 @@ import { IUser } from "@/models/types/personal/user";
 import { VerifyPassword } from "@/utils/userHelpers/verifyPassword";
 import { getServerSession } from "next-auth";
 import { Types } from "mongoose";
+import { normalizeEmail as normalizeSharedEmail, normalizeId as normalizeSharedId } from "@/lib/data-normalization";
 
 export type FamilyActionResult<T = unknown> = {
     success: boolean;
@@ -23,11 +24,11 @@ export function getRevalidationPath(route: string, fallback = "/") {
 }
 
 export function normalizeEmail(email: string) {
-    return email.trim().toLowerCase();
+    return normalizeSharedEmail(email);
 }
 
 export function normalizeId(id: unknown) {
-    return id?.toString() ?? "";
+    return normalizeSharedId(id);
 }
 
 export function getFamilyMember(family: IFamily, user: IUser) {
@@ -61,7 +62,7 @@ export async function getAuthenticatedFamilyContext(familyId: string) {
 
     await connectDB();
 
-    const userDoc = await User.findOne({ email: session.user.email });
+    const userDoc = await User.findOne({ email: normalizeEmail(session.user.email) });
     if (!userDoc) {
         return { user: null, family: null, member: null, message: "User not found" };
     }
@@ -69,6 +70,10 @@ export async function getAuthenticatedFamilyContext(familyId: string) {
     const familyDoc = await Family.findById(famIdString);
     if (!familyDoc) {
         return { user: userDoc as IUser, family: null, member: null, message: "Family not found" };
+    }
+
+    if (normalizeId((userDoc as IUser).userFamilyID) !== famIdString) {
+        return { user: userDoc as IUser, family: null, member: null, message: "You do not belong to this family" };
     }
 
     const member = getFamilyMember(familyDoc as IFamily, userDoc as IUser);

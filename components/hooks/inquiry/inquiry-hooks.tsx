@@ -9,6 +9,7 @@ import { Session } from "next-auth";
 import { AttemptCreateInquiry } from "@/utils/apihelpers/create/create-inquiry";
 import { AttemptEditInquiry } from "@/utils/apihelpers/edit/edit-inquiry";
 import AttemptDeleteInquiry from "@/utils/apihelpers/delete/delete-inquiry";
+import { formatShortDate, normalizeEmail } from "@/lib/data-normalization";
 
 export function useInquiryActions() {
     const { data: session } = useSession();
@@ -29,7 +30,7 @@ export function useInquiryActions() {
             return false;
         }
 
-        const email = user.email;
+        const email = normalizeEmail(user.email);
         if (!email) {
             toast.error("There is an issue with your account email, please try signing out and back in.");
             return false;
@@ -58,7 +59,7 @@ export function useInquiryActions() {
                 return false;
             }
 
-            const email = user.email;
+            const email = normalizeEmail(user.email);
             if (!email) {
                 toast.error("There is an issue with your account email, please try signing out and back in.");
                 
@@ -78,10 +79,10 @@ export function useInquiryActions() {
                 return false;
             }
 
-            const madeTitle = inquiryForm.getValues().inquiryType + " " + new Date().toLocaleDateString();
+            const madeTitle = inquiryForm.getValues().inquiryType + " " + formatShortDate(new Date());
 
             const inquiryToPass = {
-                inquirerEmail: inquiryForm.getValues().inquirerEmail,
+                inquirerEmail: normalizeEmail(inquiryForm.getValues().inquirerEmail),
                 inquirerName: inquiryForm.getValues().inquirerName,
                 inquiryType: inquiryForm.getValues().inquiryType,
                 inquiryMessage: inquiryForm.getValues().inquiryMessage,

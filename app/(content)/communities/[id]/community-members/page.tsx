@@ -13,6 +13,7 @@ import MembersMain from './components/members-main';
 import { Metadata } from 'next';
 import { getSessionUser } from '@/lib/data/user';
 import { createPageMetadata } from '@/lib/metadata';
+import { canViewCommunity, isCommunityAdmin } from '@/lib/community-utils';
 
 type CommunityMembersPageParams = { params: Promise<{ id: string }> };
 
@@ -68,9 +69,14 @@ export default async function Page({ params }: CommunityMembersPageParams) {
             redirect("/communities");
         }
 
+        if (!canViewCommunity(community, userInfo._id)) {
+            redirect("/");
+        }
+
+        const userIsAdmin = isCommunityAdmin(community, userInfo._id);
         const requesters = [] as IRequesterInfo[];
 
-        if (community.privacyLevel !== 'public' && community.requestIDs && community.requestIDs.length > 0) {
+        if (userIsAdmin && community.privacyLevel !== 'public' && community.requestIDs && community.requestIDs.length > 0) {
             const requestDoc = await Request.find({ requestFor: 'community'}).lean();
             const serializedRequests = requestDoc.map(serializeDoc<IRequest>);
             const filteredRequests = serializedRequests.filter(req => community.requestIDs.includes(req._id));

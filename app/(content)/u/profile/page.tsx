@@ -18,6 +18,7 @@ import { getSessionUser } from "@/lib/data/user";
 import { createPageMetadata } from "@/lib/metadata";
 import { IInvite } from "@/models/types/misc/invite";
 import { isInviteExpired, normalizeInviteEmail } from "@/lib/invite-utils";
+import { isInquiryAdminEmail, normalizeAdminEmail } from "@/lib/admin";
 
 export async function generateMetadata(): Promise<Metadata> {
     const user = await getSessionUser();
@@ -43,8 +44,8 @@ export default async function Page() {
     try {
         await connectDB();
 
-        const adminEmail = process.env.ADMIN_USERNAME || 'cdseaholm@gmail.com';
-        const userIsInquiryAdmin = user.email === adminEmail;
+        const normalizedUserEmail = normalizeAdminEmail(user.email);
+        const userIsInquiryAdmin = isInquiryAdminEmail(user.email);
 
         const [
             family,
@@ -68,7 +69,7 @@ export default async function Page() {
                 : [],
             userIsInquiryAdmin
                 ? Inquiry.find({}).sort({ createdAt: -1 }).lean()
-                : Inquiry.find({ inquirerEmail: user.email }).sort({ createdAt: -1 }).lean(),
+                : Inquiry.find({ inquirerEmail: normalizedUserEmail }).sort({ createdAt: -1 }).lean(),
             Invite.find({ email: normalizeInviteEmail(user.email) }).sort({ createdAt: -1 }).lean(),
             Community.find({ creatorId: user._id }).lean(),
             user.communityIDs && user.communityIDs.length > 0

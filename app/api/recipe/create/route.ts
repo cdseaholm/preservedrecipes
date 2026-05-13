@@ -3,8 +3,7 @@ import Family from "@/models/family";
 import Recipe from "@/models/recipe";
 import { IUser } from "@/models/types/personal/user";
 import { IRecipe } from "@/models/types/recipes/recipe";
-import { getServerSession, User } from "next-auth";
-import { getToken } from "next-auth/jwt";
+import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import MongoUser from "@/models/user";
 import Community from "@/models/community";
@@ -12,27 +11,21 @@ import { isCommunityMember } from "@/lib/community-utils";
 import { IIngredient, IngredientForForm } from "@/models/types/recipes/ingredient";
 import Ingredient from "@/models/ingredient";
 import { getUploadThingKeyFromUrl } from "@/utils/uploadthing/file-key";
+import { getFamilyMember, hasConnectedMembership } from "@/utils/server-actions/family/utils";
+import { authOptions } from "@/lib/auth/auth-options";
+import { normalizeEmail } from "@/lib/data-normalization";
 
 export async function POST(req: NextRequest) {
+    const session = await getServerSession(authOptions);
 
-    const secret = process.env.NEXTAUTH_SECRET ? process.env.NEXTAUTH_SECRET : '';
-
-    if (secret === '') {
-        return NextResponse.json({ status: 401, message: 'Unauthorized', recipeReturned: {} as IRecipe, returnedIngredients: [] as IIngredient[] });
-    }
-
-    const session = await getServerSession({ req, secret })
-    const token = await getToken({ req, secret });
-
-    if (!session || !token) {
+    if (!session?.user?.email) {
         return NextResponse.json({ status: 401, message: 'Unauthorized', recipeReturned: {} as IRecipe, returnedIngredients: [] as IIngredient[] });
     }
 
     try {
         const body = await req.json();
         await connectDB();
-        const userSesh = session?.user as User;
-        const email = userSesh ? userSesh.email : '';
+        const email = normalizeEmail(session.user.email);
         if (email === '') {
             return NextResponse.json({ status: 401, message: 'Unauthorized', recipeReturned: {} as IRecipe, returnedIngredients: [] as IIngredient[] });
         }
@@ -41,10 +34,6 @@ export async function POST(req: NextRequest) {
 
         if (!user) {
             return NextResponse.json({ status: 404, message: 'User not found', recipeReturned: {} as IRecipe, returnedIngredients: [] as IIngredient[] });
-        }
-
-        if (user._id.toString() !== token.sub) {
-            return NextResponse.json({ status: 401, message: 'Unauthorized', recipeReturned: {} as IRecipe, returnedIngredients: [] as IIngredient[] });
         }
 
         const recipe = body.recipePassed as IRecipe;
@@ -77,6 +66,22 @@ export async function POST(req: NextRequest) {
 
             if (!isCommunityMember(community, user._id.toString())) {
                 return NextResponse.json({ status: 403, message: 'Join this community before adding recipes', recipeReturned: {} as IRecipe, returnedIngredients: [] as IIngredient[] });
+            }
+        }
+
+        if (type === 'family') {
+            if (typeId !== user.userFamilyID) {
+                return NextResponse.json({ status: 403, message: 'You can only add recipes to your own family', recipeReturned: {} as IRecipe, returnedIngredients: [] as IIngredient[] });
+            }
+
+            const family = await Family.findOne({ _id: typeId });
+            if (!family) {
+                return NextResponse.json({ status: 404, message: 'Family not found', recipeReturned: {} as IRecipe, returnedIngredients: [] as IIngredient[] });
+            }
+
+            const member = getFamilyMember(family, user);
+            if (!hasConnectedMembership(member, user)) {
+                return NextResponse.json({ status: 403, message: 'Join this family before adding recipes', recipeReturned: {} as IRecipe, returnedIngredients: [] as IIngredient[] });
             }
         }
 

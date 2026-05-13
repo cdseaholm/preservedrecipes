@@ -1,6 +1,7 @@
 import { useFamilyStore } from "@/context/familyStore";
 import { IInvite } from "@/models/types/misc/invite";
 import { IUser } from "@/models/types/personal/user";
+import { readApiResponse } from "../api-response";
 
 export async function OpenInvite({ token }: { token: string }) {
 
@@ -18,26 +19,17 @@ export async function OpenInvite({ token }: { token: string }) {
             }
         });
 
-        if (!inviteRes.ok) {
-            return { status: false, message: 'Failed to fetch invite, res', invite: {} as IInvite, userExists: false };
+        const apiResponse = await readApiResponse<{ inviteReturned?: IInvite; userExists?: IUser | boolean }>(inviteRes, 'Failed to fetch invite');
+        if (!apiResponse.status || !apiResponse.data) {
+            return { status: false, message: apiResponse.message, invite: {} as IInvite, userExists: false };
         }
 
-        const data = await inviteRes.json();
-
-        if (!data) {
-            return { status: false, message: 'Failed to fetch invite, data null', invite: {} as IInvite, userExists: false };
-        }
-
-        if (data && data.status !== 200) {
-            return { status: false, message: `Failed to fetch invite, status: ${data.status}`, invite: {} as IInvite, userExists: false };
-        }
-
-        useFamilyStore.getState().setInvite(data.inviteReturned as IInvite)
-        return { status: true, message: 'Completed opening invite', invite: data.inviteReturned as IInvite, userExists: data.userExists as IUser }
+        useFamilyStore.getState().setInvite(apiResponse.data.inviteReturned as IInvite)
+        return { status: true, message: 'Completed opening invite', invite: apiResponse.data.inviteReturned as IInvite, userExists: apiResponse.data.userExists as IUser }
 
 
     } catch (error: any) {
-        return { status: false, message: error, invite: {} as IInvite, userExists: false };
+        return { status: false, message: 'Failed to fetch invite', invite: {} as IInvite, userExists: false };
     }
 
 }

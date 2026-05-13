@@ -1,25 +1,21 @@
 import { getServerSession } from 'next-auth';
-import { getToken } from 'next-auth/jwt';
 import connectDB from '@/lib/mongodb';
 import MongoUser from '@/models/user';
 import { NextRequest, NextResponse } from 'next/server';
 import Inquiry from '@/models/inquiry';
 import { IInquiry } from '@/models/types/misc/inquiry';
 import { IUser } from '@/models/types/personal/user';
+import { normalizeAdminEmail } from '@/lib/admin';
+import { authOptions } from '@/lib/auth/auth-options';
 
 export async function GET(req: NextRequest) {
     try {
-        const session = await getServerSession({ req, secret: process.env.NEXTAUTH_SECRET });
-        if (!session) {
+        const session = await getServerSession(authOptions);
+        if (!session?.user?.email) {
             return NextResponse.json({ status: 401, message: 'Unauthorized from session.', inquirys: [] as IInquiry[] });
         }
 
         const userSesh = session.user as IUser;
-
-        const token = await getToken({ req });
-        if (!token) {
-            return NextResponse.json({ status: 401, message: 'Unauthorized from token', inquirys: [] as IInquiry[] });
-        }
 
         const headers = req.headers;
         if (!headers) {
@@ -27,7 +23,7 @@ export async function GET(req: NextRequest) {
         }
 
         await connectDB();
-        const email = userSesh.email || '';
+        const email = normalizeAdminEmail(userSesh.email || '');
         if (!email) {
             return NextResponse.json({ status: 401, message: 'Unauthorized via email', inquirys: [] as IInquiry[] });
         }
@@ -36,10 +32,6 @@ export async function GET(req: NextRequest) {
 
         if (!user) {
             return NextResponse.json({ status: 404, message: 'User not found', inquirys: [] as IInquiry[] });
-        }
-
-        if (user._id.toString() !== token.sub) {
-            return NextResponse.json({ status: 401, message: 'Unauthorized via token mismatch', inquirys: [] as IInquiry[] });
         }
 
         const returnInquirys = await Inquiry.find({}) as IInquiry[];

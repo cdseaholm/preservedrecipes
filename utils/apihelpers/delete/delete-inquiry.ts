@@ -1,7 +1,7 @@
 import { useUserStore } from "@/context/userStore";
-import { toast } from "sonner";
 import { HelperResponse } from "./deleteUser";
 import { IInquiry } from "@/models/types/misc/inquiry";
+import { readApiResponse } from "../api-response";
 
 export default async function AttemptDeleteInquiry({ toDelete }: { toDelete: IInquiry[] }): Promise<HelperResponse> {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
@@ -24,21 +24,8 @@ export default async function AttemptDeleteInquiry({ toDelete }: { toDelete: IIn
             body: JSON.stringify({ itemsToDelete: toDelete }),
         });
 
-        if (!response.ok) {
-            toast.error('Failed to delete inquiry');
-            return { status: false, message: 'Failed to delete inquiry' };
-        }
-
-        const data = await response.json();
-
-        if (!data) {
-            return { status: false, message: 'Failed to delete inquiry, data null' };
-        }
-
-        if (data.status !== 200) {
-            toast.error('Failed to delete inquiry');
-            return { status: false, message: 'Failed to delete inquiry' };
-        }
+        const apiResponse = await readApiResponse(response, 'Failed to delete inquiry');
+        if (!apiResponse.status) return { status: false, message: apiResponse.message };
 
         const currInquirys = useUserStore.getState().inquiries || [];
         const newInquirys = currInquirys.filter(inq => !toDelete.some(del => del._id === inq._id));
@@ -48,7 +35,6 @@ export default async function AttemptDeleteInquiry({ toDelete }: { toDelete: IIn
         return { status: true, message: 'Inquirys deleted successfully' };
 
     } catch (error) {
-        toast.error('Error deleting inquiry');
         return { status: false, message: 'Error deleting inquiry' };
     }
 }
