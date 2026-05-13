@@ -2,32 +2,24 @@ import connectDB from "@/lib/mongodb";
 import Recipe from "@/models/recipe";
 import { IUser } from "@/models/types/personal/user";
 import MongoUser from "@/models/user";
-import { getServerSession, User } from "next-auth";
+import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt"
 import { ObjectId } from "mongodb";
 import Family from "@/models/family";
+import { authOptions } from "@/lib/auth/auth-options";
+import { normalizeEmail } from "@/lib/data-normalization";
 
 export async function DELETE(req: NextRequest) {
+    const session = await getServerSession(authOptions);
 
-    const secret = process.env.NEXTAUTH_SECRET ? process.env.NEXTAUTH_SECRET : '';
-
-    if (secret === '') {
-        return NextResponse.json({ status: 401, message: 'Unauthorized' });
-    }
-
-    const session = await getServerSession({ req, secret })
-    const token = await getToken({ req, secret });
-
-    if (!session || !token) {
+    if (!session?.user?.email) {
         return NextResponse.json({ status: 401, message: 'Unauthorized' });
     }
 
     try {
         const body = await req.json();
         await connectDB();
-        const userSesh = session?.user as User;
-        const email = userSesh ? userSesh.email : '';
+        const email = normalizeEmail(session.user.email);
         if (email === '') {
             return NextResponse.json({ status: 401, message: 'Unauthorized' });
         }
@@ -40,17 +32,30 @@ export async function DELETE(req: NextRequest) {
 
         const items = body.itemsToDelete as string[];
 
-        if (items.length === 0) {
+        if (!items || items.length === 0) {
             return NextResponse.json({ status: 400, message: 'No items to delete' });
         }
 
-        const deletePromises = items.map(async (item: string) => {
-            await Recipe.deleteOne({ _id: new ObjectId(item) });
+        const validItems = Array.from(new Set(items)).filter(item => ObjectId.isValid(item));
+        if (validItems.length !== items.length) {
+            return NextResponse.json({ status: 400, message: 'Invalid recipe ID' });
+        }
+
+        const ownedRecipes = await Recipe.find({
+            _id: { $in: validItems.map(item => new ObjectId(item)) },
+            creatorID: user._id.toString(),
+        }).select('_id').lean();
+
+        if (ownedRecipes.length !== validItems.length) {
+            return NextResponse.json({ status: 403, message: 'Only recipes you created can be deleted' });
+        }
+
+        await Recipe.deleteMany({
+            _id: { $in: validItems.map(item => new ObjectId(item)) },
+            creatorID: user._id.toString(),
         });
 
-        await Promise.all(deletePromises);
-
-        const newUserIDs = user.recipeIDs.filter((id: string) => !items.some((item: string) => item === id));
+        const newUserIDs = user.recipeIDs.filter((id: string) => !validItems.some((item: string) => item === id));
 
         await MongoUser.updateOne(
             { _id: new ObjectId(user._id) },
@@ -60,7 +65,7 @@ export async function DELETE(req: NextRequest) {
         if (user.userFamilyID) {
             const family = await Family.findById(user.userFamilyID);
             if (family) {
-                const newFamilyRecipeIDs = family.recipeIDs.filter((id: string) => !items.some((item: string) => item === id));
+                const newFamilyRecipeIDs = family.recipeIDs.filter((id: string) => !validItems.some((item: string) => item === id));
                 await Family.updateOne(
                     { _id: new ObjectId(family._id) },
                     { $set: { recipeIDs: newFamilyRecipeIDs } }

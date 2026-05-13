@@ -1,19 +1,18 @@
 import { useCommunityStore } from "@/context/communityStore";
 import { ICommunity } from "@/models/types/community/community";
 import { IPost } from "@/models/types/misc/post";
+import { readApiResponse } from "../api-response";
 
 export async function AttemptCreatePost({ post }: { post: IPost }): Promise<{ status: boolean, message: string }> {
 
     const urlToUse = process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL as string : '';
 
     if (!urlToUse || urlToUse === '') {
-        console.log('No URL to use for post creation');
-        return { status: false, message: `No URL to use` };
+        return { status: false, message: `App URL is not configured` };
     }
 
     if (!post) {
-        console.log('No post to add');
-        return { status: false, message: `No post to add` };
+        return { status: false, message: `Post data is required` };
     }
 
     try {
@@ -26,28 +25,16 @@ export async function AttemptCreatePost({ post }: { post: IPost }): Promise<{ st
             body: JSON.stringify({ postPassed: post })
         });
 
-        if (!res || !res.ok) {
-            console.log('Response not ok:', res.statusText);
-            return { status: false, message: `Failed Creation, ${res.statusText}` };
-        }
+        const apiResponse = await readApiResponse<{ postReturned?: IPost; communityReturned?: ICommunity | null }>(res, 'Failed to create post');
+        if (!apiResponse.status || !apiResponse.data) return { status: false, message: apiResponse.message };
 
-        const data = await res.json();
-
-        if (!data) {
-            return { status: false, message: `Failed Creation, Invalid JSON response` };
-        }
-
-        if (data.status !== 200) {
-            return { status: false, message: `Failed Creation, ${data.message}` };
-        }
-
-        const returnedPost = data.postReturned as IPost;
+        const returnedPost = apiResponse.data.postReturned as IPost;
 
         if (!returnedPost) {
-            return { status: false, message: `Failed Creation, No post returned` };
+            return { status: false, message: `No post returned` };
         }
 
-        const returnedCommunity = data.communityReturned as ICommunity | null;
+        const returnedCommunity = apiResponse.data.communityReturned as ICommunity | null;
 
         if (returnedCommunity) {
             useCommunityStore.getState().setCommunity(returnedCommunity);
@@ -60,8 +47,7 @@ export async function AttemptCreatePost({ post }: { post: IPost }): Promise<{ st
 
     } catch (error: any) {
 
-        console.log('Error creating post:', error);
-        return { status: false, message: `Failed Creation, ${error.message}` };
+        return { status: false, message: `Failed to create post` };
 
     }
 }

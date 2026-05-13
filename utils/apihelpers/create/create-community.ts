@@ -3,6 +3,7 @@ import { useUserStore } from "@/context/userStore";
 import { ICommunity } from "@/models/types/community/community";
 import { IUser } from "@/models/types/personal/user";
 import { SaltAndHashPassword } from "@/utils/userHelpers/saltAndHash";
+import { readApiResponse } from "../api-response";
 
 
 
@@ -11,15 +12,15 @@ export async function AttemptCreateCommunity({ communityToAdd }: { communityToAd
     const urlToUse = process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL as string : '';
 
     if (!urlToUse || urlToUse.length === 0 || urlToUse === '') {
-        return { status: false, message: 'Failed Creation, No URL' };
+        return { status: false, message: 'App URL is not configured' };
     }
 
     if (!communityToAdd) {
-        return { status: false, message: 'Failed Creation, No Community Data' };
+        return { status: false, message: 'Community data is required' };
     }
 
     if (communityToAdd.privacyLevel === 'passwordProtected' && (!communityToAdd.communityPassword || communityToAdd.communityPassword === '')) {
-        return { status: false, message: 'Failed Creation, password protected communities must have a password' };
+        return { status: false, message: 'Password protected communities must have a password' };
     }
 
     const saltedPassword = communityToAdd.privacyLevel === 'passwordProtected'
@@ -39,22 +40,13 @@ export async function AttemptCreateCommunity({ communityToAdd }: { communityToAd
             body: JSON.stringify({ communityPassed: communityPassed })
         });
 
-        if (!res.ok) {
-            return { status: false, message: `Failed Creation, ${res.statusText}` };
-        }
+        const apiResponse = await readApiResponse<{ communityReturned?: ICommunity }>(res, 'Failed to create community');
+        if (!apiResponse.status || !apiResponse.data) return { status: false, message: apiResponse.message };
 
-        const data = await res.json().catch(() => null);
-
-        if (!data) {
-            return { status: false, message: `Failed Creation, Invalid JSON response` };
-        }
-
-        if (data.status !== 200) {
-            return { status: false, message: `Failed Creation, ${data.message}` };
-        }
+        const data = apiResponse.data;
         const newCommunity = data.communityReturned as ICommunity;
         if (!newCommunity) {
-            return { status: false, message: `Failed Creation, No community returned` };
+            return { status: false, message: `No community returned` };
         }
         const currCommunities = useDataStore.getState().communities as ICommunity[];
         useDataStore.getState().setCommunities([...currCommunities, newCommunity]);
@@ -73,6 +65,6 @@ export async function AttemptCreateCommunity({ communityToAdd }: { communityToAd
         return { status: true, message: `Created` };
 
     } catch (error: any) {
-        return { status: false, message: `Failed creation` };
+        return { status: false, message: `Failed to create community` };
     }
 }

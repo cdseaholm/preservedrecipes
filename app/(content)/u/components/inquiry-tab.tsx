@@ -5,12 +5,14 @@ import { IInquiry, InquiryFormType } from "@/models/types/misc/inquiry";
 import { IUser } from "@/models/types/personal/user";
 import { useInquiryActions } from "@/components/hooks/inquiry/inquiry-hooks";
 import { useUserStore } from "@/context/userStore";
+import { formatShortDate } from "@/lib/data-normalization";
 import {
     ActionIcon,
     Badge,
     Button,
     Card,
     Group,
+    Pagination,
     Select,
     Stack,
     Text,
@@ -35,8 +37,17 @@ const inquiryTypeOptions = [
     { value: 'Other', label: 'Other' },
 ];
 
+const INQUIRIES_PER_PAGE = 5;
+const INQUIRY_CARD_MIN_HEIGHT = 132;
+
+function getInquiryDisplayTitle(inquiry: IInquiry) {
+    const formattedDate = formatShortDate(inquiry.createdAt);
+    return formattedDate ? `${inquiry.inquiryType} ${formattedDate}` : inquiry.inquiryType;
+}
+
 export default function InquiryTabContent({ initialInquiries, user, isAdmin }: InquiryTabContentProps) {
     const [search, setSearch] = useState('');
+    const [activePage, setActivePage] = useState(1);
     const [busyInquiryId, setBusyInquiryId] = useState<string | null>(null);
     const { loading, createInquiry, editInquiries, deleteInquiries, storedInquiries } = useInquiryActions();
     const setInquiries = useUserStore(state => state.setInquiries);
@@ -85,6 +96,22 @@ export default function InquiryTabContent({ initialInquiries, user, isAdmin }: I
             return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
         });
     }, [search, storedInquiries]);
+
+    const totalPages = Math.max(1, Math.ceil(filteredInquiries.length / INQUIRIES_PER_PAGE));
+    const paginatedInquiries = useMemo(() => {
+        const startIndex = (activePage - 1) * INQUIRIES_PER_PAGE;
+        return filteredInquiries.slice(startIndex, startIndex + INQUIRIES_PER_PAGE);
+    }, [activePage, filteredInquiries]);
+    const visibleListItemCount = filteredInquiries.length > 0 ? paginatedInquiries.length : 1;
+    const placeholderCount = Math.max(0, INQUIRIES_PER_PAGE - visibleListItemCount);
+
+    useEffect(() => {
+        setActivePage(1);
+    }, [search]);
+
+    useEffect(() => {
+        setActivePage((currentPage) => Math.min(currentPage, totalPages));
+    }, [totalPages]);
 
     const handleCreate = async () => {
         inquiryForm.setFieldValue('inquirerName', user.name || user.email);
@@ -182,8 +209,15 @@ export default function InquiryTabContent({ initialInquiries, user, isAdmin }: I
 
                 <Stack gap="sm">
                     {filteredInquiries.length > 0 ? (
-                        filteredInquiries.map((inquiry) => (
-                            <Card key={inquiry._id} withBorder radius="md" padding="md" className="bg-mainBack/60">
+                        paginatedInquiries.map((inquiry) => (
+                            <Card
+                                key={inquiry._id}
+                                withBorder
+                                radius="md"
+                                padding="md"
+                                className="bg-mainBack/60"
+                                style={{ minHeight: INQUIRY_CARD_MIN_HEIGHT }}
+                            >
                                 <Group justify="space-between" align="flex-start" gap="sm" wrap="nowrap">
                                     <Stack gap={6} className="min-w-0">
                                         <Group gap="xs">
@@ -194,11 +228,11 @@ export default function InquiryTabContent({ initialInquiries, user, isAdmin }: I
                                                 {inquiry.inquiryType}
                                             </Badge>
                                         </Group>
-                                        <Text fw={700} className="truncate" title={inquiry.inquiryTitle}>
-                                            {inquiry.inquiryTitle}
+                                        <Text fw={700} className="truncate" title={getInquiryDisplayTitle(inquiry)}>
+                                            {getInquiryDisplayTitle(inquiry)}
                                         </Text>
                                         <Text size="sm" c="dimmed">
-                                            {isAdmin ? `${inquiry.inquirerName} · ${inquiry.inquirerEmail}` : new Date(inquiry.createdAt).toLocaleDateString()}
+                                            {isAdmin ? `${inquiry.inquirerName} · ${inquiry.inquirerEmail}` : formatShortDate(inquiry.createdAt)}
                                         </Text>
                                         <Text size="sm" className="whitespace-pre-wrap">
                                             {inquiry.inquiryMessage}
@@ -239,12 +273,40 @@ export default function InquiryTabContent({ initialInquiries, user, isAdmin }: I
                             </Card>
                         ))
                     ) : (
-                        <Card withBorder radius="md" padding="xl" className="bg-mainBack/60 text-center">
+                        <Card
+                            withBorder
+                            radius="md"
+                            padding="xl"
+                            className="bg-mainBack/60 text-center"
+                            style={{ minHeight: INQUIRY_CARD_MIN_HEIGHT }}
+                        >
                             <Text fw={700}>No feedback found</Text>
                             <Text size="sm" c="dimmed">
                                 {search ? 'Try a different search.' : 'Submitted feedback will appear here.'}
                             </Text>
                         </Card>
+                    )}
+                    {Array.from({ length: placeholderCount }).map((_, index) => (
+                        <Card
+                            key={`inquiry-placeholder-${index}`}
+                            withBorder
+                            radius="md"
+                            padding="md"
+                            aria-hidden="true"
+                            className="invisible bg-mainBack/60"
+                            style={{ minHeight: INQUIRY_CARD_MIN_HEIGHT }}
+                        />
+                    ))}
+                    {filteredInquiries.length > INQUIRIES_PER_PAGE && (
+                        <Group justify="center" pt="xs">
+                            <Pagination
+                                total={totalPages}
+                                value={activePage}
+                                onChange={setActivePage}
+                                size="sm"
+                                withEdges
+                            />
+                        </Group>
                     )}
                 </Stack>
             </Stack>

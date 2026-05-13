@@ -2,31 +2,23 @@ import connectDB from "@/lib/mongodb";
 import Inquiry from "@/models/inquiry";
 import { IInquiry } from "@/models/types/misc/inquiry";
 import { IUser } from "@/models/types/personal/user";
-import { getServerSession, User } from "next-auth";
-import { getToken } from "next-auth/jwt";
+import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import MongoUser from "@/models/user";
+import { isInquiryAdminEmail, normalizeAdminEmail } from "@/lib/admin";
+import { authOptions } from "@/lib/auth/auth-options";
 
 export async function DELETE(req: NextRequest) {
+    const session = await getServerSession(authOptions);
 
-    const secret = process.env.NEXTAUTH_SECRET ? process.env.NEXTAUTH_SECRET : '';
-
-    if (secret === '') {
-        return NextResponse.json({ status: 401, message: 'Unauthorized' });
-    }
-
-    const session = await getServerSession({ req, secret })
-    const token = await getToken({ req, secret });
-
-    if (!session || !token) {
+    if (!session?.user?.email) {
         return NextResponse.json({ status: 401, message: 'Unauthorized' });
     }
 
     try {
         const body = await req.json();
         await connectDB();
-        const userSesh = session?.user as User;
-        const email = userSesh ? userSesh.email : '';
+        const email = normalizeAdminEmail(session.user.email);
         if (email === '') {
             return NextResponse.json({ status: 401, message: 'Unauthorized' });
         }
@@ -37,12 +29,7 @@ export async function DELETE(req: NextRequest) {
             return NextResponse.json({ status: 404, message: 'User not found' });
         }
 
-        if (user._id.toString() !== token.sub) {
-            return NextResponse.json({ status: 401, message: 'Unauthorized' });
-        }
-
-        const adminEmail = process.env.ADMIN_USERNAME || 'cdseaholm@gmail.com';
-        if (user.email !== adminEmail) {
+        if (!isInquiryAdminEmail(user.email)) {
             return NextResponse.json({ status: 403, message: 'Admin privileges are required' });
         }
 

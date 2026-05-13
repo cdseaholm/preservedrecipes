@@ -2,6 +2,7 @@ import { useFamilyStore } from "@/context/familyStore";
 import { useUserStore } from "@/context/userStore";
 import { IFamilyMember } from "@/models/types/family/familyMember";
 import { IInvite } from "@/models/types/misc/invite";
+import { readApiResponse } from "../api-response";
 
 export async function InviteRegCheck({ invite }: { invite: IInvite }) {
 
@@ -20,21 +21,10 @@ export async function InviteRegCheck({ invite }: { invite: IInvite }) {
             body: JSON.stringify({ token: invite.token }),
         });
 
-        if (!response.ok) {
-            return { status: false, message: 'Failed to recieve invite response' };
-        }
+        const apiResponse = await readApiResponse<{ returnedMembers?: IFamilyMember[] }>(response, 'Failed to accept invite');
+        if (!apiResponse.status || !apiResponse.data) return { status: false, message: apiResponse.message };
 
-        const data = await response.json();
-
-        if (!data) {
-            return { status: false, message: 'Failed to recieve invite, data null' };
-        }
-
-        if (data.status !== 200) {
-            return { status: false, message: `Failed to recieve invite, data status not 200 ${data.message}` };
-        }
-
-        const returnedMembers = data.returnedMembers as IFamilyMember[];
+        const returnedMembers = apiResponse.data.returnedMembers as IFamilyMember[];
 
         useFamilyStore.getState().setInvite(null);
 
@@ -50,9 +40,9 @@ export async function InviteRegCheck({ invite }: { invite: IInvite }) {
             familyMembers: returnedMembers
         });
 
-        return { status: true, message: 'Invite opened and recieved successfully' };
+        return { status: true, message: 'Invite accepted successfully' };
 
     } catch (error) {
-        return { status: false, message: 'Error recieving invite' };
+        return { status: false, message: 'Error accepting invite' };
     }
 }

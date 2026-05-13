@@ -8,6 +8,7 @@ import { getServerSession } from "next-auth";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
+import { normalizeEmail, normalizeId } from "./data-normalization";
 
 export const COMMUNITY_PRIVACY_LEVELS = ['public', 'private', 'hidden', 'restricted', 'passwordProtected'] as const;
 export const COMMUNITY_POST_TYPES = ['recipe', 'text'] as const;
@@ -17,12 +18,23 @@ export function normalizeCommunityText(value: unknown, maxLength: number) {
   return typeof value === 'string' ? value.trim().slice(0, maxLength) : '';
 }
 
+export function normalizeCommunityId(id: unknown) {
+  return normalizeId(id);
+}
+
 export function isCommunityAdmin(community: Pick<ICommunity, 'adminIDs' | 'creatorID'>, userId: string) {
-  return community.creatorID === userId || community.adminIDs.includes(userId);
+  const normalizedUserId = normalizeCommunityId(userId);
+  const creatorId = normalizeCommunityId(community.creatorID);
+  const adminIds = (community.adminIDs || []).map(normalizeCommunityId);
+
+  return creatorId === normalizedUserId || adminIds.includes(normalizedUserId);
 }
 
 export function isCommunityMember(community: Pick<ICommunity, 'adminIDs' | 'creatorID' | 'communityMemberIDs'>, userId: string) {
-  return isCommunityAdmin(community, userId) || community.communityMemberIDs.includes(userId);
+  const normalizedUserId = normalizeCommunityId(userId);
+  const memberIds = (community.communityMemberIDs || []).map(normalizeCommunityId);
+
+  return isCommunityAdmin(community, normalizedUserId) || memberIds.includes(normalizedUserId);
 }
 
 export function canViewCommunity(community: ICommunity, userId?: string) {
@@ -57,14 +69,15 @@ export async function getAuthedUser(req: NextRequest) {
     getToken({ req, secret }),
   ]);
 
-  const email = session?.user?.email?.trim().toLowerCase() || '';
+  const email = normalizeEmail(session?.user?.email);
   if (!session || !token || !email) {
     return { error: NextResponse.json({ status: 401, message: 'Unauthorized' }), user: null as IUser | null };
   }
 
   await connectDB();
   const user = await MongoUser.findOne({ email }) as IUser | null;
-  if (!user || user._id.toString() !== token.sub) {
+  const tokenUserId = normalizeCommunityId(token.sub || token.id);
+  if (!user || normalizeCommunityId(user._id) !== tokenUserId) {
     return { error: NextResponse.json({ status: 401, message: 'Unauthorized' }), user: null as IUser | null };
   }
 

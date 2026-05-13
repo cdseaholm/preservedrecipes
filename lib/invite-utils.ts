@@ -2,11 +2,12 @@ import Invite from "@/models/invite";
 import Family from "@/models/family";
 import { IInvite } from "@/models/types/misc/invite";
 import { ObjectId } from "mongodb";
+import { normalizeEmail } from "./data-normalization";
 
 export const INVITE_EXPIRATION_MS = 7 * 24 * 60 * 60 * 1000;
 
 export function normalizeInviteEmail(email: string | null | undefined) {
-  return email?.trim().toLowerCase() || "";
+  return normalizeEmail(email);
 }
 
 export function isInviteExpired(invite: Pick<IInvite, "createdAt">) {
