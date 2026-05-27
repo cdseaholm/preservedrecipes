@@ -32,10 +32,10 @@ export default function AddFamMemberForm({ handleAddFamMem, handleCancel }: { ha
     const options = addFamMemsForm.getValues().newMembers.map((item: NewMembers, index: number) => (
         <li key={item.email} className="flex flex-row justify-between items-center w-full h-content p-2 hover:text-gray-400 cursor-pointer">
             {item.email}
-            <button onClick={() => {
+            <button type="button" onClick={() => {
                 addFamMemsForm.removeListItem('newMembers', index);
-            }} aria-label="Remove Family Member">
-                <BiTrashAlt />
+            }} aria-label={`Remove ${item.email}`}>
+                <BiTrashAlt aria-hidden="true" />
             </button>
         </li>
     ));

@@ -12,6 +12,7 @@ import { IRequesterInfo } from "@/models/types/misc/request"
 import { IUser } from "@/models/types/personal/user"
 import { Tabs } from "@mantine/core"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { useState, useEffect, ChangeEvent } from "react"
 import { BiFoodMenu, BiPlus } from "react-icons/bi"
 import { MdOutlineSpaceDashboard } from "react-icons/md"
@@ -30,6 +31,7 @@ export default function MembersMain({
 }) {
 
     const setUserInfo = useUserStore(state => state.setUserInfo);
+    const router = useRouter();
     
     const [activeTab, setActiveTab] = useState<string | null>('members');
     const [search, setSearch] = useState('');
@@ -80,7 +82,7 @@ export default function MembersMain({
 
     const handleSeeItem = (item: CommonInfo) => {
         if (item.which === 'members') {
-            toast.info(`Viewing member: ${item.name}`);
+            router.push(`/view/member/${item.id}`);
         } else {
             toast.info(`Viewing requester: ${item.name}`);
         }
@@ -96,15 +98,14 @@ export default function MembersMain({
         >
             <PageSpecButtonBox
                 leftHandButtons={
-                    <Link href={`/communities/${community._id}`}>
-                        <button 
-                            className="h-content w-content flex flex-row p-1 justify-evenly items-center hover:bg-gray-100 hover:text-blue-300 text-blue-500 rounded-md text-sm sm:text-base space-x-2 cursor-pointer" 
-                            aria-label="Back to Community" 
-                            title="Back to Community"
-                        >
-                            <BiPlus size={20} className="rotate-45" />
-                            <p>Back to Community</p>
-                        </button>
+                    <Link
+                        href={`/communities/${community._id}`}
+                        className="h-content w-content flex flex-row p-1 justify-evenly items-center hover:bg-gray-100 hover:text-blue-300 text-blue-500 rounded-md text-sm sm:text-base space-x-2 cursor-pointer"
+                        aria-label="Back to Community"
+                        title="Back to Community"
+                    >
+                        <BiPlus size={20} className="rotate-45" aria-hidden="true" />
+                        <span>Back to Community</span>
                     </Link>
                 }
                 rightHandButtons={

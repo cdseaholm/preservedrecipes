@@ -10,7 +10,7 @@ export default function PageSpecButtonBox({ leftHandButtons, rightHandButtons, l
             <div className="flex h-content w-full flex-row flex-wrap items-center justify-start gap-2 sm:w-content sm:gap-7" aria-label={leftLabel}>
                 {leftHandButtons}
             </div>
-            <div className="flex h-content w-full flex-row flex-wrap items-center justify-start gap-2 sm:w-content sm:justify-evenly sm:gap-7" aria-label={rightLabel}>
+            <div className="flex h-content w-full flex-row flex-wrap items-center justify-start gap-2 sm:w-content sm:justify-end sm:gap-7" aria-label={rightLabel}>
                 {rightHandButtons}
             </div>
         </div>

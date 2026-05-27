@@ -183,8 +183,8 @@ export default function CommunityMain({
             </>
           }
           rightHandButtons={
-            userInfo && <button onClick={handleCreate} className={`h-content w-content flex flex-row p-1 justify-evenly items-center hover:bg-gray-100 hover:text-blue-300 text-blue-500 rounded-md text-sm sm:text-base space-x-1 cursor-pointer`} aria-label="Create Community" title="Create Community">
-              <BiPlus size={20} />
+            userInfo && <button type="button" onClick={handleCreate} className={`h-content w-content flex flex-row p-1 justify-evenly items-center hover:bg-gray-100 hover:text-blue-300 text-blue-500 rounded-md text-sm sm:text-base space-x-1 cursor-pointer`} aria-label="Create Community" title="Create Community">
+              <BiPlus size={20} aria-hidden="true" />
               <span className="hidden sm:inline">Create Community</span>
             </button>
           }

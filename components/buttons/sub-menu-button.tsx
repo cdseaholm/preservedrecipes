@@ -9,8 +9,8 @@ export default function SubMenuButton({
 }) {
 
     return (
-        <button type="button" onClick={onClick} className={buttonClass}>
-            <p className={textClass}>{title}</p>
+        <button type="button" onClick={onClick} className={buttonClass} aria-label={title}>
+            <span className={textClass}>{title}</span>
         </button>
     );
 }

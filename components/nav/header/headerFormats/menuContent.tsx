@@ -68,7 +68,7 @@ export default function MenuContent({ session, profile, signOutElement, signIn, 
         <>
             {homeButton.map((button) => (
                 button && <Link key={button.value} href={button.href} onClick={handleNavigationClick} className={`${buttonClass} mt-4 py-4 w-full`}>
-                    <span className={`${textClass}`}>{button.icon}</span>
+                    <span className={`${textClass}`} aria-hidden="true">{button.icon}</span>
                     <span className={`${textClass}`}>{button.label}</span>
                 </Link>
             ))}
@@ -78,7 +78,7 @@ export default function MenuContent({ session, profile, signOutElement, signIn, 
             {buttons.map((button) => (
                 button && (
                     <Link key={button.value} href={button.href} onClick={handleNavigationClick} className={`${buttonClass} py-4 mb-2`}>
-                        <span className={`${textClass}`}>{button.icon}</span>
+                        <span className={`${textClass}`} aria-hidden="true">{button.icon}</span>
                         <span className={`${textClass}`}>{button.label}</span>
                     </Link>
                 )
@@ -97,7 +97,7 @@ export default function MenuContent({ session, profile, signOutElement, signIn, 
                             onClick={handleNavigationClick}
                             className={`${buttonClass} py-4 mb-2`}
                         >
-                            <span className={`${textClass}`}>{button.icon}</span>
+                            <span className={`${textClass}`} aria-hidden="true">{button.icon}</span>
                             <span className={`${textClass}`}>{button.label}</span>
                         </Link>
                     );
@@ -106,10 +106,12 @@ export default function MenuContent({ session, profile, signOutElement, signIn, 
                 return (
                     <button
                         key={button.value}
+                        type="button"
                         onClick={button.onClick}
+                        aria-label={button.label}
                         className={`${buttonClass} py-4 mb-2`}
                     >
-                        <span className={`${textClass}`}>{button.icon}</span>
+                        <span className={`${textClass}`} aria-hidden="true">{button.icon}</span>
                         <span className={`${textClass}`}>{button.label}</span>
                     </button>
                 );

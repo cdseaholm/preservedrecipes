@@ -74,8 +74,8 @@ export default function RecipeForm({
                         <div className="sticky top-0 z-20 border-b border-accent/20 bg-mainBack/95 px-4 py-3 backdrop-blur sm:px-6">
                                 <div className="flex flex-row items-end justify-between gap-3">
                                         {width < 640 && formType === 'edit' ? (
-                                                <button type="button" onClick={favoriteRecipe} className={`${isFavorited ? "text-red-500" : "text-gray-500"} rounded-md p-2 hover:bg-accent/10`} title={isFavorited ? "Remove from favorites" : "Add to favorites"}>
-                                                        {isFavorited ? <IoHeart size={22} /> : <IoHeartOutline size={22} />}
+                                                <button type="button" onClick={favoriteRecipe} className={`${isFavorited ? "text-red-500" : "text-gray-500"} rounded-md p-2 hover:bg-accent/10`} title={isFavorited ? "Remove from favorites" : "Add to favorites"} aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}>
+                                                        {isFavorited ? <IoHeart size={22} aria-hidden="true" /> : <IoHeartOutline size={22} aria-hidden="true" />}
                                                 </button>
                                         ) : null}
                                         <div className="min-w-0 flex-1">
@@ -98,8 +98,8 @@ export default function RecipeForm({
                                         </div>
                                         <div className="flex shrink-0 items-center gap-2">
                                                 {width >= 640 && formType === 'edit' ? (
-                                                        <button type="button" onClick={favoriteRecipe} className={`${isFavorited ? "text-red-500" : "text-gray-500"} rounded-md p-2 hover:bg-accent/10`} title={isFavorited ? "Remove from favorites" : "Add to favorites"}>
-                                                                {isFavorited ? <IoHeart size={22} /> : <IoHeartOutline size={22} />}
+                                                        <button type="button" onClick={favoriteRecipe} className={`${isFavorited ? "text-red-500" : "text-gray-500"} rounded-md p-2 hover:bg-accent/10`} title={isFavorited ? "Remove from favorites" : "Add to favorites"} aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}>
+                                                                {isFavorited ? <IoHeart size={22} aria-hidden="true" /> : <IoHeartOutline size={22} aria-hidden="true" />}
                                                         </button>
                                                 ) : null}
                                                 {width > 640 && <Button type="submit" leftSection={<BiCheck />} loading={isSaving} className="hidden sm:flex">
@@ -125,19 +125,19 @@ export default function RecipeForm({
                         </div>
 
                         <div className="mx-auto flex w-full max-w-4xl flex-col gap-5 px-4 py-5 pb-24 sm:px-6">
-                                <section id="recipe-basics" className="scroll-mt-32 rounded-md border border-accent/20 bg-cardBack p-4 shadow-sm sm:p-5">
+                                <section id="recipe-basics" aria-label="Recipe basics" className="scroll-mt-32 rounded-md border border-accent/20 bg-cardBack p-4 shadow-sm sm:p-5">
                                         <RecipePanelInfo recipeForm={recipeForm} onImageUpload={handleImageUpload} />
                                 </section>
-                                <section id="recipe-ingredients" className="scroll-mt-32 rounded-md border border-accent/20 bg-cardBack p-4 shadow-sm sm:p-5">
+                                <section id="recipe-ingredients" aria-label="Recipe ingredients" className="scroll-mt-32 rounded-md border border-accent/20 bg-cardBack p-4 shadow-sm sm:p-5">
                                         <RecipePanelIngredients recipeForm={recipeForm} ingredientNames={ingredientNames} />
                                 </section>
-                                <section id="recipe-steps" className="scroll-mt-32 rounded-md border border-accent/20 bg-cardBack p-4 shadow-sm sm:p-5">
+                                <section id="recipe-steps" aria-label="Recipe instructions" className="scroll-mt-32 rounded-md border border-accent/20 bg-cardBack p-4 shadow-sm sm:p-5">
                                         <RecipePanelSteps recipeForm={recipeForm} />
                                 </section>
-                                <section id="recipe-extras" className="scroll-mt-32 rounded-md border border-accent/20 bg-cardBack p-4 shadow-sm sm:p-5">
+                                <section id="recipe-extras" aria-label="Recipe sharing options" className="scroll-mt-32 rounded-md border border-accent/20 bg-cardBack p-4 shadow-sm sm:p-5">
                                         <RecipePanelExtras recipeForm={recipeForm} />
                                 </section>
-                                <section id="recipe-review" className="scroll-mt-32 rounded-md border border-accent/20 bg-cardBack p-4 shadow-sm sm:p-5">
+                                <section id="recipe-review" aria-label="Recipe review" className="scroll-mt-32 rounded-md border border-accent/20 bg-cardBack p-4 shadow-sm sm:p-5">
                                         <RecipePanelFinalize recipeForm={recipeForm} handleCreate={handleCreate} handleEdit={handleEdit} formType={formType} attemptedToCreate={attemptedToCreate} handleDelete={handleDelete} />
                                 </section>
                         </div>

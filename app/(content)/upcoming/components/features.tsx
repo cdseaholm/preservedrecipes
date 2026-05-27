@@ -26,7 +26,7 @@ export default function FeaturesPage() {
         <ContentWrapper containedChild={false} paddingNeeded={true}>
             <p className="flex flex-row justify-center items-center bg-altBack/80 w-full h-content p-4 pb-8 text-base lg:text-lg">
                 Have an idea you would like to suggest? - <span>
-                    <button className="text-blue-700 hover:text-blue-300 hover:underline ml-2 cursor-pointer" onClick={() => setOpenInquiryModal(true)} aria-label="Submit Suggestions">Submit a suggestion here</button>
+                    <button type="button" className="text-blue-700 hover:text-blue-300 hover:underline ml-2 cursor-pointer" onClick={() => setOpenInquiryModal(true)} aria-label="Submit Suggestions">Submit a suggestion here</button>
                 </span>
             </p>
             <h2 className="text-xl md:text-2xl underline text-semibold pt-4">Current upcoming updates:</h2>

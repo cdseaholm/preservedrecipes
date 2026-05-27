@@ -21,7 +21,7 @@ export default function CTASection() {
                 onClick={() => navigate('/auth/signup')}
             >
                 <span>Start Your Free Account</span>
-                <FaArrowRight className="group-hover:translate-x-1 transition-transform" />
+                <FaArrowRight className="group-hover:translate-x-1 transition-transform" aria-hidden="true" />
             </button>
 
             <p className="text-white/80 text-sm">

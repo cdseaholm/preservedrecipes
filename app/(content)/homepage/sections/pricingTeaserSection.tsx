@@ -41,7 +41,7 @@ export default function PricingTeaserSection() {
                         {features.map((feature, index) => (
                             <li key={index} className="flex items-center gap-3">
                                 <div className="flex-shrink-0 w-6 h-6 rounded-full bg-accent/10 flex items-center justify-center">
-                                    <FaCheck className="text-accent text-sm" />
+                                    <FaCheck className="text-accent text-sm" aria-hidden="true" />
                                 </div>
                                 <span className="text-mainText text-lg">{feature}</span>
                             </li>
@@ -54,7 +54,7 @@ export default function PricingTeaserSection() {
                         onClick={() => navigate('/auth/signup')}
                     >
                         <span className="text-lg">Get Started Now</span>
-                        <FaArrowRight className="group-hover:translate-x-1 transition-transform" />
+                        <FaArrowRight className="group-hover:translate-x-1 transition-transform" aria-hidden="true" />
                     </button>
 
                     <button

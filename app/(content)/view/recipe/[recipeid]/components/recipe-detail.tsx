@@ -70,7 +70,7 @@ export default function RecipeDetail({ recipe, currentUser, creatorName }: Recip
                                 onClick={() => router.back()}
                                 className="flex w-fit flex-row items-center gap-1 rounded-md px-2 py-1 text-sm text-blue-600 hover:bg-accent/20 cursor-pointer"
                             >
-                                <BiArrowBack />
+                                <BiArrowBack aria-hidden="true" />
                                 Back
                             </button>
                             <div className="flex flex-row flex-wrap items-center justify-start gap-2 sm:justify-end">
@@ -130,7 +130,7 @@ export default function RecipeDetail({ recipe, currentUser, creatorName }: Recip
                                     src={recipe.image || null}
                                     className="h-35 w-auto object-contain sm:h-54 lg:h-[220px]"
                                     fallbackSrc="https://placehold.co/600x400?text=Placeholder"
-                                    aria-label={recipe.image ? recipe.name : 'No-image-found'}
+                                    alt={recipe.image ? `${recipe.name} recipe image` : 'Recipe image placeholder'}
                                 />
                             </div>
                         </div>

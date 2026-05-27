@@ -34,7 +34,7 @@ export default function ViewPage({ memberToView }: { memberToView: IUserView }) 
         { label: 'Recipes', options: memberToView.publicRecipes.map((rec) => ({ title: rec.name, val: rec, link: `recipes/${rec._id}` })) },
         { label: 'Comments Made', options: memberToView.publicReviews.map((review, index) => ({ title: `Comment ${index + 1}`, val: review.comment, link: null })) },
         { label: 'Ratings Given', options: memberToView.publicReviews.map((review, index) => ({ title: `Review ${index + 1}`, link: null, val: review.rating })) },
-        memberToView.sameFamily && { label: 'Family Membership', options: [{ title: `Member of ${memberToView.familyMemberName}'s Family`, val: memberToView.familyMemberID, link: `family/${memberToView.familyMemberID}` }] }
+        memberToView.sameFamily && { label: 'Family Membership', options: [{ title: `Member of ${memberToView.sameFamily.name}`, val: memberToView.sameFamily, link: `family/${memberToView.sameFamily._id}` }] }
     ] as { label: string, options: GroupItem[] }[];
 
     const allGroups = groupNames.reduce((acc, group) => {

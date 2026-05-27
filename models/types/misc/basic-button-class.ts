@@ -1,3 +1,3 @@
-export const BasicButtonClass = `h-content w-content flex flex-row p-1 justify-evenly items-center hover:bg-gray-100 hover:text-blue-300 text-blue-500 rounded-md text-sm sm:text-base space-x-1 cursor-pointer`;
+export const BasicButtonClass = `h-content w-content flex flex-row p-1 justify-evenly items-center hover:bg-gray-100 hover:text-blue-300 text-blue-500 rounded-md text-sm sm:text-base space-x-1 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2`;
 
-export const BasicButtonDisabledClass = `h-content w-content flex flex-row p-1 justify-evenly items-center text-gray-400 rounded-md text-sm sm:text-base space-x-1 cursor-not-allowed`;
+export const BasicButtonDisabledClass = `h-content w-content flex flex-row p-1 justify-evenly items-center text-gray-400 rounded-md text-sm sm:text-base space-x-1 cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2`;
