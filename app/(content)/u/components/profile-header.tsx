@@ -34,7 +34,7 @@ interface ProfileHeaderProps {
 
 export default function ProfileHeader({ user, familyData, completeness }: ProfileHeaderProps) {
     const router = useRouter();
-    const profileUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/u/${user._id}/view`;
+    const profileUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/view/member/${user._id}`;
     const openSettings = () => router.push('/u/profile?tab=settings');
 
     const getCompletenessColor = () => {

@@ -41,7 +41,7 @@ export default function UserSpaceTemplate({
     primaryActionHref?: string;
 }) {
     const setUserInfo = useUserStore(state => state.setUserInfo);
-    const profileUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/u/${user._id}/view`;
+    const profileUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/view/member/${user._id}`;
     const completion = completeness ?? null;
     const completionColor = completion === null ? 'gray' : completion >= 75 ? 'green' : completion >= 50 ? 'yellow' : 'red';
 

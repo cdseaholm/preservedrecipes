@@ -14,7 +14,7 @@ export default function PostView({ userInfo, post }: { post: IPost, userInfo: IU
         <NavWrapper userInfo={userInfo}>
             <ContentWrapper containedChild={true} paddingNeeded={true}>
                 <div className="flex flex-row justify-between items-center w-full mb-4 px-6">
-                    <button onClick={() => window.history.back()} className="text-sm text-blue-500 hover:underline cursor-pointer">Go Back</button>
+                    <button type="button" onClick={() => window.history.back()} className="text-sm text-blue-500 hover:underline cursor-pointer">Go Back</button>
                     <h2 className="text-2xl font-bold underline">{post.name}</h2>
                 </div>
                 <ListWrapper

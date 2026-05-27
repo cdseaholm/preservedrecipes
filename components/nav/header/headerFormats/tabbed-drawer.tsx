@@ -36,6 +36,7 @@ export function TabbedDrawer({
                 opened={openMenu === 'main'}
                 onClose={() => handleMenuToggle(null)}
                 withCloseButton={true}
+                closeButtonProps={{ 'aria-label': 'Close navigation menu' }}
                 padding={0}
                 w={"100%"}
                 h={"100vh"}
@@ -95,11 +96,13 @@ export function TabbedDrawer({
                 type="button"
                 className={`group w-1/2 cursor-pointer rounded-bl-xl min-h-[50px] flex flex-row items-end justify-center transition-all group-hover:text-mainText/60`}
                 onClick={() => handleMenuToggle('main')}
-                aria-label="Site Navigation"
-                title="Site Navigation"
+                aria-label="Open site navigation"
+                title="Open site navigation"
+                aria-haspopup="dialog"
+                aria-expanded={openMenu === 'main'}
             >
                 <div className="flex flex-col items-end justify-center w-full">
-                    <HiOutlineMenu size={24} className="text-mainText group-hover:text-mainText/70 my-1" />
+                    <HiOutlineMenu size={24} className="text-mainText group-hover:text-mainText/70 my-1" aria-hidden="true" />
                     <span className="text-[10px] mb-1 font-medium text-mainText/80 group-hover:text-mainText/60">
                         Menu
                     </span>

@@ -11,16 +11,18 @@ import DeleteButton from "@/components/buttons/deleteButton"
 import EditButton from "@/components/buttons/edit-button"
 import PageSpecButtonBox from "@/components/buttons/page-spec-button-box/page-spec-button-box"
 import SearchBar from "@/components/misc/searchBox/searchBar"
-import { Checkbox } from "@mantine/core"
+import { Button, Checkbox, Select } from "@mantine/core"
 import Link from "next/link"
 import { BiCheck, BiPencil, BiPlus, BiChevronRight } from "react-icons/bi"
 import { FaRegTrashAlt } from "react-icons/fa"
 import ListWrapper from "@/components/wrappers/list-wrapper"
 import { useState } from "react"
 
+const statusOptions: IFamilyMember["permissionStatus"][] = ["Admin", "Member", "Guest"];
+
 export default function FamilyMembers({ userInfo, family }: { userInfo: IUser, family: IFamily }) {
 
-    const { allCheck, edit, familySearch, famChecked, memberNames, handleFamilyMemberSearch, handleCheckedFam, handleCheckAllFam, handleEdit, handleDelete } = FamilyMemberHooks();
+    const { allCheck, edit, familySearch, famChecked, memberNames, handleFamilyMemberSearch, handleCheckedFam, handleCheckAllFam, handleEdit, handleDelete, handleUpdateMemberStatuses } = FamilyMemberHooks();
 
     // Turn off loading once this component is mounted with data
 
@@ -31,11 +33,20 @@ export default function FamilyMembers({ userInfo, family }: { userInfo: IUser, f
     const adminPermission = userInfo && family ? family.familyMembers.find((mem) => mem.familyMemberEmail === userInfo.email)?.permissionStatus === 'Admin' : false;
     const membersPerPage = 10;
     const [currentPage, setCurrentPage] = useState(1);
+    const [roleDrafts, setRoleDrafts] = useState<Record<string, IFamilyMember["permissionStatus"]>>({});
     const filteredMembers = members
         .map((member, originalIndex) => ({ member, originalIndex }))
         .filter(({ member }) => member.familyMemberName === '' ? member.familyMemberEmail.toLowerCase().includes(familySearch.toLowerCase().trim()) : member.familyMemberName.toLowerCase().includes(familySearch.toLowerCase().trim()));
     const totalPages = Math.max(1, Math.ceil(filteredMembers.length / membersPerPage));
     const visibleMembers = filteredMembers.slice((currentPage - 1) * membersPerPage, currentPage * membersPerPage);
+    const changedRoleMembers = members
+        .filter((member) => roleDrafts[member.familyMemberID] && roleDrafts[member.familyMemberID] !== member.permissionStatus)
+        .map((member) => ({
+            ...member,
+            permissionStatus: roleDrafts[member.familyMemberID],
+        }));
+    const hasRoleDraftChanges = changedRoleMembers.length > 0;
+    const selectedMemberCount = famChecked.filter(Boolean).length;
 
     const handleCreatePass = () => {
         setOpenAddFamMemsModal(true)
@@ -46,14 +57,24 @@ export default function FamilyMembers({ userInfo, family }: { userInfo: IUser, f
             <PageSpecButtonBox
                 leftHandButtons={
                     <>
-                        {edit && <DeleteButton icon={<FaRegTrashAlt />} label={`Delete ${famChecked.filter((check) => check !== false).length}`} onClick={handleDelete} />}
+                        {adminPermission && <CreateButton onClick={handleCreatePass} icon={<BiPlus />} additionString={`Add Family Member`} />}
                     </>
 
                 }
                 rightHandButtons={
                     <>
-                        {adminPermission && <EditButton onClick={handleEdit} icon={edit ? <BiCheck /> : <BiPencil />} label={edit ? 'Done' : 'Edit'} optionsLength={memberNameLength} />}
-                        {adminPermission && <CreateButton onClick={handleCreatePass} icon={<BiPlus />} additionString={`Add Family Member`} />}
+                        {edit && selectedMemberCount > 0 && <DeleteButton icon={<FaRegTrashAlt />} label={`Delete ${selectedMemberCount}`} onClick={handleDelete} />}
+                        {edit && hasRoleDraftChanges && (
+                            <Button
+                                type="button"
+                                size="xs"
+                                variant="light"
+                                onClick={() => handleUpdateMemberStatuses(changedRoleMembers, () => setRoleDrafts({}))}
+                            >
+                                Update
+                            </Button>
+                        )}
+                        {adminPermission && <EditButton onClick={handleEdit} icon={edit ? <BiCheck size={12}/> : <BiPencil size={12}/>} label={edit ? 'Done' : 'Edit'} optionsLength={memberNameLength} extraCss={`${edit ? 'bg-gray-100 text-[12px] px-2' : 'text-[12px] px-2'}`}/>}
                     </>
                 }
                 leftLabel="Selected Family Members"
@@ -67,9 +88,17 @@ export default function FamilyMembers({ userInfo, family }: { userInfo: IUser, f
                 currentPage={currentPage} isPending={false} numberOfPages={totalPages} onPageChange={setCurrentPage} editButtons={undefined}            >
                 <div className={`flex flex-row w-[100%] items-center justify-start space-x-2 ${edit ? 'pl-3' : 'px-4'} text-sm lg:text-md p-2 text-start border-b border-accent/30`}>
                     {edit ? (<Checkbox checked={allCheck} onChange={handleCheckAllFam} style={{ cursor: 'pointer' }} className={`cursor-pointer w-content`} aria-label="Edit checkbox" />) : (null)}
-                    <p className={`w-2/5 truncate font-semibold text-sm sm:text-base`}>Name</p>
-                    <p className={`w-2/5 truncate font-semibold text-sm sm:text-base`}>Email</p>
-                    <p className={`w-1/5 truncate font-semibold text-sm sm:text-base`}>Role</p>
+                    {edit ? (
+                        <>
+                            <p className={`w-2/5 truncate font-semibold text-sm sm:text-base`}>Select All</p>
+                        </>
+                    ) : (
+                        <>
+                            <p className={`w-2/5 truncate font-semibold text-sm sm:text-base`}>Name</p>
+                            <p className={`w-2/5 truncate font-semibold text-sm sm:text-base`}>Email</p>
+                            <p className={`w-1/5 truncate font-semibold text-sm sm:text-base`}>Role</p>
+                        </>
+                    )}
                     {edit ? null : <BiChevronRight height={'auto'} width={'auto'} className="h-fit w-fit text-transparent" size={16} />}
                 </div>
                 {
@@ -81,10 +110,33 @@ export default function FamilyMembers({ userInfo, family }: { userInfo: IUser, f
                                         <Checkbox checked={famChecked[originalIndex]} className="cursor-pointer w-content" aria-label="Edit checkbox" onClick={() => handleCheckedFam(originalIndex)} />
                                         <ul className={`w-2/5 truncate`} title={item.familyMemberName || 'No name'}>{edit ? null : `${index + 1}. `}{item.familyMemberName === '' ? 'No name' : item.familyMemberName}</ul>
                                         <ul className={`w-2/5 truncate`} title={item.familyMemberEmail || 'No email'}>{item.familyMemberEmail === '' ? 'No email' : item.familyMemberEmail}</ul>
-                                        <ul className={`w-1/5 truncate`} title={item.permissionStatus || 'Guest'}>{item.permissionStatus ? item.permissionStatus : 'Guest'}</ul>
+                                        <Select
+                                            aria-label={`${item.familyMemberName || item.familyMemberEmail} role`}
+                                            data={statusOptions}
+                                            value={roleDrafts[item.familyMemberID] ?? item.permissionStatus ?? "Guest"}
+                                            onChange={(value) => {
+                                                if (value) {
+                                                    setRoleDrafts((drafts) => ({
+                                                        ...drafts,
+                                                        [item.familyMemberID]: value as IFamilyMember["permissionStatus"],
+                                                    }));
+                                                }
+                                            }}
+                                            className="w-[130px]"
+                                            size="xs"
+                                        />
+                                        <button
+                                            type="button"
+                                            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-red-500 hover:bg-red-100 hover:text-red-600 cursor-pointer"
+                                            aria-label={`Remove ${item.familyMemberName || item.familyMemberEmail} from family`}
+                                            title="Remove from family"
+                                            onClick={() => handleDelete([item])}
+                                        >
+                                            <FaRegTrashAlt />
+                                        </button>
                                     </div>
                                 ) : (
-                                    <Link href={`/family/${familyID}/members/${item.familyMemberID}`} className={`flex flex-row w-full h-content text-ellipsis text-start items-center cursor-pointer justify-between`} aria-label="Specific item button">
+                                    <Link href={`/view/member/${item.familyMemberID}`} className={`flex flex-row w-full h-content text-ellipsis text-start items-center cursor-pointer justify-between`} aria-label="Specific item button">
                                         <ul className={`w-2/5 truncate`} title={item.familyMemberName || 'No name'}>{edit ? null : `${index + 1}. `}{item.familyMemberName === '' ? 'No name' : item.familyMemberName}</ul>
                                         <ul className={`w-2/5 truncate`} title={item.familyMemberEmail || 'No email'}>{item.familyMemberEmail === '' ? 'No email' : item.familyMemberEmail}</ul>
                                         <ul className={`w-1/5 truncate`} title={item.permissionStatus || 'Guest'}>{item.permissionStatus ? item.permissionStatus : 'Guest'}</ul>
@@ -113,6 +165,6 @@ export default function FamilyMembers({ userInfo, family }: { userInfo: IUser, f
     )
 
     return (
-            renderItem
+        renderItem
     )
 }

@@ -183,7 +183,7 @@ export default function ProfilePage({
                                             window.history.pushState({}, '', '/u/profile?tab=activity');
                                         }}
                                     >
-                                        <IconHistory size={16} />
+                                        <IconHistory size={16} aria-hidden="true" />
                                         Back to activity
                                     </button>
                                 </Card>

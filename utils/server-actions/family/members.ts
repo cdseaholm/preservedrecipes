@@ -4,9 +4,9 @@ import { revalidatePath } from "next/cache";
 import Family from "@/models/family";
 import User from "@/models/user";
 import { IFamilyMember } from "@/models/types/family/familyMember";
-import { getAuthenticatedFamilyContext, getRevalidationPath, hasAdminPrivilege } from "./utils";
+import { getAuthenticatedFamilyContext, getRevalidationPath, hasAdminPrivilege, verifyUserPassword } from "./utils";
 
-export async function RemoveFamilyMembers(familyId: string, memberIds: string[], route: string) {
+export async function RemoveFamilyMembers(familyId: string, memberIds: string[], adminPassword: string, route: string) {
     if (!memberIds?.length) {
         return { success: false, message: "No members selected", members: [] as IFamilyMember[] };
     }
@@ -14,6 +14,7 @@ export async function RemoveFamilyMembers(familyId: string, memberIds: string[],
     const { user, family, member, message } = await getAuthenticatedFamilyContext(familyId);
     if (!user || !family) return { success: false, message, members: [] as IFamilyMember[] };
     if (!hasAdminPrivilege(member)) return { success: false, message: "Admin privileges are required", members: [] as IFamilyMember[] };
+    if (!(await verifyUserPassword(user, adminPassword))) return { success: false, message: "Password is incorrect", members: [] as IFamilyMember[] };
 
     const uniqueMemberIds = Array.from(new Set(memberIds));
     const existingIds = new Set(family.familyMembers.map(familyMember => familyMember.familyMemberID));

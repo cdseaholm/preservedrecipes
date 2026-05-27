@@ -7,7 +7,7 @@ import { IUser } from "@/models/types/personal/user"
 export default function NoFamTab({ userInfo }: { userInfo: IUser }) {
     return (
         <div className="flex flex-col justify-start items-center w-full h-full space-y-3">
-            <button onClick={() => useModalStore.getState().setOpenCreateFamilyModal(true)} aria-label="Create Family Tree">
+            <button type="button" onClick={() => useModalStore.getState().setOpenCreateFamilyModal(true)} aria-label="Create Family Tree">
                 {`Create a family tree`}
             </button>
             <p>

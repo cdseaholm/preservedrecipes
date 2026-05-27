@@ -30,15 +30,15 @@ export default function WelcomeSection() {
             {/* Value Props - Quick Stats */}
             <div className="flex flex-wrap justify-center gap-6 md:gap-8 text-center py-4">
                 <div className="flex items-center gap-2 text-mainText/70">
-                    <FaBook className="text-accent text-xl" />
+                    <FaBook className="text-accent text-xl" aria-hidden="true" />
                     <span className="font-semibold">Unlimited Recipes</span>
                 </div>
                 <div className="flex items-center gap-2 text-mainText/70">
-                    <FaUsers className="text-accent text-xl" />
+                    <FaUsers className="text-accent text-xl" aria-hidden="true" />
                     <span className="font-semibold">Family Sharing</span>
                 </div>
                 <div className="flex items-center gap-2 text-mainText/70">
-                    <FaHeart className="text-accent text-xl" />
+                    <FaHeart className="text-accent text-xl" aria-hidden="true" />
                     <span className="font-semibold">100% Free for Initial Users</span>
                 </div>
             </div>
@@ -52,7 +52,7 @@ export default function WelcomeSection() {
                     aria-label="Get started for free"
                 >
                     <span className="text-lg md:text-xl text-white font-semibold">Get Started Free</span>
-                    <FaArrowRight className="text-white group-hover:translate-x-1 transition-transform" />
+                    <FaArrowRight className="text-white group-hover:translate-x-1 transition-transform" aria-hidden="true" />
                 </button>
                 
                 <button 
