@@ -3,14 +3,17 @@
 'use client';
 
 import { useCommunityStore } from "@/context/communityStore";
+import { ICommunity } from "@/models/types/community/community";
 import { AttemptDeleteCommunity } from "@/utils/apihelpers/delete/delete-community";
 import { Button, Card, Group, Stack, Text, ThemeIcon } from "@mantine/core";
 import { IconEdit, IconLockCog, IconTrash } from "@tabler/icons-react";
 import type { ReactNode } from "react";
 import { toast } from "sonner";
+import CommunityInviteForm from "./community-invite-form";
 
-export default function CommunitySettings({ communityID, handleLoading }: { communityID: string, handleLoading: (loading: boolean) => void }) {
+export default function CommunitySettings({ community, handleLoading }: { community: ICommunity, handleLoading: (loading: boolean) => void }) {
     const setEditCommunity = useCommunityStore(state => state.setEditCommunity);
+    const communityID = community._id;
 
     const Delete = async () => {
         handleLoading(true);
@@ -71,6 +74,8 @@ export default function CommunitySettings({ communityID, handleLoading }: { comm
                     action={<Button type="button" color="red" variant="light" onClick={confirm}>Delete</Button>}
                 />
             </div>
+
+            <CommunityInviteForm community={community} />
         </Stack>
     );
 }

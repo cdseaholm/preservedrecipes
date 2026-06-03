@@ -6,10 +6,10 @@ import { ICommunity } from "@/models/types/community/community";
 import { authOptions } from "@/lib/auth/auth-options";
 import MongoUser from "@/models/user";
 import { IUser } from "@/models/types/personal/user";
-import { canViewCommunity, normalizeCommunityId } from "@/lib/community-utils";
+import { canDiscoverCommunity, normalizeCommunityId } from "@/lib/community-utils";
 import { normalizeEmail } from "@/lib/data-normalization";
 
-export async function GET() {
+export async function GET(req: Request) {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
@@ -36,7 +36,8 @@ export async function GET() {
         }
 
         const userId = normalizeCommunityId(user._id);
-        const viewableCommunities = communities.filter(community => canViewCommunity(community, userId));
+        const search = new URL(req.url).searchParams.get('search');
+        const viewableCommunities = communities.filter(community => canDiscoverCommunity(community, userId, search));
 
         return NextResponse.json({ status: 200, message: 'Success!', communities: viewableCommunities });
     } catch (error) {

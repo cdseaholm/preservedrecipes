@@ -1,6 +1,6 @@
 'use client'
 
-import ContentWrapper from "@/components/wrappers/contentWrapper";
+import { InfoPageShell } from "@/components/layout/page-shells";
 import NavWrapper from "@/components/wrappers/navWrapper";
 import { IUser } from "@/models/types/personal/user";
 import AboutSection from "@/app/(content)/homepage/sections/aboutSection";
@@ -11,9 +11,12 @@ export default function AboutPage({ userInfo }: { userInfo: IUser | null }) {
 
     return (
         <NavWrapper userInfo={userInfo}>
-            <ContentWrapper containedChild={false} paddingNeeded={true}>
+            <InfoPageShell
+                title="About Preserved Recipes"
+                description="A home for the recipes, food stories, and family traditions worth keeping."
+            >
                 <AboutSection />
-            </ContentWrapper>
+            </InfoPageShell>
         </NavWrapper>
     )
 }

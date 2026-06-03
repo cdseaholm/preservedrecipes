@@ -35,7 +35,7 @@ export default function CreateCommunityHooks() {
             ),
             communityPassword: (value, values) => (
                 values.privacyLevel === 'passwordProtected' ?
-                    (value ? (value.length < 6 ? 'Password too short' : null) : 'Password cannot be empty for private communities')
+                    (value ? (value.length < 6 ? 'Password too short' : null) : 'Password cannot be empty for password protected communities')
                     : null
             ),
         }

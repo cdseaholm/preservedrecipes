@@ -18,7 +18,9 @@ export function isInviteExpired(invite: Pick<IInvite, "createdAt">) {
 export function serializeInvite(invite: IInvite) {
   return {
     email: invite.email,
+    inviteType: invite.inviteType || "family",
     familyID: invite.familyID,
+    communityID: invite.communityID || "",
     token: invite.token,
     createdAt: invite.createdAt,
   } as IInvite;

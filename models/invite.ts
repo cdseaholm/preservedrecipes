@@ -9,9 +9,20 @@ export const inviteSchema = new Schema(
             trim: true,
             lowercase: true
         },
+        inviteType: {
+            type: String,
+            enum: ['family', 'community'],
+            default: 'family',
+        },
         familyID: { 
             type: String, 
-            required: true 
+            required: false,
+            default: '',
+        },
+        communityID: {
+            type: String,
+            required: false,
+            default: '',
         },
         token: { 
             type: String, 

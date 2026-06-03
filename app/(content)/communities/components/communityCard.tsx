@@ -36,12 +36,12 @@ export default function CommunityCard({ community, index, userInfo }: { communit
             return;
         }
 
-        if (isMember || community.privacyLevel === 'public') {
+        if (isMember || community.privacyLevel === 'public' || community.privacyLevel === 'hidden') {
             router.push(`/communities/${community._id}`);
             return;
         }
 
-        if (community.privacyLevel === 'restricted' || community.privacyLevel === 'private') {
+        if (community.privacyLevel === 'restricted') {
             setRequestToJoinCommunity({ community, type: 'restricted' });
             return;
         }
@@ -75,15 +75,15 @@ export default function CommunityCard({ community, index, userInfo }: { communit
                 <div className="flex shrink-0 flex-row items-center justify-between gap-3 sm:flex-col sm:items-end">
                     <p className="text-xs sm:text-sm text-mainText/65">{community.communityMemberIDs.length} members</p>
                     <span className="inline-flex items-center gap-1 text-sm text-blue-600">
-                        {isMember || community.privacyLevel === 'public' ? 'Open' : 'Join'}
-                        {isMember || community.privacyLevel === 'public' ? <BiRightArrowAlt size={18} /> : <BiUserPlus size={18} />}
+                        {isMember || community.privacyLevel === 'public' || community.privacyLevel === 'hidden' ? 'Open' : 'Join'}
+                        {isMember || community.privacyLevel === 'public' || community.privacyLevel === 'hidden' ? <BiRightArrowAlt size={18} /> : <BiUserPlus size={18} />}
                     </span>
                 </div>
             </div>
         </article>
     );
 
-    return community.privacyLevel === 'public' || isMember ? (
+    return community.privacyLevel === 'public' || community.privacyLevel === 'hidden' || isMember ? (
         <Link key={index} href={`/communities/${community._id}`} className="mb-3 block w-full">
             {body}
         </Link>

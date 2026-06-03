@@ -25,6 +25,10 @@ export async function GET(
             return NextResponse.json({ status: 402, message, inviteReturned: {} as IInvite, userExists: false });
         }
 
+        if ((invite.inviteType || 'family') !== 'family') {
+            return NextResponse.json({ status: 400, message: 'This invite is available in your profile inbox', inviteReturned: {} as IInvite, userExists: false });
+        }
+
         const userToSeek = normalizeInviteEmail(invite.email);
         const user = await MongoUser.findOne({ email: userToSeek }) as IUser;
 

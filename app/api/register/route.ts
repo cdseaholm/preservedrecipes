@@ -39,6 +39,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ status: 400, message: inviteLookup?.message || "Invalid invite", newUser: {} as IUser });
     }
 
+    if (invite && (invite.inviteType || 'family') !== 'family') {
+      return NextResponse.json({ status: 400, message: "Community invites can be accepted from your profile inbox after registering", newUser: {} as IUser });
+    }
+
     const userFamID = invite !== null ? invite.familyID : '';
 
     if (invite !== null) {

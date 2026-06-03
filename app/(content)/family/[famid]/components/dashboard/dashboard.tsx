@@ -1,15 +1,14 @@
 'use client'
 
 import { IFamily } from "@/models/types/family/family";
+import { DashboardStatsGrid } from "@/components/layout/page-shells";
 import {
     Badge,
     Box,
     Divider,
     Group,
-    SimpleGrid,
     Stack,
     Text,
-    ThemeIcon
 } from "@mantine/core";
 import {
     IconBook2,
@@ -59,32 +58,7 @@ export default function FamilyDashboard({ family }: { family: IFamily }) {
         <Stack gap="lg" style={{ flex: 1, minHeight: 0 }} w="100%">
             <Box>
                 <Text fw={700} mb="md">Overview</Text>
-                <SimpleGrid cols={{ base: 1, xs: 2, md: 4 }} spacing="md">
-                    {stats.map(stat => (
-                        <Box
-                            key={stat.label}
-                            p="md"
-                            className="rounded-md border border-accent/20 bg-secondaryBack/60"
-                        >
-                            <Group justify="space-between" align="flex-start">
-                                <Stack gap={2}>
-                                    <Text size="sm" c="dimmed" fw={500}>
-                                        {stat.label}
-                                    </Text>
-                                    <Text size="2rem" fw={800} c="accent" lh={1}>
-                                        {stat.value}
-                                    </Text>
-                                </Stack>
-                                <ThemeIcon variant="light" color="accent" size="lg" radius="md">
-                                    {stat.icon}
-                                </ThemeIcon>
-                            </Group>
-                            <Text size="sm" c="dimmed" mt="sm">
-                                {stat.description}
-                            </Text>
-                        </Box>
-                    ))}
-                </SimpleGrid>
+                <DashboardStatsGrid stats={stats} />
             </Box>
 
             <Divider />

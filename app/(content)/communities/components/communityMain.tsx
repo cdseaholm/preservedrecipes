@@ -2,6 +2,7 @@
 
 import CommunityCard from "./communityCard";
 import { ChangeEvent, useEffect, useState, useMemo } from "react";
+import { DashboardCard } from "@/components/layout/page-shells";
 import ContentWrapper from "@/components/wrappers/contentWrapper";
 import SearchBar from "@/components/misc/searchBox/searchBar";
 import { BiPlus } from "react-icons/bi";
@@ -66,12 +67,27 @@ export default function CommunityMain({
   //can add filteredAndSorted to return if needed elsewhere
   const { totalPages, currentCommunities, currentCommunityTags } = useMemo(() => {
     let communities = [...storedCommunities];
+    const normalizedSearch = searchText.trim().toLowerCase();
+    const currentUserId = userInfo?._id || '';
+
+    communities = communities.filter(c => {
+      const isMember = !!currentUserId && (
+        c.communityMemberIDs.includes(currentUserId) ||
+        c.adminIDs.includes(currentUserId) ||
+        c.creatorID === currentUserId
+      );
+
+      if (isMember) return true;
+      if (c.privacyLevel === 'private') return false;
+      if (c.privacyLevel !== 'hidden') return true;
+      return normalizedSearch.length > 0 && c.name.trim().toLowerCase() === normalizedSearch;
+    });
 
     // Apply search filter
-    if (searchText.trim()) {
+    if (normalizedSearch) {
       communities = communities.filter(c => 
-        c.name.toLowerCase().includes(searchText.toLowerCase().trim()) ||
-        c.description?.toLowerCase().includes(searchText.toLowerCase().trim())
+        c.name.toLowerCase().includes(normalizedSearch) ||
+        c.description?.toLowerCase().includes(normalizedSearch)
       );
     }
 
@@ -125,7 +141,7 @@ export default function CommunityMain({
       currentCommunities,
       currentCommunityTags
     };
-  }, [storedCommunities, searchText, initialFilter, initialStatus, initialSort, currentPage, itemsPerPage]);
+  }, [storedCommunities, searchText, initialFilter, initialStatus, initialSort, currentPage, itemsPerPage, userInfo?._id]);
 
   const handleTransiton = (url: string) => {
     router.push(url);
@@ -164,57 +180,59 @@ export default function CommunityMain({
   return (
     <NavWrapper userInfo={userInfo}>
       <ContentWrapper containedChild={true} paddingNeeded={true}>
-        <PageSpecButtonBox
-          leftHandButtons={
-            <>
-              <SortCommunities 
-                key="sort" 
-                searchParams={searchParams} 
-                widthQuery={width} 
-                handleTransiton={handleTransiton} 
-              />
-              <CommunityFilter 
-                key="filter" 
-                searchParams={searchParams} 
-                widthQuery={width} 
-                handleTransiton={handleTransiton}
-                tags={currentCommunityTags}
-              />
-            </>
-          }
-          rightHandButtons={
-            userInfo && <button type="button" onClick={handleCreate} className={`h-content w-content flex flex-row p-1 justify-evenly items-center hover:bg-gray-100 hover:text-blue-300 text-blue-500 rounded-md text-sm sm:text-base space-x-1 cursor-pointer`} aria-label="Create Community" title="Create Community">
-              <BiPlus size={20} aria-hidden="true" />
-              <span className="hidden sm:inline">Create Community</span>
-            </button>
-          }
-          leftLabel="Sort-and-Filter"
-          rightLabel="Add"
-        />
+        <DashboardCard>
+          <PageSpecButtonBox
+            leftHandButtons={
+              <>
+                <SortCommunities 
+                  key="sort" 
+                  searchParams={searchParams} 
+                  widthQuery={width} 
+                  handleTransiton={handleTransiton} 
+                />
+                <CommunityFilter 
+                  key="filter" 
+                  searchParams={searchParams} 
+                  widthQuery={width} 
+                  handleTransiton={handleTransiton}
+                  tags={currentCommunityTags}
+                />
+              </>
+            }
+            rightHandButtons={
+              userInfo && <button type="button" onClick={handleCreate} className={`h-content w-content flex flex-row p-1 justify-evenly items-center hover:bg-gray-100 hover:text-blue-300 text-blue-500 rounded-md text-sm sm:text-base space-x-1 cursor-pointer`} aria-label="Create Community" title="Create Community">
+                <BiPlus size={20} aria-hidden="true" />
+                <span className="hidden sm:inline">Create Community</span>
+              </button>
+            }
+            leftLabel="Sort-and-Filter"
+            rightLabel="Add"
+          />
 
-        <div className="mb-4 w-full">
-          <h1 className="text-xl sm:text-2xl font-semibold text-mainText">Communities</h1>
-          <p className="text-sm text-mainText/70">Find groups centered on recipes, food questions, cooking advice, and shared collections.</p>
-        </div>
+          <div className="mb-4 w-full">
+            <h1 className="text-xl sm:text-2xl font-semibold text-mainText">Communities</h1>
+            <p className="text-sm text-mainText/70">Find groups centered on recipes, food questions, cooking advice, and shared collections.</p>
+          </div>
 
-        <ListWrapper 
-          numberOfPages={totalPages}
-          isPending={false}
-          currentPage={currentPage}
-          searchBar={<SearchBar
-            handleSearch={handleSearch}
-            searchString={searchText || 'Search Communities'}
-            index={0} leftSection={null} />} editButtons={undefined}>
-          {currentCommunities && currentCommunities.length > 0 ? (
-            currentCommunities.map((community, index) => (
-              <CommunityCard key={community._id} community={community} index={index} userInfo={userInfo} />
-            ))
-          ) : (
-            <ul className="p-2 text-start pl-7">
-              {searchText ? `No communities found matching "${searchText}"` : 'No communities found'}
-            </ul>
-          )}
-        </ListWrapper>
+          <ListWrapper 
+            numberOfPages={totalPages}
+            isPending={false}
+            currentPage={currentPage}
+            searchBar={<SearchBar
+              handleSearch={handleSearch}
+              searchString={searchText || 'Search Communities'}
+              index={0} leftSection={null} />} editButtons={undefined}>
+            {currentCommunities && currentCommunities.length > 0 ? (
+              currentCommunities.map((community, index) => (
+                <CommunityCard key={community._id} community={community} index={index} userInfo={userInfo} />
+              ))
+            ) : (
+              <ul className="p-2 text-start pl-7">
+                {searchText ? `No communities found matching "${searchText}"` : 'No communities found'}
+              </ul>
+            )}
+          </ListWrapper>
+        </DashboardCard>
       </ContentWrapper>
     </NavWrapper>
   )

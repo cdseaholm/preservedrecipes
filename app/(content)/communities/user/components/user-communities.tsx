@@ -13,6 +13,7 @@ import { BiCheck, BiPencil, BiPlus } from "react-icons/bi";
 import { CiSearch } from "react-icons/ci";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { ICommunity } from "@/models/types/community/community";
+import { DashboardCard } from "@/components/layout/page-shells";
 import ListWrapper from "@/components/wrappers/list-wrapper";
 import ContentWrapper from "@/components/wrappers/contentWrapper";
 
@@ -93,68 +94,70 @@ export default function UserCommunitiesList({ userCommunities }: { userCommuniti
 
     return (
         <ContentWrapper containedChild={true} paddingNeeded={true}>
-            <PageSpecButtonBox
-                leftHandButtons={
-                    edit && (
-                        <DeleteButton 
-                            icon={<FaRegTrashAlt />} 
-                            label={`Delete ${checkedCommunities.size}`} 
-                            onClick={handleDelete} 
-                        />
-                    )
-                }
-                rightHandButtons={
-                    <>
-                        <EditButton 
-                            onClick={handleEdit} 
-                            icon={edit ? <BiCheck /> : <BiPencil />} 
-                            label={edit ? 'Done' : 'Edit'} 
-                            optionsLength={userCommunities?.length || 0} 
-                        />
-                        <CreateButton 
-                            onClick={handleCreate} 
-                            icon={<BiPlus />} 
-                            additionString={'Community'} 
-                        />
-                        <JoinLinkButton 
-                            href="/communities" 
-                            icon={<CiSearch />} 
-                            label="Join" 
-                        />
-                    </>
-                }
-                leftLabel="Manage Communities"
-                rightLabel="Community Actions"
-            />
-            <ListWrapper 
-                searchBar={<SearchBar
-                    handleSearch={handleSearch}
-                    searchString={communitySearch || 'Search your communities'}
-                    index={3} leftSection={null} />}
-                numberOfPages={totalPages}
-                isPending={false}
-                currentPage={currentPage} onPageChange={setCurrentPage} editButtons={undefined}            >
-                {visibleCommunities.length > 0 ? (
-                    visibleCommunities.map((community, index) => (
-                        <InSearchItemButton 
-                            key={community._id}
-                            item={community.name}
-                            handleChecked={() => handleToggleCommunity(community._id)}
-                            edit={edit}
-                            checked={checkedCommunities.has(community._id)}
-                            handleSeeItem={() => handleSeeItem(community)}
-                        >
-                            <ul className="space-x-2 cursor-pointer">
-                                {index + 1}. {community.name}
-                            </ul>
-                        </InSearchItemButton>
-                    ))
-                ) : (
-                    <ul className="p-2 text-start pl-7">
-                        {communitySearch ? 'No communities found' : 'Join a community to see it here'}
-                    </ul>
-                )}
-            </ListWrapper>
+            <DashboardCard>
+                <PageSpecButtonBox
+                    leftHandButtons={
+                        edit && (
+                            <DeleteButton 
+                                icon={<FaRegTrashAlt />} 
+                                label={`Delete ${checkedCommunities.size}`} 
+                                onClick={handleDelete} 
+                            />
+                        )
+                    }
+                    rightHandButtons={
+                        <>
+                            <EditButton 
+                                onClick={handleEdit} 
+                                icon={edit ? <BiCheck /> : <BiPencil />} 
+                                label={edit ? 'Done' : 'Edit'} 
+                                optionsLength={userCommunities?.length || 0} 
+                            />
+                            <CreateButton 
+                                onClick={handleCreate} 
+                                icon={<BiPlus />} 
+                                additionString={'Community'} 
+                            />
+                            <JoinLinkButton 
+                                href="/communities" 
+                                icon={<CiSearch />} 
+                                label="Join" 
+                            />
+                        </>
+                    }
+                    leftLabel="Manage Communities"
+                    rightLabel="Community Actions"
+                />
+                <ListWrapper 
+                    searchBar={<SearchBar
+                        handleSearch={handleSearch}
+                        searchString={communitySearch || 'Search your communities'}
+                        index={3} leftSection={null} />}
+                    numberOfPages={totalPages}
+                    isPending={false}
+                    currentPage={currentPage} onPageChange={setCurrentPage} editButtons={undefined}            >
+                    {visibleCommunities.length > 0 ? (
+                        visibleCommunities.map((community, index) => (
+                            <InSearchItemButton 
+                                key={community._id}
+                                item={community.name}
+                                handleChecked={() => handleToggleCommunity(community._id)}
+                                edit={edit}
+                                checked={checkedCommunities.has(community._id)}
+                                handleSeeItem={() => handleSeeItem(community)}
+                            >
+                                <ul className="space-x-2 cursor-pointer">
+                                    {index + 1}. {community.name}
+                                </ul>
+                            </InSearchItemButton>
+                        ))
+                    ) : (
+                        <ul className="p-2 text-start pl-7">
+                            {communitySearch ? 'No communities found' : 'Join a community to see it here'}
+                        </ul>
+                    )}
+                </ListWrapper>
+            </DashboardCard>
         </ContentWrapper>
     );
 }

@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
 import Community from "@/models/community";
 import { ICommunity } from "@/models/types/community/community";
+import { hash } from "bcrypt-ts";
 
 export async function PUT(req: NextRequest) {
 
@@ -26,11 +27,28 @@ export async function PUT(req: NextRequest) {
 
         const safeUpdates = sanitizeCommunityPayload(item);
 
+        if (safeUpdates.privacyLevel === 'passwordProtected') {
+            if (!safeUpdates.communityPassword && !existing.communityPassword) {
+                return NextResponse.json({ status: 400, message: 'Password protected communities need a password' });
+            }
+
+            if (safeUpdates.communityPassword && safeUpdates.communityPassword !== existing.communityPassword) {
+                if (safeUpdates.communityPassword.length < 6) {
+                    return NextResponse.json({ status: 400, message: 'Password protected communities need a password' });
+                }
+                safeUpdates.communityPassword = await hash(safeUpdates.communityPassword, 10);
+            } else {
+                safeUpdates.communityPassword = existing.communityPassword || '';
+            }
+        } else {
+            safeUpdates.communityPassword = '';
+        }
+
         await Community.updateOne({ _id: new ObjectId(item._id) }, { $set: safeUpdates });
 
         return NextResponse.json({ status: 200, message: 'Success!' });
 
     } catch (error: any) {
-        return NextResponse.json({ status: 500, message: 'Error creating recipe' });
+        return NextResponse.json({ status: 500, message: 'Error editing community' });
     }
 }

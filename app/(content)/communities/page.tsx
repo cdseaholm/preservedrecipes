@@ -8,6 +8,7 @@ import { serializeDoc } from '@/utils/data/seralize';
 import { Metadata } from 'next';
 import { getSessionUser } from '@/lib/data/user';
 import { createPageMetadata } from '@/lib/metadata';
+import { canDiscoverCommunity } from '@/lib/community-utils';
 
 export const metadata: Metadata = createPageMetadata({
   title: "Communities",
@@ -38,19 +39,24 @@ export default async function Page(props: { searchParams: Promise<{ page?: strin
       Community.find({}).lean(),
     ]);
     const allCommunities = allCommunitiesDocs.map(doc => serializeDoc<ICommunity>(doc));
-    const nonHiddenCommunities = allCommunities.filter(community => community.privacyLevel !== 'hidden');
 
     let userCommunities = [] as ICommunity[];
     if (user) {
       userCommunities = allCommunities.filter(community =>
-        community.communityMemberIDs.includes(user._id)
+        community.communityMemberIDs.includes(user._id) ||
+        community.adminIDs.includes(user._id) ||
+        community.creatorID === user._id
       );
     }
+
+    const discoverableCommunities = allCommunities.filter(community =>
+      canDiscoverCommunity(community, user?._id, searchQuery)
+    );
 
     return (
       <CommunityMain
         userInfo={user}
-        allCommunities={nonHiddenCommunities}
+        allCommunities={discoverableCommunities}
         userCommunities={userCommunities}
         itemsPerPage={itemsPerPage}
         currentPage={currentPage}

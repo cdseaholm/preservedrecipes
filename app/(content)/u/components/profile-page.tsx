@@ -8,11 +8,12 @@ import { IRecipe } from "@/models/types/recipes/recipe";
 import { IInquiry } from "@/models/types/misc/inquiry";
 import ContentWrapper from "@/components/wrappers/contentWrapper";
 import NavWrapper from "@/components/wrappers/navWrapper";
+import { DashboardCard } from "@/components/layout/page-shells";
 import { ICommunity } from "@/models/types/community/community";
 import ProfileStats from "./profile-stats";
 import RecentActivity from "./recent-activity";
 import HistoryTabContent from "./accountHistory";
-import ProfileInbox, { ProfileFamilyInvite } from "./profile-inbox";
+import ProfileInbox, { ProfileCommunityInvite, ProfileFamilyInvite } from "./profile-inbox";
 import SettingsTab from "./settings-page";
 import UserSpaceTemplate from "./user-space-template";
 import UserSpaceTabs, { UserSpaceTab } from "./user-space-tabs";
@@ -45,6 +46,7 @@ interface ProfilePageProps {
     favoriteRecipes: IRecipe[];
     inquiries: IInquiry[];
     familyInvites: ProfileFamilyInvite[];
+    communityInvites: ProfileCommunityInvite[];
     userIsInquiryAdmin: boolean;
     communitiesCreated: ICommunity[];
     communitiesJoined: ICommunity[];
@@ -57,6 +59,7 @@ export default function ProfilePage({
     recentRecipes,
     inquiries,
     familyInvites,
+    communityInvites,
     userIsInquiryAdmin,
     communitiesCreated,
     communitiesJoined
@@ -79,7 +82,7 @@ export default function ProfilePage({
     const storedInquiries = useUserStore(state => state.inquiries);
     const inquiriesForBadge = storedInquiries.length > 0 ? storedInquiries : inquiries;
     const openInquiryCount = inquiriesForBadge.filter(inquiry => !inquiry.handled).length;
-    const inboxCount = openInquiryCount + familyInvites.length;
+    const inboxCount = openInquiryCount + familyInvites.length + communityInvites.length;
     const timeBeingMember = user.createdAt
         ? Math.floor((new Date().getTime() - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24))
         : 0;
@@ -124,19 +127,7 @@ export default function ProfilePage({
             <ContentWrapper containedChild={true} paddingNeeded={true}>
                 <UserSpaceTemplate user={user} familyData={familyData} completeness={completeness} />
                 {/* Tabs Section - Takes remaining space */}
-                <Card
-                    shadow="sm"
-                    padding="md"
-                    radius="md"
-                    w={'100%'}
-                    withBorder
-                    style={{
-                        flex: 1,
-                        minHeight: '0',
-                        display: 'flex',
-                        flexDirection: 'column'
-                    }}
-                >
+                <DashboardCard>
                     <Tabs
                         value={activeTab}
                         onChange={(value) => setActiveTab((value || 'activity') as ProfilePanel)}
@@ -199,6 +190,7 @@ export default function ProfilePage({
                             <Tabs.Panel value="inbox">
                                 <ProfileInbox
                                     familyInvites={familyInvites}
+                                    communityInvites={communityInvites}
                                     initialInquiries={inquiries}
                                     user={user}
                                     isAdmin={userIsInquiryAdmin}
@@ -210,7 +202,7 @@ export default function ProfilePage({
                             </Tabs.Panel>
                         </Box>
                     </Tabs>
-                </Card>
+                </DashboardCard>
             </ContentWrapper>
         </NavWrapper>
     );

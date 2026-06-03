@@ -1,6 +1,6 @@
 'use client'
 
-import ContentWrapper from "@/components/wrappers/contentWrapper";
+import { InfoPageShell, infoPaperClass } from "@/components/layout/page-shells";
 
 export default function TosPage() {
 
@@ -76,17 +76,14 @@ export default function TosPage() {
     //functions
 
     return (
-        <ContentWrapper containedChild={false} paddingNeeded={true}>
-            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-center text-accent mb-8">
-                {'Terms of Service for Preserved Recipes'}
-            </h2>
-            <h3 className="text-base md:text-lg font-medium text-center text-mainText/80 mb-4">
-                {`Effective Date: ${new Date().toLocaleDateString()}`}
-            </h3>
-            <div className="max-w-5xl mx-auto bg-altBack/80 backdrop-blur-md rounded-2xl shadow-2xl text-lg md:text-xl lg:text-2xl leading-relaxed px-6 py-10 md:px-12 md:py-14 m-4 text-center font-light relative overflow-hidden before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-br before:from-[#F8E6D3]/30 before:via-transparent before:to-[#E85D3A]/5 before:opacity-60 before:pointer-events-none flex flex-col justify-start items-start space-y-6">
+        <InfoPageShell
+            title="Terms of Service"
+            description={`Effective Date: ${new Date().toLocaleDateString()}`}
+        >
+            <div className={`${infoPaperClass} flex flex-col justify-start items-start space-y-6`}>
                 {termsOfServiceItems}
             </div>
-        </ContentWrapper>
+        </InfoPageShell>
 
     )
 };

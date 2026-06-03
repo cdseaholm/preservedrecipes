@@ -1,6 +1,5 @@
 import { Metadata } from "next";
 
-import ContentWrapper from "@/components/wrappers/contentWrapper";
 import NavWrapper from "@/components/wrappers/navWrapper";
 import ContactPage from "./components/contact-page";
 import { getSessionUser } from "@/lib/data/user";
@@ -20,9 +19,7 @@ export default async function Page() {
 
     return (
         <NavWrapper userInfo={userInfo}>
-            <ContentWrapper containedChild={false} paddingNeeded={true}>
-                <ContactPage />
-            </ContentWrapper>
+            <ContactPage />
         </NavWrapper>
     );
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import ContentWrapper from "@/components/wrappers/contentWrapper";
+import { InfoPageShell, infoPaperClass } from "@/components/layout/page-shells";
 import { useModalStore } from "@/context/modalStore"
 
 export default function FeaturesPage() {
@@ -23,16 +23,18 @@ export default function FeaturesPage() {
     });
 
     return (
-        <ContentWrapper containedChild={false} paddingNeeded={true}>
-            <p className="flex flex-row justify-center items-center bg-altBack/80 w-full h-content p-4 pb-8 text-base lg:text-lg">
-                Have an idea you would like to suggest? - <span>
-                    <button type="button" className="text-blue-700 hover:text-blue-300 hover:underline ml-2 cursor-pointer" onClick={() => setOpenInquiryModal(true)} aria-label="Submit Suggestions">Submit a suggestion here</button>
-                </span>
-            </p>
-            <h2 className="text-xl md:text-2xl underline text-semibold pt-4">Current upcoming updates:</h2>
-            <ul className="flex flex-col items-center justify-center w-11/12 xl:h-2/3 h-full sm:h-4/5 xl:px-12 max-sm:m-4 xl:py-32 xl:m-5 m-2 p-8 bg-cardBack relative overflow-hidden rounded-md divide-y divide-accent/50">
+        <InfoPageShell
+            title="Upcoming Features"
+            description="A running look at what may come next for Preserved Recipes."
+            actions={(
+                <button type="button" className="text-blue-700 hover:text-blue-300 hover:underline cursor-pointer" onClick={() => setOpenInquiryModal(true)} aria-label="Submit Suggestions">
+                    Submit a suggestion
+                </button>
+            )}
+        >
+            <ul className={`${infoPaperClass} flex flex-col items-center justify-center divide-y divide-accent/50`}>
                 {upcomingItems}
             </ul>
-        </ContentWrapper>
+        </InfoPageShell>
     )
 }

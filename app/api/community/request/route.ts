@@ -19,8 +19,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ status: 404, message: 'Community not found' });
     }
 
-    if (!['restricted', 'private'].includes(community.privacyLevel)) {
-      return NextResponse.json({ status: 400, message: 'This community does not use admin requests' });
+    if (community.privacyLevel !== 'restricted') {
+      return NextResponse.json({ status: 400, message: community.privacyLevel === 'private' ? 'Private communities are invite only' : 'This community does not use admin requests' });
     }
 
     const userId = user._id.toString();
@@ -71,12 +71,23 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ status: 404, message: 'Request not found' });
     }
 
+    if (request.status !== 'pending') {
+      return NextResponse.json({ status: 409, message: 'This request has already been reviewed' });
+    }
+
     const community = await getCommunityById(request.requestFor.id) as ICommunity | null;
     if (!community || !isCommunityAdmin(community, user._id.toString())) {
       return NextResponse.json({ status: 403, message: 'Admin privileges required' });
     }
 
-    await Request.updateOne({ _id: requestID }, { status: action });
+    if (community.privacyLevel !== 'restricted') {
+      return NextResponse.json({ status: 400, message: 'Only restricted communities can approve join requests' });
+    }
+
+    const updateResult = await Request.updateOne({ _id: requestID, status: 'pending' }, { status: action });
+    if (updateResult.modifiedCount <= 0) {
+      return NextResponse.json({ status: 409, message: 'This request has already been reviewed' });
+    }
 
     if (action === 'approved') {
       await Promise.all([

@@ -1,6 +1,7 @@
 'use client'
 
 import ContentWrapper from "@/components/wrappers/contentWrapper";
+import { DashboardCard } from "@/components/layout/page-shells";
 import NavWrapper from "@/components/wrappers/navWrapper";
 import { IUser } from "@/models/types/personal/user";
 import { IRecipe } from "@/models/types/recipes/recipe";
@@ -63,7 +64,7 @@ export default function RecipeDetail({ recipe, currentUser, creatorName }: Recip
             <NavWrapper userInfo={currentUser}>
                 <ContentWrapper containedChild paddingNeeded>
                     <LoadingOverlay visible={loading} />
-                    <section className="flex w-full max-w-7xl flex-col items-center justify-start gap-4 rounded-md border border-accent/30 bg-mainContent p-3 min-h-[75dvh] sm:p-5">
+                    <DashboardCard className="min-h-[75dvh] gap-4">
                         <div className="flex w-full flex-row items-stretch justify-between gap-3">
                             <button
                                 type="button"
@@ -192,7 +193,7 @@ export default function RecipeDetail({ recipe, currentUser, creatorName }: Recip
                                 </Tabs.Panel>
                             </ListWrapper>
                         </Tabs>
-                    </section>
+                    </DashboardCard>
                 </ContentWrapper>
             </NavWrapper>
         </>

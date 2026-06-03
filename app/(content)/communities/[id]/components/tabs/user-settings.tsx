@@ -43,13 +43,13 @@ export default function UserSettingsTab({ isAdmin, community, userInfo }: { isAd
                                 ? 'Admins can review requests and adjust community settings.'
                                 : isMember
                                     ? 'You can post recipe discussions and share non-private recipes here.'
-                                    : 'Join this public community before posting or sharing recipes.'}
+                                : 'Join this community before posting or sharing recipes.'}
                         </Text>
                     </Stack>
                 </Group>
 
                 <Group gap="xs">
-                    {!isMember && community.privacyLevel === 'public' && (
+                    {!isMember && (community.privacyLevel === 'public' || community.privacyLevel === 'hidden') && (
                         <Button onClick={joinPublic} type="button" leftSection={<IconLogin2 size={16} />}>
                             Join Community
                         </Button>

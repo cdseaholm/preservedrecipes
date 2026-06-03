@@ -1,13 +1,13 @@
 'use client'
 
 import { useUserStore } from "@/context/userStore";
+import { DashboardCard } from "@/components/layout/page-shells";
 import { IFamily } from "@/models/types/family/family";
 import { IUser } from "@/models/types/personal/user";
 import {
     Avatar,
     Badge,
     Button,
-    Card,
     CopyButton,
     Group,
     Progress,
@@ -51,7 +51,7 @@ export default function UserSpaceTemplate({
 
     return (
         <div className="flex w-full flex-col items-center justify-start">
-            <Card shadow="md" padding="md" radius="md" withBorder w="100%" className="flex flex-1 flex-col">
+            <DashboardCard>
                 <Stack gap="md" style={{ flex: 1, minHeight: 0 }} w="100%">
                     <Group justify="space-between" align="flex-start" gap="md" wrap="wrap">
                         <Group gap="md" align="flex-start" className="min-w-0">
@@ -159,7 +159,7 @@ export default function UserSpaceTemplate({
                         </CopyButton>
                     </Group>
                 </Stack>
-            </Card>
+            </DashboardCard>
         </div>
     );
 }

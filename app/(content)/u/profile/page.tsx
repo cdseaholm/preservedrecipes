@@ -90,7 +90,9 @@ export default async function Page() {
         const activeInvites = invitesDoc
             .map(doc => serializeDoc<IInvite>(doc))
             .filter(invite => !isInviteExpired(invite));
-        const inviteFamilyIds = Array.from(new Set(activeInvites.map(invite => invite.familyID)));
+        const familyActiveInvites = activeInvites.filter(invite => (invite.inviteType || 'family') === 'family');
+        const communityActiveInvites = activeInvites.filter(invite => invite.inviteType === 'community');
+        const inviteFamilyIds = Array.from(new Set(familyActiveInvites.map(invite => invite.familyID).filter(Boolean)));
         const inviteFamiliesDoc = inviteFamilyIds.length > 0
             ? await Family.find({ _id: { $in: inviteFamilyIds } }).select('name').lean()
             : [];
@@ -99,9 +101,24 @@ export default async function Page() {
                 .map(doc => serializeDoc<Pick<IFamily, '_id' | 'name'>>(doc))
                 .map(family => [family._id.toString(), family.name])
         );
-        const familyInvites = activeInvites.map(invite => ({
+        const familyInvites = familyActiveInvites.map(invite => ({
             ...invite,
             familyName: inviteFamilyNames.get(invite.familyID) || 'Family',
+        }));
+        const inviteCommunityIds = Array.from(new Set(communityActiveInvites.map(invite => invite.communityID).filter(Boolean)));
+        const inviteCommunitiesDoc = inviteCommunityIds.length > 0
+            ? await Community.find({ _id: { $in: inviteCommunityIds } }).select('name privacyLevel').lean()
+            : [];
+        const inviteCommunityNames = new Map(
+            inviteCommunitiesDoc
+                .map(doc => serializeDoc<Pick<ICommunity, '_id' | 'name'>>(doc))
+                .map(community => [community._id.toString(), community.name])
+        );
+        const communityInvites = communityActiveInvites.map(invite => ({
+            ...invite,
+            inviteType: 'community' as const,
+            communityID: invite.communityID || '',
+            communityName: inviteCommunityNames.get(invite.communityID || '') || 'Community',
         }));
         const communitiesCreated = communitiesCreatedDoc.map(doc => serializeDoc<ICommunity>(doc));
         const communitiesJoined = communitiesJoinedDoc.map(doc => serializeDoc<ICommunity>(doc));
@@ -115,6 +132,7 @@ export default async function Page() {
                 favoriteRecipes={favoriteRecipes}
                 inquiries={inquiries}
                 familyInvites={familyInvites}
+                communityInvites={communityInvites}
                 userIsInquiryAdmin={userIsInquiryAdmin}
                 communitiesCreated={communitiesCreated}
                 communitiesJoined={communitiesJoined}

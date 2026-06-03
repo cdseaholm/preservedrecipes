@@ -6,6 +6,7 @@ import { IUser } from "@/models/types/personal/user";
 import { IIngredient } from "@/models/types/recipes/ingredient";
 import NavWrapper from "@/components/wrappers/navWrapper";
 import ContentWrapper from "@/components/wrappers/contentWrapper";
+import { DashboardCard } from "@/components/layout/page-shells";
 import ListWrapper from "@/components/wrappers/list-wrapper";
 import InSearchItemButton from "@/components/buttons/inSearchItemButton";
 import DeleteButton from "@/components/buttons/deleteButton";
@@ -18,7 +19,7 @@ import MenuPanelHooks from "@/components/hooks/menu/menu-panel-hooks";
 import dynamic from "next/dynamic";
 import FilterAndSortDetailsRow from "@/components/templates/filter-sort-details-row";
 import CardTemplate from "@/components/templates/card-template";
-import { Button, Card, Checkbox } from "@mantine/core";
+import { Button, Checkbox } from "@mantine/core";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useStateStore } from "@/context/stateStore";
@@ -92,19 +93,7 @@ export default function RecipePage({
             >
                 <ContentWrapper containedChild paddingNeeded>
                     <UserSpaceTemplate user={userInfo} primaryActionLabel="View Profile" primaryActionHref="/u/profile" />
-                    <Card
-                        shadow="sm"
-                        padding="md"
-                        radius="md"
-                        w={'100%'}
-                        withBorder
-                        style={{
-                            flex: 1,
-                            minHeight: '0',
-                            display: 'flex',
-                            flexDirection: 'column'
-                        }}
-                    >
+                    <DashboardCard>
                         <FilterAndSortDetailsRow
                             filterLabel={filter}
                             sortLabel={sort}
@@ -191,7 +180,7 @@ export default function RecipePage({
                                 </div>
                             )}
                         </ListWrapper>
-                    </Card>
+                    </DashboardCard>
                 </ContentWrapper>
             </NavWrapper >
 

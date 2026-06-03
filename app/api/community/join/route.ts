@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ status: 404, message: 'Community not found' });
     }
 
-    if (community.privacyLevel !== 'public') {
+    if (!['public', 'hidden'].includes(community.privacyLevel)) {
       return NextResponse.json({ status: 403, message: 'This community requires a request, password, or invite' });
     }
 

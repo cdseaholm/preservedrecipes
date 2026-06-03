@@ -37,6 +37,10 @@ export async function PUT(req: NextRequest) {
             return NextResponse.json({ status: 403, message: 'This community is not password protected' });
         }
 
+        if (!community.communityPassword) {
+            return NextResponse.json({ status: 500, message: 'Community password is not configured' });
+        }
+
         const userId = user._id.toString();
 
         if (isCommunityMember(community, userId)) {
@@ -49,13 +53,15 @@ export async function PUT(req: NextRequest) {
             return NextResponse.json({ status: 403, message: 'Incorrect password' });
         }
 
-        await MongoUser.updateOne({ _id: userId }, { $addToSet: { communityIDs: community._id.toString() } });
-        await Community.updateOne({ _id: community._id }, { $addToSet: { communityMemberIDs: userId } });
+        await Promise.all([
+            MongoUser.updateOne({ _id: userId }, { $addToSet: { communityIDs: community._id.toString() } }),
+            Community.updateOne({ _id: community._id }, { $addToSet: { communityMemberIDs: userId } }),
+        ]);
 
         return NextResponse.json({ status: 200, message: 'Success!' });
 
     } catch (error: any) {
-        console.error('Error creating community:', error);
-        return NextResponse.json({ status: 500, message: 'Error creating community' });
+        console.error('Error joining password protected community:', error);
+        return NextResponse.json({ status: 500, message: 'Error joining community' });
     }
 }

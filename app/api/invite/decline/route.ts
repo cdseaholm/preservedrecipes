@@ -46,6 +46,10 @@ export async function POST(req: NextRequest) {
             return inviteResponse({ status: 404, message: 'Invite not found' });
         }
 
+        if ((invite.inviteType || 'family') !== 'family') {
+            return inviteResponse({ status: 400, message: 'This is not a family invite' });
+        }
+
         if (normalizeInviteEmail(invite.email) !== email) {
             return inviteResponse({ status: 403, message: 'Sign in as the invited user to decline this invite' });
         }

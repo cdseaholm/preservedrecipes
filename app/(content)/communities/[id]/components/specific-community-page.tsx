@@ -1,6 +1,7 @@
 'use client'
 
 import ContentWrapper from "@/components/wrappers/contentWrapper";
+import { DashboardCard } from "@/components/layout/page-shells";
 import NavWrapper from "@/components/wrappers/navWrapper";
 import { useCommunityStore } from "@/context/communityStore";
 import { useStateStore } from "@/context/stateStore";
@@ -14,7 +15,6 @@ import {
     Badge,
     Box,
     Button,
-    Card,
     Container,
     Group,
     Stack,
@@ -130,7 +130,7 @@ export default function SpecificCommunityPage({
             <ContentWrapper containedChild={true} paddingNeeded={true}>
                 <Container size="xl" px="sm" w="100%">
                     <Stack gap="lg">
-                        <Card withBorder radius="md" padding="lg" className="bg-secondaryBack">
+                        <DashboardCard>
                             <Stack gap="md">
                                 <Group justify="space-between" align="flex-start" gap="md">
                                     <Stack gap="sm" className="min-w-0">
@@ -183,9 +183,9 @@ export default function SpecificCommunityPage({
                                     </Stack>
                                 </Group>
                             </Stack>
-                        </Card>
+                        </DashboardCard>
 
-                        <Card withBorder radius="md" padding="lg" className="bg-cardBack">
+                        <DashboardCard>
                             <Tabs value={activeTab} onChange={handleTabChange} variant="pills" radius="md">
                                 <Tabs.List grow>
                                     <Tabs.Tab
@@ -236,12 +236,12 @@ export default function SpecificCommunityPage({
                                     </Tabs.Panel>
                                     {userIsAdmin && (
                                         <Tabs.Panel value="community-settings">
-                                            <CommunitySettings communityID={displayCommunity._id} handleLoading={handleLoading} />
+                                            <CommunitySettings community={displayCommunity} handleLoading={handleLoading} />
                                         </Tabs.Panel>
                                     )}
                                 </Box>
                             </Tabs>
-                        </Card>
+                        </DashboardCard>
                     </Stack>
                 </Container>
             </ContentWrapper>

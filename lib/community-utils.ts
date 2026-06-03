@@ -38,8 +38,17 @@ export function isCommunityMember(community: Pick<ICommunity, 'adminIDs' | 'crea
 }
 
 export function canViewCommunity(community: ICommunity, userId?: string) {
-  if (community.privacyLevel === 'public') return true;
+  if (community.privacyLevel === 'public' || community.privacyLevel === 'hidden') return true;
   return !!userId && isCommunityMember(community, userId);
+}
+
+export function canDiscoverCommunity(community: ICommunity, userId?: string, search?: string | null) {
+  if (userId && isCommunityMember(community, userId)) return true;
+  if (community.privacyLevel === 'private') return false;
+  if (community.privacyLevel !== 'hidden') return true;
+
+  const normalizedSearch = normalizeCommunityText(search, 80).toLowerCase();
+  return normalizedSearch.length > 0 && community.name.trim().toLowerCase() === normalizedSearch;
 }
 
 export function sanitizeCommunityPayload(community: Partial<ICommunity>) {
@@ -54,7 +63,9 @@ export function sanitizeCommunityPayload(community: Partial<ICommunity>) {
     tags: Array.isArray(community.tags)
       ? Array.from(new Set(community.tags.map(tag => normalizeCommunityText(tag, 32)).filter(Boolean))).slice(0, 8)
       : [],
-    communityPassword: community.communityPassword || '',
+    communityPassword: typeof community.communityPassword === 'string'
+      ? community.communityPassword.slice(0, 128)
+      : '',
   };
 }
 

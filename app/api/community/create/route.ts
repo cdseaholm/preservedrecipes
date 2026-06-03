@@ -4,6 +4,7 @@ import Community from "@/models/community";
 import { ICommunity } from "@/models/types/community/community";
 import MongoUser from "@/models/user";
 import { NextRequest, NextResponse } from "next/server";
+import { hash } from "bcrypt-ts";
 
 export async function POST(req: NextRequest) {
 
@@ -19,9 +20,21 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ status: 400, message: 'Invalid community data', communityReturned: {} as ICommunity });
         }
 
-        if (community.privacyLevel === 'passwordProtected' && !community.communityPassword) {
+        const existingCommunity = await Community.findOne({
+            name: { $regex: `^${community.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, $options: 'i' },
+        });
+
+        if (existingCommunity) {
+            return NextResponse.json({ status: 409, message: 'Community name already exists', communityReturned: {} as ICommunity });
+        }
+
+        if (community.privacyLevel === 'passwordProtected' && community.communityPassword.length < 6) {
             return NextResponse.json({ status: 400, message: 'Password protected communities need a password', communityReturned: {} as ICommunity });
         }
+
+        const communityPassword = community.privacyLevel === 'passwordProtected'
+            ? await hash(community.communityPassword, 10)
+            : '';
 
         const userId = user._id.toString();
 
@@ -31,6 +44,7 @@ export async function POST(req: NextRequest) {
 
         const communityToAdd = {
             ...community,
+            communityPassword,
             adminIDs: [userId],
             communityMemberIDs: [userId],
             creatorID: userId,

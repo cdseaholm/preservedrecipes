@@ -47,6 +47,10 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ status: 404, message, returnedMembers: [] as IFamilyMember[] });
         }
 
+        if ((invite.inviteType || 'family') !== 'family') {
+            return NextResponse.json({ status: 400, message: 'This is not a family invite', returnedMembers: [] as IFamilyMember[] });
+        }
+
         const userSesh = session?.user as User;
         const email = normalizeInviteEmail(userSesh?.email);
         if (!email) {

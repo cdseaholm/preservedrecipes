@@ -76,8 +76,12 @@ export default async function Page({ params }: CommunityMembersPageParams) {
         const userIsAdmin = isCommunityAdmin(community, userInfo._id);
         const requesters = [] as IRequesterInfo[];
 
-        if (userIsAdmin && community.privacyLevel !== 'public' && community.requestIDs && community.requestIDs.length > 0) {
-            const requestDoc = await Request.find({ requestFor: 'community'}).lean();
+        if (userIsAdmin && community.privacyLevel === 'restricted' && community.requestIDs && community.requestIDs.length > 0) {
+            const requestDoc = await Request.find({
+                _id: { $in: community.requestIDs },
+                'requestFor.type': 'community',
+                status: 'pending',
+            }).lean();
             const serializedRequests = requestDoc.map(serializeDoc<IRequest>);
             const filteredRequests = serializedRequests.filter(req => community.requestIDs.includes(req._id));
             if (filteredRequests && filteredRequests.length > 0) {

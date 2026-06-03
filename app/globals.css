@@ -7,10 +7,12 @@
   --color-foreground: var(--foreground);
   --color-mainBack: var(--mainBack);
   --color-cardBack: var(--cardBack);
+  --color-mainContent: var(--cardBack);
   --color-accent: var(--accent);
   --color-accentMuted: var(--accentMuted);
   --color-highlight: var(--highlight);
   --color-altBack: var(--altBack);
+  --color-secondaryBack: var(--secondary);
   --color-mainText: var(--mainText);
   --color-lightText: var(--lightText);
   --color-linkText: var(--linkText);

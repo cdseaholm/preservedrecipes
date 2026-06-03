@@ -2,7 +2,6 @@ import { useDataStore } from "@/context/dataStore";
 import { useUserStore } from "@/context/userStore";
 import { ICommunity } from "@/models/types/community/community";
 import { IUser } from "@/models/types/personal/user";
-import { SaltAndHashPassword } from "@/utils/userHelpers/saltAndHash";
 import { readApiResponse } from "../api-response";
 
 
@@ -23,12 +22,11 @@ export async function AttemptCreateCommunity({ communityToAdd }: { communityToAd
         return { status: false, message: 'Password protected communities must have a password' };
     }
 
-    const saltedPassword = communityToAdd.privacyLevel === 'passwordProtected'
-        ? await SaltAndHashPassword(communityToAdd.communityPassword as string)
-        : '';
     const communityPassed = {
         ...communityToAdd,
-        communityPassword: saltedPassword,
+        communityPassword: communityToAdd.privacyLevel === 'passwordProtected'
+            ? communityToAdd.communityPassword
+            : '',
     };
 
     try {
