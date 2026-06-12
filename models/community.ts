@@ -55,6 +55,11 @@ export const communitySchema = new Schema(
     }
 );
 
+communitySchema.index({ privacyLevel: 1 });
+communitySchema.index({ creatorID: 1 });
+communitySchema.index({ communityMemberIDs: 1 });
+communitySchema.index({ adminIDs: 1 });
+
 const Community = mongoose.models?.Community || mongoose.model("Community", communitySchema);
 
 export default Community as Model<ICommunity>;

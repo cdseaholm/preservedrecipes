@@ -12,7 +12,6 @@ async function connectDB() {
   const MONGODB_URI = await getMongoDBUri();
 
   if (!MONGODB_URI) {
-    console.log('uri:', MONGODB_URI);
     throw new Error("Please add your MongoDB URI to .env.local");
   }
 
@@ -21,25 +20,18 @@ async function connectDB() {
   if (!cached) {
     cached = global.mongoose = { conn: null, promise: null };
   }
+
   if (cached.conn) {
-    console.log("🚀 Using cached connection");
     return cached.conn;
   }
 
   if (!cached.promise) {
-    const opts = {
+    cached.promise = connect(MONGODB_URI, {
       bufferCommands: false,
-    };
-
-    cached.promise = connect(MONGODB_URI, opts)
-      .then((mongoose) => {
-        console.log("✅ New connection established");
-        return mongoose;
-      })
-      .catch((error) => {
-        console.error("❌ Connection to database failed");
-        throw error;
-      });
+    }).catch((error) => {
+      console.error("Connection to database failed");
+      throw error;
+    });
   }
 
   try {

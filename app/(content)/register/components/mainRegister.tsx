@@ -83,9 +83,11 @@ export default function RegisterPage({ userInfo }: { userInfo: IUser | null }) {
             registerForm.clearErrors();
             await update();
             resetZoom(width, false);
+            setGlobalLoading(false);
             router.push('/u/profile');
 
         } catch (error) {
+            toast.error('Something went wrong while registering. Please try again.');
             setGlobalLoading(false);
             return;
         }

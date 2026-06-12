@@ -87,50 +87,51 @@ export default function RecipeDetail({ recipe, currentUser, creatorName }: Recip
                                 )}
                             </div>
                         </div>
-                        <div className="grid w-full grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(260px,360px)] lg:items-start">
-                            <div className="order-2 flex min-w-0 flex-col gap-3 lg:order-1 h-full">
+                        <div className="grid w-full grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(280px,380px)] lg:items-stretch">
+                            <div className="order-2 flex min-w-0 flex-col gap-4 lg:order-1">
                                 <div className="flex flex-row flex-wrap items-center gap-2">
                                     {recipe.secret && <Badge color="red">Private</Badge>}
                                     {recipe.recipeType && <Badge color="teal">{recipe.recipeType}</Badge>}
                                     <Badge color="gray">{averageRating ? `${averageRating} rating` : 'No rating'}</Badge>
-                                    {averageRating && <p aria-label="Reviews" title="Reviews">{`${averageRating} Reviews`}</p>}
                                 </div>
-                                <div>
-                                    <h1 className="text-3xl font-semibold">{recipe.name}</h1>
+                                <div className="flex min-w-0 flex-col gap-2">
+                                    <h1 className="break-words text-3xl font-semibold leading-tight text-mainText sm:text-4xl">{recipe.name}</h1>
                                     <p className="text-sm text-gray-600">By {creatorName}</p>
                                 </div>
-                                <div className="flex flex-row h-full w-full items-start justify-start rounded-md bg-white/50 px-3 py-2">
-                                    <p className={`text-base leading-7 ${recipe.description && recipe.description !== '' ? '' : 'text-gray-400 '}`}>{recipe.description && recipe.description !== '' ? recipe.description : 'No description'}</p>
+                                <div className="min-h-[8rem] rounded-md border border-accent/10 bg-white/50 px-4 py-3">
+                                    <p className={`text-base leading-7 ${recipe.description ? '' : 'text-gray-400'}`}>
+                                        {recipe.description || 'No description has been added yet.'}
+                                    </p>
                                 </div>
-                                <div className="flex w-full flex-row flex-wrap items-end justify-start gap-2 h-content">
+                                <div className="flex w-full flex-row flex-wrap items-center justify-start gap-2">
                                     <Button
                                         type="button"
-                                        variant="subtle"
+                                        variant="light"
                                         color={isFavorited ? 'red' : 'gray'}
                                         leftSection={isFavorited ? <IoHeart /> : <IoHeartOutline />}
                                         onClick={handleFavorite}
-                                        size={'compact-lg'}
+                                        size="sm"
                                     >
                                         {favoriteCount}
                                     </Button>
                                     <Button
                                         type="button"
-                                        variant="subtle"
+                                        variant="light"
                                         color={isSaved ? 'teal' : 'gray'}
                                         leftSection={isSaved ? <FaBookmark /> : <FaRegBookmark />}
                                         onClick={handleSave}
-                                        size={'compact-lg'}
+                                        size="sm"
                                     >
                                         {saveCount}
                                     </Button>
                                 </div>
                             </div>
-                            <div className="order-1 w-full overflow-hidden rounded-md bg-white/50 lg:order-2">
+                            <div className="order-1 flex min-h-[220px] w-full overflow-hidden rounded-md border border-accent/15 bg-altBack/70 lg:order-2 lg:min-h-full">
                                 <Image
                                     radius="md"
                                     src={recipe.image || null}
-                                    className="h-35 w-auto object-contain sm:h-54 lg:h-[220px]"
-                                    fallbackSrc="https://placehold.co/600x400?text=Placeholder"
+                                    className="h-full min-h-[220px] w-full object-cover sm:min-h-[280px] lg:min-h-[320px]"
+                                    fallbackSrc="https://placehold.co/760x520?text=Recipe+Photo"
                                     alt={recipe.image ? `${recipe.name} recipe image` : 'Recipe image placeholder'}
                                 />
                             </div>

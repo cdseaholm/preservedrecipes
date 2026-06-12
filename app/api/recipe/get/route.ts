@@ -18,7 +18,6 @@ export async function GET(req: NextRequest) {
     }
 
     const session = await getServerSession(authOptions);
-    console.log('API Route - Session:', session);
     const token = await getToken({ req, secret });
 
     if (!session) {
@@ -50,13 +49,13 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ status: 200, message: 'No recipes found', recipes: [] as IRecipe[] });
         }
 
-        const recipePromises = recipeIDs.map(async (id) => {
-            const recipe = await Recipe.findOne({ _id: new ObjectId(id) }) as IRecipe;
-            return recipe;
-        });
+        const objectIds = Array.from(new Set(recipeIDs))
+            .filter(id => ObjectId.isValid(id))
+            .map(id => new ObjectId(id));
 
-        const recipes = await Promise.all(recipePromises) as IRecipe[];
-        const filteredRecipes = recipes.filter(recipe => recipe !== null);
+        const filteredRecipes = objectIds.length > 0
+            ? await Recipe.find({ _id: { $in: objectIds } }).lean()
+            : [];
 
         return NextResponse.json({ status: 200, message: 'Success!', recipes: filteredRecipes });
     } catch (error) {

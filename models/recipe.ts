@@ -95,6 +95,10 @@ export const recipeSchema = new Schema(
   }
 );
 
+recipeSchema.index({ creatorID: 1, createdAt: -1 });
+recipeSchema.index({ secret: 1 });
+recipeSchema.index({ secretViewerIDs: 1 });
+
 const Recipe = mongoose.models?.Recipe || mongoose.model("Recipe", recipeSchema);
 
 export default Recipe as Model<IRecipe>;

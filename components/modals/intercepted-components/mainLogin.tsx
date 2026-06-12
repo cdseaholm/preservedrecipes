@@ -65,6 +65,7 @@ export default function SignInPage({ handleCancel, handleLoading }: { handleCanc
         } catch (error) {
             handleLoading(false);
             console.error('Error Signing in:', error);
+            toast.error('Something went wrong while signing in. Please try again.');
             return;
         }
     }

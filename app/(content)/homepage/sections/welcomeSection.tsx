@@ -67,7 +67,7 @@ export default function WelcomeSection() {
 
             {/* Trust Badge */}
             <p className="text-sm text-mainText/60 text-center">
-                No credit card required • Forever free plan available for initial users
+                No credit card required. Forever free plan available for initial users.
             </p>
         </div>
     );

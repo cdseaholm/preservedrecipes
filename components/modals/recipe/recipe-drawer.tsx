@@ -28,6 +28,8 @@ export default function RecipeDrawer({ openRecipeForm }: { openRecipeForm: Recip
     const router = useRouter();
     const [drawerOpened, setDrawerOpened] = useState(false);
     const [uploadedImageKeys, setUploadedImageKeys] = useState<string[]>([]);
+    const [imageUploadInProgress, setImageUploadInProgress] = useState(false);
+    const [imageUploadProgress, setImageUploadProgress] = useState(0);
     const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const transitionDuration = 220;
     const { ensureReady: ensureIngredients } = useEnsureData('ingredients');
@@ -109,6 +111,19 @@ export default function RecipeDrawer({ openRecipeForm }: { openRecipeForm: Recip
         form.setFieldValue('imageKey', file.key);
     };
 
+    const handleImageUploadStart = () => {
+        setImageUploadInProgress(true);
+        setImageUploadProgress(0);
+    };
+
+    const handleImageUploadProgress = (progress: number) => {
+        setImageUploadProgress(Math.max(0, Math.min(100, Math.round(progress))));
+    };
+
+    const handleImageUploadSettled = () => {
+        setImageUploadInProgress(false);
+    };
+
     const closeDrawer = ({ resetForm = false, notify = false, cleanupPendingUploads = false, afterClose }: { resetForm?: boolean, notify?: boolean, cleanupPendingUploads?: boolean, afterClose?: () => void } = {}) => {
         setDrawerOpened(false);
 
@@ -126,6 +141,8 @@ export default function RecipeDrawer({ openRecipeForm }: { openRecipeForm: Recip
             if (resetForm) {
                 form.reset();
                 resetZoom(width, false);
+                setImageUploadProgress(0);
+                setImageUploadInProgress(false);
             }
 
             if (notify) {
@@ -137,6 +154,11 @@ export default function RecipeDrawer({ openRecipeForm }: { openRecipeForm: Recip
     };
 
     const onSubmit = async () => {
+        if (imageUploadInProgress) {
+            toast.error('Wait for the recipe photo upload to finish before saving');
+            return;
+        }
+
         const route = isEditMode ? pathname : '/u/recipes';
         const savedImageKey = form.getValues().imageKey || '';
 
@@ -165,6 +187,11 @@ export default function RecipeDrawer({ openRecipeForm }: { openRecipeForm: Recip
     };
 
     const handleCancel = () => {
+        if (imageUploadInProgress) {
+            toast.error('Wait for the recipe photo upload to finish before closing');
+            return;
+        }
+
         closeDrawer({ resetForm: true, notify: true, cleanupPendingUploads: true });
     };
 
@@ -177,8 +204,8 @@ export default function RecipeDrawer({ openRecipeForm }: { openRecipeForm: Recip
                 blur: 3,
             }}
             size="min(100%, 980px)"
-            closeOnEscape={!loading}
-            closeOnClickOutside={!loading}
+            closeOnEscape={!loading && !imageUploadInProgress}
+            closeOnClickOutside={!loading && !imageUploadInProgress}
             position="right"
             transitionProps={{ transition: 'slide-left', duration: transitionDuration, timingFunction: 'ease-out' }}
             withCloseButton={false}
@@ -211,7 +238,12 @@ export default function RecipeDrawer({ openRecipeForm }: { openRecipeForm: Recip
                     isFavorited={isFavorited} 
                     favoriteRecipe={favoriteRecipe}
                     isSaving={loading}
+                    isImageUploading={imageUploadInProgress}
+                    imageUploadProgress={imageUploadProgress}
                     handleImageUpload={handleImageUpload}
+                    handleImageUploadStart={handleImageUploadStart}
+                    handleImageUploadProgress={handleImageUploadProgress}
+                    handleImageUploadSettled={handleImageUploadSettled}
                 />
             </ScrollArea>
         </Drawer>

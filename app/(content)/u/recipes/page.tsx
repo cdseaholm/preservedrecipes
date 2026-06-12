@@ -5,8 +5,6 @@ import Recipe from "@/models/recipe";
 import { ObjectId } from "mongodb";
 import { serializeDoc } from "@/utils/data/seralize";
 import { redirect } from "next/navigation";
-import Ingredient from "@/models/ingredient";
-import { IIngredient } from "@/models/types/recipes/ingredient";
 import RecipePage from "../components/recipe-page";
 import { getSessionUser } from "@/lib/data/user";
 import { createPageMetadata } from "@/lib/metadata";
@@ -59,69 +57,36 @@ export default async function Page() {
         let allMixedRecipes: IRecipe[] = [];
 
         const viewerIds = [user._id, user.email].filter(Boolean);
-        const viewableRecipeFilter = {
-            $or: [
-                { secret: { $ne: true } },
-                { creatorID: user._id },
-                { secretViewerIDs: { $in: viewerIds } },
-            ],
-        };
-
-        const [
-            recipeDocs,
-            favoriteRecipeDocs,
-            savedRecipeDocs,
-            ingredientDocs,
-        ] = await Promise.all([
-            user.recipeIDs && user.recipeIDs.length > 0
-                ? Recipe.find({
-                    _id: { $in: getValidObjectIds(user.recipeIDs) },
-                    creatorID: user._id,
-                }).lean()
-                : [],
-            user.favoriteRecipeIDs && user.favoriteRecipeIDs.length > 0
-                ? Recipe.find({
-                    _id: { $in: getValidObjectIds(user.favoriteRecipeIDs) },
-                    ...viewableRecipeFilter,
-                }).lean()
-                : [],
-            user.savedRecipeIDs && user.savedRecipeIDs.length > 0
-                ? Recipe.find({
-                    _id: { $in: getValidObjectIds(user.savedRecipeIDs) },
-                    ...viewableRecipeFilter,
-                }).lean()
-                : [],
-            Ingredient.find({}).lean(),
+        const mixedRecipeIds = getValidObjectIds([
+            ...(user.recipeIDs || []),
+            ...(user.favoriteRecipeIDs || []),
+            ...(user.savedRecipeIDs || []),
         ]);
+
+        const recipeDocs = mixedRecipeIds.length > 0
+            ? await Recipe.find({
+                _id: { $in: mixedRecipeIds },
+                $or: [
+                    { secret: { $ne: true } },
+                    { creatorID: user._id },
+                    { secretViewerIDs: { $in: viewerIds } },
+                ],
+            }).lean()
+            : [];
 
         recipeDocs.forEach(doc => {
             const recipe = sanitizeRecipeForUser(serializeDoc<IRecipe>(doc), user._id);
-            recipeIdSet.add(recipe._id);
-            allMixedRecipes.push(recipe);
-        });
-
-        favoriteRecipeDocs.forEach(doc => {
-            const recipe = sanitizeRecipeForUser(serializeDoc<IRecipe>(doc), user._id);
             if (!recipeIdSet.has(recipe._id)) {
                 recipeIdSet.add(recipe._id);
                 allMixedRecipes.push(recipe);
             }
         });
-
-        savedRecipeDocs.forEach(doc => {
-            const recipe = sanitizeRecipeForUser(serializeDoc<IRecipe>(doc), user._id);
-            if (!recipeIdSet.has(recipe._id)) {
-                recipeIdSet.add(recipe._id);
-                allMixedRecipes.push(recipe);
-            }
-        });
-        const ingredients = ingredientDocs.map(doc => serializeDoc<IIngredient>(doc));
 
         return (
             <RecipePage
                 allMixedRecipes={allMixedRecipes}
                 userInfo={user}
-                ingredients={ingredients}
+                ingredients={[]}
             />
         );
     } catch (error) {

@@ -1,11 +1,27 @@
 'use client'
 
-import { Button, Image, NumberInput, Textarea } from "@mantine/core";
+import { Button, Image, NumberInput, Progress, Textarea } from "@mantine/core";
 import { RecipePhotoUploader, UploadedRecipeImage } from "@/components/buttons/uploadThing-button";
 import { RecipeFormType } from "@/models/types/recipes/review";
 import { BiImageAdd } from "react-icons/bi";
 
-export default function RecipePanelInfo({ recipeForm, onImageUpload }: { recipeForm: RecipeFormType, onImageUpload: (file: UploadedRecipeImage) => void }) {
+export default function RecipePanelInfo({
+    recipeForm,
+    onImageUpload,
+    onImageUploadStart,
+    onImageUploadProgress,
+    onImageUploadSettled,
+    isImageUploading,
+    imageUploadProgress,
+}: {
+    recipeForm: RecipeFormType,
+    onImageUpload: (file: UploadedRecipeImage) => void,
+    onImageUploadStart: () => void,
+    onImageUploadProgress: (progress: number) => void,
+    onImageUploadSettled: () => void,
+    isImageUploading: boolean,
+    imageUploadProgress: number,
+}) {
     const image = recipeForm.getValues().image;
 
     return (
@@ -38,6 +54,7 @@ export default function RecipePanelInfo({ recipeForm, onImageUpload }: { recipeF
                                 variant="subtle"
                                 color="red"
                                 size="xs"
+                                disabled={isImageUploading}
                                 onClick={() => {
                                     recipeForm.setFieldValue('image', '');
                                     recipeForm.setFieldValue('imageKey', '');
@@ -46,9 +63,23 @@ export default function RecipePanelInfo({ recipeForm, onImageUpload }: { recipeF
                                 Remove
                             </Button>
                         )}
-                        <RecipePhotoUploader onUploadComplete={onImageUpload} />
+                        <RecipePhotoUploader
+                            onUploadComplete={onImageUpload}
+                            onUploadStart={onImageUploadStart}
+                            onUploadProgress={onImageUploadProgress}
+                            onUploadSettled={onImageUploadSettled}
+                        />
                     </div>
                 </div>
+                {isImageUploading && (
+                    <div className="border-t border-accent/20 px-3 py-3">
+                        <div className="mb-2 flex items-center justify-between gap-3 text-xs font-medium text-mainText/70">
+                            <span>Uploading photo</span>
+                            <span>{imageUploadProgress}%</span>
+                        </div>
+                        <Progress value={imageUploadProgress} color="accent" radius="sm" />
+                    </div>
+                )}
             </div>
 
             <Textarea

@@ -7,6 +7,10 @@ import { IInquiry } from "@/models/types/misc/inquiry";
 import { IIngredient } from "@/models/types/recipes/ingredient";
 import { IRecipe } from "@/models/types/recipes/recipe";
 
+type DataType = 'ingredients' | 'recipes' | 'family' | 'suggestions';
+
+const dataLoadPromises = new Map<DataType, Promise<void>>();
+
 /**
  * Phase 1: Critical user data only
  * Loads immediately after session is authenticated
@@ -262,7 +266,7 @@ export async function initCriticalUserData(urlToUse: string) {
  * Lazy loader for on-demand data fetching
  * Call this before user interactions that require specific data
  */
-export async function ensureDataLoaded(urlToUse: string, dataType: 'ingredients' | 'recipes' | 'family' | 'suggestions') {
+export async function ensureDataLoaded(urlToUse: string, dataType: DataType) {
     const loaders = {
         ingredients: async () => {
             const currentIngredients = useDataStore.getState().ingredientNames || [];
@@ -303,5 +307,16 @@ export async function ensureDataLoaded(urlToUse: string, dataType: 'ingredients'
         }
     };
 
-    await loaders[dataType]();
+    const inFlightLoad = dataLoadPromises.get(dataType);
+    if (inFlightLoad) {
+        await inFlightLoad;
+        return;
+    }
+
+    const loadPromise = loaders[dataType]().finally(() => {
+        dataLoadPromises.delete(dataType);
+    });
+
+    dataLoadPromises.set(dataType, loadPromise);
+    await loadPromise;
 }

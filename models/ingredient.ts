@@ -13,6 +13,8 @@ export const ingredientSchema = new Schema(
   }
 );
 
+ingredientSchema.index({ ingredient: 1 });
+
 const Ingredient = mongoose.models?.Ingredient || mongoose.model("Ingredient", ingredientSchema);
 
 export default Ingredient as Model<IIngredient>;

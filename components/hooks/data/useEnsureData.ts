@@ -1,5 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { ensureDataLoaded } from '@/utils/data/optimized-init';
+import { useDataStore } from '@/context/dataStore';
+import { useFamilyStore } from '@/context/familyStore';
+import { useUserStore } from '@/context/userStore';
 
 type DataType = 'ingredients' | 'recipes' | 'family' | 'suggestions';
 
@@ -19,9 +22,23 @@ export function useEnsureData(dataType: DataType, autoLoad = false) {
     const [isLoading, setIsLoading] = useState(false);
     const [isReady, setIsReady] = useState(false);
     const urlToUse = process.env.NEXT_PUBLIC_BASE_URL || '';
+    const ingredientsLoaded = useDataStore(state => state.ingredientNames.length > 0);
+    const recipesLoaded = useUserStore(state => state.userRecipes.length > 0);
+    const familyLoaded = useFamilyStore(state => !!state.family);
+    const suggestionsLoaded = useUserStore(state => state.inquiries.length > 0);
+    const hasData = dataType === 'ingredients'
+        ? ingredientsLoaded
+        : dataType === 'recipes'
+            ? recipesLoaded
+            : dataType === 'family'
+                ? familyLoaded
+                : suggestionsLoaded;
 
     const ensureReady = useCallback(async () => {
-        if (isReady) return;
+        if (isReady || hasData) {
+            setIsReady(true);
+            return;
+        }
         
         setIsLoading(true);
         try {
@@ -32,13 +49,19 @@ export function useEnsureData(dataType: DataType, autoLoad = false) {
         } finally {
             setIsLoading(false);
         }
-    }, [isReady, dataType, urlToUse]);
+    }, [hasData, isReady, dataType, urlToUse]);
 
     useEffect(() => {
         if (autoLoad) {
             ensureReady();
         }
     }, [autoLoad, ensureReady]);
+
+    useEffect(() => {
+        if (hasData) {
+            setIsReady(true);
+        }
+    }, [hasData]);
 
     return { isReady, isLoading, ensureReady };
 }
@@ -51,33 +74,20 @@ export function useDataAvailable(dataType: DataType) {
     const [isAvailable, setIsAvailable] = useState(false);
 
     useEffect(() => {
-        // Check if data exists in store
-        const checkDataAvailability = () => {
-            switch (dataType) {
-                case 'ingredients':
-                    return import('@/context/dataStore').then(({ useDataStore }) => {
-                        const ingredients = useDataStore.getState().ingredientNames || [];
-                        return ingredients.length > 0;
-                    });
-                case 'recipes':
-                    return import('@/context/userStore').then(({ useUserStore }) => {
-                        //not entirely sure if this is right, was using dataStore previously but I am trying to reduce zustand usage
-                        return useUserStore.getState().userRecipes.length > 0;
-                    });
-                case 'family':
-                    return import('@/context/familyStore').then(({ useFamilyStore }) => {
-                        return !!useFamilyStore.getState().family;
-                    });
-                case 'suggestions':
-                    return import('@/context/userStore').then(({ useUserStore }) => {
-                        return useUserStore.getState().setInquiries.length > 0;
-                    });
-                default:
-                    return Promise.resolve(false);
-            }
-        };
-
-        checkDataAvailability().then(setIsAvailable);
+        switch (dataType) {
+            case 'ingredients':
+                setIsAvailable(useDataStore.getState().ingredientNames.length > 0);
+                break;
+            case 'recipes':
+                setIsAvailable(useUserStore.getState().userRecipes.length > 0);
+                break;
+            case 'family':
+                setIsAvailable(!!useFamilyStore.getState().family);
+                break;
+            case 'suggestions':
+                setIsAvailable(useUserStore.getState().inquiries.length > 0);
+                break;
+        }
     }, [dataType]);
 
     return isAvailable;

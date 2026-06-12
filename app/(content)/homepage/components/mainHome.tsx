@@ -25,7 +25,7 @@ export default function Homepage() {
             </section>
 
             {/* Features Section */}
-            <section className={`${sectionClass} bg-mainBack`}>
+            <section id="features-section" className={`${sectionClass} bg-mainBack`}>
                 <FeaturesSection />
             </section>
 

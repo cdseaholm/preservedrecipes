@@ -26,7 +26,12 @@ export default function RecipeForm({
         isFavorited,
         favoriteRecipe,
         isSaving,
+        isImageUploading,
+        imageUploadProgress,
         handleImageUpload,
+        handleImageUploadStart,
+        handleImageUploadProgress,
+        handleImageUploadSettled,
 }: {
         attemptedToCreate: boolean,
         recipeForm: RecipeFormType,
@@ -39,13 +44,25 @@ export default function RecipeForm({
         isFavorited: boolean,
         favoriteRecipe: () => void,
         isSaving: boolean,
+        isImageUploading: boolean,
+        imageUploadProgress: number,
         handleImageUpload: (file: UploadedRecipeImage) => void,
+        handleImageUploadStart: () => void,
+        handleImageUploadProgress: (progress: number) => void,
+        handleImageUploadSettled: () => void,
 }) {
 
         const { width } = useWindowSizes()
 
         const saveLabel = formType === 'edit' ? 'Save recipe' : 'Create recipe';
-        const statusLabel = isSaving ? 'Saving...' : recipeForm.isDirty() ? 'Unsaved changes' : 'Ready';
+        const saveDisabled = isSaving || isImageUploading;
+        const statusLabel = isImageUploading
+                ? `Uploading photo ${imageUploadProgress}%`
+                : isSaving
+                        ? 'Saving...'
+                        : recipeForm.isDirty()
+                                ? 'Unsaved changes'
+                                : 'Ready';
         const sectionLinks = [
                 { id: 'recipe-basics', label: 'Basics' },
                 { id: 'recipe-ingredients', label: 'Ingredients' },
@@ -55,6 +72,10 @@ export default function RecipeForm({
         ];
 
         const handleSave = () => {
+                if (saveDisabled) {
+                        return;
+                }
+
                 if (formType === 'edit') {
                         handleEdit();
                 } else {
@@ -102,7 +123,7 @@ export default function RecipeForm({
                                                                 {isFavorited ? <IoHeart size={22} aria-hidden="true" /> : <IoHeartOutline size={22} aria-hidden="true" />}
                                                         </button>
                                                 ) : null}
-                                                {width > 640 && <Button type="submit" leftSection={<BiCheck />} loading={isSaving} className="hidden sm:flex">
+                                                {width > 640 && <Button type="submit" leftSection={<BiCheck />} loading={isSaving} disabled={saveDisabled} className="hidden sm:flex">
                                                         {saveLabel}
                                                 </Button>}
                                                 <CloseButton onClick={handleCancel} title="Close Recipe Form" size="lg" iconSize={24} />
@@ -126,7 +147,15 @@ export default function RecipeForm({
 
                         <div className="mx-auto flex w-full max-w-4xl flex-col gap-5 px-4 py-5 pb-24 sm:px-6">
                                 <section id="recipe-basics" aria-label="Recipe basics" className="scroll-mt-32 rounded-md border border-accent/20 bg-cardBack p-4 shadow-sm sm:p-5">
-                                        <RecipePanelInfo recipeForm={recipeForm} onImageUpload={handleImageUpload} />
+                                        <RecipePanelInfo
+                                                recipeForm={recipeForm}
+                                                onImageUpload={handleImageUpload}
+                                                onImageUploadStart={handleImageUploadStart}
+                                                onImageUploadProgress={handleImageUploadProgress}
+                                                onImageUploadSettled={handleImageUploadSettled}
+                                                isImageUploading={isImageUploading}
+                                                imageUploadProgress={imageUploadProgress}
+                                        />
                                 </section>
                                 <section id="recipe-ingredients" aria-label="Recipe ingredients" className="scroll-mt-32 rounded-md border border-accent/20 bg-cardBack p-4 shadow-sm sm:p-5">
                                         <RecipePanelIngredients recipeForm={recipeForm} ingredientNames={ingredientNames} />
@@ -149,7 +178,7 @@ export default function RecipeForm({
                                                         Delete
                                                 </Button>
                                         )}
-                                        <Button type="submit" leftSection={<BiCheck />} loading={isSaving} fullWidth>
+                                        <Button type="submit" leftSection={<BiCheck />} loading={isSaving} disabled={saveDisabled} fullWidth>
                                                 {saveLabel}
                                         </Button>
                                 </div>

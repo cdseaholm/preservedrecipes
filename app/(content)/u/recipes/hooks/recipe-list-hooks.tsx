@@ -139,6 +139,7 @@ export function useRecipeList(allMixedRecipes: IRecipe[], userInfo: IUser | null
             setEdit(false);
             setCheckedRecipes(new Set());
             router.refresh();
+            setLoading(false);
         } else {
             toast.error(result.message);
             setLoading(false);

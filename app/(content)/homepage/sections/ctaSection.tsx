@@ -18,7 +18,7 @@ export default function CTASection() {
             <button
                 type="button"
                 className="flex items-center justify-center gap-3 bg-white hover:bg-gray-50 text-accent font-bold text-xl py-5 px-10 rounded-lg transition-all duration-300 hover:scale-105 shadow-xl hover:shadow-2xl group"
-                onClick={() => navigate('/auth/signup')}
+                onClick={() => navigate('/register')}
             >
                 <span>Start Your Free Account</span>
                 <FaArrowRight className="group-hover:translate-x-1 transition-transform" aria-hidden="true" />
@@ -29,7 +29,7 @@ export default function CTASection() {
                 <button
                     type="button"
                     className="underline hover:text-white font-semibold"
-                    onClick={() => navigate('/auth/signin')}
+                    onClick={() => navigate('/login')}
                 >
                     Sign in here
                 </button>
