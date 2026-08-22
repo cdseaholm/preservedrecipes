@@ -1,12 +1,7 @@
 import connectDB from "@/lib/mongodb";
-import { findValidInviteByToken, normalizeInviteEmail } from "@/lib/invite-utils";
-import Family from '@/models/family';
-import Invite from '@/models/invite';
-import { IFamily } from '@/models/types/family/family';
-import { IFamilyMember } from '@/models/types/family/familyMember';
+import { acceptFamilyInviteForUser, findValidInviteByToken, normalizeInviteEmail } from "@/lib/invite-utils";
 import { IUser } from '@/models/types/personal/user';
 import User from '@/models/user';
-import { ObjectId } from 'mongodb';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
@@ -49,24 +44,6 @@ export async function POST(req: NextRequest) {
       if (normalizedEmail !== normalizeInviteEmail(invite.email)) {
         return NextResponse.json({ status: 403, message: "Register with the invited email address", newUser: {} as IUser });
       }
-
-      if (!ObjectId.isValid(invite.familyID)) {
-        return NextResponse.json({ status: 400, message: 'Invalid family id', newUser: {} as IUser });
-      }
-
-      const famObjectID = new ObjectId(invite.familyID);
-      const thisFam = await Family.findOne({ _id: famObjectID }) as IFamily;
-
-      if (!thisFam) {
-        return NextResponse.json({ status: 404, message: 'Family not found', newUser: {} as IUser });
-      }
-
-      const famMembers = thisFam.familyMembers;
-      const memberToChange = famMembers.find((member) => normalizeInviteEmail(member.familyMemberEmail) === normalizedEmail);
-
-      if (!memberToChange) {
-        return NextResponse.json({ status: 404, message: 'Family member not found', returnedMembers: [] as IFamilyMember[] });
-      }
     }
 
     const user = await User.create({
@@ -89,32 +66,11 @@ export async function POST(req: NextRequest) {
     }
 
     if (invite !== null) {
-      const famObjectID = new ObjectId(invite.familyID);
-      const thisFam = await Family.findOne({ _id: famObjectID }) as IFamily;
-      const famMembers = thisFam.familyMembers;
-      const famMembersWithout = famMembers.filter((member) => normalizeInviteEmail(member.familyMemberEmail) !== normalizedEmail);
-      const memberToChange = famMembers.find((member) => normalizeInviteEmail(member.familyMemberEmail) === normalizedEmail);
-
-      if (!memberToChange) {
-        return NextResponse.json({ status: 404, message: 'Family member not found', newUser: {} as IUser });
+      const accepted = await acceptFamilyInviteForUser(invite, user);
+      if (!accepted.success) {
+        await User.deleteOne({ _id: user._id });
+        return NextResponse.json({ status: accepted.status, message: accepted.message, newUser: {} as IUser });
       }
-
-      const newMember = {
-        ...memberToChange,
-        familyMemberID: user._id.toString(),
-        familyMemberName: user.name,
-        familyMemberEmail: normalizedEmail,
-        memberConnected: true
-      } as IFamilyMember;
-
-      const updatedMembers = [
-        ...famMembersWithout,
-        newMember
-      ] as IFamilyMember[];
-
-      await Family.updateOne({ _id: famObjectID }, { $set: { familyMembers: updatedMembers } });
-
-      await Invite.deleteOne({ token: invite.token });
     }
 
     return NextResponse.json({ status: 200, message: "Success!", newUser: JSON.parse(JSON.stringify(user)) as IUser });

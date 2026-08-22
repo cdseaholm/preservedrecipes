@@ -14,13 +14,13 @@ export type InviteRegisterFormType = {
 }
 
 
-export default function InviteRegisterForm({ handleRegister }: { handleRegister: ({ inviteRegisterForm }: { inviteRegisterForm: UseFormReturnType<InviteRegisterFormType, (values: InviteRegisterFormType) => InviteRegisterFormType> }) => void }) {
+export default function InviteRegisterForm({ handleRegister, initialEmail = '' }: { handleRegister: ({ inviteRegisterForm }: { inviteRegisterForm: UseFormReturnType<InviteRegisterFormType, (values: InviteRegisterFormType) => InviteRegisterFormType> }) => void, initialEmail?: string }) {
 
     const inviteRegisterForm = useForm({
         mode: 'uncontrolled',
         initialValues: {
             name: '',
-            email: '',
+            email: initialEmail,
             password: '',
             confirmPassword: ''
         },
@@ -67,7 +67,7 @@ export default function InviteRegisterForm({ handleRegister }: { handleRegister:
                     placeholder="email@email.com"
                     mt={'md'}
                     withAsterisk
-                    key={inviteRegisterForm.key('email')}
+                    key={`${initialEmail}-${inviteRegisterForm.key('email')}`}
                     {...inviteRegisterForm.getInputProps('email')}
                 />
                 <PasswordInput

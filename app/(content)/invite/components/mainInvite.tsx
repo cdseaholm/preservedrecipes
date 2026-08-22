@@ -47,6 +47,7 @@ export default function InvitePage({ token, userInfo }: { token: string | null, 
 
     const currentUser = session ? session.user as User : {} as User;
     const currentEmail = currentUser?.email?.trim().toLowerCase() || '';
+    const inviteEmail = invite?.email?.trim().toLowerCase() || '';
 
     const acceptInviteForSignedInUser = useCallback(async (inviteToAccept: IInvite) => {
         const inviteEmail = inviteToAccept.email.trim().toLowerCase();
@@ -73,7 +74,7 @@ export default function InvitePage({ token, userInfo }: { token: string | null, 
     }, [currentEmail, router, session, update, resetZoom, width]);
 
     if (token === null) {
-        forwardRef.current = '/register';
+        forwardRef.current = '/login';
         forward();
     }
 
@@ -139,9 +140,35 @@ export default function InvitePage({ token, userInfo }: { token: string | null, 
             const attemptStatus = registerHelp.status as boolean;
 
             if (!attemptStatus) {
-                const message = registerHelp.message === 'User already exists'
-                    ? 'Email is already in use. Sign in to accept this invite.'
-                    : registerHelp.message || 'Error registering';
+                if (registerHelp.message === 'User already exists') {
+                    const signInAttempt = await SignInHelper({ emailPassed: email, pwPassed: password }) as { status: boolean };
+
+                    if (!signInAttempt || !signInAttempt.status) {
+                        toast.error('Email is already in use. Sign in to accept this invite.');
+                        registeringRef.current = false;
+                        setGlobalLoading(false);
+                        return;
+                    }
+
+                    const accepted = await InviteRegCheck({ invite }) as { status: boolean, message?: string };
+                    if (!accepted.status) {
+                        toast.error(accepted.message || 'Issue accepting invite');
+                        registeringRef.current = false;
+                        setGlobalLoading(false);
+                        return;
+                    }
+
+                    registrationCompleteRef.current = true;
+                    setInvite(null);
+                    await update();
+                    toast.success('Signed in and invite accepted!');
+                    resetZoom(width, false);
+                    router.replace('/u/profile');
+                    setGlobalLoading(false);
+                    return;
+                }
+
+                const message = registerHelp.message || 'Error registering';
                 toast.error(message);
                 registeringRef.current = false;
                 setGlobalLoading(false);
@@ -200,6 +227,7 @@ export default function InvitePage({ token, userInfo }: { token: string | null, 
 
             if (inviteExists && inviteExists.status === false) {
                 toast.error('Issue with invite, please have family admin send another')
+                router.replace('/login');
                 return;
             }
 
@@ -231,14 +259,14 @@ export default function InvitePage({ token, userInfo }: { token: string | null, 
             fetchInvite(token);
         }
 
-    }, [token, currentEmail, session, setGlobalToast, forward, acceptInviteForSignedInUser]);
+    }, [token, currentEmail, session, setGlobalToast, forward, acceptInviteForSignedInUser, router]);
 
     return (
         <NavWrapper userInfo={userInfo}>
             <ContentWrapper containedChild={true} paddingNeeded={true}>
                 <h1>Register</h1>
                 {invite && <p>You have been invited to join a family!</p>}
-                <InviteRegisterForm handleRegister={handleRegister} />
+                <InviteRegisterForm handleRegister={handleRegister} initialEmail={inviteEmail} />
             </ContentWrapper>
         </NavWrapper>
     )
