@@ -18,7 +18,7 @@ export default function RightsFooter({ footerButtonText }: { footerButtonText: s
                 getrecipesafe.com
             </div>
             <div className="text-[10px] opacity-75">
-                v0.51.01
+                v0.52.01
             </div>
         </div>
     )

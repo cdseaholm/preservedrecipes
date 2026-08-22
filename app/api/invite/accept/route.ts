@@ -1,16 +1,12 @@
 import connectDB from "@/lib/mongodb";
 import { authOptions } from "@/lib/auth/auth-options";
-import { findValidInviteByToken, normalizeInviteEmail } from "@/lib/invite-utils";
+import { acceptFamilyInviteForUser, findValidInviteByToken, normalizeInviteEmail } from "@/lib/invite-utils";
 import { IUser } from "@/models/types/personal/user";
 import MongoUser from "@/models/user";
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { User } from "next-auth";
-import Family from "@/models/family";
-import { ObjectId } from "mongodb";
-import { IFamily } from "@/models/types/family/family";
 import { IFamilyMember } from "@/models/types/family/familyMember";
-import Invite from "@/models/invite";
 
 export async function POST(req: NextRequest) {
 
@@ -65,54 +61,12 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ status: 404, message: 'User not found', returnedMembers: [] as IFamilyMember[] });
         }
 
-        if (!ObjectId.isValid(invite.familyID)) {
-            return NextResponse.json({ status: 400, message: 'Invalid family id', returnedMembers: [] as IFamilyMember[] });
+        const accepted = await acceptFamilyInviteForUser(invite, user);
+        if (!accepted.success) {
+            return NextResponse.json({ status: accepted.status, message: accepted.message, returnedMembers: [] as IFamilyMember[] });
         }
 
-        const famObjectID = new ObjectId(invite.familyID);
-        const thisFam = await Family.findOne({ _id: famObjectID }) as IFamily;
-
-        if (!thisFam) {
-            return NextResponse.json({ status: 404, message: 'Family not found', returnedMembers: [] as IFamilyMember[] });
-        }
-
-        if (user.userFamilyID && user.userFamilyID !== invite.familyID) {
-            return NextResponse.json({ status: 406, message: "User must leave current family to accept this invite", returnedMembers: [] as IFamilyMember[] })
-        }
-
-        await MongoUser.updateOne({ email: email }, { userFamilyID: invite.familyID });
-
-        const famMembers = thisFam.familyMembers;
-        const famMembersWithout = famMembers.filter((member) => normalizeInviteEmail(member.familyMemberEmail) !== email);
-        const memberToChange = famMembers.find((member) => normalizeInviteEmail(member.familyMemberEmail) === email);
-
-        if (!memberToChange) {
-            const alreadyConnected = famMembers.find((member) => member.familyMemberID === user._id.toString() && member.memberConnected);
-            if (user.userFamilyID === invite.familyID && alreadyConnected) {
-                await Invite.deleteOne({ token: invite.token });
-                return NextResponse.json({ status: 200, message: 'Invite already accepted', returnedMembers: famMembers });
-            }
-            return NextResponse.json({ status: 404, message: 'Family member not found', returnedMembers: [] as IFamilyMember[] });
-        }
-
-        const newMember = {
-            familyMemberEmail: memberToChange.familyMemberEmail,
-            familyMemberID: user._id.toString(),
-            familyMemberName: user.name,
-            memberConnected: true,
-            permissionStatus: memberToChange.permissionStatus
-        } as IFamilyMember;
-
-        const updatedMembers = [
-            ...famMembersWithout,
-            newMember
-        ] as IFamilyMember[];
-
-        await Family.updateOne({ _id: famObjectID }, { $set: { familyMembers: updatedMembers } });
-
-        await Invite.deleteOne({ token: invite.token });
-
-        return NextResponse.json({ status: 200, message: 'Success!', returnedMembers: updatedMembers });
+        return NextResponse.json({ status: 200, message: 'Success!', returnedMembers: accepted.members });
 
     } catch (error: any) {
         return NextResponse.json({ status: 500, message: 'Error fetching', returnedMembers: [] as IFamilyMember[] });
