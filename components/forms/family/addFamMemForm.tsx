@@ -167,7 +167,7 @@ export default function AddFamMemberForm({ handleAddFamMem, handleCancel }: { ha
 
             <section className="flex flex-row w-full justify-evenly items-center pt-12 pb-8">
                 <CancelButton handleCancel={() => { addFamMemsForm.reset(); addFamMemsForm.clearErrors(); handleCancel(); }} />
-                <SubmitButton buttonTitle="Create"/>
+                <SubmitButton buttonTitle="Invite"/>
             </section>
         </form>
     )

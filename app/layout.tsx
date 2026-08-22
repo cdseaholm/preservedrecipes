@@ -14,11 +14,20 @@ import { extractRouterConfig } from 'uploadthing/server';
 import { ourFileRouter } from './api/uploadthing/core';
 import { defaultSiteMetadata } from '@/lib/metadata';
 import ThemeClassProvider from '@/components/providers/themeClassProvider';
+import type { Viewport } from 'next';
 
 //const inter = Inter({ subsets: ["latin"] });
 //<html lang="en" className={inter.className} suppressHydrationWarning>
 
 export const metadata = defaultSiteMetadata;
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: 'cover',
+};
 
 export default function RootLayout({
   children

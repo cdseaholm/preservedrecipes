@@ -36,15 +36,15 @@ export default function NavWrapper({ children, userInfo }: { children: React.Rea
     }, [handleUser]);
 
     return (
-        <div className="flex flex-col justify-start items-center w-screen h-full overflow-hidden">
+        <div className="flex h-dvh w-dvw flex-col items-center justify-start overflow-hidden">
             <LoadingOverlayComponent visible={globalLoading} />
             <TextureWrapper>
                 <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-cardBack focus:px-4 focus:py-2 focus:text-mainText focus:shadow">
                     Skip to main content
                 </a>
                 <AppHeader handleMenuToggle={handleMenuToggle} openMenu={openMenu} userInfo={userInfo} />
-                <main id="main-content" tabIndex={-1} className={`h-full w-full pt-[60px] flex flex-col justify-start items-center bg-mainBack/30`}>
-                    <ScrollArea w={'100%'} scrollbarSize={10} className="z-3" p={0}>
+                <main id="main-content" tabIndex={-1} className="box-border flex h-full min-h-0 w-full flex-col items-center justify-start bg-mainBack/30 pt-[60px]">
+                    <ScrollArea w={'100%'} h={'100%'} scrollbarSize={10} className="z-3 min-h-0" p={0}>
                         <RouterTransitionWrapper />
                         {children}
                         <MainFooter />

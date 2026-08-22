@@ -1,6 +1,6 @@
 'use client'
 
-import React, { ChangeEvent, useState } from "react"
+import React, { ChangeEvent, useEffect, useState } from "react"
 import { PasswordInput } from "@mantine/core"
 import { toast } from "sonner"
 import { IFamilyMember } from "@/models/types/family/familyMember"
@@ -11,6 +11,8 @@ import { CheckFunction } from "@/app/(content)/u/functions/functions"
 import { useRouter } from "next/navigation"
 import { RemoveFamilyMembers } from "@/utils/server-actions/family/members"
 import { UpdateFamilyMemberStatuses } from "@/utils/server-actions/family/update"
+
+const memberKey = (member: IFamilyMember) => member.familyMemberID || member.familyMemberEmail;
 
 export default function FamilyMemberHooks() {
 
@@ -26,6 +28,15 @@ export default function FamilyMemberHooks() {
     const familyMembers = family ? family.familyMembers as IFamilyMember[] : [] as IFamilyMember[];
     const memberNames = familyMembers ? familyMembers.map((mem) => { return { name: mem.familyMemberName, email: mem.familyMemberEmail, role: mem.permissionStatus } }) as { name: string, email: string, role: string }[] : [] as { name: string, email: string, role: string }[];
     const [famChecked, setFamChecked] = useState<boolean[]>(new Array(memberNames.length).fill(false));
+
+    useEffect(() => {
+        setFamChecked(current => {
+            if (current.length === memberNames.length) return current;
+            return new Array(memberNames.length).fill(false);
+        });
+        setFamCheckedAmt(current => current > memberNames.length ? 0 : current);
+        setAllCheck(false);
+    }, [memberNames.length]);
 
     const openAdminPasswordConfirm = ({
         title,
@@ -121,10 +132,10 @@ export default function FamilyMemberHooks() {
             return;
         }
 
-        const statusById = new Map(membersToChange.map(member => [member.familyMemberID, member.permissionStatus]));
+        const statusById = new Map(membersToChange.map(member => [memberKey(member), member.permissionStatus]));
         const updatedMembers = familyMembers.map(member => ({
             ...member,
-            permissionStatus: statusById.get(member.familyMemberID) ?? member.permissionStatus,
+            permissionStatus: statusById.get(memberKey(member)) ?? member.permissionStatus,
         }));
 
         if (!updatedMembers.some(member => member.permissionStatus === "Admin")) {
@@ -175,7 +186,7 @@ export default function FamilyMemberHooks() {
 
         const admins = familyMembers.filter((mem) => mem.permissionStatus === 'Admin');
         const checkedAdmins = memsToDelete.filter(member => member.permissionStatus === 'Admin');
-        const remainingAdmins = admins.filter(admin => !memsToDelete.some(member => member.familyMemberID === admin.familyMemberID));
+        const remainingAdmins = admins.filter(admin => !memsToDelete.some(member => memberKey(member) === memberKey(admin)));
         const removingSelf = Boolean(userInfo && memsToDelete.some(member => member.familyMemberID === userInfo._id || member.familyMemberEmail === userInfo.email));
 
         if (remainingAdmins.length === 0) {
@@ -197,7 +208,7 @@ export default function FamilyMemberHooks() {
             }
             const attemptDelete = await RemoveFamilyMembers(
                 family._id,
-                memsToDelete.map(member => member.familyMemberID),
+                memsToDelete.map(memberKey),
                 adminPassword,
                 `/family/${family._id}/members`,
             );

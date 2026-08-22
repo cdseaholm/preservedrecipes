@@ -57,15 +57,15 @@ export default function MenuContent({ session, profile, signOutElement, signIn, 
         !isAuthenticated && { value: 'Register', label: 'Register', icon: <TfiWrite />, href: '/register' },
     ];
 
-    const buttonClass = `flex flex-row items-center px-6 hover:bg-accent/20 rounded-md space-x-2 w-full cursor-pointer`;
-    const textClass = `text-base md:text-lg lg:text-xl font-medium`;
+    const buttonClass = `flex flex-row items-center px-4 sm:px-6 hover:bg-accent/20 rounded-md space-x-2 w-full cursor-pointer`;
+    const textClass = `text-base md:text-lg font-medium`;
     //const disabledButtonClass = `flex flex-row items-center px-6 rounded-md space-x-2 w-full bg-gray-300/50`;
     //const disabledTextClass = `text-base md:text-lg lg:text-xl font-medium text-gray-500`;
 
     const menuContent = (
         <>
             {homeButton.map((button) => (
-                button && <Link key={button.value} href={button.href} onClick={handleNavigationClick} className={`${buttonClass} mt-4 py-4 w-full`}>
+                button && <Link key={button.value} href={button.href} onClick={handleNavigationClick} className={`${buttonClass} mt-2 py-3 sm:py-4 w-full`}>
                     <span className={`${textClass}`} aria-hidden="true">{button.icon}</span>
                     <span className={`${textClass}`}>{button.label}</span>
                 </Link>
@@ -78,7 +78,7 @@ export default function MenuContent({ session, profile, signOutElement, signIn, 
             }} />
             {buttons.map((button) => (
                 button && (
-                    <Link key={button.value} href={button.href} onClick={handleNavigationClick} className={`${buttonClass} py-4 mb-2`}>
+                    <Link key={button.value} href={button.href} onClick={handleNavigationClick} className={`${buttonClass} py-3 sm:py-4 mb-1 sm:mb-2`}>
                         <span className={`${textClass}`} aria-hidden="true">{button.icon}</span>
                         <span className={`${textClass}`}>{button.label}</span>
                     </Link>
@@ -96,7 +96,7 @@ export default function MenuContent({ session, profile, signOutElement, signIn, 
                             key={button.value}
                             href={button.href}
                             onClick={handleNavigationClick}
-                            className={`${buttonClass} py-4 mb-2`}
+                            className={`${buttonClass} py-3 sm:py-4 mb-1 sm:mb-2`}
                         >
                             <span className={`${textClass}`} aria-hidden="true">{button.icon}</span>
                             <span className={`${textClass}`}>{button.label}</span>
@@ -110,7 +110,7 @@ export default function MenuContent({ session, profile, signOutElement, signIn, 
                         type="button"
                         onClick={button.onClick}
                         aria-label={button.label}
-                        className={`${buttonClass} py-4 mb-2`}
+                        className={`${buttonClass} py-3 sm:py-4 mb-1 sm:mb-2`}
                     >
                         <span className={`${textClass}`} aria-hidden="true">{button.icon}</span>
                         <span className={`${textClass}`}>{button.label}</span>

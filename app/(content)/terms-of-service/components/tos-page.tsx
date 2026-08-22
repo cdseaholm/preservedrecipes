@@ -2,7 +2,7 @@
 
 import { InfoPageShell, infoPaperClass } from "@/components/layout/page-shells";
 
-const contactLines = ['Seaholm LLC, doing business as RecipeSafe', 'Denver, CO, United States', 'newprogresscs@gmail.com'];
+const contactLines = ['Seaholm LLC, doing business as RecipeSafe', 'Denver, CO, United States', 'support@getrecipesafe.com'];
 
 const sections = [
     {

@@ -39,7 +39,7 @@ export function TabbedDrawer({
                 closeButtonProps={{ 'aria-label': 'Close navigation menu' }}
                 padding={0}
                 w={"100%"}
-                h={"100vh"}
+                h={"100dvh"}
                 size={size}
                 title={
                     <p className="text-lg font-semibold underline text-navText">
@@ -66,8 +66,9 @@ export function TabbedDrawer({
                     },
                     body: {
                         paddingTop: 12,
-                        height: '100%',
-                        backgroundColor: 'var(--mainBack)'
+                        height: 'calc(100dvh - 60px)',
+                        backgroundColor: 'var(--mainBack)',
+                        overflow: 'hidden',
                     },
                     header: {
                         backgroundColor: 'var(--navBack)',
@@ -77,8 +78,8 @@ export function TabbedDrawer({
                 }}
             >
 
-                <ScrollArea h="calc(100vh - 60px)" px="md" w={"100%"}>
-                    <div className="flex flex-col justify-start items-center w-full h-full shadow-[inset_0_2px_8px_rgba(0,0,0,0.10),inset_0_-2px_8px_rgba(0,0,0,0.10)] overflow-x-hidden rounded-md p-1">
+                <ScrollArea h="calc(100dvh - 72px)" px="md" w={"100%"} type="auto" offsetScrollbars>
+                    <div className="flex min-h-full flex-col justify-start items-center w-full shadow-[inset_0_2px_8px_rgba(0,0,0,0.10),inset_0_-2px_8px_rgba(0,0,0,0.10)] overflow-x-hidden rounded-md p-1">
                         <MenuContent
                             profile={profile}
                             signOutElement={signOutElement}
