@@ -19,20 +19,20 @@ export default function AppHeader({ handleMenuToggle, openMenu, userInfo }: { ha
     const { width, mounted } = useWindowSizes();
     const isMobile = mounted && width < 768;
 
-    const headerClass = `bg-[#694b33ff]/30 w-screen flex flex-row items-center fixed text-mainText min-h-[60px] border-b border-black/30`;
+    const headerClass = `bg-navBack w-screen flex flex-row items-center fixed text-navText min-h-[60px] border-b border-black/30 shadow-md`;
 
     const toRender = (
         <header className={`${headerClass} justify-between px-12 md:px-16 lg:px-20`}>
-            <nav className="text-sm sm:text-base md:text-lg lg:text-xl font-bold w-content w-1/2 cursor-pointer hover:underline hover:text-mainText/70 min-h-[50px] flex flex-row items-center justify-start" aria-label="Primary">
-                <Link href={'/'} title="Home" aria-label="Preserved Recipes home">
+            <nav className="text-sm sm:text-base md:text-lg lg:text-xl font-bold w-content w-1/2 cursor-pointer hover:underline hover:text-navTextMuted min-h-[50px] flex flex-row items-center justify-start" aria-label="Primary">
+                <Link href={'/'} title="Home" aria-label="RecipeSafe home">
                     {isMobile ? (
                         <div className="flex flex-col items-center justify-center">
-                            <FiHome size={24} className="text-mainText group-hover:text-mainText/70 my-1" aria-hidden="true" />
-                            <span className="text-[10px] mb-1 font-medium text-mainText/80 group-hover:text-mainText/60">
+                            <FiHome size={24} className="text-navText group-hover:text-navTextMuted my-1" aria-hidden="true" />
+                            <span className="text-[10px] mb-1 font-medium text-navTextMuted group-hover:text-navText">
                                 Home
                             </span>
                         </div>
-                    ) : 'Preserved Recipes'}
+                    ) : 'RecipeSafe'}
                 </Link>
             </nav>
             <TabbedDrawer

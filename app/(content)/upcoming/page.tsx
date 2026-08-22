@@ -7,7 +7,7 @@ import { createPageMetadata } from '@/lib/metadata';
 export function generateMetadata(): Metadata {
     return createPageMetadata({
         title: "Upcoming Features",
-        description: "Explore planned Preserved Recipes features, product improvements, and future ideas for recipe and community tools.",
+        description: "Explore planned RecipeSafe features, product improvements, and future ideas for recipe and family tools.",
     });
 }
 

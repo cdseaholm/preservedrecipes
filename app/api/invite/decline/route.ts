@@ -4,7 +4,6 @@ import { normalizeInviteEmail, removePendingInviteMember } from "@/lib/invite-ut
 import Invite from "@/models/invite";
 import { IInvite } from "@/models/types/misc/invite";
 import { getServerSession } from "next-auth";
-import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
 function inviteResponse(body: { status: number; message: string }, status = body.status) {
@@ -20,9 +19,8 @@ export async function POST(req: NextRequest) {
         }
 
         const session = await getServerSession(authOptions);
-        const token = await getToken({ req, secret });
 
-        if (!session || !token) {
+        if (!session) {
             return inviteResponse({ status: 401, message: 'Unauthorized' });
         }
 

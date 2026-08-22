@@ -27,8 +27,8 @@ export async function generateMetadata(): Promise<Metadata> {
     return createPageMetadata({
         title: userName ? `${userName}'s Profile` : "Profile",
         description: userName
-            ? `View ${userName}'s Preserved Recipes profile, recipe activity, family space, communities, inquiries, and favorites.`
-            : "View your Preserved Recipes profile, recipe activity, family space, communities, inquiries, and favorites.",
+            ? `View ${userName}'s RecipeSafe profile, recipe activity, family space, communities, inquiries, and favorites.`
+            : "View your RecipeSafe profile, recipe activity, family space, communities, inquiries, and favorites.",
         robots: { index: false, follow: true },
     });
 }

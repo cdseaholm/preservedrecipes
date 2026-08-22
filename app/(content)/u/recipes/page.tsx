@@ -37,8 +37,8 @@ export async function generateMetadata(): Promise<Metadata> {
     return createPageMetadata({
         title: userName ? `${userName}'s Recipes` : "My Recipes",
         description: userName
-            ? `Manage ${userName}'s Preserved Recipes collection, including created, favorite, saved, public, and private recipes.`
-            : "Manage your Preserved Recipes collection, including created, favorite, saved, public, and private recipes.",
+            ? `Manage ${userName}'s RecipeSafe collection, including created, favorite, saved, public, and private recipes.`
+            : "Manage your RecipeSafe collection, including created, favorite, saved, public, and private recipes.",
         robots: { index: false, follow: true },
     });
 }

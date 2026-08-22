@@ -1,7 +1,7 @@
 'use client'
 
 import { useNavigation } from "@/components/hooks/menu/use-navigation-hook";
-import { FaArrowRight, FaBook, FaUsers, FaHeart } from "react-icons/fa";
+import { FaArrowRight, FaBook, FaHeart, FaLock } from "react-icons/fa";
 
 export default function WelcomeSection() {
     const { navigate } = useNavigation();
@@ -20,10 +20,10 @@ export default function WelcomeSection() {
             {/* Main Heading */}
             <div className="text-start space-y-4 w-full">
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-mainText leading-tight w-full">
-                    Preserve Your Family&apos;s <span className="text-accent">Culinary Legacy</span>
+                    Keep Family Recipes <span className="text-accent">Safe</span>
                 </h1>
                 <p className="text-lg md:text-xl lg:text-2xl text-mainText/80 font-medium mx-auto w-full text-start">
-                    Create a digital cookbook that keeps cherished recipes alive for generations
+                    RecipeSafe™ is an early access recipe archive for saving family favorites, handwritten classics, and the stories behind them.
                 </p>
             </div>
 
@@ -31,15 +31,15 @@ export default function WelcomeSection() {
             <div className="flex flex-wrap justify-center gap-6 md:gap-8 text-center py-4">
                 <div className="flex items-center gap-2 text-mainText/70">
                     <FaBook className="text-accent text-xl" aria-hidden="true" />
-                    <span className="font-semibold">Unlimited Recipes</span>
+                    <span className="font-semibold">Personal Cookbook</span>
                 </div>
                 <div className="flex items-center gap-2 text-mainText/70">
-                    <FaUsers className="text-accent text-xl" aria-hidden="true" />
-                    <span className="font-semibold">Family Sharing</span>
+                    <FaLock className="text-accent text-xl" aria-hidden="true" />
+                    <span className="font-semibold">Private by Default</span>
                 </div>
                 <div className="flex items-center gap-2 text-mainText/70">
                     <FaHeart className="text-accent text-xl" aria-hidden="true" />
-                    <span className="font-semibold">100% Free for Initial Users</span>
+                    <span className="font-semibold">RecipeSafe Early Access</span>
                 </div>
             </div>
 
@@ -51,7 +51,7 @@ export default function WelcomeSection() {
                     onClick={handleSignUp}
                     aria-label="Get started for free"
                 >
-                    <span className="text-lg md:text-xl text-white font-semibold">Get Started Free</span>
+                    <span className="text-lg md:text-xl text-white font-semibold">Get RecipeSafe</span>
                     <FaArrowRight className="text-white group-hover:translate-x-1 transition-transform" aria-hidden="true" />
                 </button>
                 
@@ -67,7 +67,7 @@ export default function WelcomeSection() {
 
             {/* Trust Badge */}
             <p className="text-sm text-mainText/60 text-center">
-                No credit card required. Forever free plan available for initial users.
+                No credit card required. Built carefully with early user feedback.
             </p>
         </div>
     );

@@ -2,12 +2,6 @@ import { readApiResponse } from "../api-response";
 
 export async function CommunityJoinWithPassword({ communityID, password }: { communityID: string; password: string; }) {
 
-    const urlToUse = process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL as string : '';
-
-    if (!urlToUse || urlToUse.length === 0 || urlToUse === '') {
-        return { status: false, message: 'App URL is not configured' };
-    }
-
     if (!communityID || communityID === '') {
         return { status: false, message: 'Community ID is required' };
     }
@@ -17,7 +11,7 @@ export async function CommunityJoinWithPassword({ communityID, password }: { com
     }
 
     try {
-        const res = await fetch(`${urlToUse}/api/community/join/pw`, {
+        const res = await fetch('/api/community/join/pw', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

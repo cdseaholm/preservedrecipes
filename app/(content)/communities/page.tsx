@@ -12,7 +12,7 @@ import { canDiscoverCommunity } from '@/lib/community-utils';
 
 export const metadata: Metadata = createPageMetadata({
   title: "Communities",
-  description: "Browse Preserved Recipes communities for shared cooking interests, recipe collections, posts, and group activity.",
+  description: "Browse RecipeSafe communities for shared cooking interests, recipe collections, posts, and group activity.",
 });
 
 export default async function Page(props: { searchParams: Promise<{ page?: string, size?: string, search?: string, sort?: string, filter?: string[], status?: string }> }) {

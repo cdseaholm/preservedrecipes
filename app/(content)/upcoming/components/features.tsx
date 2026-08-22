@@ -25,7 +25,7 @@ export default function FeaturesPage() {
     return (
         <InfoPageShell
             title="Upcoming Features"
-            description="A running look at what may come next for Preserved Recipes."
+            description="A running look at what may come next for RecipeSafe."
             actions={(
                 <button type="button" className="text-blue-700 hover:text-blue-300 hover:underline cursor-pointer" onClick={() => setOpenInquiryModal(true)} aria-label="Submit Suggestions">
                     Submit a suggestion

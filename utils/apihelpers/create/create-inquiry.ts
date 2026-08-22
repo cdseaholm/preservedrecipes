@@ -5,14 +5,12 @@ import { readApiResponse } from "../api-response";
 
 export async function AttemptCreateInquiry({ inquiry, email }: { inquiry: IInquiry, email: string }) {
 
-    const urlToUse = process.env.NEXT_PUBLIC_BASE_URL || '';
-
     if (!email || email.length === 0 || email === '' || !inquiry) {
         return { status: false, message: 'Email and inquiry are required' };
     }
 
     try {
-        const res = await fetch(`${urlToUse}/api/inquiry/create`, {
+        const res = await fetch('/api/inquiry/create', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

@@ -15,9 +15,9 @@ const dataLoadPromises = new Map<DataType, Promise<void>>();
  * Phase 1: Critical user data only
  * Loads immediately after session is authenticated
  */
-export async function initCriticalUserData(urlToUse: string) {
+export async function initCriticalUserData() {
     try {
-        const userDataRes = await fetch(`${urlToUse}/api/user/get`);
+        const userDataRes = await fetch('/api/user/get');
 
         if (!userDataRes) {
             throw new Error('Failed to fetch user data');
@@ -266,12 +266,12 @@ export async function initCriticalUserData(urlToUse: string) {
  * Lazy loader for on-demand data fetching
  * Call this before user interactions that require specific data
  */
-export async function ensureDataLoaded(urlToUse: string, dataType: DataType) {
+export async function ensureDataLoaded(dataType: DataType) {
     const loaders = {
         ingredients: async () => {
             const currentIngredients = useDataStore.getState().ingredientNames || [];
             if (currentIngredients.length === 0) {
-                const res = await fetch(`${urlToUse}/api/ingredient/get`);
+                const res = await fetch('/api/ingredient/get');
                 const data = await res.json();
                 if (data?.ingredients) {
                     useDataStore.getState().setIngredientNames(data.ingredients as IIngredient[]);
@@ -280,7 +280,7 @@ export async function ensureDataLoaded(urlToUse: string, dataType: DataType) {
         },
         recipes: async () => {
             if (useUserStore.getState().userRecipes.length === 0) {
-                const res = await fetch(`${urlToUse}/api/recipe/get`);
+                const res = await fetch('/api/recipe/get');
                 const data = await res.json();
                 if (data?.recipes) {
                     useUserStore.getState().setUserRecipes(data.recipes as IRecipe[]);
@@ -289,7 +289,7 @@ export async function ensureDataLoaded(urlToUse: string, dataType: DataType) {
         },
         family: async () => {
             if (!useFamilyStore.getState().family) {
-                const res = await fetch(`${urlToUse}/api/family/get`);
+                const res = await fetch('/api/family/get');
                 const data = await res.json();
                 if (data?.family) {
                     useFamilyStore.getState().setFamily(data.family as IFamily);
@@ -298,7 +298,7 @@ export async function ensureDataLoaded(urlToUse: string, dataType: DataType) {
         },
         suggestions: async () => {
             if (useUserStore.getState().inquiries.length === 0) {
-                const res = await fetch(`${urlToUse}/api/inquiry/get`);
+                const res = await fetch('/api/inquiry/get');
                 const data = await res.json();
                 if (data?.inquiries) {
                     useUserStore.getState().setInquiries(data.inquiries as IInquiry[]);

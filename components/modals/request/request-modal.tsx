@@ -24,8 +24,7 @@ export default function RequestModal() {
     const handleCreate = async (message: string) => {
         setLoading(true);
         try {
-            const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
-            const response = await fetch(`${baseUrl}/api/community/request`, {
+            const response = await fetch('/api/community/request', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

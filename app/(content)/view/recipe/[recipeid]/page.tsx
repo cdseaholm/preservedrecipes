@@ -56,7 +56,7 @@ async function getRecipeViewData(recipeid: string) {
     return {
         recipe,
         currentUser,
-        creatorName: creatorDoc?.name || 'Deleted User',
+        creatorName: creatorDoc?.name || 'Account Deleted',
     };
 }
 

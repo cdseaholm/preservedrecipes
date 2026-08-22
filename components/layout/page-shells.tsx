@@ -115,7 +115,7 @@ export function InfoPageShell({ title, description, children, actions }: InfoPag
             <section className="flex min-h-[80dvh] w-full flex-col items-center gap-6">
                 <Stack gap="xs" align="center" ta="center" maw={rem(780)}>
                     <Text tt="uppercase" fw={800} size="xs" c="accent">
-                        Preserved Recipes
+                        RecipeSafe
                     </Text>
                     <Title order={1} c="mainText" className="text-3xl sm:text-4xl md:text-5xl">
                         {title}

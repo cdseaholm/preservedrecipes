@@ -10,6 +10,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { toast } from "sonner";
+import GoogleSignInButton from "@/components/buttons/googleSignInButton";
 
 export default function SignInPage({ handleCancel, handleLoading }: { handleCancel: () => void, handleLoading: (loading: boolean) => void }) {
 
@@ -71,6 +72,14 @@ export default function SignInPage({ handleCancel, handleLoading }: { handleCanc
     }
 
     return (
-        <SignInForm handleCancel={handleCancel} handleSignIn={handleSignIn} />
+        <div className="flex w-full flex-col gap-4">
+            <GoogleSignInButton />
+            <div className="flex items-center gap-3 text-xs uppercase tracking-wide text-mainText/50">
+                <span className="h-px flex-1 bg-accent/20" />
+                or
+                <span className="h-px flex-1 bg-accent/20" />
+            </div>
+            <SignInForm handleCancel={handleCancel} handleSignIn={handleSignIn} />
+        </div>
     );
 }

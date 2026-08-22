@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: FamilyStatsPageParams): Promi
 
     return createPageMetadata({
         title: `${family.name} Stats`,
-        description: `Review recipe, member, and activity stats for the ${family.name} family space on Preserved Recipes.`,
+        description: `Review recipe, member, and activity stats for the ${family.name} family space on RecipeSafe.`,
         robots: { index: false, follow: true },
     });
 }

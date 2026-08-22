@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = createPageMetadata({
     title: "About",
-    description: "Learn about Preserved Recipes and its mission to help families and communities keep meaningful recipes alive.",
+    description: "Learn about RecipeSafe and its mission to help families keep meaningful recipes safe.",
 });
 
 export default async function Page() {

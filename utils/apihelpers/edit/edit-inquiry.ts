@@ -6,15 +6,13 @@ import { readApiResponse } from "../api-response";
 
 export async function AttemptEditInquiry({ inquiriesToEdit }: { inquiriesToEdit: IInquiry[] }) {
 
-    const urlToUse = process.env.NEXT_PUBLIC_BASE_URL || '';
-
     if (!inquiriesToEdit || inquiriesToEdit.length === 0) {
         return { status: false, message: 'No inquiries selected' };
     }
 
     try {
 
-        const res = await fetch(`${urlToUse}/api/inquiry/edit`, {
+        const res = await fetch('/api/inquiry/edit', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

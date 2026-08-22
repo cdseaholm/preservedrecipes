@@ -13,6 +13,7 @@ import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from 'uploadthing/server';
 import { ourFileRouter } from './api/uploadthing/core';
 import { defaultSiteMetadata } from '@/lib/metadata';
+import ThemeClassProvider from '@/components/providers/themeClassProvider';
 
 //const inter = Inter({ subsets: ["latin"] });
 //<html lang="en" className={inter.className} suppressHydrationWarning>
@@ -27,12 +28,13 @@ export default function RootLayout({
   return (
     <html lang="en" {...mantineHtmlProps}>
       <head>
-        <ColorSchemeScript />
+        <ColorSchemeScript defaultColorScheme="light" />
       </head>
       <body className="overflow-hidden">
         <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
         <AuthWrapper>
-          <MantineProvider>
+          <MantineProvider defaultColorScheme="light">
+              <ThemeClassProvider />
               <StateWrapper>
                 {children}
               </StateWrapper>

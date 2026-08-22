@@ -4,7 +4,6 @@ import { findValidInviteByToken, normalizeInviteEmail } from "@/lib/invite-utils
 import { IUser } from "@/models/types/personal/user";
 import MongoUser from "@/models/user";
 import { NextRequest, NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
 import { getServerSession } from "next-auth";
 import { User } from "next-auth";
 import Family from "@/models/family";
@@ -22,9 +21,8 @@ export async function POST(req: NextRequest) {
     }
 
     const session = await getServerSession(authOptions);
-    const token = await getToken({ req, secret });
 
-    if (!session || !token) {
+    if (!session) {
         return NextResponse.json({ status: 401, message: 'Unauthorized', returnedMembers: [] as IFamilyMember[] });
     }
 

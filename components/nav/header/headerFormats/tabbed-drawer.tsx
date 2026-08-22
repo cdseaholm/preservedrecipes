@@ -42,8 +42,8 @@ export function TabbedDrawer({
                 h={"100vh"}
                 size={size}
                 title={
-                    <p className="text-lg font-semibold underline">
-                        {`Preserved Recipes Menu`}
+                    <p className="text-lg font-semibold underline text-navText">
+                        {`RecipeSafe Menu`}
                     </p>
                 }
 
@@ -57,7 +57,7 @@ export function TabbedDrawer({
                 }}
                 styles={{
                     content: {
-                        backgroundImage: 'url(/images/old-paper.jpg)',
+                        backgroundColor: 'var(--mainBack)',
                         backgroundRepeat: 'no-repeat',
                         backgroundSize: 'cover',
                         borderTopRightRadius: '8px',
@@ -67,11 +67,11 @@ export function TabbedDrawer({
                     body: {
                         paddingTop: 12,
                         height: '100%',
-                        backgroundColor: 'rgba(250, 244, 232, 0.7)'
+                        backgroundColor: 'var(--mainBack)'
                     },
                     header: {
-                        backgroundColor: 'rgba(187, 151, 121, 1)',
-                        borderBottom: '2px solid rgba(105, 75, 51, 0.3)',
+                        backgroundColor: 'var(--navBack)',
+                        borderBottom: '2px solid color-mix(in srgb, var(--accent) 35%, transparent)',
                         paddingInline: '20px'
                     }
                 }}
@@ -94,16 +94,16 @@ export function TabbedDrawer({
             {/* Tab Triggers - Icon-based */}
             <button
                 type="button"
-                className={`group w-1/2 cursor-pointer rounded-bl-xl min-h-[50px] flex flex-row items-end justify-center transition-all group-hover:text-mainText/60`}
+                className={`group w-1/2 cursor-pointer rounded-bl-xl min-h-[50px] flex flex-row items-end justify-end text-navText transition-all`}
                 onClick={() => handleMenuToggle('main')}
                 aria-label="Open site navigation"
                 title="Open site navigation"
                 aria-haspopup="dialog"
                 aria-expanded={openMenu === 'main'}
             >
-                <div className="flex flex-col items-end justify-center w-full">
-                    <HiOutlineMenu size={24} className="text-mainText group-hover:text-mainText/70 my-1" aria-hidden="true" />
-                    <span className="text-[10px] mb-1 font-medium text-mainText/80 group-hover:text-mainText/60">
+                <div className="mb-1 flex flex-col items-center justify-center rounded-md px-3 py-1 transition-colors group-hover:bg-white/10">
+                    <HiOutlineMenu size={24} className="text-navText group-hover:text-navTextMuted my-1" aria-hidden="true" />
+                    <span className="text-[10px] font-medium text-navTextMuted group-hover:text-navText">
                         Menu
                     </span>
                 </div>

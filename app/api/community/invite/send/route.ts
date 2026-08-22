@@ -12,7 +12,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 
 const unverifiedConsumerDomains = new Set(['gmail.com', 'googlemail.com', 'yahoo.com', 'outlook.com', 'hotmail.com', 'icloud.com']);
-const productionInviteUrl = 'https://preservedrecipes.com';
+const productionInviteUrl = 'https://www.getrecipesafe.com';
 
 function response(body: { status: number; message: string; invitesReturned?: IInvite[] }, status = body.status) {
     return NextResponse.json(body, { status });
@@ -113,7 +113,7 @@ export async function POST(req: NextRequest) {
         const resend = new Resend(resendKey);
         for (const invite of createdInvites) {
             const sent: any = await resend.emails.send({
-                from: `Preserved Recipes <${sender.from}>`,
+                from: `RecipeSafe <${sender.from}>`,
                 to: invite.email,
                 subject: `Invitation to join ${community.name}`,
                 react: CommunityInviteTemplate({

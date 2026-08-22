@@ -5,7 +5,6 @@ import { ICommunity } from "@/models/types/community/community";
 import { IUser } from "@/models/types/personal/user";
 import MongoUser from "@/models/user";
 import { getServerSession } from "next-auth";
-import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
 import { normalizeEmail, normalizeId } from "./data-normalization";
@@ -69,27 +68,27 @@ export function sanitizeCommunityPayload(community: Partial<ICommunity>) {
   };
 }
 
-export async function getAuthedUser(req: NextRequest) {
+function apiResponse(body: { status: number; message: string }, status = body.status) {
+  return NextResponse.json(body, { status });
+}
+
+export async function getAuthedUser(_req: NextRequest) {
   const secret = process.env.NEXTAUTH_SECRET || '';
   if (!secret) {
-    return { error: NextResponse.json({ status: 401, message: 'Unauthorized' }), user: null as IUser | null };
+    return { error: apiResponse({ status: 401, message: 'Unauthorized' }), user: null as IUser | null };
   }
 
-  const [session, token] = await Promise.all([
-    getServerSession(authOptions),
-    getToken({ req, secret }),
-  ]);
+  const session = await getServerSession(authOptions);
 
   const email = normalizeEmail(session?.user?.email);
-  if (!session || !token || !email) {
-    return { error: NextResponse.json({ status: 401, message: 'Unauthorized' }), user: null as IUser | null };
+  if (!session || !email) {
+    return { error: apiResponse({ status: 401, message: 'Unauthorized' }), user: null as IUser | null };
   }
 
   await connectDB();
   const user = await MongoUser.findOne({ email }) as IUser | null;
-  const tokenUserId = normalizeCommunityId(token.sub || token.id);
-  if (!user || normalizeCommunityId(user._id) !== tokenUserId) {
-    return { error: NextResponse.json({ status: 401, message: 'Unauthorized' }), user: null as IUser | null };
+  if (!user) {
+    return { error: apiResponse({ status: 401, message: 'Unauthorized' }), user: null as IUser | null };
   }
 
   return { error: null, user };

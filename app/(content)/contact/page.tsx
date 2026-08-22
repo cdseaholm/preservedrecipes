@@ -9,7 +9,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
     return createPageMetadata({
         title: "Contact",
-        description: "Contact Preserved Recipes with questions, feedback, support requests, and ideas for improving the recipe-preservation experience.",
+        description: "Contact RecipeSafe with questions, feedback, support requests, and ideas for improving the recipe-preservation experience.",
     });
 }
 

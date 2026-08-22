@@ -6,7 +6,7 @@ import { createPageMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = createPageMetadata({
     title: "Terms of Service",
-    description: "Review the Preserved Recipes terms for using accounts, recipe tools, community features, and shared content.",
+    description: "Review the RecipeSafe terms for using accounts, recipe tools, family spaces, and shared content.",
 });
 
 export default async function Page() {

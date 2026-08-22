@@ -21,7 +21,7 @@ export default function GlobalError({
                     <div className="flex w-full max-w-xl flex-col items-center gap-4 text-center">
                         <h1 className="text-2xl font-semibold md:text-3xl">Something went wrong</h1>
                         <p className="text-sm text-mainText/70 md:text-base">
-                            Preserved Recipes hit an unexpected error. Try again, or return home if it keeps happening.
+                            RecipeSafe hit an unexpected error. Try again, or return home if it keeps happening.
                         </p>
                         <div className="flex flex-col gap-2 sm:flex-row">
                             <button

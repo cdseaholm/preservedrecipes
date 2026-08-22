@@ -15,7 +15,7 @@ export interface IRecipe {
     tags: string[];
     image: string;
     imageKey?: string;
-    //make sure when fetching recipes, if creatorID is empty, this suggests deleted user, add "Deleted User" as name
+    // Empty creatorID means the creator deleted their account; display "Account Deleted".
     creatorID: string;
     reviews: IReview[];
     recipeFor: ('personal' | 'family' | 'community')[];

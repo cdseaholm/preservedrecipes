@@ -33,13 +33,13 @@ export async function generateMetadata({ params }: MemberViewPageParams): Promis
         return createPageMetadata({
             title: userName ? `${userName}'s Public Profile` : "Public Profile",
             description: userName
-                ? `View ${userName}'s public recipes, public communities, and shared Preserved Recipes profile details.`
-                : "View a Preserved Recipes member's public recipes, public communities, and shared profile details.",
+                ? `View ${userName}'s public recipes, public communities, and shared RecipeSafe profile details.`
+                : "View a RecipeSafe member's public recipes, public communities, and shared profile details.",
         });
     } catch {
         return createPageMetadata({
             title: "Public Profile",
-            description: "View a Preserved Recipes member's public recipes, public communities, and shared profile details.",
+            description: "View a RecipeSafe member's public recipes, public communities, and shared profile details.",
         });
     }
 }

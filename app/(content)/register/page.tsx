@@ -6,7 +6,7 @@ import { createPageMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = createPageMetadata({
     title: "Register",
-    description: "Create a Preserved Recipes account to save recipes, join family recipe spaces, and participate in cooking communities.",
+    description: "Create a RecipeSafe account to save recipes and keep family recipes safe.",
 });
 
 export default async function Page() {
