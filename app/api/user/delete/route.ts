@@ -1,13 +1,13 @@
+import { authOptions } from "@/lib/auth/auth-options";
 import connectDB from "@/lib/mongodb";
+import Community from "@/models/community";
+import Family from "@/models/family";
+import Recipe from "@/models/recipe";
 import { IUser } from "@/models/types/personal/user";
 import MongoUser from "@/models/user";
+import { ObjectId } from "mongodb";
 import { getServerSession, User } from "next-auth";
 import { NextResponse } from "next/server";
-import { ObjectId } from "mongodb";
-import Family from "@/models/family";
-import Community from "@/models/community";
-import Recipe from "@/models/recipe";
-import { authOptions } from "@/lib/auth/auth-options";
 
 function normalizeEmail(email: string | null | undefined) {
     return email?.trim().toLowerCase() ?? "";
@@ -23,29 +23,25 @@ function response(body: { status: number; message: string; [key: string]: unknow
 }
 
 export async function DELETE() {
-
-    const secret = process.env.NEXTAUTH_SECRET ? process.env.NEXTAUTH_SECRET : '';
-
-    if (secret === '') {
+    if (!process.env.NEXTAUTH_SECRET) {
         return response({ status: 401, message: 'Unauthorized' }, 401);
     }
 
-    const session = await getServerSession(authOptions)
-
+    const session = await getServerSession(authOptions);
     if (!session) {
         return response({ status: 401, message: 'Unauthorized' }, 401);
     }
 
     try {
         await connectDB();
-        const userSesh = session?.user as User;
+
+        const userSesh = session.user as User;
         const email = normalizeEmail(userSesh?.email);
-        if (email === '') {
+        if (!email) {
             return response({ status: 401, message: 'Unauthorized' }, 401);
         }
 
-        const user = await MongoUser.findOne({ email }) as IUser;
-
+        const user = await MongoUser.findOne({ email }) as IUser | null;
         if (!user) {
             return response({ status: 404, message: 'User not found' }, 404);
         }

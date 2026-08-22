@@ -32,10 +32,14 @@ export default function InviteTemplate({ senderName, familyName, inviteLink, fir
                             </Text>
                             <Text className="text-[12px] font-[Palatino] text-[#857b7b] mt-[20px]">
                                 Learn more about{' '}
-                                <Link title="Go to RecipeSafe Homepage" href="https://getrecipesafe.com" className='text-[#6b4423] no-underline font-semibold'>
+                                <Link title="Go to RecipeSafe Homepage" href="https://www.getrecipesafe.com" className='text-[#6b4423] no-underline font-semibold'>
                                     RecipeSafe
                                 </Link>
-                                {' '}and keep family recipes safe.
+                                {' '}or explore our{' '}
+                                <Link title="Go to RecipeSafe Communities" href="https://www.getrecipesafe.com/communities" className='text-[#6b4423] no-underline font-semibold'>
+                                    Communities
+                                </Link>
+                                {' '}to share recipes and tips with others.
                             </Text>
                         </Column>
                     </Row>

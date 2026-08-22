@@ -127,14 +127,12 @@ export default function InviteSignInModal({ session, handleUpdate }: { session: 
     }
 
     const exit = async (invited: boolean) => {
-        toast.success('Successful Sign in!');
+        toast.success(invited ? 'Invite accepted!' : 'Successful Sign in!');
         await handleUpdate();
         resetZoom(width, false);
         setLoading(false);
         setOpenInviteSignInModal(false);
-        if (invited) {
-            router.replace('/u/profile')
-        }
+        router.replace('/u/profile')
     }
 
     const handleCancel = () => {

@@ -8,6 +8,7 @@ import Recipe from "@/models/recipe";
 import { ObjectId } from "mongodb";
 import { IRecipe } from "@/models/types/recipes/recipe";
 import { authOptions } from "@/lib/auth/auth-options";
+import { normalizeEmail } from "@/lib/data-normalization";
 
 export async function GET() {
     const secret = process.env.NEXTAUTH_SECRET || '';
@@ -26,7 +27,7 @@ export async function GET() {
         await connectDB();
 
         const userSesh = session?.user as User;
-        const email = userSesh?.email || '';
+        const email = normalizeEmail(userSesh?.email);
         if (!email) {
             return NextResponse.json({ status: 401, message: 'Unauthorized', recipes: [] as IRecipe[] });
         }

@@ -2,8 +2,10 @@
 
 import CancelButton from "@/components/buttons/cancelButton";
 import SubmitButton from "@/components/buttons/submitButton";
-import { Fieldset, PasswordInput, TextInput } from "@mantine/core"
+import { Button, Divider, Fieldset, PasswordInput, TextInput } from "@mantine/core"
 import { useForm, UseFormReturnType } from "@mantine/form";
+import { signIn } from "next-auth/react";
+import { FcGoogle } from "react-icons/fc";
 
 export type SignInFormType = {
     email: string;
@@ -32,6 +34,16 @@ export default function SignInForm({ handleSignIn, handleCancel }: { handleSignI
 
     return (
         <form id="modalLoginForm" onSubmit={signInForm.onSubmit(() => handleSignIn({ signInForm }))} onAbort={() => { signInForm.reset(); signInForm.clearErrors(); handleCancel(); }} className="w-full">
+            <Button
+                type="button"
+                variant="default"
+                fullWidth
+                leftSection={<FcGoogle />}
+                onClick={() => signIn('google', { callbackUrl: '/u/profile' })}
+            >
+                Continue with Google
+            </Button>
+            <Divider label="or sign in with email" labelPosition="center" my="md" />
             <Fieldset legend="Personal Information">
                 <TextInput
                     id="modalLoginEmail"

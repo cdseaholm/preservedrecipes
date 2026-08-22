@@ -17,8 +17,10 @@ import { BiCheck, BiPencil, BiPlus, BiChevronRight } from "react-icons/bi"
 import { FaRegTrashAlt } from "react-icons/fa"
 import ListWrapper from "@/components/wrappers/list-wrapper"
 import { useState } from "react"
+import { useFamilyStore } from "@/context/familyStore"
 
 const statusOptions: IFamilyMember["permissionStatus"][] = ["Admin", "Member", "Guest"];
+const memberKey = (member: IFamilyMember) => member.familyMemberID || member.familyMemberEmail;
 
 export default function FamilyMembers({ userInfo, family }: { userInfo: IUser, family: IFamily }) {
 
@@ -26,7 +28,9 @@ export default function FamilyMembers({ userInfo, family }: { userInfo: IUser, f
 
     // Turn off loading once this component is mounted with data
 
-    const members = family ? family.familyMembers : [] as IFamilyMember[];
+    const liveFamily = useFamilyStore(state => state.family);
+    const familyToRender = liveFamily?._id === family._id ? liveFamily : family;
+    const members = familyToRender ? familyToRender.familyMembers : [] as IFamilyMember[];
     const memberNameLength = memberNames ? memberNames.length : 0;
     const familyID = userInfo ? userInfo.userFamilyID : '';
     const setOpenAddFamMemsModal = useModalStore(state => state.setOpenAddFamMemsModal);
@@ -40,10 +44,10 @@ export default function FamilyMembers({ userInfo, family }: { userInfo: IUser, f
     const totalPages = Math.max(1, Math.ceil(filteredMembers.length / membersPerPage));
     const visibleMembers = filteredMembers.slice((currentPage - 1) * membersPerPage, currentPage * membersPerPage);
     const changedRoleMembers = members
-        .filter((member) => roleDrafts[member.familyMemberID] && roleDrafts[member.familyMemberID] !== member.permissionStatus)
+        .filter((member) => roleDrafts[memberKey(member)] && roleDrafts[memberKey(member)] !== member.permissionStatus)
         .map((member) => ({
             ...member,
-            permissionStatus: roleDrafts[member.familyMemberID],
+            permissionStatus: roleDrafts[memberKey(member)],
         }));
     const hasRoleDraftChanges = changedRoleMembers.length > 0;
     const selectedMemberCount = famChecked.filter(Boolean).length;
@@ -63,7 +67,7 @@ export default function FamilyMembers({ userInfo, family }: { userInfo: IUser, f
                 }
                 rightHandButtons={
                     <>
-                        {edit && selectedMemberCount > 0 && <DeleteButton icon={<FaRegTrashAlt />} label={`Delete ${selectedMemberCount}`} onClick={handleDelete} />}
+                        {edit && selectedMemberCount > 0 && <DeleteButton icon={<FaRegTrashAlt />} label={`Delete ${selectedMemberCount}`} onClick={() => handleDelete()} />}
                         {edit && hasRoleDraftChanges && (
                             <Button
                                 type="button"
@@ -108,17 +112,17 @@ export default function FamilyMembers({ userInfo, family }: { userInfo: IUser, f
                                 {edit ? (
                                     <div className={`flex flex-row w-full h-content text-ellipsis text-start justify-start space-x-2 cursor-pointer`}>
                                         <Checkbox checked={famChecked[originalIndex]} className="cursor-pointer w-content" aria-label="Edit checkbox" onClick={() => handleCheckedFam(originalIndex)} />
-                                        <ul className={`w-2/5 truncate`} title={item.familyMemberName || 'No name'}>{edit ? null : `${index + 1}. `}{item.familyMemberName === '' ? 'No name' : item.familyMemberName}</ul>
+                                        <ul className={`w-2/5 truncate`} title={item.memberConnected ? item.familyMemberName || 'No name' : 'Invited'}>{edit ? null : `${index + 1}. `}{item.memberConnected ? item.familyMemberName || 'No name' : 'Invited'}</ul>
                                         <ul className={`w-2/5 truncate`} title={item.familyMemberEmail || 'No email'}>{item.familyMemberEmail === '' ? 'No email' : item.familyMemberEmail}</ul>
                                         <Select
                                             aria-label={`${item.familyMemberName || item.familyMemberEmail} role`}
                                             data={statusOptions}
-                                            value={roleDrafts[item.familyMemberID] ?? item.permissionStatus ?? "Guest"}
+                                            value={roleDrafts[memberKey(item)] ?? item.permissionStatus ?? "Guest"}
                                             onChange={(value) => {
                                                 if (value) {
                                                     setRoleDrafts((drafts) => ({
                                                         ...drafts,
-                                                        [item.familyMemberID]: value as IFamilyMember["permissionStatus"],
+                                                        [memberKey(item)]: value as IFamilyMember["permissionStatus"],
                                                     }));
                                                 }
                                             }}
@@ -136,8 +140,8 @@ export default function FamilyMembers({ userInfo, family }: { userInfo: IUser, f
                                         </button>
                                     </div>
                                 ) : (
-                                    <Link href={`/view/member/${item.familyMemberID}`} className={`flex flex-row w-full h-content text-ellipsis text-start items-center cursor-pointer justify-between`} aria-label="Specific item button">
-                                        <ul className={`w-2/5 truncate`} title={item.familyMemberName || 'No name'}>{edit ? null : `${index + 1}. `}{item.familyMemberName === '' ? 'No name' : item.familyMemberName}</ul>
+                                    <Link href={item.memberConnected ? `/view/member/${item.familyMemberID}` : '#'} className={`flex flex-row w-full h-content text-ellipsis text-start items-center cursor-pointer justify-between ${item.memberConnected ? '' : 'pointer-events-none'}`} aria-label="Specific item button">
+                                        <ul className={`w-2/5 truncate`} title={item.memberConnected ? item.familyMemberName || 'No name' : 'Invited'}>{edit ? null : `${index + 1}. `}{item.memberConnected ? item.familyMemberName || 'No name' : 'Invited'}</ul>
                                         <ul className={`w-2/5 truncate`} title={item.familyMemberEmail || 'No email'}>{item.familyMemberEmail === '' ? 'No email' : item.familyMemberEmail}</ul>
                                         <ul className={`w-1/5 truncate`} title={item.permissionStatus || 'Guest'}>{item.permissionStatus ? item.permissionStatus : 'Guest'}</ul>
                                         <BiChevronRight height={'auto'} width={'auto'} className="h-fit w-fit cursor-pointer" size={16} />
