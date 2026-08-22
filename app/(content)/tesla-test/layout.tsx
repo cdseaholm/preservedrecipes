@@ -3,7 +3,7 @@ import { createPageMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = createPageMetadata({
     title: "Project Echelon Test",
-    description: "Interact with a Preserved Recipes UI experiment for an electric concept vehicle control surface.",
+    description: "Interact with a RecipeSafe UI experiment for an electric concept vehicle control surface.",
     robots: { index: false, follow: false },
 });
 

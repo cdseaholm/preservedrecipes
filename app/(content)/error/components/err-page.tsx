@@ -12,7 +12,7 @@ export default function ErrorPage() {
             <div className="flex min-h-[60dvh] w-full max-w-xl flex-col items-center justify-center gap-4 px-4 text-center">
                 <h1 className="text-2xl font-semibold text-mainText md:text-3xl">Something went wrong</h1>
                 <p className="text-sm text-mainText/70 md:text-base">
-                    We could not load that part of Preserved Recipes. You can head back home and try again.
+                    We could not load that part of RecipeSafe. You can head back home and try again.
                 </p>
                 <button
                     type="button"

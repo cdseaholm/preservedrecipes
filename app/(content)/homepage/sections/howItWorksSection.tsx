@@ -1,23 +1,23 @@
 'use client'
 
-import { FaUserPlus, FaBook, FaUsers } from "react-icons/fa";
+import { FaBook, FaPenNib, FaUserPlus } from "react-icons/fa";
 
 export default function HowItWorksSection() {
     const steps = [
         {
             icon: <FaUserPlus className="text-5xl text-accent" />,
             title: "1. Sign Up",
-            description: "Create your free account in seconds. No credit card needed."
+            description: "Create a free early access account and start with your own private recipe space."
+        },
+        {
+            icon: <FaPenNib className="text-5xl text-accent" />,
+            title: "2. Add Recipes",
+            description: "Enter the ingredients, steps, notes, and memories that make each recipe yours."
         },
         {
             icon: <FaBook className="text-5xl text-accent" />,
-            title: "2. Add Recipes",
-            description: "Start building your digital cookbook with your favorite family recipes."
-        },
-        {
-            icon: <FaUsers className="text-5xl text-accent" />,
-            title: "3. Share & Preserve",
-            description: "Invite family members and keep your culinary traditions alive forever."
+            title: "3. Build Your Archive",
+            description: "Keep everything organized so your most important recipes are easier to find and pass along."
         }
     ];
 
@@ -28,7 +28,7 @@ export default function HowItWorksSection() {
                     How It Works
                 </h2>
                 <p className="text-lg md:text-xl text-mainText/70 max-w-2xl mx-auto">
-                    Three simple steps to preserve your family&apos;s recipes
+                    A simple starting point for keeping family recipes safe
                 </p>
             </div>
 

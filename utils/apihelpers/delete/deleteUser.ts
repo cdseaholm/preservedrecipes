@@ -5,6 +5,7 @@ import { IFamily } from "@/models/types/family/family";
 import { IUser } from "@/models/types/personal/user";
 import { IRecipe } from "@/models/types/recipes/recipe";
 import { toast } from "sonner";
+import { readApiResponse } from "../api-response";
 
 export interface HelperResponse {
     status: boolean;
@@ -12,15 +13,8 @@ export interface HelperResponse {
 }
 
 export default async function AttemptDeleteUser(headers: HeadersInit): Promise<HelperResponse> {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL as string : '';
-    if (!baseUrl || baseUrl.length === 0 || baseUrl === '') {
-        toast.error('Base URL not defined');
-        return { status: false, message: 'Base URL not defined' };
-    }
-    const urlToDelete = `${baseUrl}/api/user/delete`;
-
     try {
-        const response = await fetch(urlToDelete, {
+        const response = await fetch('/api/user/delete', {
             method: 'DELETE',
             headers: {
                 ...headers,
@@ -28,16 +22,10 @@ export default async function AttemptDeleteUser(headers: HeadersInit): Promise<H
             }
         });
 
-        const data = await response.json();
-
-        if (!response.ok) {
-            const message = data?.message || 'Failed to delete user';
-            toast.error(message);
-            return { status: false, message };
-        }
-
-        if (!data) {
-            return { status: false, message: 'Failed to delete user, data null' };
+        const apiResponse = await readApiResponse(response, 'Failed to delete user');
+        if (!apiResponse.status) {
+            toast.error(apiResponse.message);
+            return { status: false, message: apiResponse.message };
         }
 
         useUserStore.getState().setUserRecipes([] as IRecipe[]);

@@ -2,7 +2,6 @@
 import { IFamilyMember } from "@/models/types/family/familyMember";
 import { IUser } from '@/models/types/personal/user';
 import { getServerSession } from 'next-auth';
-import { getToken } from 'next-auth/jwt';
 import { type NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import crypto from 'crypto';
@@ -33,7 +32,7 @@ const inviteServerError = (message: string, error?: unknown) => {
     });
 };
 const unverifiedConsumerDomains = new Set(['gmail.com', 'googlemail.com', 'yahoo.com', 'outlook.com', 'hotmail.com', 'icloud.com']);
-const productionInviteUrl = 'https://preservedrecipes.com';
+const productionInviteUrl = 'https://www.getrecipesafe.com';
 
 function getInviteBaseUrl() {
     if (process.env.NODE_ENV === 'production') {
@@ -108,14 +107,9 @@ export async function POST(req: NextRequest) {
         }
 
         const session = await getServerSession(authOptions);
-        const token = await getToken({ req, secret });
 
         if (!session) {
             return inviteResponse({ status: 401, message: 'Unauthorized from session', famMembersReturned: [] as IFamilyMember[] });
-        }
-
-        if (!token) {
-            return inviteResponse({ status: 401, message: 'Unauthorized from token', famMembersReturned: [] as IFamilyMember[] });
         }
 
         const user = session.user;
@@ -272,7 +266,7 @@ export async function POST(req: NextRequest) {
 
         for (const item of newItems) {
             const sent: any = await resend.emails.send({
-                    from: `Preserved Recipes <${sender.from}>`,
+                    from: `RecipeSafe <${sender.from}>`,
                     to: item.newMember.familyMemberEmail,
                     subject: `Invitation from ${senderName}`,
                     react: InviteTemplate({

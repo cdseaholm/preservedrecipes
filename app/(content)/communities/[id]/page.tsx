@@ -32,13 +32,13 @@ export async function generateMetadata({ params }: CommunityPageParams): Promise
 
         return createPageMetadata({
             title: community?.name || "Community",
-            description: community?.description || "View this Preserved Recipes community, including its recipes, posts, members, and shared cooking activity.",
+            description: community?.description || "View this RecipeSafe community, including its recipes, posts, members, and shared cooking activity.",
             robots: community?.privacyLevel === 'public' ? undefined : { index: false, follow: true },
         });
     } catch {
         return createPageMetadata({
             title: "Community",
-            description: "View a Preserved Recipes community and its shared recipes, posts, members, and cooking activity.",
+            description: "View a RecipeSafe community and its shared recipes, posts, members, and cooking activity.",
         });
     }
 }

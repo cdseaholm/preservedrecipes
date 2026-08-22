@@ -6,7 +6,7 @@ import { createPageMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = createPageMetadata({
     title: "Privacy Policy",
-    description: "Learn how Preserved Recipes handles account data, recipe content, family information, and community activity.",
+    description: "Learn how RecipeSafe handles account data, recipe content, family information, and community activity.",
 });
 
 export default async function Page() {

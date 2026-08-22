@@ -7,7 +7,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
     return createPageMetadata({
         title: "Family Invite",
-        description: "Accept a Preserved Recipes invitation and join a family recipe space shared by someone you know.",
+        description: "Accept a RecipeSafe invitation and join a family recipe space shared by someone you know.",
         robots: { index: false, follow: false },
     });
 }

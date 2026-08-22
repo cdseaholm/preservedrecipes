@@ -1,22 +1,22 @@
 import connectDB from "@/lib/mongodb";
 import { IUser } from "@/models/types/personal/user";
 import MongoUser from "@/models/user";
-import { NextRequest, NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
-import { getServerSession } from "next-auth/next";
+import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
 import { User } from "next-auth";
+import { authOptions } from "@/lib/auth/auth-options";
+import { normalizeEmail } from "@/lib/data-normalization";
 
-export async function GET(req: NextRequest) {
+export async function GET() {
     const secret = process.env.NEXTAUTH_SECRET || '';
 
     if (!secret) {
         return NextResponse.json({ status: 401, message: 'Incorrect secret', userInfo: {} as IUser });
     }
 
-    const session = await getServerSession({ req, secret });
-    const token = await getToken({ req, secret });
+    const session = await getServerSession(authOptions);
 
-    if (!session || !token) {
+    if (!session) {
         return NextResponse.json({ status: 401, message: 'Unauthorized', userInfo: {} as IUser });
     }
 
@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
         await connectDB();
 
         const userSesh = session?.user as User;
-        const email = userSesh?.email || '';
+        const email = normalizeEmail(userSesh?.email);
         if (!email) {
             return NextResponse.json({ status: 401, message: 'Unauthorized', userInfo: {} as IUser });
         }

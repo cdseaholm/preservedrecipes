@@ -1,16 +1,15 @@
 import connectDB from "@/lib/mongodb";
 import { IUser } from "@/models/types/personal/user";
 import MongoUser from "@/models/user";
-import { NextRequest, NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
-import { getServerSession } from "next-auth/next";
+import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
 import { User } from "next-auth";
 import Recipe from "@/models/recipe";
 import { ObjectId } from "mongodb";
 import { IRecipe } from "@/models/types/recipes/recipe";
 import { authOptions } from "@/lib/auth/auth-options";
 
-export async function GET(req: NextRequest) {
+export async function GET() {
     const secret = process.env.NEXTAUTH_SECRET || '';
 
     if (!secret) {
@@ -18,14 +17,9 @@ export async function GET(req: NextRequest) {
     }
 
     const session = await getServerSession(authOptions);
-    const token = await getToken({ req, secret });
 
     if (!session) {
         return NextResponse.json({ status: 401, message: 'Unauthorized from session', recipes: [] as IRecipe[] });
-    }
-
-    if (!token) {
-        return NextResponse.json({ status: 401, message: 'Unauthorized from token', recipes: [] as IRecipe[] });
     }
 
     try {

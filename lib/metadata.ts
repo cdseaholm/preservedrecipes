@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
-const siteName = "Preserved Recipes";
+const siteName = "RecipeSafe";
 const defaultDescription =
-    "Preserve, organize, and share family recipes, community cooking traditions, and personal recipe collections.";
+    "Keep family recipes safe with a private-first recipe archive for saved dishes, cooking notes, and food memories.";
 
 type PageMetadataOptions = {
     title: string;
@@ -42,11 +42,12 @@ export const defaultSiteMetadata: Metadata = {
     description: defaultDescription,
     applicationName: siteName,
     keywords: [
-        "preserved recipes",
+        "recipesafe",
         "family recipes",
         "recipe organizer",
-        "community recipes",
+        "recipe archive",
         "cooking traditions",
+        "preserved recipes",
     ],
     creator: siteName,
     publisher: siteName,

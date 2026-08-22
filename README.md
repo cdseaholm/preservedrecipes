@@ -1,36 +1,128 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# RecipeSafe
 
-## Getting Started
+RecipeSafe is an early access Next.js app for keeping family recipes safe. It helps users save recipes, organize notes and ingredients, and build toward private family recipe sharing.
 
-First, run the development server:
+## Core Stack
+
+- Next.js App Router
+- React
+- TypeScript
+- MongoDB / Mongoose
+- NextAuth
+- Mantine
+- Resend
+- UploadThing
+- Zustand
+
+## Local Development
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Use `.env.local` for local development and configure matching production values in Vercel.
 
-## Learn More
+```bash
+MONGODB_URI=
+NEXTAUTH_SECRET=
+NEXTAUTH_URL=http://localhost:3000
 
-To learn more about Next.js, take a look at the following resources:
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+RESEND_API_KEY=
+EMAIL_FROM=support@getrecipesafe.com
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+NEXT_PUBLIC_BASE_URL=http://localhost:3000
+NEXT_PUBLIC_INVITE_BASE_URL=http://localhost:3000
+```
 
-## Deploy on Vercel
+Production values should use the canonical domain:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+NEXTAUTH_URL=https://www.getrecipesafe.com
+NEXT_PUBLIC_BASE_URL=https://www.getrecipesafe.com
+NEXT_PUBLIC_INVITE_BASE_URL=https://www.getrecipesafe.com
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Google OAuth
+
+In Google Cloud Console, configure the OAuth client for a web application.
+
+Authorized JavaScript origins:
+
+```text
+https://www.getrecipesafe.com
+https://getrecipesafe.com
+http://localhost:3000
+```
+
+Authorized redirect URIs:
+
+```text
+https://www.getrecipesafe.com/api/auth/callback/google
+https://getrecipesafe.com/api/auth/callback/google
+http://localhost:3000/api/auth/callback/google
+```
+
+If `getrecipesafe.com` permanently redirects to `www.getrecipesafe.com`, the `www` callback is the canonical one. Keeping both listed is harmless and avoids redirect/callback surprises while DNS and Vercel settle.
+
+Add the Google credentials to Vercel:
+
+```bash
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+```
+
+## Resend Email
+
+RecipeSafe sends invite email through Resend.
+
+Checklist:
+
+- Verify `getrecipesafe.com` in Resend.
+- Confirm SPF/DKIM DNS checks are passing in Resend.
+- Set `EMAIL_FROM=support@getrecipesafe.com` in Vercel.
+- Redeploy after changing the environment variable.
+
+Resend domain verification allows sending from `support@getrecipesafe.com`; it does not automatically create an inbox. To receive mail sent to `support@getrecipesafe.com`, configure email hosting or forwarding with the domain/DNS provider.
+
+Common forwarding options:
+
+- Registrar email forwarding, if offered
+- Cloudflare Email Routing
+- Google Workspace
+- Microsoft 365
+- ImprovMX
+
+## Deployment Notes
+
+- Production domain: `https://www.getrecipesafe.com`
+- Non-www domain should redirect to the canonical www domain.
+- Old Preserved Recipes domains should redirect path-for-path to RecipeSafe.
+- Keep `NEXTAUTH_URL`, public base URL vars, and OAuth callback URLs aligned with the canonical domain.
+
+## Launch Records
+
+Keep records that show first public use of the RecipeSafe name:
+
+- Domain purchase receipt from the registrar
+- Vercel deployment logs
+- Git commits showing the rebrand
+- Screenshots of the live site
+- First user/signup records
+- Resend domain verification screenshots
+
+The domain receipt usually lives in the registrar account where the domain was purchased, often under billing, orders, invoices, or receipts. Email confirmations from the registrar also count.

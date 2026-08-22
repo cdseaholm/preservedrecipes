@@ -12,6 +12,7 @@ import NavWrapper from "@/components/wrappers/navWrapper";
 import ContentWrapper from "@/components/wrappers/contentWrapper";
 import { useWindowSizes } from "@/context/width-height-store";
 import { CreateUser } from "@/utils/server-actions/user";
+import GoogleSignInButton from "@/components/buttons/googleSignInButton";
 
 export default function RegisterPage({ userInfo }: { userInfo: IUser | null }) {
 
@@ -98,6 +99,14 @@ export default function RegisterPage({ userInfo }: { userInfo: IUser | null }) {
         <NavWrapper userInfo={userInfo}>
             <ContentWrapper containedChild={true} paddingNeeded={true}>
                 <h1 className="text-xl md:text-2xl underline">Register</h1>
+                <div className="my-4 flex w-full max-w-md flex-col gap-4">
+                    <GoogleSignInButton label="Sign up with Google" />
+                    <div className="flex items-center gap-3 text-xs uppercase tracking-wide text-mainText/50">
+                        <span className="h-px flex-1 bg-accent/20" />
+                        or
+                        <span className="h-px flex-1 bg-accent/20" />
+                    </div>
+                </div>
                 <RegisterForm handleRegister={handleRegister} />
             </ContentWrapper>
         </NavWrapper>

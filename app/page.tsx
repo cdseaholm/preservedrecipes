@@ -8,7 +8,7 @@ export function generateMetadata(): Metadata {
 
   return createPageMetadata({
     title: "Home",
-    description: "Discover Preserved Recipes, a place to save family recipes, share food memories, and organize cooking traditions.",
+    description: "Discover RecipeSafe, a private-first place to keep family recipes, food memories, and cooking notes safe.",
   });
 }
 

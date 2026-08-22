@@ -16,6 +16,12 @@
   --color-mainText: var(--mainText);
   --color-lightText: var(--lightText);
   --color-linkText: var(--linkText);
+  --color-navBack: var(--navBack);
+  --color-navText: var(--navText);
+  --color-navTextMuted: var(--navTextMuted);
+  --color-footerBack: var(--footerBack);
+  --color-footerText: var(--footerText);
+  --color-footerLink: var(--footerLink);
   --color-golden: var(--golden);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
@@ -56,6 +62,12 @@
   --mainText:   #4A2C14;        /* Body text — feels like it was typed on a typewriter */
   --lightText:  #FFFDF7;
   --linkText:  #4b97eeff;        /* Burnt orange for links and emphasis */
+  --navBack: #5A3924;
+  --navText: #FFF8EA;
+  --navTextMuted: #F5E0C4;
+  --footerBack: #EBD2B7;
+  --footerText: #2C1A0D;
+  --footerLink: #5A2F16;
 
   /* Subtle golden undertones for that sun-through-the-kitchen-window feel */
   --golden:     #D4A574;        /* Use extremely sparingly — maybe for "Pinned" stars or premium badge */
@@ -87,6 +99,12 @@
   --mainText:   #E8D8C4;
   --lightText:  #6B3410;        /* Warm golden orange for dark mode headings */
   --linkText:  #4b97eeff;
+  --navBack: #1F1510;
+  --navText: #FFF8EA;
+  --navTextMuted: #E8D8C4;
+  --footerBack: #251A12;
+  --footerText: #FAF4E8;
+  --footerLink: #FFD1A6;
 
   --golden:     #FFB84D;
   --primary: var(--accent);
@@ -147,13 +165,6 @@
   --lightText: #000000;
   --darkText: #ffffff;
 }*/
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
 
 @layer utilities {
   

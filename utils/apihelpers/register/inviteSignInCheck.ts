@@ -6,14 +6,8 @@ import { readApiResponse } from "../api-response";
 
 export async function InviteRegCheck({ invite }: { invite: IInvite }) {
 
-    const urlToUse = process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL as string : '';
-
-    if (urlToUse === '') {
-        return { status: false }
-    }
-
     try {
-        const response = await fetch(`${urlToUse}/api/invite/accept`, {
+        const response = await fetch('/api/invite/accept', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

@@ -2,129 +2,99 @@
 
 import { InfoPageShell, infoPaperClass } from "@/components/layout/page-shells";
 
+const contactLines = ['Seaholm LLC, doing business as RecipeSafe', 'Denver, CO, United States', 'newprogresscs@gmail.com'];
 
-const ListSection = ({ items }: { items: string[] }) => {
-    return (
-        items.length !== 5 ? (<ul className={`list-disc text-sm md:text-base grid grid-cols-1 grid-rows-${items.length} items-center gap-1 text-start w-full`}>
-            {items.map((item, index) => (
-                <li className="list-disc text-sm md:text-base font-normal flex-wrap mx-3 my-1" style={{ listStyleType: 'disc', listStyle: 'inside' }} key={index}>
-                    {` ${item}`}
-                </li>
-            ))}
-        </ul>
-        ) : (
-            <ul className={`text-sm md:text-base grid grid-cols-1 grid-rows-${items.length} items-center gap-1 text-start w-full`}>
-                {items.map((item, index) => (
-                    <li className="text-sm md:text-base font-normal flex-wrap mx-3 my-1" key={index}>
-                        {` ${item}`}
-                    </li>
-                ))}
-            </ul>
-        )
-    )
-};
+const sections = [
+    {
+        title: "Introduction",
+        body: "RecipeSafe is operated by Seaholm LLC, a Colorado limited liability company doing business as RecipeSafe. RecipeSafe (\"we,\" \"us,\" or \"our\") respects your privacy. This Privacy Policy explains how we collect, use, store, and share information when you use RecipeSafe, including getrecipesafe.com and related recipe-management features."
+    },
+    {
+        title: "Information We Collect",
+        body: "We may collect account information, profile details, email addresses, authentication data, recipes, ingredients, notes, images, family or community information, invite information, contact requests, support messages, device/browser information, logs, and usage information needed to operate and improve RecipeSafe."
+    },
+    {
+        title: "Recipe and User Content",
+        body: "Recipes, notes, images, posts, and family information you add to RecipeSafe may contain personal or sensitive information that you choose to include. Please avoid adding information you do not want stored or shared with the people you invite or authorize."
+    },
+    {
+        title: "How We Use Information",
+        body: "We use information to create and manage accounts, provide recipe-saving features, authenticate users, send invites and service emails, respond to support requests, improve RecipeSafe, prevent abuse, protect security, troubleshoot issues, and comply with legal obligations."
+    },
+    {
+        title: "Sharing and Disclosure",
+        body: "We do not sell your personal information. We may share information with service providers that help us run RecipeSafe, with people you choose to share content with, when required by law, to protect rights and safety, or in connection with a business transfer such as a merger, acquisition, or asset sale."
+    },
+    {
+        title: "Third-Party Service Providers",
+        body: "RecipeSafe may use third-party providers for hosting, databases, authentication, email delivery, file uploads, analytics, error monitoring, and similar operational needs. These providers may process information on our behalf according to their own terms and privacy practices."
+    },
+    {
+        title: "Cookies and Similar Technologies",
+        body: "RecipeSafe may use cookies, local storage, and similar technologies for authentication, preferences, security, analytics, and site functionality. You can adjust browser settings to limit cookies, but some features may not work correctly."
+    },
+    {
+        title: "Data Security",
+        body: "We use reasonable administrative, technical, and organizational measures to protect information. No online service is perfectly secure, and we cannot guarantee that information will never be accessed, disclosed, altered, or lost."
+    },
+    {
+        title: "Data Retention",
+        body: "We keep information for as long as needed to provide RecipeSafe, comply with legal obligations, resolve disputes, enforce agreements, maintain backups, and protect the service. Some deleted information may remain in backups or logs for a limited time."
+    },
+    {
+        title: "Your Choices",
+        body: "You may update certain account information in RecipeSafe. You may request help accessing, correcting, or deleting information by contacting us. We may need to verify your identity before completing some requests."
+    },
+    {
+        title: "Children's Privacy",
+        body: "RecipeSafe is not intended for children under 13 without parent or guardian involvement. If you believe a child has provided personal information without appropriate permission, contact us so we can review and take appropriate action."
+    },
+    {
+        title: "Food, Allergy, and Health Information",
+        body: "RecipeSafe is not designed to verify allergens, nutrition, health claims, cooking temperatures, or food safety. Any dietary or health-related information users add is user-provided and should be independently verified before use."
+    },
+    {
+        title: "External Links",
+        body: "RecipeSafe may link to third-party websites or services. We are not responsible for the privacy practices, content, or security of those third parties."
+    },
+    {
+        title: "Brand Non-Affiliation",
+        body: "RecipeSafe is not affiliated with, endorsed by, or sponsored by RecipeSage. RecipeSage is a separate recipe-management product."
+    },
+    {
+        title: "Changes to This Policy",
+        body: "We may update this Privacy Policy from time to time. Updates are effective when posted unless a later date is stated. Continued use of RecipeSafe after changes are posted means you acknowledge the updated policy."
+    },
+    {
+        title: "Contact Information",
+        body: "Questions about this Privacy Policy can be sent to:"
+    },
+];
 
 export default function PrivacyPolicyPage() {
-
-    const sectionTitles = [
-        "Introduction",
-        "Information We Collect",
-        "How We Use Your Information",
-        "Information Sharing and Discolsure",
-        "Data Security",
-        "Cookies and Tracking Technologies",
-        "Third Party Links",
-        "Children's Privacy",
-        "Changes to this Privacy Policy",
-        "Contact Information"
-    ];
-
-    const sectionBlurbs = [
-        [`Preserved Recipes ("we," "us," or "our") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your information when you visit our website at www.preservedrecipes.com (the "Site").`],
-        [`We collect information that you voluntarily provide to us when you use our Site, such as when you: `, `The information we collect may include: `],
-        [`We use the information we collect to: `],
-        ['We do not sell, trade, or otherwise transfer your personally identifiable information to outside parties. This does not include trusted third parties who assist us in operating our website, conducting our business, or servicing you, as long as those parties agree to keep this information confidential.'],
-        ['We implement reasonable security measures to protect your personal information from unauthorized access, alteration, disclosure, or destruction.'],
-        ['Our Site may use cookies and similar tracking technologies to enhance your browsing experience. You can set your browser to refuse all or some browser cookies or to alert you when websites set or access cookies.'],
-        ['Our Site may contain links to third-party websites. We have no control over the content, privacy policies, or practices of any third-party sites or services.'],
-        ['Our Site is not intended for children under 13 years of age unless accompanied by an adult to use the site for the intended purposes and the intended purposes only. Children under the age of 13 may sign up for the site under adult supervision, in which case the adult is advised to use their own name, email, and any other information they do want saved to the site database for future use.'],
-        ['We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Effective Date" at the top of this policy.'],
-        ['If you have questions or comments about this Privacy Policy, please contact us at: ']
-    ];
-
-    const sectionBPs = [
-        [`Contact us through the provided contact information`, `Subscribe to newsletters or updates (if applicable)`],
-        [`Name`, `Email address`, `Phone number`, `Any other information you choose to provide`],
-        [`Respond to your inquiries`, `Provide you with information about our services`, `Improve our Site and services`],
-        ['Preserved Recipes', 'Denver, CO. United States', 'newprogresscs@gmail.com']
-    ];
-
-    const privacyItems = sectionTitles.map((title, index) => {
-        let item;
-        let itemTwo;
-        if (index === 9) {
-            item = sectionBPs[3];
-        } else if (index === 1) {
-            item = sectionBPs[0];
-            itemTwo = sectionBPs[1];
-        } else {
-            item = sectionBPs[2];
-        }
-
-        return (
-            <div className={`flex flex-col justify-start items-start w-full space-y-2`} key={`${index}parentKey`}>
-                <h4 className='text-base md:text-base underline pb-2 font-semibold text-accent'>
-                    {`${index + 1}. ${title}`}
-                </h4>
-                {index === 0 || index === 3 || index === 4 || index === 5 || index === 6 || index === 7 || index === 8 ? (
-                    <p key={index} className="text-left">
-                        {sectionBlurbs[index]}
-                    </p>
-                ) : index === 1 && item && itemTwo ? (
-                    <div className="flex flex-col justify-start items-start space-y-2 w-full">
-                        <p key={`${index}blurbOne`} className="text-left">
-                            {sectionBlurbs[index]}
-                        </p>
-                        <ListSection key={`${index}ListOne`} items={item} />
-                        <p key={`${index}blurbTwo`} className="text-left">
-                            {sectionBlurbs[index]}
-                        </p>
-                        <ListSection key={`${index}ListTwo`} items={itemTwo} />
-                    </div>
-                ) : index === 9 && item ? (
-                    <div className="flex flex-col justify-start items-start space-y-2 w-full">
-                        <p key={`${index}BlurbOne`} className="text-left">
-                            {sectionBlurbs[index]}
-                        </p>
-                        <ul className={`text-sm md:text-base grid grid-cols-1 grid-rows-${sectionBPs.length} items-center gap-1 text-start w-full`}>
-                            {item.map((text, index) => (
-                                <li className="text-sm md:text-base font-normal flex-wrap mx-3 my-1 text-center" key={`${index}List`}>
-                                    {`${text}`}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                ) : (
-                    <div className="flex flex-col justify-start items-start space-y-2 w-full">
-                        <p key={`${index}blurbOne`} className="text-left">
-                            {sectionBlurbs[index]}
-                        </p>
-                        {item &&
-                            <ListSection key={`${index}List`} items={item} />
-                        }
-                    </div>
-                )}
-            </div>
-        )
-    });
-
     return (
         <InfoPageShell
             title="Privacy Policy"
-            description={`Effective Date: ${new Date().toLocaleDateString()}`}
+            description="Effective Date: August 22, 2026"
         >
             <div className={`${infoPaperClass} flex flex-col justify-start items-start space-y-6`}>
-                {privacyItems}
+                {sections.map((section, index) => (
+                    <section className="flex w-full flex-col items-start justify-start space-y-2" key={section.title}>
+                        <h4 className="pb-2 text-base font-semibold text-accent underline md:text-base">
+                            {index + 1}. {section.title}
+                        </h4>
+                        <p className="text-left">{section.body}</p>
+                        {section.title === "Contact Information" && (
+                            <ul className="grid w-full grid-cols-1 items-center gap-1 text-start text-sm md:text-base">
+                                {contactLines.map(item => (
+                                    <li className="mx-3 my-1 flex-wrap text-center text-sm font-normal md:text-base" key={item}>
+                                        {item}
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </section>
+                ))}
             </div>
         </InfoPageShell>
     );

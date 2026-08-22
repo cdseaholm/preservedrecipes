@@ -9,7 +9,7 @@ export default function ContactPage() {
 
     return (
         <InfoPageShell
-            title="Contact the Preserved Recipes Team"
+            title="Contact the RecipeSafe Team"
             description="Questions, feedback, bugs, and product ideas all belong here."
         >
             <p className={infoPaperClass}>
@@ -17,7 +17,7 @@ export default function ContactPage() {
                 <span className="text-2xl md:text-3xl text-accent font-serif font-bold leading-none">
                     C
                 </span>
-                urrently we are a small team working hard to bring you the best experience possible with Preserved Recipes. If you wish to contact us, have suggestions, want to report a bug, or just want to say thanks, you can click the Contact button below and fill out the form that should appear!
+                urrently we are a small team working hard to bring you the best experience possible with RecipeSafe. If you wish to contact us, have suggestions, want to report a bug, or just want to say thanks, you can click the Contact button below and fill out the form that should appear!
                 </span>
             </p>
             <div className="flex flex-col justify-start items-center sm:flex-row sm:justify-evenly w-full max-w-3xl mt-6 max-sm:space-y-4 sm:space-y-0">

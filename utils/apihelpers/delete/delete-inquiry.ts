@@ -4,16 +4,12 @@ import { IInquiry } from "@/models/types/misc/inquiry";
 import { readApiResponse } from "../api-response";
 
 export default async function AttemptDeleteInquiry({ toDelete }: { toDelete: IInquiry[] }): Promise<HelperResponse> {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
-
-    const urlToDelete = `${baseUrl}/api/inquiry/delete`;
-
     if (!toDelete || !toDelete.length || toDelete.length === 0) {
         return { status: false, message: 'No inquiry to delete' };
     }
 
     try {
-        const response = await fetch(urlToDelete, {
+        const response = await fetch('/api/inquiry/delete', {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'

@@ -13,7 +13,7 @@ import { createPageMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = createPageMetadata({
     title: "My Communities",
-    description: "View the Preserved Recipes communities you belong to and return to shared posts, recipes, and members.",
+    description: "View the RecipeSafe communities you belong to and return to shared posts, recipes, and members.",
     robots: { index: false, follow: true },
 });
 

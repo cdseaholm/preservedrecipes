@@ -6,7 +6,7 @@ import { createPageMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = createPageMetadata({
     title: "Something Went Wrong",
-    description: "A Preserved Recipes error page for recovering from an issue and returning to the app.",
+    description: "A RecipeSafe error page for recovering from an issue and returning to the app.",
     robots: { index: false, follow: false },
 });
 

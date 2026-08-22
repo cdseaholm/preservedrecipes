@@ -1,38 +1,38 @@
 'use client'
 
-import { FaBook, FaUsers, FaLock, FaSearch, FaImage, FaFileExport } from "react-icons/fa";
+import { FaBook, FaHeart, FaLock, FaSearch, FaTags, FaUserFriends } from "react-icons/fa";
 
 export default function FeaturesSection() {
     const features = [
         {
             icon: <FaBook className="text-4xl text-accent" />,
             title: "Digital Cookbook",
-            description: "Store unlimited recipes with photos, ingredients, and step-by-step instructions."
+            description: "Save recipes with ingredients, steps, prep details, notes, and the context that usually gets lost."
         },
         {
-            icon: <FaUsers className="text-4xl text-accent" />,
-            title: "Family Sharing",
-            description: "Create a family tree and share recipes with loved ones across generations."
+            icon: <FaHeart className="text-4xl text-accent" />,
+            title: "Made for Heirlooms",
+            description: "Keep the recipes that matter most in one place instead of scattered across texts, cards, and memory."
         },
         {
             icon: <FaLock className="text-4xl text-accent" />,
-            title: "Privacy Control",
-            description: "Keep recipes private, share with family only, or make them public. You decide."
+            title: "Private First",
+            description: "Start with your own collection and choose what belongs beyond your personal cookbook later."
         },
         {
             icon: <FaSearch className="text-4xl text-accent" />,
             title: "Easy Search",
-            description: "Find any recipe instantly with powerful search and filtering tools."
+            description: "Find recipes quickly by name, ingredients, tags, and the details you remember."
         },
         {
-            icon: <FaImage className="text-4xl text-accent" />,
-            title: "Photo Uploads",
-            description: "Add beautiful photos to your recipes and preserve visual memories."
+            icon: <FaTags className="text-4xl text-accent" />,
+            title: "Simple Organization",
+            description: "Use types, tags, ingredients, and favorites to keep a growing collection manageable."
         },
         {
-            icon: <FaFileExport className="text-4xl text-accent" />,
-            title: "Export & Print",
-            description: "Generate PDFs and print recipe cards for offline cooking."
+            icon: <FaUserFriends className="text-4xl text-accent" />,
+            title: "Family Tools in Progress",
+            description: "Family spaces and sharing are part of the direction, but the first priority is a dependable recipe archive."
         }
     ];
 
@@ -40,10 +40,10 @@ export default function FeaturesSection() {
         <div className="flex flex-col items-center justify-center w-full max-w-7xl mx-auto px-6 space-y-12" id="features-section">
             <div className="text-center space-y-4">
                 <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-mainText">
-                    Everything You Need to Preserve Recipes
+                    A Focused Start for RecipeSafe
                 </h2>
                 <p className="text-lg md:text-xl text-mainText/70 max-w-3xl mx-auto">
-                    Powerful features designed to keep your family&apos;s culinary traditions alive
+                    Family recipes, kept safe. Save the recipe, protect the memory, and make it easy to find again.
                 </p>
             </div>
 

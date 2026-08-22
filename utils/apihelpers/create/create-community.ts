@@ -8,12 +8,6 @@ import { readApiResponse } from "../api-response";
 
 export async function AttemptCreateCommunity({ communityToAdd }: { communityToAdd: ICommunity }) {
 
-    const urlToUse = process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL as string : '';
-
-    if (!urlToUse || urlToUse.length === 0 || urlToUse === '') {
-        return { status: false, message: 'App URL is not configured' };
-    }
-
     if (!communityToAdd) {
         return { status: false, message: 'Community data is required' };
     }
@@ -30,7 +24,7 @@ export async function AttemptCreateCommunity({ communityToAdd }: { communityToAd
     };
 
     try {
-        const res = await fetch(`${urlToUse}/api/community/create`, {
+        const res = await fetch('/api/community/create', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

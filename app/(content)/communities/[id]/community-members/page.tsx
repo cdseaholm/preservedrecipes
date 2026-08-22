@@ -27,13 +27,13 @@ export async function generateMetadata({ params }: CommunityMembersPageParams): 
 
         return createPageMetadata({
             title: community?.name ? `${community.name} Members` : "Community Members",
-            description: "Review members, join requests, and permissions for a Preserved Recipes community.",
+            description: "Review members, join requests, and permissions for a RecipeSafe community.",
             robots: community?.privacyLevel === 'public' ? undefined : { index: false, follow: true },
         });
     } catch {
         return createPageMetadata({
             title: "Community Members",
-            description: "Review members, join requests, and permissions for a Preserved Recipes community.",
+            description: "Review members, join requests, and permissions for a RecipeSafe community.",
             robots: { index: false, follow: true },
         });
     }

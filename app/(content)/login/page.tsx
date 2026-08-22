@@ -7,7 +7,7 @@ import { createPageMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = createPageMetadata({
     title: "Log In",
-    description: "Log in to Preserved Recipes to manage recipes, family spaces, communities, saved recipes, and account settings.",
+    description: "Log in to RecipeSafe to manage recipes, family spaces, saved recipes, and account settings.",
     robots: { index: false, follow: true },
 });
 

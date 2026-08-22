@@ -8,12 +8,18 @@ import { ObjectId } from "mongodb";
 import Family from "@/models/family";
 import { authOptions } from "@/lib/auth/auth-options";
 import { normalizeEmail } from "@/lib/data-normalization";
+import Community from "@/models/community";
+import Post from "@/models/post";
+
+function response(body: { status: number; message: string }, status = body.status) {
+    return NextResponse.json(body, { status });
+}
 
 export async function DELETE(req: NextRequest) {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
-        return NextResponse.json({ status: 401, message: 'Unauthorized' });
+        return response({ status: 401, message: 'Unauthorized' });
     }
 
     try {
@@ -21,24 +27,24 @@ export async function DELETE(req: NextRequest) {
         await connectDB();
         const email = normalizeEmail(session.user.email);
         if (email === '') {
-            return NextResponse.json({ status: 401, message: 'Unauthorized' });
+            return response({ status: 401, message: 'Unauthorized' });
         }
 
         const user = await MongoUser.findOne({ email: email }) as IUser;
 
         if (!user) {
-            return NextResponse.json({ status: 404, message: 'User not found' });
+            return response({ status: 404, message: 'User not found' });
         }
 
         const items = body.itemsToDelete as string[];
 
         if (!items || items.length === 0) {
-            return NextResponse.json({ status: 400, message: 'No items to delete' });
+            return response({ status: 400, message: 'No items to delete' });
         }
 
         const validItems = Array.from(new Set(items)).filter(item => ObjectId.isValid(item));
         if (validItems.length !== items.length) {
-            return NextResponse.json({ status: 400, message: 'Invalid recipe ID' });
+            return response({ status: 400, message: 'Invalid recipe ID' });
         }
 
         const ownedRecipes = await Recipe.find({
@@ -47,8 +53,14 @@ export async function DELETE(req: NextRequest) {
         }).select('_id').lean();
 
         if (ownedRecipes.length !== validItems.length) {
-            return NextResponse.json({ status: 403, message: 'Only recipes you created can be deleted' });
+            return response({ status: 403, message: 'Only recipes you created can be deleted' });
         }
+
+        const relatedPosts = await Post.find({
+            relatedToType: 'recipe',
+            relatedToID: { $in: validItems },
+        }).select('_id').lean();
+        const relatedPostIds = relatedPosts.map(post => post._id.toString());
 
         await Recipe.deleteMany({
             _id: { $in: validItems.map(item => new ObjectId(item)) },
@@ -62,20 +74,32 @@ export async function DELETE(req: NextRequest) {
             { $set: { recipeIDs: newUserIDs } }
         );
 
-        if (user.userFamilyID) {
-            const family = await Family.findById(user.userFamilyID);
-            if (family) {
-                const newFamilyRecipeIDs = family.recipeIDs.filter((id: string) => !validItems.some((item: string) => item === id));
-                await Family.updateOne(
-                    { _id: new ObjectId(family._id) },
-                    { $set: { recipeIDs: newFamilyRecipeIDs } }
-                );
-            }
-        }
+        await Promise.all([
+            Family.updateMany(
+                { recipeIDs: { $in: validItems } },
+                { $pull: { recipeIDs: { $in: validItems } } }
+            ),
+            Community.updateMany(
+                { $or: [{ recipeIDs: { $in: validItems } }, { postIDs: { $in: relatedPostIds } }] },
+                { $pull: { recipeIDs: { $in: validItems }, postIDs: { $in: relatedPostIds } } }
+            ),
+            MongoUser.updateMany(
+                {},
+                {
+                    $pull: {
+                        savedRecipeIDs: { $in: validItems },
+                        favoriteRecipeIDs: { $in: validItems },
+                    },
+                }
+            ),
+            relatedPostIds.length
+                ? Post.deleteMany({ _id: { $in: relatedPostIds.map(id => new ObjectId(id)) } })
+                : Promise.resolve(),
+        ]);
 
-        return NextResponse.json({ status: 200, message: 'Success!' });
+        return response({ status: 200, message: 'Success!' });
 
     } catch (error: any) {
-        return NextResponse.json({ status: 500, message: 'Error deleting recipe' });
+        return response({ status: 500, message: 'Error deleting recipe' });
     }
 }

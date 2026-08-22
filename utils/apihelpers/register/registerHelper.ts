@@ -6,10 +6,9 @@ import { normalizeEmail } from "@/lib/data-normalization";
 
 export default async function RegisterHelper({ namePassed, emailPassed, pwPassed, invite }: { namePassed: string, emailPassed: string, pwPassed: string, invite: IInvite | null }) {
 
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL as string : '';
     const normalizedEmail = normalizeEmail(emailPassed);
 
-    if (!namePassed || !normalizedEmail || !pwPassed || baseUrl === '') {
+    if (!namePassed || !normalizedEmail || !pwPassed) {
  
         return {
             status: false, newUser: null
@@ -26,7 +25,7 @@ export default async function RegisterHelper({ namePassed, emailPassed, pwPassed
             }
         }
 
-        const res = await fetch(`${baseUrl}/api/register`, {
+        const res = await fetch('/api/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

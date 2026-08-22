@@ -1,8 +1,8 @@
 'use client'
 
 import { IconMoonStars, IconSun } from '@tabler/icons-react';
-import { useState, useEffect } from 'react';
-import { rem, Switch } from '@mantine/core';
+import { useEffect } from 'react';
+import { Group, rem, Switch, Text, useComputedColorScheme, useMantineColorScheme } from '@mantine/core';
 
 const sunIcon = (
   <IconSun
@@ -21,21 +21,29 @@ const moonIcon = (
 );
 
 export default function ThemeToggle() {
-    const [isDarkMode, setIsDarkMode] = useState(false);
+    const { setColorScheme } = useMantineColorScheme();
+    const computedColorScheme = useComputedColorScheme('light', { getInitialValueInEffect: true });
+    const isDarkMode = computedColorScheme === 'dark';
 
     useEffect(() => {
-        if (isDarkMode) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
+        document.documentElement.classList.toggle('dark', isDarkMode);
     }, [isDarkMode]);
 
-    const toggleTheme = () => {
-        setIsDarkMode(!isDarkMode);
-    };
-
     return (
-        <Switch size="md" color="dark.4" onLabel={moonIcon} offLabel={sunIcon} onClick={toggleTheme} aria-label='Color theme switch'/>
+        <Group justify="space-between" gap="md" className="w-full rounded-md border border-accent/20 bg-cardBack/80 px-4 py-3 text-mainText shadow-sm">
+            <div>
+                <Text fw={700} size="sm">Theme</Text>
+                <Text size="xs" c="dimmed">{isDarkMode ? 'Dark cookbook mode' : 'Light cookbook mode'}</Text>
+            </div>
+            <Switch
+                size="md"
+                color="accent"
+                checked={isDarkMode}
+                onLabel={moonIcon}
+                offLabel={sunIcon}
+                onChange={(event) => setColorScheme(event.currentTarget.checked ? 'dark' : 'light')}
+                aria-label='Color theme switch'
+            />
+        </Group>
     );
 }

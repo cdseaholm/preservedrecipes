@@ -5,19 +5,13 @@ import { readApiResponse } from "../api-response";
 
 export async function AttemptCreatePost({ post }: { post: IPost }): Promise<{ status: boolean, message: string }> {
 
-    const urlToUse = process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL as string : '';
-
-    if (!urlToUse || urlToUse === '') {
-        return { status: false, message: `App URL is not configured` };
-    }
-
     if (!post) {
         return { status: false, message: `Post data is required` };
     }
 
     try {
 
-        const res = await fetch(`${urlToUse}/api/post/create`, {
+        const res = await fetch('/api/post/create', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

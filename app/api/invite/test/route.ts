@@ -111,7 +111,7 @@ export async function POST(req: NextRequest) {
 
         for (const item of newItems) {
             const sent: any = await resend.emails.send({
-                from: `Preserved Recipes <${emailFrom}>`,
+                from: `RecipeSafe <${emailFrom}>`,
                 to: item.newMember.familyMemberEmail,
                 subject: `Invitation from ${senderName}`,
                 react: InviteTemplate({ senderName, familyName: thisFamily.name, inviteLink: `${url}/invite?token=${item.newToken}`, firstName: item.newMember.familyMemberEmail.split('@')[0] }),

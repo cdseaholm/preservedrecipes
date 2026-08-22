@@ -21,12 +21,12 @@ export async function generateMetadata({ params }: NestedCommunityPostPageParams
 
         return createPageMetadata({
             title: post?.name || "Community Post",
-            description: post?.content?.join(" ").slice(0, 155) || "Read this Preserved Recipes community post and its related recipe conversation.",
+            description: post?.content?.join(" ").slice(0, 155) || "Read this RecipeSafe community post and its related recipe conversation.",
         });
     } catch {
         return createPageMetadata({
             title: "Community Post",
-            description: "Read this Preserved Recipes community post and its related recipe conversation.",
+            description: "Read this RecipeSafe community post and its related recipe conversation.",
         });
     }
 }

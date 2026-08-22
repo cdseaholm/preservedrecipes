@@ -7,14 +7,13 @@ import { PiCookieThin } from "react-icons/pi";
 import MenuPanelHooks from "@/components/hooks/menu/menu-panel-hooks";
 import { GiFamilyTree } from "react-icons/gi";
 import { MdHome, MdInfoOutline, MdOutlineAttachMoney } from "react-icons/md";
-import { RiCommunityLine } from "react-icons/ri";
 import { TfiWrite } from "react-icons/tfi";
 import { IUser } from "@/models/types/personal/user";
 import Link from "next/link";
 import { useStateStore } from "@/context/stateStore";
+import ThemeToggle from "@/components/buttons/themeToggle";
 
 const recipes = <PiCookieThin />;
-const communities = <RiCommunityLine />;
 const fam = <GiFamilyTree />;
 
 export default function MenuContent({ session, profile, signOutElement, signIn, userData, closeDrawer }: { profile: React.ReactNode; signOutElement: JSX.Element; session: Session | null, signIn: JSX.Element | null, userData: IUser | null, closeDrawer: () => void }) {
@@ -47,7 +46,6 @@ export default function MenuContent({ session, profile, signOutElement, signIn, 
     const buttons = [
         isAuthenticated && { value: 'Recipes', label: 'Recipes', icon: recipes, href: '/u/recipes' },
         isAuthenticated && userData?.userFamilyID && { value: 'Family', label: 'Family', icon: fam, href: familyRoute },
-        { value: 'Communities', label: 'Communities', icon: communities, href: '/communities' },
         { value: 'About', label: 'About', icon: <MdInfoOutline />, href: '/about' },
         { value: 'Pricing', label: 'Pricing', icon: <MdOutlineAttachMoney />, href: '/pricing' }
     ];
@@ -72,8 +70,11 @@ export default function MenuContent({ session, profile, signOutElement, signIn, 
                     <span className={`${textClass}`}>{button.label}</span>
                 </Link>
             ))}
-            <Divider my={'md'} c={'dark'} w={'100%'} h={'1px'} style={{
-                border: '1px solid rgba(0, 0, 0, 0.3)',
+            <div className="w-full px-2 py-2">
+                <ThemeToggle />
+            </div>
+            <Divider my={'md'} w={'100%'} h={'1px'} style={{
+                border: '1px solid color-mix(in srgb, var(--mainText) 24%, transparent)',
             }} />
             {buttons.map((button) => (
                 button && (
@@ -83,8 +84,8 @@ export default function MenuContent({ session, profile, signOutElement, signIn, 
                     </Link>
                 )
             ))}
-            <Divider my={'md'} c={'dark'} w={'100%'} h={'1px'} style={{
-                border: '1px solid rgba(0, 0, 0, 0.3)',
+            <Divider my={'md'} w={'100%'} h={'1px'} style={{
+                border: '1px solid color-mix(in srgb, var(--mainText) 24%, transparent)',
             }} />
             {authButtons.map((button) => {
                 if (!button) return null;

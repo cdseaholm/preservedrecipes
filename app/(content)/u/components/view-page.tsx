@@ -245,7 +245,7 @@ export default function ViewPage({ memberToView }: { memberToView: IUserView }) 
                                 )}
                             </>
                         )}
-                        title={memberToView.familyMemberName || 'Preserved Recipes Member'}
+                        title={memberToView.familyMemberName || 'RecipeSafe Member'}
                         description="Browse the recipes, communities, and shared family context this member has made visible to you."
                         aside={(
                             <Stack gap={4} align="flex-end">

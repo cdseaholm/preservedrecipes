@@ -9,10 +9,10 @@ export default function CTASection() {
     return (
         <div className="flex flex-col items-center justify-center w-full max-w-5xl mx-auto px-6 py-16 space-y-8 text-center bg-gradient-to-r from-accent to-[#d94f33] rounded-2xl shadow-2xl">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white">
-                Ready to Preserve Your Family&apos;s Recipes?
+                Help Shape RecipeSafe
             </h2>
             <p className="text-xl md:text-2xl text-white/90 max-w-2xl">
-                Join families around the world in keeping their culinary traditions alive
+                Start keeping family recipes safe and help guide what the app becomes next.
             </p>
 
             <button
@@ -20,7 +20,7 @@ export default function CTASection() {
                 className="flex items-center justify-center gap-3 bg-white hover:bg-gray-50 text-accent font-bold text-xl py-5 px-10 rounded-lg transition-all duration-300 hover:scale-105 shadow-xl hover:shadow-2xl group"
                 onClick={() => navigate('/register')}
             >
-                <span>Start Your Free Account</span>
+                <span>Get RecipeSafe</span>
                 <FaArrowRight className="group-hover:translate-x-1 transition-transform" aria-hidden="true" />
             </button>
 

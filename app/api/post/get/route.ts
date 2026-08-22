@@ -2,13 +2,14 @@ import connectDB from "@/lib/mongodb";
 import { IUser } from "@/models/types/personal/user";
 import MongoUser from "@/models/user";
 import { NextRequest, NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
-import { getServerSession } from "next-auth/next";
+import { getServerSession } from "next-auth";
 import { User } from "next-auth";
 import { ObjectId } from "mongodb";
 import { IPost } from "@/models/types/misc/post";
 import Community from "@/models/community";
 import Post from "@/models/post";
+import { authOptions } from "@/lib/auth/auth-options";
+import { normalizeEmail } from "@/lib/data-normalization";
 
 export async function GET(req: NextRequest) {
     const secret = process.env.NEXTAUTH_SECRET || '';
@@ -17,10 +18,9 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ status: 401, message: 'Incorrect secret', family: {} as IUser });
     }
 
-    const session = await getServerSession({ req, secret });
-    const token = await getToken({ req, secret });
+    const session = await getServerSession(authOptions);
 
-    if (!session || !token) {
+    if (!session) {
         return NextResponse.json({ status: 401, message: 'Unauthorized', postReturned: [] as IPost[] });
     }
 
@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
         await connectDB();
 
         const userSesh = session?.user as User;
-        const email = userSesh?.email || '';
+        const email = normalizeEmail(userSesh?.email);
         if (!email) {
             return NextResponse.json({ status: 401, message: 'Unauthorized', postReturned: [] as IPost[] });
         }

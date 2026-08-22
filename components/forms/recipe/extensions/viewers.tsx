@@ -139,7 +139,7 @@ export default function RecipeViewers({ recipeForm, width }: { recipeForm: Recip
                                 </Popover.Target>
                                 <Popover.Dropdown styles={{ dropdown: { backgroundColor: 'GrayText', color: 'white' } }} w={width / 2}>
                                     <p className="pb-2">{`Since this recipe is set to private, these are individuals who can view the recipe. If the recipe is also set to "Family" and not "Personal" the recipe will be private to the family.`}</p>
-                                    <p className="">{`Add the names or emails of the individuals by searching below. NOTE: They MUST be members of Preserved Recipes to be added here.`}</p>
+                                    <p className="">{`Add the names or emails of the individuals by searching below. NOTE: They MUST be members of RecipeSafe to be added here.`}</p>
                                 </Popover.Dropdown>
                             </Popover>
                         </div>

@@ -4,8 +4,9 @@ import { IUser } from "@/models/types/personal/user";
 import MongoUser from "@/models/user";
 import { getServerSession, User } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt"
 import { IIngredient } from "@/models/types/recipes/ingredient";
+import { authOptions } from "@/lib/auth/auth-options";
+import { normalizeEmail } from "@/lib/data-normalization";
 
 export async function POST(req: NextRequest) {
 
@@ -15,10 +16,9 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ status: 401, message: 'Unauthorized', ingredientsReturned: [] as IIngredient[] });
     }
 
-    const session = await getServerSession({ req, secret })
-    const token = await getToken({ req, secret });
+    const session = await getServerSession(authOptions)
 
-    if (!session || !token) {
+    if (!session) {
         return NextResponse.json({ status: 401, message: 'Unauthorized', ingredientsReturned: [] as IIngredient[] });
     }
 
@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
         const body = await req.json();
         await connectDB();
         const userSesh = session?.user as User;
-        const email = userSesh ? userSesh.email : '';
+        const email = normalizeEmail(userSesh?.email);
         if (email === '') {
             return NextResponse.json({ status: 401, message: 'Unauthorized', ingredientsReturned: [] as IIngredient[] });
         }
@@ -35,10 +35,6 @@ export async function POST(req: NextRequest) {
 
         if (!user) {
             return NextResponse.json({ status: 404, message: 'User not found', ingredientsReturned: [] as IIngredient[] });
-        }
-
-        if (user._id.toString() !== token.sub) {
-            return NextResponse.json({ status: 401, message: 'Unauthorized', ingredientsReturned: [] as IIngredient[] });
         }
 
         const ingredients = body.newIngredients as IIngredient[];

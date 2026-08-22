@@ -2,12 +2,12 @@ import { Section, Column, Link, Text, Row, Container, Heading, } from "@react-em
 import BaseEmailTemplate from "./base-email-template";
 
 export default function InviteTemplate({ senderName, familyName, inviteLink, firstName }: { senderName: string; familyName: string; inviteLink: string; firstName: string }) {
-    const previewText = `${senderName} has invited you to join their family ${familyName} on Preserved Recipes`;
+    const previewText = `${senderName} has invited you to join their family ${familyName} on RecipeSafe`;
 
     return (
         <BaseEmailTemplate
             previewText={previewText}
-            emailTitle={`Join ${familyName} on Preserved Recipes`}
+            emailTitle={`Join ${familyName} on RecipeSafe`}
         >
             <Container className="mx-auto" width={'100%'} style={{ minHeight: '100vh' }}>
                 <Section className="bg-[#ffedd9] rounded-[8px] p-[60px_40px] shadow-[0_4px_6px_rgba(0,0,0,0.1)]">
@@ -28,18 +28,14 @@ export default function InviteTemplate({ senderName, familyName, inviteLink, fir
                             </Link>
                             <Text className="text-[14px] font-[Arial] text-[#666666] mt-0">
                                 Best,<br />
-                                The Preserved Recipes Team
+                                The RecipeSafe Team
                             </Text>
                             <Text className="text-[12px] font-[Palatino] text-[#857b7b] mt-[20px]">
                                 Learn more about{' '}
-                                <Link title="Go to Preserved Recipes Homepage" href="https://preservedrecipes.com" className='text-[#6b4423] no-underline font-semibold'>
-                                    Preserved Recipes
+                                <Link title="Go to RecipeSafe Homepage" href="https://getrecipesafe.com" className='text-[#6b4423] no-underline font-semibold'>
+                                    RecipeSafe
                                 </Link>
-                                {' '}or explore our{' '}
-                                <Link title="Go to Preserved Recipes Communities" href="https://preservedrecipes.com/communities" className='text-[#6b4423] no-underline font-semibold'>
-                                    Communities
-                                </Link>
-                                {' '}to share recipes and tips with others.
+                                {' '}and keep family recipes safe.
                             </Text>
                         </Column>
                     </Row>

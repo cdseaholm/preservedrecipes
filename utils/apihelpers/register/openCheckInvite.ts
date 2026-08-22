@@ -5,14 +5,12 @@ import { readApiResponse } from "../api-response";
 
 export async function OpenInvite({ token }: { token: string }) {
 
-    const urlToUse = process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL as string : '';
-
-    if (urlToUse === '' || token === '') {
-        return { status: false, message: urlToUse === '' ? 'Issue with url' : 'Issue with token', invite: {} as IInvite, userExists: false };
+    if (token === '') {
+        return { status: false, message: 'Issue with token', invite: {} as IInvite, userExists: false };
     }
 
     try {
-        const inviteRes = await fetch(`${urlToUse}/api/invite/${token}`, {
+        const inviteRes = await fetch(`/api/invite/${token}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'

@@ -21,7 +21,6 @@ type DataType = 'ingredients' | 'recipes' | 'family' | 'suggestions';
 export function useEnsureData(dataType: DataType, autoLoad = false) {
     const [isLoading, setIsLoading] = useState(false);
     const [isReady, setIsReady] = useState(false);
-    const urlToUse = process.env.NEXT_PUBLIC_BASE_URL || '';
     const ingredientsLoaded = useDataStore(state => state.ingredientNames.length > 0);
     const recipesLoaded = useUserStore(state => state.userRecipes.length > 0);
     const familyLoaded = useFamilyStore(state => !!state.family);
@@ -42,14 +41,14 @@ export function useEnsureData(dataType: DataType, autoLoad = false) {
         
         setIsLoading(true);
         try {
-            await ensureDataLoaded(urlToUse, dataType);
+            await ensureDataLoaded(dataType);
             setIsReady(true);
         } catch (error) {
             console.error(`Error ensuring ${dataType} data:`, error);
         } finally {
             setIsLoading(false);
         }
-    }, [hasData, isReady, dataType, urlToUse]);
+    }, [hasData, isReady, dataType]);
 
     useEffect(() => {
         if (autoLoad) {

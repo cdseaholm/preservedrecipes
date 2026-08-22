@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: FamilyMembersPageParams): Pro
 
     return createPageMetadata({
         title: `${family.name} Members`,
-        description: `Manage and view members in the ${family.name} family recipe space on Preserved Recipes.`,
+        description: `Manage and view members in the ${family.name} family recipe space on RecipeSafe.`,
         robots: { index: false, follow: true },
     });
 }

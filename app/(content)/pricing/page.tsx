@@ -10,7 +10,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
     return createPageMetadata({
         title: "Pricing",
-        description: "Compare Preserved Recipes pricing options for saving personal recipes, building family spaces, and sharing collections.",
+        description: "Review RecipeSafe pricing notes for early access recipe saving and family recipe preservation.",
     });
 }
 

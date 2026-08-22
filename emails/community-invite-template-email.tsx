@@ -12,12 +12,12 @@ export default function CommunityInviteTemplate({
     profileLink: string;
     firstName: string;
 }) {
-    const previewText = `${senderName} has invited you to join ${communityName} on Preserved Recipes`;
+    const previewText = `${senderName} has invited you to join ${communityName} on RecipeSafe`;
 
     return (
         <BaseEmailTemplate
             previewText={previewText}
-            emailTitle={`Join ${communityName} on Preserved Recipes`}
+            emailTitle={`Join ${communityName} on RecipeSafe`}
         >
             <Container className="mx-auto" width={'100%'} style={{ minHeight: '100vh' }}>
                 <Section className="bg-[#ffedd9] rounded-[8px] p-[60px_40px] shadow-[0_4px_6px_rgba(0,0,0,0.1)]">
@@ -38,7 +38,7 @@ export default function CommunityInviteTemplate({
                             </Link>
                             <Text className="text-[14px] font-[Arial] text-[#666666] mt-0">
                                 Best,<br />
-                                The Preserved Recipes Team
+                                The RecipeSafe Team
                             </Text>
                         </Column>
                     </Row>
