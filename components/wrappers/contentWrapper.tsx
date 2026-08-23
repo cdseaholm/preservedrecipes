@@ -12,7 +12,7 @@ export default function ContentWrapper({ children, paddingNeeded }: ContentWrapp
 
     const toRender = (
         <div 
-            className={`flex flex-col justify-start items-center gap-4 w-full min-w-[300px] min-h-[80dvh] ${paddingNeeded ? 'px-3 pb-4 pt-8 sm:px-5' : ''}`}
+            className={`mx-auto flex w-full min-w-[300px] max-w-6xl flex-col items-center justify-start gap-3 sm:gap-5 ${paddingNeeded ? 'px-2 pb-4 pt-5 sm:px-5 sm:pb-8 sm:pt-8' : ''}`}
         >
             {children}
         </div>

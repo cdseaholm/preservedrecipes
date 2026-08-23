@@ -1,7 +1,7 @@
 'use client'
 
 import { useWindowSizes } from "@/context/width-height-store";
-import { Badge, Button, Divider, Group, Tabs, rem } from "@mantine/core";
+import { Button, Group, Tabs, rem } from "@mantine/core";
 import { IconChartBar, IconChartLine, IconInbox, IconSettings, IconSquareChevronRight } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -33,10 +33,10 @@ export default function UserSpaceTabs({
     ] as const;
 
     return (
-        <Group gap="sm" wrap={mobile ? 'wrap' : 'nowrap'} align="stretch" w="100%">
+        <Group gap="xs" wrap="nowrap" align="stretch" w="100%" className="rounded-md border border-accent/10 bg-mainBack/45 p-1.5 sm:p-2">
             <Tabs
-                w={showRecipesLink && !mobile ? 'auto' : '100%'}
-                className={showRecipesLink && !mobile ? 'flex-1' : undefined}
+                w={showRecipesLink ? 'auto' : '100%'}
+                className={showRecipesLink ? 'min-w-0 flex-1' : undefined}
                 h="fit-content"
                 value={activeTab}
                 variant="pills"
@@ -54,23 +54,26 @@ export default function UserSpaceTabs({
                     }
                 }}
             >
-                <div className={mobile ? "flex w-full flex-col items-start justify-start space-y-1 px-4" : "flex h-content w-full flex-row items-end justify-between px-2"}>
-                    <Tabs.List w="100%" grow>
+                <div className="flex h-content w-full flex-row items-end justify-between">
+                    <Tabs.List w="100%" grow className="min-w-0">
                         {tabs.map((tab) => (
                             <Tabs.Tab
                                 key={tab.value}
                                 value={tab.value}
                                 leftSection={mobile ? undefined : tab.label}
-                                rightSection={'count' in tab && tab.count > 0 ? (
-                                    <Badge size="xs" variant="filled" color="red" circle>
-                                        {tab.count}
-                                    </Badge>
-                                ) : undefined}
-                                styles={mobile ? { tabLabel: { fontSize: '12px', fontWeight: 500 } } : undefined}
+                                styles={mobile ? { tabLabel: { fontSize: '13px', fontWeight: 600 } } : undefined}
                                 title={tab.labelTitle}
-                                bd="1px solid #ceb5a4ff"
+                                bd={mobile ? "0" : "1px solid var(--surfaceBorder)"}
+                                className={mobile ? "min-w-0 px-1.5" : undefined}
                             >
-                                {mobile ? tab.label : tab.labelTitle}
+                                <span className="relative inline-flex min-h-4 min-w-4 items-center justify-center">
+                                    {mobile ? tab.label : tab.labelTitle}
+                                    {'count' in tab && tab.count > 0 ? (
+                                        <span className="absolute -right-3 -top-2 inline-flex size-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold leading-none text-white">
+                                            {tab.count}
+                                        </span>
+                                    ) : null}
+                                </span>
                             </Tabs.Tab>
                         ))}
                     </Tabs.List>
@@ -79,17 +82,16 @@ export default function UserSpaceTabs({
 
             {showRecipesLink && (
                 <>
-                    {!mobile && <Divider orientation="vertical" />}
                     <Button
                         type="button"
                         variant="light"
                         color="accent"
-                        h={rem(36)}
-                        bd="1px solid #ceb5a4ff"
+                        h={mobile ? rem(37) : rem(36)}
+                        bd="1px solid var(--surfaceBorder)"
                         radius="md"
-                        rightSection={<IconSquareChevronRight size={18} />}
+                        rightSection={<IconSquareChevronRight size={mobile ? 15 : 18} />}
                         onClick={() => router.push('/u/recipes')}
-                        className={mobile ? 'w-full' : 'shrink-0'}
+                        className={mobile ? 'w-[5.6rem] shrink-0 px-2 text-xs' : 'shrink-0'}
                     >
                         Recipes
                     </Button>

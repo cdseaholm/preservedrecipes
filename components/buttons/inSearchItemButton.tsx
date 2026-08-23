@@ -19,19 +19,19 @@ export default function InSearchItemButton({
 }) {
 
     return (
-        <div className={`flex flex-row w-[100%] items-center justify-center ${edit ? 'pl-3' : 'px-4'} text-sm lg:text-base hover:bg-gray-200 hover:text-highlight p-2 text-start border border-accent/30 rounded-md cursor-pointer mb-2`} key={item}>
+        <div className={`mb-2 flex w-full flex-row items-center justify-center ${edit ? 'pl-3 pr-2' : 'px-2'} rounded-md border border-accent/15 bg-cardBack/85 p-2 text-start text-sm text-mainText shadow-sm transition hover:-translate-y-0.5 hover:border-accent/35 hover:bg-cardBack hover:shadow-[var(--tightShadow)] lg:text-base`} key={item}>
             {edit ? (
                 <button
                     value={item}
                     type="button"
-                    className={`flex flex-row w-full h-content text-ellipsis text-start justify-start space-x-2 cursor-pointer`}
+                    className="flex h-content w-full cursor-pointer flex-row justify-start gap-2 text-start"
                     onClick={handleChecked}
                     aria-label={`Select ${item}`}
                     aria-pressed={checked}
                 >
                     <span
                         aria-hidden="true"
-                        className={`mt-0.5 size-4 shrink-0 rounded border border-accent/50 ${checked ? 'bg-blue-500 shadow-[inset_0_0_0_3px_white]' : 'bg-white'}`}
+                        className={`mt-0.5 size-4 shrink-0 rounded border border-accent/50 ${checked ? 'bg-accent shadow-[inset_0_0_0_3px_white]' : 'bg-white'}`}
                     />
                     {children}
                 </button>
@@ -39,12 +39,12 @@ export default function InSearchItemButton({
                 <button 
                     type="button" 
                     value={item} 
-                    className={`flex flex-row w-full h-content text-ellipsis text-start items-center cursor-pointer justify-between`} 
+                    className="flex h-content w-full cursor-pointer flex-row items-center justify-between gap-2 text-start"
                     onClick={handleSeeItem}
                     aria-label={`View ${item}`}
                 >
                     {children}
-                    <BiChevronRight className="h-fit w-fit cursor-pointer" size={16} aria-hidden="true" />
+                    <BiChevronRight className="h-fit w-fit shrink-0 cursor-pointer text-accent" size={18} aria-hidden="true" />
                 </button>
             )}
         </div>

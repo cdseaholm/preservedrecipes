@@ -22,12 +22,11 @@ type DashboardCardProps = {
 export function DashboardCard({ children, className = "" }: DashboardCardProps) {
     return (
         <Card
-            shadow="md"
-            padding="xl"
+            padding="sm"
             radius="md"
             withBorder
             w="100%"
-            className={`flex flex-1 flex-col ${className}`}
+            className={`flex flex-1 flex-col border-[var(--surfaceBorder)] bg-[var(--surfaceRaised)] shadow-[var(--softShadow)] backdrop-blur-sm ${className}`}
         >
             {children}
         </Card>
@@ -44,18 +43,18 @@ type DashboardHeaderProps = {
 
 export function DashboardHeader({ icon, eyebrow, title, description, aside }: DashboardHeaderProps) {
     return (
-        <Group justify="space-between" align="flex-start" gap="md" wrap="wrap">
-            <Stack gap={6} className="min-w-0">
+        <Group justify="space-between" align="flex-start" gap="md" wrap="wrap" className="rounded-md bg-mainBack/45 p-3 ring-1 ring-accent/10 sm:p-4">
+            <Stack gap={6} className="min-w-0 flex-1">
                 <Group gap="xs" wrap="wrap">
-                    <ThemeIcon variant="light" color="accent" size="lg" radius="md">
+                    <ThemeIcon variant="filled" color="accent" size="lg" radius="md">
                         {icon}
                     </ThemeIcon>
                     {eyebrow}
                 </Group>
-                <Title order={2} c="mainText" className="break-words">
+                <Title order={2} c="mainText" className="break-words text-2xl sm:text-3xl">
                     {title}
                 </Title>
-                <Text c="dimmed" maw={rem(680)}>
+                <Text c="dimmed" maw={rem(680)} size="sm" className="sm:text-base">
                     {description}
                 </Text>
             </Stack>
@@ -73,27 +72,27 @@ export type DashboardStat = {
 
 export function DashboardStatsGrid({ stats }: { stats: DashboardStat[] }) {
     return (
-        <SimpleGrid cols={{ base: 1, xs: 2, md: 4 }} spacing="md">
+        <SimpleGrid cols={{ base: 2, md: 4 }} spacing={{ base: "xs", sm: "md" }}>
             {stats.map(stat => (
                 <Box
                     key={String(stat.label)}
-                    p="md"
-                    className="rounded-md border border-accent/20 bg-secondary/60"
+                    p={{ base: "sm", sm: "md" }}
+                    className="rounded-md border border-accent/15 bg-[var(--surfaceWash)] shadow-[var(--tightShadow)]"
                 >
-                    <Group justify="space-between" align="flex-start">
-                        <Stack gap={2}>
-                            <Text size="sm" c="dimmed" fw={500}>
+                    <Group justify="space-between" align="flex-start" gap="xs" wrap="nowrap">
+                        <Stack gap={2} className="min-w-0">
+                            <Text size="xs" c="dimmed" fw={700} tt="uppercase" className="truncate">
                                 {stat.label}
                             </Text>
-                            <Text size="2rem" fw={800} c="accent" lh={1}>
+                            <Text size="clamp(1.5rem, 6vw, 2rem)" fw={800} c="accent" lh={1}>
                                 {stat.value}
                             </Text>
                         </Stack>
-                        <ThemeIcon variant="light" color="accent" size="lg" radius="md">
+                        <ThemeIcon variant="light" color="accent" size="md" radius="md" className="shrink-0">
                             {stat.icon}
                         </ThemeIcon>
                     </Group>
-                    <Text size="sm" c="dimmed" mt="sm" truncate>
+                    <Text size="xs" c="dimmed" mt="sm" lineClamp={1}>
                         {stat.description}
                     </Text>
                 </Box>

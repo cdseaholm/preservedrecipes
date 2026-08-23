@@ -63,7 +63,7 @@ export default function FamilyDashboard({ family }: { family: IFamily }) {
 
             <Divider />
 
-            <Box p="md" style={{ flex: 1 }} className="rounded-md border border-dashed border-accent/30 bg-mainBack/50">
+            <Box p="md" style={{ flex: 1 }} className="rounded-md border border-dashed border-accent/25 bg-[var(--surfaceWash)] shadow-[var(--tightShadow)]">
                 <Group justify="space-between" mb="xs">
                     <Text fw={700}>Family Activity</Text>
                     <Badge variant="light" color="gray">Coming soon</Badge>

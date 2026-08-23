@@ -18,16 +18,18 @@ export default function CardTemplate({ recipeProps, communityProps, index, userI
 
     return (
         (recipeProps || communityProps) && (
-            <div className="w-full h-full p-4 flex flex-col justify-start items-start border-r border-accent/30 rounded-md">
-                <div className="flex flex-row items-center justify-between mb-2 w-full">
-                    <div className="flex flex-row items-center justify-start gap-2">
-                        {index + 1}.
-                        <h2 className="text-lg font-semibold">{(recipeProps && recipeProps.name) || (communityProps && communityProps.name)}</h2>
+            <div className="flex h-full w-full flex-col items-start justify-start gap-2 rounded-md p-2 sm:p-3">
+                <div className="flex w-full flex-row items-start justify-between gap-3">
+                    <div className="flex min-w-0 flex-row items-start justify-start gap-2">
+                        <span className="mt-0.5 inline-flex size-6 shrink-0 items-center justify-center rounded-md bg-accent/10 text-xs font-bold text-accent">
+                            {index + 1}
+                        </span>
+                        <h2 className="min-w-0 break-words text-base font-semibold leading-snug text-mainText sm:text-lg">{(recipeProps && recipeProps.name) || (communityProps && communityProps.name)}</h2>
                     </div>
-                    <span className="text-xs text-gray-500">{rating ? rating : 'No Rating'}</span>
+                    <span className="shrink-0 rounded-md bg-mainBack px-2 py-1 text-xs font-medium text-mainText/65">{rating ? rating : 'No rating'}</span>
                 </div>
                 {recipeProps ? (
-                    <div className="flex flex-row items-center justify-between gap-2 mb-2 w-full px-4">
+                    <div className="flex w-full flex-row flex-wrap items-center justify-between gap-2 pl-8 sm:pl-8">
                         <Tooltip label={
                             recipeProps.tags && recipeProps.tags.length > 0 ? (
                                 <ul className="list-disc list-inside">
@@ -38,24 +40,24 @@ export default function CardTemplate({ recipeProps, communityProps, index, userI
                             ) : (
                                 "No tags available"
                             )} w={'auto'} withArrow>
-                            <p>{recipeProps.recipeType ? <span>{recipeProps.recipeType}</span> : <span>No Type</span>}</p>
+                            <p className="rounded-md border border-accent/10 bg-mainBack/70 px-2 py-1 text-xs font-medium text-mainText/70">{recipeProps.recipeType ? <span>{recipeProps.recipeType}</span> : <span>No type</span>}</p>
                         </Tooltip>
 
-                        <div className="flex flex-row items-center justify-start gap-4 w-content">
+                        <div className="flex w-content flex-row items-center justify-start gap-3">
                             {recipeProps.creatorID === userInfo?._id ? (
-                                <p className={recipeProps.secret ? "text-red-500" : "text-green-500"}>{recipeProps.secret}</p>
+                                <p className={`rounded-md px-2 py-1 text-xs font-medium ${recipeProps.secret ? "bg-red-50 text-red-700" : "bg-green-50 text-green-700"}`}>{recipeProps.secret ? 'Secret' : 'Public'}</p>
                             ) : (
                                 // <span className="text-xs text-gray-500"><FaSave /></span>
                                 null
                             )}
-                            <span className={`flex flex-row justify-around items-center w-content gap-2 text-xs ${isFavoritedByUser ? 'text-red-500' : 'text-gray-500'}`}>
+                            <span className={`flex w-content flex-row items-center justify-around gap-1.5 text-xs font-medium ${isFavoritedByUser ? 'text-red-500' : 'text-mainText/55'}`}>
                                 {isFavoritedByUser ? <IoHeart size={22}/> : <IoHeartOutline size={22} />} {favoriteCount}
                             </span>
                         </div>
                     </div>
                 ) : communityProps ? (
-                    <div className="flex flex-row items-center justify-between gap-2 mb-2 w-full px-8">
-                        <span className="text-xs text-gray-500"><FiUsers /> {communityProps.communityMemberIDs.length || 0}</span>
+                    <div className="flex w-full flex-row items-center justify-between gap-2 pl-8">
+                        <span className="inline-flex items-center gap-1 text-xs text-mainText/60"><FiUsers /> {communityProps.communityMemberIDs.length || 0}</span>
                         <span className={communityProps.privacyLevel === "public" ? "text-green-500" : communityProps.privacyLevel === "private" ? "text-red-500" : "text-yellow-500"}><FaLock /> {communityProps.privacyLevel}</span>
                     </div>
                 ) : null}
