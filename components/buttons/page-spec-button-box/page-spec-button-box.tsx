@@ -6,11 +6,11 @@ export default function PageSpecButtonBox({ leftHandButtons, rightHandButtons, l
 
     return (
 
-        <div className={`flex h-fit w-full flex-col gap-3 p-0 sm:flex-row sm:items-end sm:p-2 ${alignment} sm:gap-4 ${extraCss ? extraCss : ''}`}>
-            <div className="flex h-content w-full flex-row flex-wrap items-center justify-start gap-2 sm:w-content sm:gap-7" aria-label={leftLabel}>
+        <div className={`flex h-fit w-full flex-col gap-2 rounded-md border border-accent/10 bg-mainBack/45 p-2 sm:flex-row sm:items-center ${alignment} sm:gap-4 ${extraCss ? extraCss : ''}`}>
+            <div className="flex h-content w-full flex-row flex-wrap items-center justify-start gap-2 sm:w-content sm:gap-3" aria-label={leftLabel}>
                 {leftHandButtons}
             </div>
-            <div className="flex h-content w-full flex-row flex-wrap items-center justify-start gap-2 sm:w-content sm:justify-end sm:gap-7" aria-label={rightLabel}>
+            <div className="flex h-content w-full flex-row flex-wrap items-center justify-start gap-2 sm:w-content sm:justify-end sm:gap-3" aria-label={rightLabel}>
                 {rightHandButtons}
             </div>
         </div>

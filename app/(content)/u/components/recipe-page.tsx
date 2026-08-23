@@ -113,7 +113,7 @@ export default function RecipePage({
                                     index={2}
                                     leftSection={
                                         edit ? (
-                                            <button type="button" onClick={toggleEdit} className={`flex w-full flex-row items-center justify-center rounded-md bg-stone-100 px-2 py-1 text-sm text-blue-500 hover:bg-stone-300 hover:text-blue-300 sm:w-auto sm:text-base`} aria-label="Toggle Edit">
+                                            <button type="button" onClick={toggleEdit} className="flex h-9 w-full flex-row items-center justify-center gap-1 rounded-md border border-accent/15 bg-cardBack px-3 text-sm font-medium text-accent transition hover:bg-accent/10 sm:w-auto sm:text-base" aria-label="Toggle Edit">
                                                 <BiCheck />
                                                 <p>{'Done'}</p>
                                             </button>
@@ -131,7 +131,7 @@ export default function RecipePage({
                                 />
                             }
                             editButtons={edit && (
-                                <div className="flex flex-row justify-between items-center w-full px-4 py-6">
+                                <div className="flex w-full flex-row items-center justify-between rounded-md border border-accent/10 bg-mainBack/45 px-3 py-2">
                                     <Checkbox
                                         checked={checkedRecipes.size === filteredAndSorted.length && filteredAndSorted.length > 0}
                                         className="cursor-pointer w-content"

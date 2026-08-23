@@ -15,7 +15,7 @@ export default function FamilyRecipesSearchBar({recipeSearch, toggleEdit, edit, 
             index={0}
             leftSection={
                 edit ? (
-                    <button type="button" onClick={toggleEdit} className={`h-content flex w-full flex-row items-center justify-center space-x-1 rounded-md p-1 text-sm text-blue-500 hover:bg-gray-100 hover:text-blue-300 sm:w-auto sm:text-base`} aria-label="Toggle Edit">
+                    <button type="button" onClick={toggleEdit} className="flex h-9 w-full flex-row items-center justify-center gap-1 rounded-md border border-accent/15 bg-cardBack px-3 text-sm font-medium text-accent transition hover:bg-accent/10 sm:w-auto sm:text-base" aria-label="Toggle Edit">
                         <BiCheck />
                         <p>{'Done'}</p>
                     </button>

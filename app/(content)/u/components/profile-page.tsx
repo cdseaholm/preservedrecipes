@@ -126,8 +126,7 @@ export default function ProfilePage({
         <NavWrapper userInfo={user}>
             <ContentWrapper containedChild={true} paddingNeeded={true}>
                 <UserSpaceTemplate user={user} familyData={familyData} completeness={completeness} />
-                {/* Tabs Section - Takes remaining space */}
-                <DashboardCard>
+                <DashboardCard className="gap-2">
                     <Tabs
                         value={activeTab}
                         onChange={(value) => setActiveTab((value || 'activity') as ProfilePanel)}
@@ -142,9 +141,9 @@ export default function ProfilePage({
                     >
                         <UserSpaceTabs value={activeVisibleTab} inboxCount={inboxCount} showRecipesLink onTabChange={handleMainTabChange} />
 
-                        <Divider mt={12} />
+                        <Divider mt={8} />
 
-                        <Box pt="sm" style={{ flex: 1, minHeight: 0, position: 'relative' }}>
+                        <Box pt={8} style={{ flex: 1, minHeight: 0, position: 'relative' }}>
                             <Tabs.Panel value="activity">
                                 <DashboardOverview
                                     recentRecipes={recentRecipes}
@@ -165,7 +164,7 @@ export default function ProfilePage({
                             </Tabs.Panel>
 
                             <Tabs.Panel value="history">
-                                <Card withBorder radius="md" padding="md" className="mb-4 bg-mainBack/60">
+                                <Card withBorder radius="md" padding="md" className="mb-4 border-accent/15 bg-mainBack/60">
                                     <button
                                         type="button"
                                         className="flex items-center gap-2 text-sm font-medium text-accent hover:underline"
@@ -219,18 +218,18 @@ function DashboardOverview({
 }) {
 
     return (
-        <Stack gap="xl" w={'100%'} h={'100%'}>
-            <section className="flex min-h-[420px] w-full flex-col rounded-md border border-accent/30 bg-cardBack sm:min-h-[520px]">
-                <Group justify="space-between" align="center" gap="sm" className="p-4">
+        <Stack gap="md" w={'100%'} h={'100%'}>
+            <section className="flex min-h-[390px] w-full flex-col rounded-md border border-accent/15 bg-cardBack/75 shadow-[var(--tightShadow)] sm:min-h-[520px]">
+                <Group justify="space-between" align="center" gap="xs" wrap="nowrap" className="border-b border-accent/10 p-3 sm:p-4">
                     <div className="min-w-0">
                         <Text fw={800} size="lg">Recent activity</Text>
-                        <Text size="sm" c="dimmed">A quick look at what you have been preserving lately.</Text>
+                        <Text size="sm" c="dimmed" lineClamp={2}>A quick look at what you have been preserving lately.</Text>
                     </div>
-                    <Button type="button" variant="light" color="accent" leftSection={<IconHistory size={16} />} onClick={onOpenHistory} className="shrink-0">
+                    <Button type="button" variant="light" color="accent" size="xs" leftSection={<IconHistory size={15} />} onClick={onOpenHistory} className="shrink-0">
                         See more
                     </Button>
                 </Group>
-                <div className="w-full flex-1 p-0 shadow-none sm:p-3 sm:shadow-[inset_0_2px_8px_rgba(0,0,0,0.10),inset_0_-2px_8px_rgba(0,0,0,0.10)]">
+                <div className="w-full flex-1 p-1.5 sm:p-3">
                     <RecentActivity recentRecipes={recentRecipes} reviews={reviews} limit={6} />
                 </div>
             </section>

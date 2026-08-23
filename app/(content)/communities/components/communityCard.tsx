@@ -55,11 +55,11 @@ export default function CommunityCard({ community, index, userInfo }: { communit
     };
 
     const body = (
-        <article className="w-full border border-mainText/20 bg-cardBack text-mainText rounded-md p-3 sm:p-4 hover:border-blue-300 hover:bg-white/80 transition-colors">
+        <article className="w-full rounded-md border border-accent/15 bg-cardBack/90 p-3 text-mainText shadow-sm transition hover:-translate-y-0.5 hover:border-accent/35 hover:bg-cardBack hover:shadow-[var(--tightShadow)] sm:p-4">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div className="min-w-0 space-y-2 text-left">
                     <div className="flex flex-wrap items-center gap-2">
-                        <h3 className="text-base sm:text-lg font-semibold truncate">{community.name}</h3>
+                        <h3 className="min-w-0 break-words text-base font-semibold leading-snug sm:text-lg">{community.name}</h3>
                         <span className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-xs ${label.className}`}>
                             {community.privacyLevel === 'passwordProtected' ? <BiLockAlt /> : community.privacyLevel === 'restricted' ? <BiMessageRounded /> : <BiShield />}
                             {label.text}
@@ -72,7 +72,7 @@ export default function CommunityCard({ community, index, userInfo }: { communit
                         ))}
                     </div>
                 </div>
-                <div className="flex shrink-0 flex-row items-center justify-between gap-3 sm:flex-col sm:items-end">
+                <div className="flex shrink-0 flex-row items-center justify-between gap-3 border-t border-accent/10 pt-2 sm:flex-col sm:items-end sm:border-t-0 sm:pt-0">
                     <p className="text-xs sm:text-sm text-mainText/65">{community.communityMemberIDs.length} members</p>
                     <span className="inline-flex items-center gap-1 text-sm text-blue-600">
                         {isMember || community.privacyLevel === 'public' || community.privacyLevel === 'hidden' ? 'Open' : 'Join'}
@@ -84,11 +84,11 @@ export default function CommunityCard({ community, index, userInfo }: { communit
     );
 
     return community.privacyLevel === 'public' || community.privacyLevel === 'hidden' || isMember ? (
-        <Link key={index} href={`/communities/${community._id}`} className="mb-3 block w-full">
+        <Link key={index} href={`/communities/${community._id}`} className="block w-full">
             {body}
         </Link>
     ) : (
-        <button key={index} type="button" onClick={handleProtectedAction} className="mb-3 block w-full cursor-pointer text-left" aria-label={`Join ${community.name}`}>
+        <button key={index} type="button" onClick={handleProtectedAction} className="block w-full cursor-pointer text-left" aria-label={`Join ${community.name}`}>
             {body}
         </button>
     );

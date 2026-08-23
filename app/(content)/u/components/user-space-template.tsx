@@ -13,15 +13,12 @@ import {
     Progress,
     Stack,
     Text,
-    ThemeIcon,
     Tooltip,
-    rem,
 } from "@mantine/core";
 import {
     IconCheck,
     IconEdit,
     IconShare,
-    IconUserCircle,
     IconUsers,
 } from "@tabler/icons-react";
 import Link from "next/link";
@@ -52,112 +49,92 @@ export default function UserSpaceTemplate({
     return (
         <div className="flex w-full flex-col items-center justify-start">
             <DashboardCard>
-                <Stack gap="md" style={{ flex: 1, minHeight: 0 }} w="100%">
-                    <Group justify="space-between" align="flex-start" gap="md" wrap="wrap">
-                        <Group gap="md" align="flex-start" className="min-w-0">
+                <Stack gap="sm" style={{ flex: 1, minHeight: 0 }} w="100%">
+                    <div className="grid w-full grid-cols-[minmax(0,1fr)_auto] gap-3 rounded-md bg-mainBack/45 p-3 ring-1 ring-accent/10 md:grid-cols-[minmax(0,1fr)_260px] md:items-start md:p-4">
+                        <div className="grid min-w-0 grid-cols-[3.75rem_minmax(0,1fr)] items-center gap-3 sm:grid-cols-[4.5rem_minmax(0,1fr)]">
                             <Avatar
                                 src={user.profileImage}
-                                size={72}
+                                size={60}
                                 radius="md"
                                 alt={user.name || 'User avatar'}
+                                className="shrink-0 ring-2 ring-accent/15 sm:size-[72px]"
                             >
                                 {user.name?.charAt(0).toUpperCase()}
                             </Avatar>
 
-                            <Stack gap={6} className="min-w-0">
-                                <Group gap="xs">
-                                    <ThemeIcon variant="light" color="accent" radius="md">
-                                        <IconUserCircle size={18} />
-                                    </ThemeIcon>
-                                    {familyData && (
-                                        <Badge leftSection={<IconUsers size={14} />} variant="light" color="accent">
-                                            {familyData.name}
-                                        </Badge>
-                                    )}
-                                </Group>
-                                <Text component="h1" fw={800} size="xl" className="truncate text-mainText">
+                            <Stack gap={4} className="min-w-0">
+                                {familyData && (
+                                    <Badge leftSection={<IconUsers size={14} />} variant="light" color="accent" className="w-fit max-w-full">
+                                        {familyData.name}
+                                    </Badge>
+                                )}
+                                <Text component="h1" fw={800} className="break-words text-xl leading-tight text-mainText sm:text-2xl">
                                     {user.name || 'Your Profile'}
                                 </Text>
-                                <Text size="sm" c="dimmed" className="truncate">
+                                <Text size="sm" c="dimmed" className="break-all leading-snug sm:break-normal">
                                     {user.email}
                                 </Text>
-                                <Text size="sm" c="dimmed" maw={rem(680)}>
-                                    {user.bio || 'Your home base for profile details, saved recipes, favorites, and the recipes you are preserving.'}
-                                </Text>
                             </Stack>
-                        </Group>
+                        </div>
 
-                        <Stack gap="xs" align="flex-end" className="w-full sm:w-auto">
-                            <Group gap="xs" visibleFrom="sm">
+                        <div className="flex w-[8.25rem] shrink-0 flex-col gap-1.5 max-[430px]:w-9 md:w-auto md:flex-row md:justify-end">
+                            <Tooltip label={primaryActionLabel} withArrow>
                                 <Button
                                     component={Link}
                                     href={primaryActionHref}
                                     variant="filled"
                                     color="blue.5"
+                                    size="sm"
+                                    aria-label={primaryActionLabel}
                                     leftSection={<IconEdit size={16} />}
+                                    className="h-9 w-full px-3 max-[430px]:w-9 max-[430px]:px-0 max-[430px]:[&_.mantine-Button-inner]:justify-center max-[430px]:[&_.mantine-Button-label]:hidden max-[430px]:[&_.mantine-Button-section]:m-0 md:w-auto"
                                 >
                                     {primaryActionLabel}
                                 </Button>
-                                <CopyButton value={profileUrl} timeout={2000}>
-                                    {({ copied, copy }) => (
-                                        <Tooltip label={copied ? 'Copied!' : 'Share profile'} withArrow>
-                                            <Button
-                                                variant="light"
-                                                color={copied ? 'teal' : 'accent'}
-                                                onClick={copy}
-                                                leftSection={copied ? <IconCheck size={16} /> : <IconShare size={16} />}
-                                            >
-                                                {copied ? 'Copied' : 'Share'}
-                                            </Button>
-                                        </Tooltip>
-                                    )}
-                                </CopyButton>
-                            </Group>
-                            {completion !== null && (
-                                <Stack gap={4} w={{ base: '100%', sm: rem(260) }}>
-                                    <Group justify="space-between" gap="xs">
-                                        <Text size="xs" fw={500} c="dimmed">
-                                            Profile completeness
-                                        </Text>
-                                        <Text size="xs" fw={700} c={completionColor}>
-                                            {completion}%
-                                        </Text>
-                                    </Group>
-                                    <Progress
-                                        value={completion}
-                                        color={completionColor}
-                                        size="sm"
-                                        radius="xl"
-                                        animated={completion < 100}
-                                    />
-                                </Stack>
-                            )}
-                        </Stack>
-                    </Group>
+                            </Tooltip>
+                            <CopyButton value={profileUrl} timeout={2000}>
+                                {({ copied, copy }) => (
+                                    <Tooltip label={copied ? 'Copied!' : 'Share profile'} withArrow>
+                                        <Button
+                                            variant="light"
+                                            color={copied ? 'teal' : 'accent'}
+                                            onClick={copy}
+                                            size="sm"
+                                            aria-label={copied ? 'Copied profile link' : 'Share profile'}
+                                            leftSection={copied ? <IconCheck size={16} /> : <IconShare size={16} />}
+                                            className="h-9 w-full px-3 max-[430px]:w-9 max-[430px]:px-0 max-[430px]:[&_.mantine-Button-inner]:justify-center max-[430px]:[&_.mantine-Button-label]:hidden max-[430px]:[&_.mantine-Button-section]:m-0 md:w-auto"
+                                        >
+                                            {copied ? 'Copied' : 'Share'}
+                                        </Button>
+                                    </Tooltip>
+                                )}
+                            </CopyButton>
+                        </div>
 
-                    <Group gap="xs" hiddenFrom="sm" grow>
-                        <Button
-                            component={Link}
-                            href={primaryActionHref}
-                            variant="filled"
-                            color="blue.5"
-                            leftSection={<IconEdit size={16} />}
-                        >
-                            {primaryActionLabel}
-                        </Button>
-                        <CopyButton value={profileUrl} timeout={2000}>
-                            {({ copied, copy }) => (
-                                <Button
-                                    variant="light"
-                                    color={copied ? 'teal' : 'accent'}
-                                    onClick={copy}
-                                    leftSection={copied ? <IconCheck size={16} /> : <IconShare size={16} />}
-                                >
-                                    {copied ? 'Copied' : 'Share'}
-                                </Button>
-                            )}
-                        </CopyButton>
-                    </Group>
+                        <Text size="sm" c="dimmed" className="col-span-2 leading-relaxed md:col-span-1 md:max-w-[42rem]">
+                            {user.bio || 'Your home base for profile details, saved recipes, favorites, and the recipes you are preserving.'}
+                        </Text>
+
+                        {completion !== null && (
+                            <Stack gap={4} className="col-span-2 w-full md:col-span-1 md:w-[260px] md:justify-self-end">
+                                <Group justify="space-between" gap="xs">
+                                    <Text size="xs" fw={500} c="dimmed">
+                                        Profile completeness
+                                    </Text>
+                                    <Text size="xs" fw={700} c={completionColor}>
+                                        {completion}%
+                                    </Text>
+                                </Group>
+                                <Progress
+                                    value={completion}
+                                    color={completionColor}
+                                    size="sm"
+                                    radius="xl"
+                                    animated={completion < 100}
+                                />
+                            </Stack>
+                        )}
+                    </div>
                 </Stack>
             </DashboardCard>
         </div>

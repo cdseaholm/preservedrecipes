@@ -1,5 +1,14 @@
 'use client'
 
+import {
+    IconBook2,
+    IconCalendarStats,
+    IconHeart,
+    IconMessageCircle,
+    IconStar,
+    IconUsers,
+} from "@tabler/icons-react";
+
 interface ProfileStatsProps {
     recipeCount: number;
     communityCount: number;
@@ -17,27 +26,29 @@ export default function ProfileStats({
     commentsMade,
     timeBeingMember
 }: ProfileStatsProps) {
-    
+
     const stats = [
-        { label: 'Recipes', value: recipeCount, icon: '📖' },
-        { label: 'Favorites', value: favoriteCount, icon: '❤️' },
-        { label: 'Communities', value: communityCount, icon: '👥' },
-        { label: 'Ratings', value: ratingsGiven, icon: '⭐' },
-        { label: 'Comments', value: commentsMade, icon: '💬' },
-        { label: 'Days', value: timeBeingMember, icon: '📅' },
+        { label: 'Recipes', value: recipeCount, icon: <IconBook2 size={22} /> },
+        { label: 'Favorites', value: favoriteCount, icon: <IconHeart size={22} /> },
+        { label: 'Communities', value: communityCount, icon: <IconUsers size={22} /> },
+        { label: 'Ratings', value: ratingsGiven, icon: <IconStar size={22} /> },
+        { label: 'Comments', value: commentsMade, icon: <IconMessageCircle size={22} /> },
+        { label: 'Days', value: timeBeingMember, icon: <IconCalendarStats size={22} /> },
     ];
 
     return (
-        <div className="grid grid-cols-3 sm:grid-cols-6 gap-3 sm:gap-4">
-            {stats.map((stat, index) => (
-                <div 
-                    key={index}
-                    className="bg-secondaryBack p-3 sm:p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow"
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-6">
+            {stats.map((stat) => (
+                <div
+                    key={stat.label}
+                    className="rounded-md border border-accent/15 bg-[var(--surfaceWash)] p-3 shadow-[var(--tightShadow)] transition hover:border-accent/30 sm:p-4"
                 >
                     <div className="flex flex-col items-center text-center">
-                        <span className="text-2xl sm:text-3xl mb-1 sm:mb-2">{stat.icon}</span>
-                        <p className="text-xl sm:text-2xl font-bold text-accent">{stat.value}</p>
-                        <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">
+                        <span className="mb-2 inline-flex size-9 items-center justify-center rounded-md bg-accent/10 text-accent">
+                            {stat.icon}
+                        </span>
+                        <p className="text-xl font-bold text-accent sm:text-2xl">{stat.value}</p>
+                        <p className="mt-1 text-xs font-medium uppercase text-mainText/60">
                             {stat.label}
                         </p>
                     </div>

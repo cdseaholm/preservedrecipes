@@ -23,7 +23,7 @@ export default function FamilyStackTemplate({ children, user, family }: { childr
     }, [family, setFamily, setUserInfo, user]);
 
     return (
-        <div className="flex flex-col justify-start items-center px-2 w-full min-h-[75dvh]">
+        <div className="flex min-h-[72dvh] w-full flex-col items-center justify-start">
             <DashboardCard>
                 <Stack gap="lg" style={{ flex: 1, minHeight: 0 }} w={'100%'}>
                     <DashboardHeader

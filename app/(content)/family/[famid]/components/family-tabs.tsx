@@ -23,8 +23,8 @@ export default function FamilyTabs({
 
     //style specific
     const { width } = useWindowSizes();
-    const tabContainerStyle = width > 768 ? "flex flex-row items-end justify-between w-full h-content px-2" : "flex flex-col items-start justify-start w-full space-y-1 h-content w-full px-4";
-    const tabFontSize = width > 768 ? '16px' : '12px';
+    const tabContainerStyle = "flex h-content w-full flex-row items-end justify-between rounded-md border border-accent/10 bg-mainBack/45 p-2";
+    const tabFontSize = width > 768 ? '16px' : '13px';
     // const famInfoContainerStyle = `flex flex-col items-end justify-end h-content w-fit ${width > 768 ? 'pb-2' : ''}`;
     // const famNameStyle = width > 768 ? "text-3xl font-bold underline" : "text-lg font-bold underline";
     // const famHeritageStyle = width > 768 ? "text-lg" : "text-xs";
@@ -48,7 +48,7 @@ export default function FamilyTabs({
                         leftSection={
                             tab.label
                         }
-                        bd={'1px solid #ceb5a4ff'}
+                        bd={'1px solid var(--surfaceBorder)'}
                     >
                         {tab.labelTitle}
                     </Tabs.Tab>
@@ -64,7 +64,7 @@ export default function FamilyTabs({
                         value={tab.value}
                         styles={{ tabLabel: { fontSize: tabFontSize, fontWeight: 500 } }}
                         title={tab.labelTitle}
-                        bd={'1px solid #ceb5a4ff'}
+                        bd={'1px solid var(--surfaceBorder)'}
                     >
                         {tab.label}
                     </Tabs.Tab>

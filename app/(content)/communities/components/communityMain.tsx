@@ -200,7 +200,7 @@ export default function CommunityMain({
               </>
             }
             rightHandButtons={
-              userInfo && <button type="button" onClick={handleCreate} className={`h-content w-content flex flex-row p-1 justify-evenly items-center hover:bg-gray-100 hover:text-blue-300 text-blue-500 rounded-md text-sm sm:text-base space-x-1 cursor-pointer`} aria-label="Create Community" title="Create Community">
+              userInfo && <button type="button" onClick={handleCreate} className="flex h-9 w-full cursor-pointer flex-row items-center justify-center gap-1 rounded-md border border-accent/15 bg-cardBack px-3 text-sm font-medium text-accent transition hover:border-accent/35 hover:bg-accent/10 sm:w-auto sm:text-base" aria-label="Create Community" title="Create Community">
                 <BiPlus size={20} aria-hidden="true" />
                 <span className="hidden sm:inline">Create Community</span>
               </button>
@@ -209,8 +209,8 @@ export default function CommunityMain({
             rightLabel="Add"
           />
 
-          <div className="mb-4 w-full">
-            <h1 className="text-xl sm:text-2xl font-semibold text-mainText">Communities</h1>
+          <div className="w-full rounded-md bg-mainBack/45 p-3 ring-1 ring-accent/10 sm:p-4">
+            <h1 className="text-xl font-bold text-mainText sm:text-2xl">Communities</h1>
             <p className="text-sm text-mainText/70">Find groups centered on recipes, food questions, cooking advice, and shared collections.</p>
           </div>
 
@@ -227,7 +227,7 @@ export default function CommunityMain({
                 <CommunityCard key={community._id} community={community} index={index} userInfo={userInfo} />
               ))
             ) : (
-              <ul className="p-2 text-start pl-7">
+              <ul className="w-full rounded-md border border-dashed border-accent/25 bg-[var(--surfaceWash)] p-6 text-center text-sm text-mainText/70">
                 {searchText ? `No communities found matching "${searchText}"` : 'No communities found'}
               </ul>
             )}
