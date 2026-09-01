@@ -64,7 +64,7 @@ export default function InquiryForm({ handleCreateInquiry, handleCancel, inquiry
     return (
         <form
             id="modalInquiryForm"
-            className="w-full h-content"
+            className="w-full min-w-0 h-content"
             onSubmit={inquiryForm.onSubmit((values) => {
                 if (values.id === '') {
                     handleCreateInquiry({ inquiryForm: inquiryForm });
@@ -157,7 +157,7 @@ export default function InquiryForm({ handleCreateInquiry, handleCancel, inquiry
                     {...inquiryForm.getInputProps('inquiryMessage')}
                 />
             </Fieldset>
-            <section className="flex flex-row w-full justify-evenly items-center pt-6 pb-4">
+            <section className="flex w-full flex-col items-stretch justify-evenly gap-3 pt-6 pb-4 sm:flex-row sm:items-center">
                 <CancelButton handleCancel={handleCancelClick} />
                 <SubmitButton buttonTitle={inquiry ? 'Update' : 'Submit'} />
             </section>

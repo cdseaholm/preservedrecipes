@@ -10,7 +10,7 @@ export type SignInFormType = {
     password: string;
 }
 
-export default function SignInForm({ handleSignIn, handleCancel }: { handleSignIn: ({ signInForm }: { signInForm: UseFormReturnType<SignInFormType, (values: SignInFormType) => SignInFormType> }) => void, handleCancel: () => void }) {
+export default function SignInForm({ handleSignIn, handleCancel, loading = false }: { handleSignIn: ({ signInForm }: { signInForm: UseFormReturnType<SignInFormType, (values: SignInFormType) => SignInFormType> }) => void, handleCancel: () => void, loading?: boolean }) {
 
     const signInForm = useForm({
         mode: 'uncontrolled',
@@ -32,6 +32,21 @@ export default function SignInForm({ handleSignIn, handleCancel }: { handleSignI
 
     return (
         <form id="modalLoginForm" onSubmit={signInForm.onSubmit(() => handleSignIn({ signInForm }))} onAbort={() => { signInForm.reset(); signInForm.clearErrors(); handleCancel(); }} className="w-full">
+<<<<<<< Updated upstream
+=======
+            <Button
+                type="button"
+                variant="default"
+                fullWidth
+                leftSection={<FcGoogle />}
+                onClick={() => signIn('google', { callbackUrl: '/u/profile' })}
+                loading={loading}
+                disabled={loading}
+            >
+                Continue with Google
+            </Button>
+            <Divider label="or sign in with email" labelPosition="center" my="md" />
+>>>>>>> Stashed changes
             <Fieldset legend="Personal Information">
                 <TextInput
                     id="modalLoginEmail"
@@ -53,9 +68,9 @@ export default function SignInForm({ handleSignIn, handleCancel }: { handleSignI
                     {...signInForm.getInputProps('password')}
                 />
             </Fieldset>
-            <section className="flex flex-row w-full justify-evenly items-center pt-5">
+            <section className="flex w-full flex-col items-stretch justify-evenly gap-3 pt-5 sm:flex-row sm:items-center">
                 <CancelButton handleCancel={() => { signInForm.reset(); signInForm.clearErrors(); handleCancel(); }} />
-                <SubmitButton buttonTitle={'Sign In'} />
+                <SubmitButton buttonTitle="Sign In" loading={loading} loadingTitle="Signing in..." />
             </section>
         </form>
     )

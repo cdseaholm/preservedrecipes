@@ -18,6 +18,7 @@ import CommunityFilter from "@/components/buttons/filter-and-sorts/community-fil
 import PageSpecButtonBox from "@/components/buttons/page-spec-button-box/page-spec-button-box";
 import ListWrapper from "@/components/wrappers/list-wrapper";
 import { useWindowSizes } from "@/context/width-height-store";
+import { useStateStore } from "@/context/stateStore";
 
 export default function CommunityMain({
   userCommunities,
@@ -47,6 +48,7 @@ export default function CommunityMain({
   const setUserInfo = useUserStore(state => state.setUserInfo);
   const setUserCommunities = useUserStore(state => state.setUserCommunities);
   const setCommunities = useDataStore(state => state.setCommunities);
+  const setIsNavigating = useStateStore(state => state.setIsNavigating);
   
   // Get from Zustand store (always up-to-date)
   const storedCommunities = useDataStore(state => state.communities);
@@ -144,6 +146,7 @@ export default function CommunityMain({
   }, [storedCommunities, searchText, initialFilter, initialStatus, initialSort, currentPage, itemsPerPage, userInfo?._id]);
 
   const handleTransiton = (url: string) => {
+    setIsNavigating(true);
     router.push(url);
   }
 
@@ -160,6 +163,7 @@ export default function CommunityMain({
       } else {
         params.delete('search');
       }
+      setIsNavigating(true);
       router.push(`/communities?${params.toString()}`);
     }, 300);
 

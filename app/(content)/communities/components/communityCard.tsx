@@ -3,6 +3,7 @@
 import { useModalStore } from "@/context/modalStore";
 import { ICommunity } from "@/models/types/community/community";
 import { IUser } from "@/models/types/personal/user";
+import { useStateStore } from "@/context/stateStore";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { BiLockAlt, BiMessageRounded, BiRightArrowAlt, BiShield, BiUserPlus } from "react-icons/bi";
@@ -26,6 +27,7 @@ function privacyLabel(level: ICommunity['privacyLevel']) {
 export default function CommunityCard({ community, index, userInfo }: { community: ICommunity, index: number, userInfo: IUser | null }) {
     const router = useRouter();
     const setRequestToJoinCommunity = useModalStore(state => state.setRequestToJoinCommunity);
+    const setIsNavigating = useStateStore(state => state.setIsNavigating);
     const userId = userInfo?._id || '';
     const isMember = !!userId && (community.communityMemberIDs.includes(userId) || community.adminIDs.includes(userId) || community.creatorID === userId);
     const label = privacyLabel(community.privacyLevel);
@@ -37,6 +39,7 @@ export default function CommunityCard({ community, index, userInfo }: { communit
         }
 
         if (isMember || community.privacyLevel === 'public' || community.privacyLevel === 'hidden') {
+            setIsNavigating(true);
             router.push(`/communities/${community._id}`);
             return;
         }
@@ -84,7 +87,11 @@ export default function CommunityCard({ community, index, userInfo }: { communit
     );
 
     return community.privacyLevel === 'public' || community.privacyLevel === 'hidden' || isMember ? (
+<<<<<<< Updated upstream
         <Link key={index} href={`/communities/${community._id}`} className="block w-full">
+=======
+        <Link key={index} href={`/communities/${community._id}`} onClick={() => setIsNavigating(true)} className="mb-3 block w-full">
+>>>>>>> Stashed changes
             {body}
         </Link>
     ) : (

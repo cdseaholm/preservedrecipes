@@ -53,7 +53,7 @@ export default function SettingsTab() {
                     <TextInput label="Email" placeholder="Coming soon" leftSection={<IconMail size={16} />} disabled />
                 </div>
 
-                <Group justify="flex-start">
+                <Group justify="flex-start" className="min-w-0">
                     <Button type="button" variant="light" disabled>
                         Change password
                     </Button>
@@ -63,6 +63,7 @@ export default function SettingsTab() {
                         color="red"
                         leftSection={<IconTrash size={16} />}
                         onClick={() => setDeleteModalOpen(true)}
+                        className="w-full sm:w-auto"
                     >
                         Delete account
                     </Button>

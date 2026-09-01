@@ -9,9 +9,11 @@ export function useNavigation() {
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
     const setIsNavigating = useStateStore(state => state.setIsNavigating);
+    const setGlobalLoading = useStateStore(state => state.setGlobalLoading);
 
     const navigate = (href: string, onComplete?: () => void) => {
         setIsNavigating(true);
+        setGlobalLoading(true);
         startTransition(() => {
             router.push(href);
         });
@@ -22,7 +24,8 @@ export function useNavigation() {
     // useEffect because isPending is derived from React internals
     useEffect(() => {
         setIsNavigating(isPending);
-    }, [isPending, setIsNavigating]);
+        if (!isPending) setGlobalLoading(false);
+    }, [isPending, setGlobalLoading, setIsNavigating]);
 
     return { navigate, isPending };
 }

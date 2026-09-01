@@ -2,6 +2,7 @@
 
 import MenuPanelHooks from "@/components/hooks/menu/menu-panel-hooks";
 import { useModalStore } from "@/context/modalStore";
+import { useStateStore } from "@/context/stateStore";
 import { useUserStore } from "@/context/userStore";
 import { IUser } from "@/models/types/personal/user";
 import { IRecipe } from "@/models/types/recipes/recipe";
@@ -18,6 +19,7 @@ export default function RecipeDetailHooks({ currentUser, recipe, userOwnsRecipe 
     const pathname = usePathname();
     const setOpenSignInModal = useModalStore(state => state.setOpenSignInModal);
     const setUserInfo = useUserStore(state => state.setUserInfo);
+    const setIsNavigating = useStateStore(state => state.setIsNavigating);
     const { handleOpenRecipeModal } = MenuPanelHooks();
 
     const [loading, setLoading] = useState(false);
@@ -99,6 +101,7 @@ export default function RecipeDetailHooks({ currentUser, recipe, userOwnsRecipe 
         }
 
         toast.success(result.message);
+        setIsNavigating(true);
         router.push('/u/recipes');
     };
 

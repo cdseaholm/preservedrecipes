@@ -22,11 +22,20 @@ type DashboardCardProps = {
 export function DashboardCard({ children, className = "" }: DashboardCardProps) {
     return (
         <Card
+<<<<<<< Updated upstream
             padding="sm"
             radius="md"
             withBorder
             w="100%"
             className={`flex flex-1 flex-col border-[var(--surfaceBorder)] bg-[var(--surfaceRaised)] shadow-[var(--softShadow)] backdrop-blur-sm ${className}`}
+=======
+            shadow="md"
+            padding="md"
+            radius="md"
+            withBorder
+            w="100%"
+            className={`flex min-w-0 flex-1 flex-col overflow-hidden ${className}`}
+>>>>>>> Stashed changes
         >
             {children}
         </Card>

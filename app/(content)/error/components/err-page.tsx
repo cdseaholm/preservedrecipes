@@ -1,11 +1,13 @@
 'use client'
 
 import ContentWrapper from "@/components/wrappers/contentWrapper";
+import { useStateStore } from "@/context/stateStore";
 import { useRouter } from "next/navigation"
 
 export default function ErrorPage() {
 
     const router = useRouter();
+    const setIsNavigating = useStateStore(state => state.setIsNavigating);
 
     return (
         <ContentWrapper containedChild={false} paddingNeeded={true}>
@@ -17,7 +19,10 @@ export default function ErrorPage() {
                 <button
                     type="button"
                     className="rounded-md bg-accent px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#d94f33]"
-                    onClick={() => router.push('/')}
+                    onClick={() => {
+                        setIsNavigating(true);
+                        router.push('/');
+                    }}
                 >
                     Back to home
                 </button>

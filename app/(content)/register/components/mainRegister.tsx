@@ -13,6 +13,7 @@ import ContentWrapper from "@/components/wrappers/contentWrapper";
 import { useWindowSizes } from "@/context/width-height-store";
 import { CreateUser } from "@/utils/server-actions/user";
 import GoogleSignInButton from "@/components/buttons/googleSignInButton";
+import { useState } from "react";
 
 export default function RegisterPage({ userInfo }: { userInfo: IUser | null }) {
 
@@ -21,11 +22,13 @@ export default function RegisterPage({ userInfo }: { userInfo: IUser | null }) {
     const setGlobalLoading = useStateStore(state => state.setGlobalLoading);
     const { width } = useWindowSizes();
     const router = useRouter();
+    const [submitting, setSubmitting] = useState(false);
 
 
     const handleRegister = async ({ registerForm }: { registerForm: RegisterFormType }) => {
 
         setGlobalLoading(true)
+        setSubmitting(true);
         try {
 
             registerForm.clearErrors();
@@ -33,6 +36,7 @@ export default function RegisterPage({ userInfo }: { userInfo: IUser | null }) {
             if (session) {
                 toast.warning("You are already signed in!");
                 setGlobalLoading(false);
+                setSubmitting(false);
                 return;
             }
 
@@ -44,6 +48,7 @@ export default function RegisterPage({ userInfo }: { userInfo: IUser | null }) {
 
             if (Object.keys(validation.errors).length > 0) {
                 setGlobalLoading(false);
+                setSubmitting(false);
                 return;
             }
 
@@ -54,6 +59,7 @@ export default function RegisterPage({ userInfo }: { userInfo: IUser | null }) {
             if (!registerAttempt) {
                 toast.error('Error registering');
                 setGlobalLoading(false);
+                setSubmitting(false);
                 return
             }
 
@@ -62,12 +68,14 @@ export default function RegisterPage({ userInfo }: { userInfo: IUser | null }) {
             if (!attemptStatus) {
                 toast.error(registerAttempt.message || 'Error registering');
                 setGlobalLoading(false);
+                setSubmitting(false);
                 return;
             }
 
             if (!registerAttempt.newUser) {
                 toast.error('Error registering, no user created');
                 setGlobalLoading(false);
+                setSubmitting(false);
                 return;
             }
 
@@ -76,6 +84,7 @@ export default function RegisterPage({ userInfo }: { userInfo: IUser | null }) {
             if (!signInAttempt || !signInAttempt.status) {
                 toast.error('Error signing in');
                 setGlobalLoading(false);
+                setSubmitting(false);
                 return;
             }
 
@@ -85,11 +94,13 @@ export default function RegisterPage({ userInfo }: { userInfo: IUser | null }) {
             await update();
             resetZoom(width, false);
             setGlobalLoading(false);
+            setSubmitting(false);
             router.push('/u/profile');
 
         } catch (error) {
             toast.error('Something went wrong while registering. Please try again.');
             setGlobalLoading(false);
+            setSubmitting(false);
             return;
         }
     }
@@ -107,7 +118,7 @@ export default function RegisterPage({ userInfo }: { userInfo: IUser | null }) {
                         <span className="h-px flex-1 bg-accent/20" />
                     </div>
                 </div>
-                <RegisterForm handleRegister={handleRegister} />
+                <RegisterForm handleRegister={handleRegister} loading={submitting} />
             </ContentWrapper>
         </NavWrapper>
     )

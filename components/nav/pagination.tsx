@@ -1,6 +1,7 @@
 'use client'
 
 import { Group, Pagination } from '@mantine/core';
+import { useStateStore } from '@/context/stateStore';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 
@@ -10,6 +11,7 @@ export default function PaginationComp({ totalPages, currentPage, onChange }: { 
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const [activePage, setPage] = useState<number>(currentPage);
+    const setIsNavigating = useStateStore(state => state.setIsNavigating);
 
     const handlePageChange = (page: number) => {
         setPage(page);
@@ -21,6 +23,7 @@ export default function PaginationComp({ totalPages, currentPage, onChange }: { 
         const params = new URLSearchParams(searchParams.toString());
         params.set('page', String(page));
         if (!params.get('size')) params.set('size', '10');
+        setIsNavigating(true);
         router.push(`${pathname}?${params.toString()}`);
     };
 

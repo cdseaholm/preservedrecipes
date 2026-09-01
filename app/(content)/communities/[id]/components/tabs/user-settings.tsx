@@ -4,13 +4,16 @@ import { ICommunity } from "@/models/types/community/community";
 import { IUser } from "@/models/types/personal/user";
 import { Button, Card, Group, Stack, Text, ThemeIcon } from "@mantine/core";
 import { IconLogin2, IconLogout2, IconShieldCheck, IconUsers } from "@tabler/icons-react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 export default function UserSettingsTab({ isAdmin, community, userInfo }: { isAdmin: boolean, community: ICommunity, userInfo: IUser | null }) {
     const userId = userInfo?._id || '';
     const isMember = !!userId && (community.communityMemberIDs.includes(userId) || community.adminIDs.includes(userId) || community.creatorID === userId);
+    const [joining, setJoining] = useState(false);
 
     const joinPublic = async () => {
+        setJoining(true);
         try {
             const response = await fetch('/api/community/join', {
                 method: 'POST',
@@ -20,12 +23,14 @@ export default function UserSettingsTab({ isAdmin, community, userInfo }: { isAd
             const data = await response.json();
             if (!response.ok || data.status !== 200) {
                 toast.error(data.message || 'Unable to join community');
+                setJoining(false);
                 return;
             }
             toast.success('Joined community');
             window.location.reload();
         } catch {
             toast.error('Unable to join community');
+            setJoining(false);
         }
     };
 
@@ -50,7 +55,7 @@ export default function UserSettingsTab({ isAdmin, community, userInfo }: { isAd
 
                 <Group gap="xs">
                     {!isMember && (community.privacyLevel === 'public' || community.privacyLevel === 'hidden') && (
-                        <Button onClick={joinPublic} type="button" leftSection={<IconLogin2 size={16} />}>
+                        <Button onClick={joinPublic} type="button" leftSection={<IconLogin2 size={16} />} loading={joining} disabled={joining}>
                             Join Community
                         </Button>
                     )}

@@ -173,10 +173,10 @@ export default function ProfileInbox({ familyInvites, communityInvites, initialI
     const inviteCount = familyInviteItems.length + communityInviteItems.length;
 
     return (
-        <Stack gap="xl">
+        <Stack gap="xl" className="min-w-0">
             <Stack gap="md">
-                <Group justify="space-between" align="flex-end" gap="sm">
-                    <div>
+                <Group justify="space-between" align="flex-end" gap="sm" wrap="nowrap" className="min-w-0">
+                    <div className="min-w-0">
                         <Text fw={700}>Invites</Text>
                         <Text size="sm" c="dimmed">
                             Invitations that need your attention.
@@ -190,19 +190,19 @@ export default function ProfileInbox({ familyInvites, communityInvites, initialI
                 </Group>
 
                 {inviteCount > 0 ? (
-                    <Stack gap="sm">
+                    <Stack gap="sm" className="min-w-0">
                         {familyInviteItems.map(invite => {
                             const alreadyInDifferentFamily = Boolean(user.userFamilyID && user.userFamilyID !== invite.familyID);
 
                             return (
                                 <Card key={invite.token} withBorder radius="md" padding="md" className="bg-secondaryBack">
-                                    <Group justify="space-between" align="flex-start" gap="md">
-                                        <Group gap="sm" align="flex-start" className="min-w-0">
+                                    <Group justify="space-between" align="flex-start" gap="md" className="min-w-0">
+                                        <Group gap="sm" align="flex-start" className="min-w-0 flex-1">
                                             <div className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
                                                 <IconInbox size={18} />
                                             </div>
                                             <Stack gap={4} className="min-w-0">
-                                                <Group gap="xs">
+                                                <Group gap="xs" wrap="wrap">
                                                     <Badge variant="light" color="accent">Family invite</Badge>
                                                     <Text size="xs" c="dimmed">
                                                         {new Date(invite.createdAt).toLocaleDateString()}
@@ -222,7 +222,7 @@ export default function ProfileInbox({ familyInvites, communityInvites, initialI
                                             </Stack>
                                         </Group>
 
-                                        <Group gap="xs" wrap="nowrap">
+                                        <Group gap="xs" wrap="wrap" className="w-full sm:w-auto">
                                             {alreadyInDifferentFamily ? (
                                                 <Button
                                                     component={Link}
@@ -230,6 +230,7 @@ export default function ProfileInbox({ familyInvites, communityInvites, initialI
                                                     variant="light"
                                                     color="red"
                                                     leftSection={<IconUserMinus size={16} />}
+                                                    className="flex-1 sm:flex-none"
                                                 >
                                                     Current family
                                                 </Button>
@@ -240,6 +241,7 @@ export default function ProfileInbox({ familyInvites, communityInvites, initialI
                                                     disabled={busyToken !== null && busyToken !== invite.token}
                                                     onClick={() => handleAccept(invite)}
                                                     leftSection={<IconCheck size={16} />}
+                                                    className="flex-1 sm:flex-none"
                                                 >
                                                     Accept
                                                 </Button>
@@ -252,6 +254,7 @@ export default function ProfileInbox({ familyInvites, communityInvites, initialI
                                                 disabled={busyToken !== null && busyToken !== invite.token}
                                                 onClick={() => handleDecline(invite)}
                                                 leftSection={<IconX size={16} />}
+                                                className="flex-1 sm:flex-none"
                                             >
                                                 Decline
                                             </Button>
@@ -262,13 +265,13 @@ export default function ProfileInbox({ familyInvites, communityInvites, initialI
                         })}
                         {communityInviteItems.map(invite => (
                             <Card key={invite.token} withBorder radius="md" padding="md" className="bg-secondaryBack">
-                                <Group justify="space-between" align="flex-start" gap="md">
-                                    <Group gap="sm" align="flex-start" className="min-w-0">
+                                    <Group justify="space-between" align="flex-start" gap="md" className="min-w-0">
+                                        <Group gap="sm" align="flex-start" className="min-w-0 flex-1">
                                         <div className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
                                             <IconUsersGroup size={18} />
                                         </div>
                                         <Stack gap={4} className="min-w-0">
-                                            <Group gap="xs">
+                                            <Group gap="xs" wrap="wrap">
                                                 <Badge variant="light" color="blue">Community invite</Badge>
                                                 <Text size="xs" c="dimmed">
                                                     {new Date(invite.createdAt).toLocaleDateString()}
@@ -283,13 +286,14 @@ export default function ProfileInbox({ familyInvites, communityInvites, initialI
                                         </Stack>
                                     </Group>
 
-                                    <Group gap="xs" wrap="nowrap">
+                                    <Group gap="xs" wrap="wrap" className="w-full sm:w-auto">
                                         <Button
                                             type="button"
                                             loading={busyToken === invite.token}
                                             disabled={busyToken !== null && busyToken !== invite.token}
                                             onClick={() => handleAcceptCommunity(invite)}
                                             leftSection={<IconCheck size={16} />}
+                                            className="flex-1 sm:flex-none"
                                         >
                                             Accept
                                         </Button>
@@ -301,6 +305,7 @@ export default function ProfileInbox({ familyInvites, communityInvites, initialI
                                             disabled={busyToken !== null && busyToken !== invite.token}
                                             onClick={() => handleDeclineCommunity(invite)}
                                             leftSection={<IconX size={16} />}
+                                            className="flex-1 sm:flex-none"
                                         >
                                             Decline
                                         </Button>

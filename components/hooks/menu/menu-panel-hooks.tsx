@@ -18,6 +18,7 @@ export default function MenuPanelHooks() {
     const setOpenCreateFamilyModal = useModalStore(state => state.setOpenCreateFamilyModal);
     const setOpenSignInModal = useModalStore(state => state.setOpenSignInModal);
     const handleZoomReset = useStateStore(state => state.handleZoomReset);
+    const setGlobalLoading = useStateStore(state => state.setGlobalLoading);
     const { width } = useWindowSizes();
     
     // Get user data from store
@@ -50,9 +51,13 @@ export default function MenuPanelHooks() {
     };
 
     const signingOut = async () => {
-        await signOut();
-        // Reset zoom after sign out completes
-        handleZoomReset(width, false);
+        setGlobalLoading(true);
+        try {
+            await signOut();
+            handleZoomReset(width, false);
+        } finally {
+            setGlobalLoading(false);
+        }
     }
 
     const handleSignOutClick = () => {

@@ -1,6 +1,7 @@
 'use client'
 
 import { useWindowSizes } from '@/context/width-height-store'
+import { useStateStore } from '@/context/stateStore'
 import { Divider, rem, Tabs } from '@mantine/core'
 import { usePathname, useRouter } from 'next/navigation'
 import { FiUsers } from 'react-icons/fi'
@@ -17,6 +18,7 @@ export default function FamilyTabs({
 
     //page specific
     const router = useRouter();
+    const setIsNavigating = useStateStore(state => state.setIsNavigating);
     const pathname = usePathname();
     const pageSplit = pathname.split("/");
     const page = pageSplit.length > 3 ? pageSplit.pop() : 'dashboard';
@@ -92,6 +94,7 @@ export default function FamilyTabs({
 
                     if (value !== page) {
                         const url = value === 'dashboard' ? `/family/${famid}` : `/family/${famid}/${value}`;
+                        setIsNavigating(true);
                         router.push(url);
                     }
 

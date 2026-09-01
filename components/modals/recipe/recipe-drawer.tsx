@@ -22,6 +22,7 @@ export default function RecipeDrawer({ openRecipeForm }: { openRecipeForm: Recip
     const setOpenRecipeForm = useModalStore(state => state.setOpenRecipeForm);
     const ingredientNames = useDataStore(state => state.ingredientNames);
     const resetZoom = useStateStore(state => state.handleZoomReset);
+    const setIsNavigating = useStateStore(state => state.setIsNavigating);
     const { width } = useWindowSizes();
     const userInfo = useUserStore(state => state.userInfo);
     const pathname = usePathname();
@@ -181,7 +182,12 @@ export default function RecipeDrawer({ openRecipeForm }: { openRecipeForm: Recip
         if (openRecipeForm.recipe?._id) {
             const result = await handleDelete(openRecipeForm.recipe._id, pathname);
             if (result.success) {
-                closeDrawer({ afterClose: () => router.push('/u/recipes') });
+                closeDrawer({
+                    afterClose: () => {
+                        setIsNavigating(true);
+                        router.push('/u/recipes');
+                    }
+                });
             }
         }
     };

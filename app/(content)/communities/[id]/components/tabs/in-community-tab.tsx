@@ -328,10 +328,10 @@ function RequestList({ requests, canManage }: { requests: IRequest[], canManage:
                         </Stack>
                         {canManage && (
                             <Group gap="xs" wrap="nowrap">
-                                <Button disabled={busyId === request._id} onClick={() => decide(request._id, 'approved')} color="green" leftSection={<BiCheck />}>
+                                <Button disabled={busyId !== null && busyId !== request._id} loading={busyId === request._id} onClick={() => decide(request._id, 'approved')} color="green" leftSection={<BiCheck />}>
                                     Approve
                                 </Button>
-                                <Button disabled={busyId === request._id} onClick={() => decide(request._id, 'rejected')} color="red" variant="light" leftSection={<BiX />}>
+                                <Button disabled={busyId !== null && busyId !== request._id} loading={busyId === request._id} onClick={() => decide(request._id, 'rejected')} color="red" variant="light" leftSection={<BiX />}>
                                     Reject
                                 </Button>
                             </Group>

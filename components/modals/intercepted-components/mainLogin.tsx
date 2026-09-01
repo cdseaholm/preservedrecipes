@@ -8,7 +8,7 @@ import SignInHelper from "@/utils/userHelpers/signInHelper";
 import { UseFormReturnType } from "@mantine/form";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useState } from "react";
 import { toast } from "sonner";
 import GoogleSignInButton from "@/components/buttons/googleSignInButton";
 
@@ -19,10 +19,12 @@ export default function SignInPage({ handleCancel, handleLoading }: { handleCanc
     const { data: session, update } = useSession();
     const resetZoom = useStateStore(state => state.handleZoomReset);
     const { width } = useWindowSizes();
+    const [submitting, setSubmitting] = useState(false);
 
     const handleSignIn = async ({ signInForm }: { signInForm: UseFormReturnType<SignInFormType, (values: SignInFormType) => SignInFormType> }) => {
 
         handleLoading(true);
+        setSubmitting(true);
 
         try {
 
@@ -32,6 +34,7 @@ export default function SignInPage({ handleCancel, handleLoading }: { handleCanc
 
                 toast.warning("You are already signed in!");
                 handleLoading(false);
+                setSubmitting(false);
                 return;
 
             }
@@ -43,6 +46,7 @@ export default function SignInPage({ handleCancel, handleLoading }: { handleCanc
 
             if (Object.keys(validation.errors).length > 0) {
                 handleLoading(false);
+                setSubmitting(false);
                 return;
             }
 
@@ -53,6 +57,7 @@ export default function SignInPage({ handleCancel, handleLoading }: { handleCanc
             if (attemptStatus === false) {
                 toast.error('Error Signing in');
                 handleLoading(false);
+                setSubmitting(false);
                 return;
             }
 
@@ -61,10 +66,12 @@ export default function SignInPage({ handleCancel, handleLoading }: { handleCanc
             resetZoom(width, false);
             router.replace('/u/profile');
             handleLoading(false);
+            setSubmitting(false);
             setOpenSignInModal(false);
 
         } catch (error) {
             handleLoading(false);
+            setSubmitting(false);
             console.error('Error Signing in:', error);
             toast.error('Something went wrong while signing in. Please try again.');
             return;
@@ -79,7 +86,7 @@ export default function SignInPage({ handleCancel, handleLoading }: { handleCanc
                 or
                 <span className="h-px flex-1 bg-accent/20" />
             </div>
-            <SignInForm handleCancel={handleCancel} handleSignIn={handleSignIn} />
+            <SignInForm handleCancel={handleCancel} handleSignIn={handleSignIn} loading={submitting} />
         </div>
     );
 }

@@ -6,7 +6,7 @@ import { Fieldset, TextInput, PasswordInput } from "@mantine/core"
 import { useForm } from "@mantine/form";
 
 
-export default function RegisterForm({ handleRegister }: { handleRegister: ({ registerForm }: { registerForm: RegisterFormType }) => void }) {
+export default function RegisterForm({ handleRegister, loading = false }: { handleRegister: ({ registerForm }: { registerForm: RegisterFormType }) => void, loading?: boolean }) {
 
     const registerForm = useForm({
         mode: 'uncontrolled',
@@ -83,8 +83,8 @@ export default function RegisterForm({ handleRegister }: { handleRegister: ({ re
                     {...registerForm.getInputProps('confirmPassword')}
                 />
             </Fieldset>
-            <div className="flex flex-row w-full justify-evenly items-center pt-5">
-                <SubmitButton buttonTitle="Register" />
+            <div className="flex w-full flex-col items-stretch justify-evenly gap-3 pt-5 sm:flex-row sm:items-center">
+                <SubmitButton buttonTitle="Register" loading={loading} loadingTitle="Creating account..." />
             </div>
         </form>
     )
