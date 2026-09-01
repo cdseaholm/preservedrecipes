@@ -126,12 +126,7 @@ export default function ProfilePage({
         <NavWrapper userInfo={user}>
             <ContentWrapper containedChild={true} paddingNeeded={true}>
                 <UserSpaceTemplate user={user} familyData={familyData} completeness={completeness} />
-<<<<<<< Updated upstream
-                <DashboardCard className="gap-2">
-=======
-                {/* Tabs Section - Takes remaining space */}
-                <DashboardCard className="min-h-0">
->>>>>>> Stashed changes
+                <DashboardCard className="min-h-0 gap-2">
                     <Tabs
                         value={activeTab}
                         onChange={(value) => setActiveTab((value || 'activity') as ProfilePanel)}
@@ -173,10 +168,10 @@ export default function ProfilePage({
                                     <button
                                         type="button"
                                         className="flex items-center gap-2 text-sm font-medium text-accent hover:underline"
-                    onClick={() => {
-                        setActiveTab('activity');
-                        window.history.pushState({}, '', '/u/profile?tab=activity');
-                    }}
+                                        onClick={() => {
+                                            setActiveTab('activity');
+                                            window.history.pushState({}, '', '/u/profile?tab=activity');
+                                        }}
                                     >
                                         <IconHistory size={16} aria-hidden="true" />
                                         Back to activity
@@ -223,24 +218,14 @@ function DashboardOverview({
 }) {
 
     return (
-<<<<<<< Updated upstream
         <Stack gap="md" w={'100%'} h={'100%'}>
             <section className="flex min-h-[390px] w-full flex-col rounded-md border border-accent/15 bg-cardBack/75 shadow-[var(--tightShadow)] sm:min-h-[520px]">
                 <Group justify="space-between" align="center" gap="xs" wrap="nowrap" className="border-b border-accent/10 p-3 sm:p-4">
-=======
-        <Stack gap="xl" w={'100%'} h={'100%'}>
-            <section className="flex min-h-[420px] w-full flex-col rounded-md border border-accent/30 bg-cardBack sm:min-h-[520px]">
-                <Group justify="space-between" align="center" gap="sm" className="p-3 sm:p-4">
->>>>>>> Stashed changes
                     <div className="min-w-0">
                         <Text fw={800} size="lg">Recent activity</Text>
                         <Text size="sm" c="dimmed" lineClamp={2}>A quick look at what you have been preserving lately.</Text>
                     </div>
-<<<<<<< Updated upstream
                     <Button type="button" variant="light" color="accent" size="xs" leftSection={<IconHistory size={15} />} onClick={onOpenHistory} className="shrink-0">
-=======
-                    <Button type="button" variant="light" color="accent" leftSection={<IconHistory size={16} />} onClick={onOpenHistory} className="w-full shrink-0 sm:w-auto">
->>>>>>> Stashed changes
                         See more
                     </Button>
                 </Group>

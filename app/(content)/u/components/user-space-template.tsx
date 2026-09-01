@@ -12,14 +12,17 @@ import {
     CopyButton,
     Group,
     Progress,
+    rem,
     Stack,
     Text,
+    ThemeIcon,
     Tooltip,
 } from "@mantine/core";
 import {
     IconCheck,
     IconEdit,
     IconShare,
+    IconUserCircle,
     IconUsers,
 } from "@tabler/icons-react";
 import Link from "next/link";
@@ -50,15 +53,9 @@ export default function UserSpaceTemplate({
     return (
         <div className="flex w-full min-w-0 flex-col items-center justify-start">
             <DashboardCard>
-<<<<<<< Updated upstream
-                <Stack gap="sm" style={{ flex: 1, minHeight: 0 }} w="100%">
-                    <div className="grid w-full grid-cols-[minmax(0,1fr)_auto] gap-3 rounded-md bg-mainBack/45 p-3 ring-1 ring-accent/10 md:grid-cols-[minmax(0,1fr)_260px] md:items-start md:p-4">
-                        <div className="grid min-w-0 grid-cols-[3.75rem_minmax(0,1fr)] items-center gap-3 sm:grid-cols-[4.5rem_minmax(0,1fr)]">
-=======
                 <Stack gap="md" style={{ flex: 1, minHeight: 0 }} w="100%">
                     <Group justify="space-between" align="flex-start" gap="md" wrap="wrap" visibleFrom="sm">
                         <Group gap="md" align="flex-start" className="min-w-0 flex-1">
->>>>>>> Stashed changes
                             <Avatar
                                 src={user.profileImage}
                                 size={60}
@@ -81,14 +78,11 @@ export default function UserSpaceTemplate({
                                 <Text size="sm" c="dimmed" className="break-all leading-snug sm:break-normal">
                                     {user.email}
                                 </Text>
-<<<<<<< Updated upstream
-=======
                                 <Text size="sm" c="dimmed" maw={rem(680)} className="break-words">
                                     {user.bio || 'Your home base for profile details, saved recipes, favorites, and the recipes you are preserving.'}
                                 </Text>
->>>>>>> Stashed changes
                             </Stack>
-                        </div>
+                        </Group>
 
                         <div className="flex w-[8.25rem] shrink-0 flex-col gap-1.5 max-[430px]:w-9 md:w-auto md:flex-row md:justify-end">
                             <Tooltip label={primaryActionLabel} withArrow>
@@ -123,10 +117,8 @@ export default function UserSpaceTemplate({
                                 )}
                             </CopyButton>
                         </div>
+                    </Group>
 
-<<<<<<< Updated upstream
-                        <Text size="sm" c="dimmed" className="col-span-2 leading-relaxed md:col-span-1 md:max-w-[42rem]">
-=======
                     <Stack gap="sm" hiddenFrom="sm" className="min-w-0">
                         <div className="grid w-full min-w-0 grid-cols-[64px_minmax(0,1fr)_40px] gap-3">
                             <Avatar
@@ -192,26 +184,16 @@ export default function UserSpaceTemplate({
                         </div>
 
                         <Text size="sm" c="dimmed" className="break-words">
->>>>>>> Stashed changes
                             {user.bio || 'Your home base for profile details, saved recipes, favorites, and the recipes you are preserving.'}
                         </Text>
 
                         {completion !== null && (
-<<<<<<< Updated upstream
-                            <Stack gap={4} className="col-span-2 w-full md:col-span-1 md:w-[260px] md:justify-self-end">
-                                <Group justify="space-between" gap="xs">
-                                    <Text size="xs" fw={500} c="dimmed">
-                                        Profile completeness
-                                    </Text>
-                                    <Text size="xs" fw={700} c={completionColor}>
-=======
                             <Stack gap={4} w="100%" className="min-w-0">
                                 <Group justify="space-between" gap="xs" wrap="nowrap">
                                     <Text size="xs" fw={500} c="dimmed" className="truncate">
                                         Profile completeness
                                     </Text>
                                     <Text size="xs" fw={700} c={completionColor} className="shrink-0">
->>>>>>> Stashed changes
                                         {completion}%
                                     </Text>
                                 </Group>
@@ -224,11 +206,7 @@ export default function UserSpaceTemplate({
                                 />
                             </Stack>
                         )}
-<<<<<<< Updated upstream
-                    </div>
-=======
                     </Stack>
->>>>>>> Stashed changes
                 </Stack>
             </DashboardCard>
         </div>

@@ -87,11 +87,7 @@ export default function CommunityCard({ community, index, userInfo }: { communit
     );
 
     return community.privacyLevel === 'public' || community.privacyLevel === 'hidden' || isMember ? (
-<<<<<<< Updated upstream
-        <Link key={index} href={`/communities/${community._id}`} className="block w-full">
-=======
         <Link key={index} href={`/communities/${community._id}`} onClick={() => setIsNavigating(true)} className="mb-3 block w-full">
->>>>>>> Stashed changes
             {body}
         </Link>
     ) : (

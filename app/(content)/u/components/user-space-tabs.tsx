@@ -1,11 +1,7 @@
 'use client'
 
-<<<<<<< Updated upstream
 import { useWindowSizes } from "@/context/width-height-store";
-import { Button, Group, Tabs, rem } from "@mantine/core";
-=======
 import { Badge, Button, Divider, Group, Tabs, rem } from "@mantine/core";
->>>>>>> Stashed changes
 import { IconChartBar, IconChartLine, IconInbox, IconSettings, IconSquareChevronRight } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -26,6 +22,8 @@ export default function UserSpaceTabs({
 }) {
     const router = useRouter();
     const setIsNavigating = useStateStore(state => state.setIsNavigating);
+    const { width } = useWindowSizes();
+    const mobile = width < 640;
     const activeTab: UserSpaceTab = value || 'activity';
     const iconStyle = { width: rem(16), height: rem(16) };
 
@@ -37,17 +35,10 @@ export default function UserSpaceTabs({
     ] as const;
 
     return (
-<<<<<<< Updated upstream
-        <Group gap="xs" wrap="nowrap" align="stretch" w="100%" className="rounded-md border border-accent/10 bg-mainBack/45 p-1.5 sm:p-2">
+        <Group gap="xs" wrap="nowrap" align="stretch" w="100%" className="min-w-0 rounded-md border border-accent/10 bg-mainBack/45 p-1.5 sm:p-2">
             <Tabs
                 w={showRecipesLink ? 'auto' : '100%'}
-                className={showRecipesLink ? 'min-w-0 flex-1' : undefined}
-=======
-        <Group gap="sm" wrap="nowrap" align="stretch" w="100%" className="min-w-0">
-            <Tabs
-                w="100%"
                 className="min-w-0 flex-1"
->>>>>>> Stashed changes
                 h="fit-content"
                 value={activeTab}
                 variant="pills"
@@ -65,21 +56,13 @@ export default function UserSpaceTabs({
                     }
                 }}
             >
-<<<<<<< Updated upstream
                 <div className="flex h-content w-full flex-row items-end justify-between">
                     <Tabs.List w="100%" grow className="min-w-0">
-=======
-                <div className="flex w-full min-w-0 flex-row items-end justify-between px-0 sm:px-2">
-                    <Tabs.List w="100%" grow>
->>>>>>> Stashed changes
                         {tabs.map((tab) => (
                             <Tabs.Tab
                                 key={tab.value}
                                 value={tab.value}
-<<<<<<< Updated upstream
                                 leftSection={mobile ? undefined : tab.label}
-                                styles={mobile ? { tabLabel: { fontSize: '13px', fontWeight: 600 } } : undefined}
-=======
                                 rightSection={'count' in tab && tab.count > 0 ? (
                                     <Badge size="xs" variant="filled" color="red" circle>
                                         {tab.count}
@@ -87,26 +70,19 @@ export default function UserSpaceTabs({
                                 ) : undefined}
                                 styles={{
                                     tab: { minWidth: 0, paddingInline: rem(8) },
-                                    tabLabel: { minWidth: 0, fontSize: rem(12), fontWeight: 500 },
+                                    tabLabel: { minWidth: 0, fontSize: mobile ? '13px' : rem(12), fontWeight: mobile ? 600 : 500 },
                                 }}
->>>>>>> Stashed changes
                                 title={tab.labelTitle}
                                 bd={mobile ? "0" : "1px solid var(--surfaceBorder)"}
                                 className={mobile ? "min-w-0 px-1.5" : undefined}
                             >
-<<<<<<< Updated upstream
                                 <span className="relative inline-flex min-h-4 min-w-4 items-center justify-center">
                                     {mobile ? tab.label : tab.labelTitle}
-                                    {'count' in tab && tab.count > 0 ? (
+                                    {mobile && 'count' in tab && tab.count > 0 ? (
                                         <span className="absolute -right-3 -top-2 inline-flex size-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold leading-none text-white">
                                             {tab.count}
                                         </span>
                                     ) : null}
-=======
-                                <span className="flex min-w-0 items-center justify-center gap-1.5">
-                                    {tab.label}
-                                    <span className="hidden truncate md:inline">{tab.labelTitle}</span>
->>>>>>> Stashed changes
                                 </span>
                             </Tabs.Tab>
                         ))}
@@ -116,10 +92,7 @@ export default function UserSpaceTabs({
 
             {showRecipesLink && (
                 <>
-<<<<<<< Updated upstream
-=======
                     <Divider orientation="vertical" visibleFrom="sm" />
->>>>>>> Stashed changes
                     <Button
                         type="button"
                         variant="light"
@@ -127,18 +100,12 @@ export default function UserSpaceTabs({
                         h={mobile ? rem(37) : rem(36)}
                         bd="1px solid var(--surfaceBorder)"
                         radius="md"
-<<<<<<< Updated upstream
-                        rightSection={<IconSquareChevronRight size={mobile ? 15 : 18} />}
-                        onClick={() => router.push('/u/recipes')}
-                        className={mobile ? 'w-[5.6rem] shrink-0 px-2 text-xs' : 'shrink-0'}
-=======
                         rightSection={<IconSquareChevronRight size={18} />}
                         onClick={() => {
                             setIsNavigating(true);
                             router.push('/u/recipes');
                         }}
-                        className="min-w-[92px] shrink-0 px-2 sm:min-w-[108px]"
->>>>>>> Stashed changes
+                        className={mobile ? 'w-[5.6rem] shrink-0 px-2 text-xs' : 'min-w-[108px] shrink-0 px-2'}
                     >
                         Recipes
                     </Button>

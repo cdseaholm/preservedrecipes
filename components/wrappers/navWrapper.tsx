@@ -44,17 +44,11 @@ export default function NavWrapper({ children, userInfo }: { children: React.Rea
                     Skip to main content
                 </a>
                 <AppHeader handleMenuToggle={handleMenuToggle} openMenu={openMenu} userInfo={userInfo} />
-<<<<<<< Updated upstream
-                <main id="main-content" tabIndex={-1} className="box-border flex h-full min-h-0 w-full flex-col items-center justify-start bg-mainBack/35 pt-[60px]">
-                    <ScrollArea w={'100%'} h={'100%'} scrollbarSize={8} className="z-3 min-h-0" p={0}>
-                        <RouterTransitionWrapper />
-=======
                 <main id="main-content" tabIndex={-1} className="box-border flex h-full min-h-0 w-full flex-col items-center justify-start bg-mainBack/30 pt-[60px]">
                     <ScrollArea w={'100%'} h={'100%'} scrollbarSize={10} className="z-3 min-h-0" p={0}>
                         <Suspense fallback={null}>
                             <RouterTransitionWrapper />
                         </Suspense>
->>>>>>> Stashed changes
                         {children}
                         <MainFooter />
                     </ScrollArea>

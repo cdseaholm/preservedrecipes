@@ -1,8 +1,9 @@
 'use client'
 
 import CancelButton from "@/components/buttons/cancelButton";
+import GoogleSignInButton from "@/components/buttons/googleSignInButton";
 import SubmitButton from "@/components/buttons/submitButton";
-import { Fieldset, PasswordInput, TextInput } from "@mantine/core"
+import { Divider, Fieldset, PasswordInput, TextInput } from "@mantine/core"
 import { useForm, UseFormReturnType } from "@mantine/form";
 
 export type SignInFormType = {
@@ -32,21 +33,8 @@ export default function SignInForm({ handleSignIn, handleCancel, loading = false
 
     return (
         <form id="modalLoginForm" onSubmit={signInForm.onSubmit(() => handleSignIn({ signInForm }))} onAbort={() => { signInForm.reset(); signInForm.clearErrors(); handleCancel(); }} className="w-full">
-<<<<<<< Updated upstream
-=======
-            <Button
-                type="button"
-                variant="default"
-                fullWidth
-                leftSection={<FcGoogle />}
-                onClick={() => signIn('google', { callbackUrl: '/u/profile' })}
-                loading={loading}
-                disabled={loading}
-            >
-                Continue with Google
-            </Button>
+            <GoogleSignInButton />
             <Divider label="or sign in with email" labelPosition="center" my="md" />
->>>>>>> Stashed changes
             <Fieldset legend="Personal Information">
                 <TextInput
                     id="modalLoginEmail"
