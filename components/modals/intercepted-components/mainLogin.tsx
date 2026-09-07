@@ -83,7 +83,7 @@ export default function SignInPage({ handleCancel, handleLoading }: { handleCanc
             <GoogleSignInButton />
             <div className="flex items-center gap-3 text-xs uppercase tracking-wide text-mainText/50">
                 <span className="h-px flex-1 bg-accent/20" />
-                or
+                or sign in with email
                 <span className="h-px flex-1 bg-accent/20" />
             </div>
             <SignInForm handleCancel={handleCancel} handleSignIn={handleSignIn} loading={submitting} />

@@ -7,6 +7,8 @@ export type IInquiry = {
     inquiryType: 'General' | 'Bug Report' | 'Feature Request' | 'Suggestion' | 'Other';
     inquiryMessage: string;
     inquiryTitle: string;
+    adminNote?: string;
+    read?: boolean;
     handled: boolean;
     createdAt: Date;
     updatedAt: Date;
@@ -19,6 +21,8 @@ export type InquiryFormType = {
     inquiryType: 'General' | 'Bug Report' | 'Feature Request' | 'Suggestion' | 'Other' | '';
     inquiryMessage: string;
     inquiryTitle: string;
+    adminNote?: string;
+    read?: boolean;
     handled: boolean;
     createdAt: Date;
     updatedAt: Date;

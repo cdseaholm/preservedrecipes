@@ -17,15 +17,17 @@ import React from "react";
 type DashboardCardProps = {
     children: React.ReactNode;
     className?: string;
+    style?: React.CSSProperties;
 };
 
-export function DashboardCard({ children, className = "" }: DashboardCardProps) {
+export function DashboardCard({ children, className = "", style }: DashboardCardProps) {
     return (
         <Card
             padding="sm"
             radius="md"
             withBorder
             w="100%"
+            style={style}
             className={`flex min-w-0 flex-1 flex-col overflow-hidden border-[var(--surfaceBorder)] bg-[var(--surfaceRaised)] shadow-[var(--softShadow)] backdrop-blur-sm ${className}`}
         >
             {children}

@@ -11,6 +11,7 @@ import {
     Button,
     CopyButton,
     Group,
+    Modal,
     Progress,
     rem,
     Stack,
@@ -21,12 +22,14 @@ import {
 import {
     IconCheck,
     IconEdit,
+    IconMessageCircle,
     IconShare,
     IconUserCircle,
     IconUsers,
 } from "@tabler/icons-react";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import InquiryTabContent from "./inquiry-tab";
 
 export default function UserSpaceTemplate({
     user,
@@ -42,6 +45,7 @@ export default function UserSpaceTemplate({
     primaryActionHref?: string;
 }) {
     const setUserInfo = useUserStore(state => state.setUserInfo);
+    const [feedbackOpen, setFeedbackOpen] = useState(false);
     const profileUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/view/member/${user._id}`;
     const completion = completeness ?? null;
     const completionColor = completion === null ? 'gray' : completion >= 75 ? 'green' : completion >= 50 ? 'yellow' : 'red';
@@ -84,38 +88,51 @@ export default function UserSpaceTemplate({
                             </Stack>
                         </Group>
 
-                        <div className="flex w-[8.25rem] shrink-0 flex-col gap-1.5 max-[430px]:w-9 md:w-auto md:flex-row md:justify-end">
-                            <Tooltip label={primaryActionLabel} withArrow>
-                                <Button
-                                    component={Link}
-                                    href={primaryActionHref}
-                                    variant="filled"
-                                    color="blue.5"
-                                    size="sm"
-                                    aria-label={primaryActionLabel}
-                                    leftSection={<IconEdit size={16} />}
-                                    className="h-9 w-full px-3 max-[430px]:w-9 max-[430px]:px-0 max-[430px]:[&_.mantine-Button-inner]:justify-center max-[430px]:[&_.mantine-Button-label]:hidden max-[430px]:[&_.mantine-Button-section]:m-0 md:w-auto"
-                                >
-                                    {primaryActionLabel}
-                                </Button>
-                            </Tooltip>
-                            <CopyButton value={profileUrl} timeout={2000}>
-                                {({ copied, copy }) => (
-                                    <Tooltip label={copied ? 'Copied!' : 'Share profile'} withArrow>
-                                        <Button
-                                            variant="light"
-                                            color={copied ? 'teal' : 'accent'}
-                                            onClick={copy}
-                                            size="sm"
-                                            aria-label={copied ? 'Copied profile link' : 'Share profile'}
-                                            leftSection={copied ? <IconCheck size={16} /> : <IconShare size={16} />}
-                                            className="h-9 w-full px-3 max-[430px]:w-9 max-[430px]:px-0 max-[430px]:[&_.mantine-Button-inner]:justify-center max-[430px]:[&_.mantine-Button-label]:hidden max-[430px]:[&_.mantine-Button-section]:m-0 md:w-auto"
-                                        >
-                                            {copied ? 'Copied' : 'Share'}
-                                        </Button>
-                                    </Tooltip>
-                                )}
-                            </CopyButton>
+                        <div className="flex w-[8.25rem] shrink-0 flex-col gap-1.5 max-[430px]:w-9 md:w-auto md:items-stretch">
+                            <div className="flex flex-col gap-1.5 md:flex-row">
+                                <Tooltip label={primaryActionLabel} withArrow>
+                                    <Button
+                                        component={Link}
+                                        href={primaryActionHref}
+                                        variant="filled"
+                                        color="blue.5"
+                                        size="sm"
+                                        aria-label={primaryActionLabel}
+                                        leftSection={<IconEdit size={16} />}
+                                        className="h-9 w-full px-3 max-[430px]:w-9 max-[430px]:px-0 max-[430px]:[&_.mantine-Button-inner]:justify-center max-[430px]:[&_.mantine-Button-label]:hidden max-[430px]:[&_.mantine-Button-section]:m-0 md:w-auto"
+                                    >
+                                        {primaryActionLabel}
+                                    </Button>
+                                </Tooltip>
+                                <CopyButton value={profileUrl} timeout={2000}>
+                                    {({ copied, copy }) => (
+                                        <Tooltip label={copied ? 'Copied!' : 'Share profile'} withArrow>
+                                            <Button
+                                                variant="light"
+                                                color={copied ? 'teal' : 'accent'}
+                                                onClick={copy}
+                                                size="sm"
+                                                aria-label={copied ? 'Copied profile link' : 'Share profile'}
+                                                leftSection={copied ? <IconCheck size={16} /> : <IconShare size={16} />}
+                                                className="h-9 w-full px-3 max-[430px]:w-9 max-[430px]:px-0 max-[430px]:[&_.mantine-Button-inner]:justify-center max-[430px]:[&_.mantine-Button-label]:hidden max-[430px]:[&_.mantine-Button-section]:m-0 md:w-auto"
+                                            >
+                                                {copied ? 'Copied' : 'Share'}
+                                            </Button>
+                                        </Tooltip>
+                                    )}
+                                </CopyButton>
+                            </div>
+                            <Button
+                                type="button"
+                                variant="subtle"
+                                color="accent"
+                                size="sm"
+                                leftSection={<IconMessageCircle size={16} />}
+                                onClick={() => setFeedbackOpen(true)}
+                                className="h-9 w-full px-3 max-[430px]:w-9 max-[430px]:px-0 max-[430px]:[&_.mantine-Button-inner]:justify-center max-[430px]:[&_.mantine-Button-label]:hidden max-[430px]:[&_.mantine-Button-section]:m-0"
+                            >
+                                Submit Feedback
+                            </Button>
                         </div>
                     </Group>
 
@@ -180,6 +197,19 @@ export default function UserSpaceTemplate({
                                         </Tooltip>
                                     )}
                                 </CopyButton>
+                                <Tooltip label="Submit feedback" withArrow position="left">
+                                    <ActionIcon
+                                        type="button"
+                                        variant="subtle"
+                                        color="accent"
+                                        size={36}
+                                        radius="md"
+                                        aria-label="Submit feedback"
+                                        onClick={() => setFeedbackOpen(true)}
+                                    >
+                                        <IconMessageCircle size={17} />
+                                    </ActionIcon>
+                                </Tooltip>
                             </Stack>
                         </div>
 
@@ -209,6 +239,22 @@ export default function UserSpaceTemplate({
                     </Stack>
                 </Stack>
             </DashboardCard>
+
+            <Modal
+                opened={feedbackOpen}
+                onClose={() => setFeedbackOpen(false)}
+                title="Submit Feedback"
+                centered
+                size="lg"
+            >
+                <InquiryTabContent
+                    initialInquiries={[]}
+                    user={user}
+                    isAdmin={false}
+                    showList={false}
+                    onSubmitted={() => setFeedbackOpen(false)}
+                />
+            </Modal>
         </div>
     );
 }

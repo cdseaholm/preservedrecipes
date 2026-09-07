@@ -37,23 +37,23 @@ export default function ProfileStats({
     ];
 
     return (
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-6">
+        <section className="grid h-full min-h-0 grid-cols-2 grid-rows-3 gap-2 sm:grid-cols-3 sm:grid-rows-2 sm:gap-3">
             {stats.map((stat) => (
                 <div
                     key={stat.label}
-                    className="rounded-md border border-accent/15 bg-[var(--surfaceWash)] p-3 shadow-[var(--tightShadow)] transition hover:border-accent/30 sm:p-4"
+                    className="flex min-h-0 rounded-md border border-accent/15 bg-[var(--surfaceWash)] p-3 shadow-[var(--tightShadow)] transition hover:border-accent/30 sm:p-4"
                 >
-                    <div className="flex flex-col items-center text-center">
-                        <span className="mb-2 inline-flex size-9 items-center justify-center rounded-md bg-accent/10 text-accent">
+                    <div className="flex min-h-0 w-full flex-col items-center justify-center text-center">
+                        <span className="mb-2 inline-flex size-9 items-center justify-center rounded-md bg-accent/10 text-accent sm:mb-3 sm:size-11">
                             {stat.icon}
                         </span>
-                        <p className="text-xl font-bold text-accent sm:text-2xl">{stat.value}</p>
+                        <p className="text-2xl font-bold leading-none text-accent sm:text-3xl">{stat.value}</p>
                         <p className="mt-1 text-xs font-medium uppercase text-mainText/60">
                             {stat.label}
                         </p>
                     </div>
                 </div>
             ))}
-        </div>
+        </section>
     );
 }

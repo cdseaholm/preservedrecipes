@@ -40,6 +40,8 @@ export async function POST(req: NextRequest) {
             inquiryType,
             inquiryTitle,
             inquiryMessage: inquiry.inquiryMessage,
+            adminNote: '',
+            read: false,
             handled: false,
             createdAt: new Date(),
             updatedAt: new Date()
