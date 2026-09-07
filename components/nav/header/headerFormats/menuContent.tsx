@@ -10,6 +10,7 @@ import { MdHome, MdInfoOutline, MdOutlineAttachMoney } from "react-icons/md";
 import { TfiWrite } from "react-icons/tfi";
 import { IUser } from "@/models/types/personal/user";
 import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useStateStore } from "@/context/stateStore";
 import ThemeToggle from "@/components/buttons/themeToggle";
 
@@ -19,6 +20,8 @@ const fam = <GiFamilyTree />;
 export default function MenuContent({ session, profile, signOutElement, signIn, userData, closeDrawer }: { profile: React.ReactNode; signOutElement: JSX.Element; session: Session | null, signIn: JSX.Element | null, userData: IUser | null, closeDrawer: () => void }) {
 
     const { handleSignOutClick, handleSignInClick } = MenuPanelHooks();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
     const setIsNavigating = useStateStore(state => state.setIsNavigating);
     const isAuthenticated = Boolean(session || userData?._id);
     const familyRoute = userData ? `/family/${userData.userFamilyID}` : '/'
@@ -32,6 +35,17 @@ export default function MenuContent({ session, profile, signOutElement, signIn, 
             event.altKey ||
             event.button !== 0
         ) {
+            return;
+        }
+
+        const currentSearch = searchParams.toString();
+        const currentHref = `${pathname}${currentSearch ? `?${currentSearch}` : ''}`;
+        const nextUrl = new URL(event.currentTarget.href, window.location.href);
+        const nextHref = `${nextUrl.pathname}${nextUrl.search}`;
+
+        if (nextHref === currentHref) {
+            setIsNavigating(false);
+            closeDrawer();
             return;
         }
 

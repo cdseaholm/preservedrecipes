@@ -29,17 +29,19 @@ export async function DELETE(req: NextRequest) {
             return NextResponse.json({ status: 404, message: 'User not found' });
         }
 
-        if (!isInquiryAdminEmail(user.email)) {
-            return NextResponse.json({ status: 403, message: 'Admin privileges are required' });
-        }
-
         const inquiries = body.itemsToDelete as IInquiry[];
 
         if (!inquiries || inquiries.length === 0 || !inquiries[0]._id) {
             return NextResponse.json({ status: 500, message: 'Error deleting inquiry' });
         }
 
-        await Inquiry.deleteMany({ _id: { $in: inquiries.map(inq => inq._id) } });
+        const idsToDelete = inquiries.map(inq => inq._id);
+        const isAdmin = isInquiryAdminEmail(user.email);
+
+        await Inquiry.deleteMany({
+            _id: { $in: idsToDelete },
+            ...(isAdmin ? {} : { inquirerEmail: email })
+        });
 
         return NextResponse.json({ status: 200, message: 'Successfully deleted!' });
 

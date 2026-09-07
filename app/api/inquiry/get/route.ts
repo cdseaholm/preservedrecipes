@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import Inquiry from '@/models/inquiry';
 import { IInquiry } from '@/models/types/misc/inquiry';
 import { IUser } from '@/models/types/personal/user';
-import { normalizeAdminEmail } from '@/lib/admin';
+import { isInquiryAdminEmail, normalizeAdminEmail } from '@/lib/admin';
 import { authOptions } from '@/lib/auth/auth-options';
 
 export async function GET(req: NextRequest) {
@@ -34,10 +34,12 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ status: 404, message: 'User not found', inquirys: [] as IInquiry[] });
         }
 
-        const returnInquirys = await Inquiry.find({}) as IInquiry[];
+        const returnInquirys = await (isInquiryAdminEmail(user.email)
+            ? Inquiry.find({}).sort({ createdAt: -1 })
+            : Inquiry.find({ inquirerEmail: email }).sort({ createdAt: -1 })) as IInquiry[];
 
         if (!returnInquirys || returnInquirys.length === 0) {
-            return NextResponse.json({ status: 403, message: 'No Inquirys found', inquirys: [] as IInquiry[] });
+            return NextResponse.json({ status: 200, message: 'No Inquirys found', inquirys: [] as IInquiry[] });
         }
 
         return NextResponse.json({ status: 200, message: 'Success!', inquirys: returnInquirys });

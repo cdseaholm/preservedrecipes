@@ -26,6 +26,7 @@ import {
     Stack,
     Text,
     Divider,
+    Pagination,
 } from "@mantine/core";
 import {
     IconHistory,
@@ -37,6 +38,7 @@ type ProfilePanel = UserSpaceTab | 'stats' | 'history';
 
 const profileTabs: ProfilePanel[] = ['activity', 'stats', 'history', 'inbox', 'settings'];
 const visibleTabs: UserSpaceTab[] = ['activity', 'inbox', 'stats', 'settings'];
+const profilePanelHeight = 'clamp(430px, min(58dvh, 46vw), 520px)';
 
 interface ProfilePageProps {
     user: IUser;
@@ -69,6 +71,7 @@ export default function ProfilePage({
     const requestedTab = searchParams.get('tab');
     const requestedProfileTab = requestedTab === 'inquiries' ? 'inbox' : requestedTab;
     const [activeTab, setActiveTab] = useState<ProfilePanel>(profileTabs.includes(requestedProfileTab as ProfilePanel) ? requestedProfileTab as ProfilePanel : 'activity');
+    const [liveInboxCount, setLiveInboxCount] = useState<number | null>(null);
 
     useEffect(() => {
         if (requestedProfileTab && profileTabs.includes(requestedProfileTab as ProfilePanel)) {
@@ -82,7 +85,10 @@ export default function ProfilePage({
     const storedInquiries = useUserStore(state => state.inquiries);
     const inquiriesForBadge = storedInquiries.length > 0 ? storedInquiries : inquiries;
     const openInquiryCount = inquiriesForBadge.filter(inquiry => !inquiry.handled).length;
-    const inboxCount = openInquiryCount + familyInvites.length + communityInvites.length;
+    const unreadInquiryCount = inquiriesForBadge.filter(inquiry => !inquiry.read).length;
+    const unreadInviteCount = familyInvites.filter(invite => !invite.read).length + communityInvites.filter(invite => !invite.read).length;
+    const fallbackInboxCount = userIsInquiryAdmin ? openInquiryCount : unreadInquiryCount + unreadInviteCount;
+    const inboxCount = liveInboxCount ?? fallbackInboxCount;
     const timeBeingMember = user.createdAt
         ? Math.floor((new Date().getTime() - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24))
         : 0;
@@ -126,7 +132,10 @@ export default function ProfilePage({
         <NavWrapper userInfo={user}>
             <ContentWrapper containedChild={true} paddingNeeded={true}>
                 <UserSpaceTemplate user={user} familyData={familyData} completeness={completeness} />
-                <DashboardCard className="min-h-0 gap-2">
+                <DashboardCard
+                    className="gap-2"
+                    style={{ height: 'auto' }}
+                >
                     <Tabs
                         value={activeTab}
                         onChange={(value) => setActiveTab((value || 'activity') as ProfilePanel)}
@@ -143,8 +152,8 @@ export default function ProfilePage({
 
                         <Divider mt={8} />
 
-                        <Box pt={8} style={{ flex: 1, minHeight: 0, position: 'relative' }}>
-                            <Tabs.Panel value="activity">
+                        <Box pt={8} style={{ height: profilePanelHeight, minHeight: profilePanelHeight, position: 'relative', overflow: 'hidden' }}>
+                            <Tabs.Panel value="activity" className="h-full overflow-hidden pr-1" style={{ height: '100%', minHeight: '100%' }}>
                                 <DashboardOverview
                                     recentRecipes={recentRecipes}
                                     reviews={reviews}
@@ -152,7 +161,7 @@ export default function ProfilePage({
                                 />
                             </Tabs.Panel>
 
-                            <Tabs.Panel value="stats">
+                            <Tabs.Panel value="stats" className="h-full overflow-hidden pr-1" style={{ height: '100%', minHeight: '100%' }}>
                                 <ProfileStats
                                     recipeCount={recipeCount}
                                     communityCount={communityCount}
@@ -163,7 +172,7 @@ export default function ProfilePage({
                                 />
                             </Tabs.Panel>
 
-                            <Tabs.Panel value="history">
+                            <Tabs.Panel value="history" className="h-full overflow-hidden pr-1" style={{ height: '100%', minHeight: '100%' }}>
                                 <Card withBorder radius="md" padding="md" className="mb-4 border-accent/15 bg-mainBack/60">
                                     <button
                                         type="button"
@@ -177,26 +186,29 @@ export default function ProfilePage({
                                         Back to activity
                                     </button>
                                 </Card>
-                                <HistoryTabContent
-                                    recipesCreated={recentRecipes}
-                                    communitiesCreated={communitiesCreated}
-                                    communitiesJoined={communitiesJoined}
-                                    inquiriesMade={inquiries}
-                                    reviews={reviews}
-                                />
+                                <div className="h-[calc(100%-4.25rem)] overflow-y-auto pr-1">
+                                    <HistoryTabContent
+                                        recipesCreated={recentRecipes}
+                                        communitiesCreated={communitiesCreated}
+                                        communitiesJoined={communitiesJoined}
+                                        inquiriesMade={inquiries}
+                                        reviews={reviews}
+                                    />
+                                </div>
                             </Tabs.Panel>
 
-                            <Tabs.Panel value="inbox">
+                            <Tabs.Panel value="inbox" className="h-full overflow-hidden pr-1" style={{ height: '100%', minHeight: '100%' }}>
                                 <ProfileInbox
                                     familyInvites={familyInvites}
                                     communityInvites={communityInvites}
                                     initialInquiries={inquiries}
                                     user={user}
                                     isAdmin={userIsInquiryAdmin}
+                                    onInboxCountChange={setLiveInboxCount}
                                 />
                             </Tabs.Panel>
 
-                            <Tabs.Panel value="settings">
+                            <Tabs.Panel value="settings" className="h-full overflow-hidden pr-1" style={{ height: '100%', minHeight: '100%' }}>
                                 <SettingsTab />
                             </Tabs.Panel>
                         </Box>
@@ -216,10 +228,19 @@ function DashboardOverview({
     reviews: IReview[];
     onOpenHistory: () => void;
 }) {
+    const [activityPage, setActivityPage] = useState(1);
+    const activityPageSize = 3;
+    const totalActivities = recentRecipes.length + reviews.length;
+    const activityPages = Math.max(1, Math.ceil(totalActivities / activityPageSize));
+    const activityOffset = (activityPage - 1) * activityPageSize;
+
+    useEffect(() => {
+        setActivityPage(currentPage => Math.min(currentPage, activityPages));
+    }, [activityPages]);
 
     return (
-        <Stack gap="md" w={'100%'} h={'100%'}>
-            <section className="flex min-h-[390px] w-full flex-col rounded-md border border-accent/15 bg-cardBack/75 shadow-[var(--tightShadow)] sm:min-h-[520px]">
+        <Stack gap="md" w={'100%'} h={'100%'} className="min-h-0">
+            <section className="flex h-full min-h-0 w-full flex-col rounded-md border border-accent/15 bg-cardBack/75 shadow-[var(--tightShadow)]">
                 <Group justify="space-between" align="center" gap="xs" wrap="nowrap" className="border-b border-accent/10 p-3 sm:p-4">
                     <div className="min-w-0">
                         <Text fw={800} size="lg">Recent activity</Text>
@@ -229,9 +250,19 @@ function DashboardOverview({
                         See more
                     </Button>
                 </Group>
-                <div className="w-full flex-1 p-1.5 sm:p-3">
-                    <RecentActivity recentRecipes={recentRecipes} reviews={reviews} limit={6} />
+                <div className="min-h-0 w-full flex-1 p-1.5 sm:p-3">
+                    <RecentActivity
+                        recentRecipes={recentRecipes}
+                        reviews={reviews}
+                        limit={activityPageSize}
+                        offset={activityOffset}
+                    />
                 </div>
+                {activityPages > 1 && (
+                    <Group justify="center" className="border-t border-accent/10 px-3 py-2">
+                        <Pagination total={activityPages} value={activityPage} onChange={setActivityPage} size="sm" withEdges />
+                    </Group>
+                )}
             </section>
         </Stack>
     );

@@ -24,6 +24,14 @@ export const inquirySchema = new Schema(
             type: String,
             required: true
         },
+        adminNote: {
+            type: String,
+            default: ''
+        },
+        read: {
+            type: Boolean,
+            default: false
+        },
         handled: {
             type: Boolean,
             default: false

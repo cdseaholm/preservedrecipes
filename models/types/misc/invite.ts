@@ -4,5 +4,6 @@ export type IInvite = {
     familyID: string;
     communityID?: string;
     token: string;
+    read?: boolean;
     createdAt: Date;
 }

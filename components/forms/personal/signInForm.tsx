@@ -1,9 +1,8 @@
 'use client'
 
 import CancelButton from "@/components/buttons/cancelButton";
-import GoogleSignInButton from "@/components/buttons/googleSignInButton";
 import SubmitButton from "@/components/buttons/submitButton";
-import { Divider, Fieldset, PasswordInput, TextInput } from "@mantine/core"
+import { Fieldset, PasswordInput, TextInput } from "@mantine/core"
 import { useForm, UseFormReturnType } from "@mantine/form";
 
 export type SignInFormType = {
@@ -33,8 +32,6 @@ export default function SignInForm({ handleSignIn, handleCancel, loading = false
 
     return (
         <form id="modalLoginForm" onSubmit={signInForm.onSubmit(() => handleSignIn({ signInForm }))} onAbort={() => { signInForm.reset(); signInForm.clearErrors(); handleCancel(); }} className="w-full">
-            <GoogleSignInButton />
-            <Divider label="or sign in with email" labelPosition="center" my="md" />
             <Fieldset legend="Personal Information">
                 <TextInput
                     id="modalLoginEmail"
